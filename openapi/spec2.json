@@ -553,65 +553,6 @@
         ]
       }
     },
-    "/networks/{id}/splashLoginAttempts": {
-      "get": {
-        "description": "List the splash login attempts for a network",
-        "operationId": "getNetworkSplashLoginAttempts",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "ssidNumber",
-            "description": "Only return the login attempts for the specified SSID",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "loginIdentifier",
-            "description": "The username, email, or phone number used during login",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "timespan",
-            "description": "The timespan, in seconds, for the login attempts. The period will be from [timespan] seconds ago until now. The maximum timespan is 3 months",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "name": "Miles Meraki",
-                  "login": "miles@meraki.com",
-                  "ssid": "My SSID",
-                  "loginAt": 1518365681,
-                  "gatewayDeviceMac": "00:11:22:33:44:55",
-                  "clientMac": "22:33:44:55:66:77",
-                  "clientId": "k74272e",
-                  "authorization": "success"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the splash login attempts for a network",
-        "tags": [
-          "Splash login attempts"
-        ]
-      }
-    },
     "/networks/{networkID}/switchStacks/{switchStackId}/remove": {
       "post": {
         "description": "Remove a switch from a stack",
@@ -1446,7 +1387,7 @@
     },
     "/networks/{networkId}/cameras/{serial}/videoLink": {
       "get": {
-        "description": "Returns video link for the specified camera. If a timestamp supplied, it links to that time.",
+        "description": "Returns video link to the specified camera. If a timestamp is supplied, it links to that timestamp.",
         "operationId": "getNetworkCameraVideoLink",
         "parameters": [
           {
@@ -1462,10 +1403,10 @@
             "required": true
           },
           {
+            "type": "string",
             "name": "timestamp",
-            "description": "The video link will start at this timestamp. The timestamp is in UNIX Epoch time (milliseconds).",
             "in": "query",
-            "type": "string"
+            "description": "[optional] The video link will start at this timestamp. The timestamp is in UNIX Epoch time (milliseconds). If no timestamp is specified, we will assume current time."
           }
         ],
         "responses": {
@@ -1482,7 +1423,7 @@
             }
           }
         },
-        "summary": "Returns video link for the specified camera. If a timestamp supplied, it links to that time.",
+        "summary": "Returns video link to the specified camera. If a timestamp is supplied, it links to that timestamp.",
         "tags": [
           "Cameras"
         ]
@@ -3939,10 +3880,10 @@
             "required": true
           },
           {
+            "type": "integer",
             "name": "timespan",
-            "description": "The timespan for which LLDP and CDP information will be fetched. Must be in seconds and less than or equal to a month (2592000 seconds). LLDP and CDP information is sent to the Meraki dashboard every 10 minutes. In instances where this LLDP and CDP information matches an existing entry in the Meraki dashboard, the data is updated once every two hours. Meraki recommends querying LLDP and CDP information at an interval slightly greater than two hours, to ensure that unchanged CDP / LLDP information can be queried consistently.",
             "in": "query",
-            "type": "string"
+            "description": "The timespan for which LLDP and CDP information will be fetched. Must be in seconds and less than or equal to a month (2592000 seconds). LLDP and CDP information is sent to the Meraki dashboard every 10 minutes. In instances where this LLDP and CDP information matches an existing entry in the Meraki dashboard, the data is updated once every two hours. Meraki recommends querying LLDP and CDP information at an interval slightly greater than two hours, to ensure that unchanged CDP / LLDP information can be queried consistently."
           }
         ],
         "responses": {
@@ -12490,6 +12431,82 @@
         ]
       }
     },
+    "/networks/{networkId}/splashLoginAttempts": {
+      "get": {
+        "description": "List the splash login attempts for a network",
+        "operationId": "getNetworkSplashLoginAttempts",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14
+            ],
+            "name": "ssidNumber",
+            "in": "query",
+            "description": "Only return the login attempts for the specified SSID"
+          },
+          {
+            "type": "string",
+            "name": "loginIdentifier",
+            "in": "query",
+            "description": "The username, email, or phone number used during login"
+          },
+          {
+            "type": "integer",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan, in seconds, for the login attempts. The period will be from [timespan] seconds ago until now. The maximum timespan is 3 months"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Miles Meraki",
+                  "login": "miles@meraki.com",
+                  "ssid": "My SSID",
+                  "loginAt": 1518365681,
+                  "gatewayDeviceMac": "00:11:22:33:44:55",
+                  "clientMac": "22:33:44:55:66:77",
+                  "clientId": "k74272e",
+                  "authorization": "success"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the splash login attempts for a network",
+        "tags": [
+          "Splash login attempts"
+        ]
+      }
+    },
     "/networks/{networkId}/split": {
       "post": {
         "description": "Split a combined network into individual networks for each type of device",
@@ -13148,12 +13165,12 @@
               "type": "object",
               "properties": {
                 "splashUrl": {
-                  "description": "The custom splash URL of the click-through splash page. Optional. Note that the URL can be configured without necessarily being used. In order to enable the custom URL, see 'useSplashUrl'",
-                  "type": "string"
+                  "type": "string",
+                  "description": "[optional] The custom splash URL of the click-through splash page. Note that the URL can be configured without necessarily being used. In order to enable the custom URL, see 'useSplashUrl'"
                 },
                 "useSplashUrl": {
-                  "description": "Boolean indicating whether the user will be redirected to the custom splash url. A custom splash URL must be set if this is true. Optional. Note that depending on your SSID's access control settings, it may not be possible to use the custom splash URL.",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "description": "[optional] Boolean indicating whether the user will be redirected to the custom splash url. A custom splash URL must be set if this is true. Note that depending on your SSID's access control settings, it may not be possible to use the custom splash URL."
                 }
               },
               "example": {
@@ -16090,14 +16107,18 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The name of the organization",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the organization"
                 }
               },
               "example": {
                 "name": "My organization"
-              }
-            }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -16121,13 +16142,13 @@
         ]
       }
     },
-    "/organizations/{id}": {
+    "/organizations/{organizationId}": {
       "get": {
         "description": "Return an organization",
         "operationId": "getOrganization",
         "parameters": [
           {
-            "name": "id",
+            "name": "organizationId",
             "in": "path",
             "type": "string",
             "required": true
@@ -16158,7 +16179,7 @@
         "operationId": "updateOrganization",
         "parameters": [
           {
-            "name": "id",
+            "name": "organizationId",
             "in": "path",
             "type": "string",
             "required": true
@@ -16170,8 +16191,8 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The name of the organization",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the organization"
                 }
               },
               "example": {
@@ -16199,174 +16220,7 @@
         "tags": [
           "Organizations"
         ]
-      }
-    },
-    "/organizations/{id}/clone": {
-      "post": {
-        "description": "Create a new organization by cloning the addressed organization",
-        "operationId": "cloneOrganization",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "cloneOrganization",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "description": "The name of the new organization",
-                  "type": "string"
-                }
-              },
-              "example": {
-                "name": "My organization"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "id": "2930418",
-                "name": "My organization"
-              }
-            }
-          }
-        },
-        "summary": "Create a new organization by cloning the addressed organization",
-        "tags": [
-          "Organizations"
-        ]
-      }
-    },
-    "/organizations/{id}/deviceStatuses": {
-      "get": {
-        "description": "List the status of every Meraki device in the organization",
-        "operationId": "getOrganizationDeviceStatuses",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "name": "My AP",
-                  "serial": "Q234-ABCD-5678",
-                  "mac": "00:11:22:33:44:55",
-                  "status": "online",
-                  "lanIp": "1.2.3.4",
-                  "publicIp": "123.123.123.1",
-                  "networkId": "N_24329156"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the status of every Meraki device in the organization",
-        "tags": [
-          "Organizations"
-        ]
-      }
-    },
-    "/organizations/{id}/inventory": {
-      "get": {
-        "description": "Return the inventory for an organization",
-        "operationId": "getOrganizationInventory",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "mac": "00:11:22:33:44:55",
-                  "serial": "Q234-ABCD-5678",
-                  "networkId": "N_24329156",
-                  "model": "MR34",
-                  "claimedAt": 1518365681.0,
-                  "publicIp": "123.123.123.1",
-                  "name": "My AP"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Return the inventory for an organization",
-        "tags": [
-          "Organizations"
-        ]
-      }
-    },
-    "/organizations/{id}/licenseState": {
-      "get": {
-        "description": "Return the license state for an organization",
-        "operationId": "getOrganizationLicenseState",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "status": "OK",
-                "expirationDate": "Feb 8, 2020 UTC",
-                "licensedDeviceCounts": {
-                  "MS": 100
-                }
-              }
-            }
-          }
-        },
-        "summary": "Return the license state for an organization",
-        "tags": [
-          "Organizations"
-        ]
-      }
-    },
-    "/organizations/{organizationId}": {
+      },
       "delete": {
         "description": "Delete an organization",
         "operationId": "deleteOrganization",
@@ -17183,6 +17037,59 @@
         ]
       }
     },
+    "/organizations/{organizationId}/clone": {
+      "post": {
+        "description": "Create a new organization by cloning the addressed organization",
+        "operationId": "cloneOrganization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "cloneOrganization",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new organization"
+                }
+              },
+              "example": {
+                "name": "My organization"
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "2930418",
+                "name": "My organization"
+              }
+            }
+          }
+        },
+        "summary": "Create a new organization by cloning the addressed organization",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
     "/organizations/{organizationId}/configTemplates": {
       "get": {
         "description": "List the configuration templates for this organization",
@@ -17289,6 +17196,46 @@
         ]
       }
     },
+    "/organizations/{organizationId}/deviceStatuses": {
+      "get": {
+        "description": "List the status of every Meraki device in the organization",
+        "operationId": "getOrganizationDeviceStatuses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "My AP",
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:33:44:55",
+                  "status": "online",
+                  "lanIp": "1.2.3.4",
+                  "publicIp": "123.123.123.1",
+                  "networkId": "N_24329156"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the status of every Meraki device in the organization",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
     "/organizations/{organizationId}/devices": {
       "get": {
         "description": "List the devices in an organization",
@@ -17352,6 +17299,82 @@
         "summary": "List the devices in an organization",
         "tags": [
           "Devices"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory": {
+      "get": {
+        "description": "Return the inventory for an organization",
+        "operationId": "getOrganizationInventory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "mac": "00:11:22:33:44:55",
+                  "serial": "Q234-ABCD-5678",
+                  "networkId": "N_24329156",
+                  "model": "MR34",
+                  "claimedAt": 1518365681.0,
+                  "publicIp": "123.123.123.1",
+                  "name": "My AP"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the inventory for an organization",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenseState": {
+      "get": {
+        "description": "Return the license state for an organization",
+        "operationId": "getOrganizationLicenseState",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "status": "OK",
+                "expirationDate": "Feb 8, 2020 UTC",
+                "licensedDeviceCounts": {
+                  "MS": 100
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the license state for an organization",
+        "tags": [
+          "Organizations"
         ]
       }
     },
