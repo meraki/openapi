@@ -1,17 +1,21 @@
 # Cisco Meraki Dasbhoard API - OpenAPI Specification
 
-This repository contains Open API specificatrion for the Meraki Dashboard API.
+This repository contains Open API specifications for the Meraki Dashboard API.
 
 
-[Changelog](openapi/changelog.md)
-[Latest](openapi/spec2.json)
+> [Changelog](openapi/changelog.md)
+
+> [Latest Version](openapi/spec2.json)
+
+
 
 Files can be found in the `openapi/` directory:
 
 ## Latest API version
-* `/openapi/spec2.json`: OpenAPI 2.0 spec.
-* 
-* `/openapi/x.x.x/spec2.json`: Historical OpenAPI 2.0 spec.
+* `/openapi/spec2.json
+
+## Historical
+* `/openapi/x.x.x/spec2.json`
 
 ## More Info
 For complete details, visit the [Meraki Developer Hub](https://meraki.io)
