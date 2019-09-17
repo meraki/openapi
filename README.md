@@ -9,10 +9,10 @@ This repository contains Open API specifications for the Meraki Dashboard API.
 
 
 
-Files can be found in the `openapi/` directory:
+Files can be found in the `openapi` directory:
 
 ## Latest API version
-* `/openapi/spec2.json
+* `/openapi/spec2.json`
 
 ## Historical
 * `/openapi/x.x.x/spec2.json`
