@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.3.0",
+    "version": "0.4.0",
     "title": "Meraki Dashboard API",
     "description": "The Cisco Meraki Dashboard API is a modern REST API based on the [OpenAPI](https://swagger.io/docs/specification/about/) specification.\n\n## What can the API be used for?\nThe Dashboard API can be used for many purposes. It's meant to be an open-ended tool. Here are some examples of use cases:\n\n* Add new organizations, admins, networks, devices, VLANs, and more\n* Configure networks at scale\n* Automatically on-board and off-board new employees' teleworker setups\n* Build your own dashboard for store managers, field techs, or unique use cases\n\n## Enabling the Dashboard API\n1. Begin by logging into [Meraki Dashboard](https://dashboard.meraki.com) and navigating to **Organization > Settings**\n\n2. Locate the section titled **Dashboard API access** and select **Enable Access**, then **Save** your changes\n\n3. After enabling the API, choose your username at the top-right of the Meraki Dashboard and select **my profile**\n\n4. Locate the section titled **Dashboard API access** and select **Generate new API key**\n\n*Note: The API key is associated with a Dashboard administrator account. You can generate, revoke, and regenerate your API key on your profile.*\n\n**Keep your API key safe as it provides authentication to all of your organizations with the API enabled. If your API key is shared, you can regenerate your API key at any time. This will revoke the existing API key.**\n\nCopy and store your API key in a safe place. Dashboard does not store API keys in plaintext for security reasons, so this is the only time you will be able to record it. If you lose or forget your API key, you will have to revoke it and generate a new one.\n\nEvery request must specify an API key via a request header.\n\nThe API key must be specified in the URL header. The API will return a 404 (rather than a 403) in response to a request with a missing or incorrect API key in order to prevent leaking the existence of resources to unauthorized users.\n\n`X-Cisco-Meraki-API-Key: <secret key>`\n\nRead more about API [authorization](../api/#/python/getting-started/authorizing-your-client)\n\n\n## Versioning\nOnce an API version is released, we will make only backwards-compatible changes to it. Backwards-compatible changes include:\n\n* Adding new API resources\n\n* Adding new optional request parameters to existing API methods\n\n* Adding new properties to existing API responses\n\n* Changing the order of properties in existing API responses\n\n## Rate Limit\n* The Dashboard API is limited to **5 calls per second**, per organization.\n* A burst of 5 additional calls are allowed in the first second, so a maximum of 15 calls in the first 2 seconds.\n* The rate limiting technique is based off of the [token bucket model](https://en.wikipedia.org/wiki/Token_bucket).\n* An error with a `429` status code will be returned when the rate limit has been exceeded.\n* Expect to backoff for 1 - 2 seconds if the limit has been exceeded. You may have to wait potentially longer if a large number of requests were made within this timeframe.\n\n\n## Additional Details\nIdentifiers in the API are opaque strings. A `{networkId}`, for example, might be the string \"126043\", whereas an `{orderId}` might contain characters, such as \"4S1234567\". Client applications must not try to parse them as numbers. Even identifiers that look like numbers might be too long to encode without loss of precision in Javascript, where the only numeric type is IEEE 754 floating point.\n\nVerbs in the API follow the usual REST conventions:\n\n`GET` returns the value of a resource or a list of resources, depending on whether an identifier is specified. For example, a `GET` of `/organizations` returns a list of organizations, whereas a `GET` of `/organizations/{organizationId}` returns a particular organization.\n\n`POST` adds a new resource, as in a `POST` to `/organizations/{organizationId}/admins`, or performs some other non-idempotent change.\n\n`PUT` updates a resource. `PUTs` are idempotent; they update a resource, creating it first if it does not already exist. A `PUT` should specify all the fields of a resource; the API will revert omitted fields to their default value.\n\n`DELETE` removes a resource.\n",
     "x-codegen-settings": {
@@ -110,7 +110,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 1 hour."
@@ -266,7 +267,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 14 hours after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 hours. The default is 1 hour."
@@ -331,7 +333,8 @@
             "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -406,10 +409,6 @@
                   "linkNegotiation": "Auto negotiate",
                   "portScheduleId": "1234",
                   "udld": "Alert only",
-                  "macWhitelist": [
-                    "34:56:fe:ce:8e:b0",
-                    "34:56:fe:ce:8e:b1"
-                  ],
                   "stickyMacWhitelist": [
                     "34:56:fe:ce:8e:b0",
                     "34:56:fe:ce:8e:b1"
@@ -468,10 +467,6 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
-                "macWhitelist": [
-                  "34:56:fe:ce:8e:b0",
-                  "34:56:fe:ce:8e:b1"
-                ],
                 "stickyMacWhitelist": [
                   "34:56:fe:ce:8e:b0",
                   "34:56:fe:ce:8e:b1"
@@ -592,7 +587,25 @@
                 }
               },
               "example": {
-
+                "name": "My switch port",
+                "tags": "tag1 tag2",
+                "enabled": true,
+                "poeEnabled": true,
+                "type": "access",
+                "vlan": 10,
+                "voiceVlan": 20,
+                "isolationEnabled": false,
+                "rstpEnabled": true,
+                "stpGuard": "disabled",
+                "accessPolicyNumber": "1234",
+                "linkNegotiation": "Auto negotiate",
+                "portScheduleId": "1234",
+                "udld": "Alert only",
+                "stickyMacWhitelist": [
+                  "34:56:fe:ce:8e:b0",
+                  "34:56:fe:ce:8e:b1"
+                ],
+                "stickyMacWhitelistLimit": 5
               }
             }
           }
@@ -621,10 +634,6 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
-                "macWhitelist": [
-                  "34:56:fe:ce:8e:b0",
-                  "34:56:fe:ce:8e:b1"
-                ],
                 "stickyMacWhitelist": [
                   "34:56:fe:ce:8e:b0",
                   "34:56:fe:ce:8e:b1"
@@ -637,68 +646,6 @@
         "summary": "Update a switch port",
         "tags": [
           "Switch ports"
-        ]
-      }
-    },
-    "/networks/{networkID}/switchStacks/{switchStackId}/remove": {
-      "post": {
-        "description": "Remove a switch from a stack",
-        "operationId": "removeNetworkSwitchStack",
-        "parameters": [
-          {
-            "name": "networkID",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "switchStackId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "removeNetworkSwitchStack",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "serial": {
-                  "type": "string",
-                  "description": "The serial of the switch to be removed"
-                }
-              },
-              "example": {
-                "serial": "QBZY-XWVU-TSRQ"
-              },
-              "required": [
-                "serial"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "id": "8473",
-                "name": "A cool stack",
-                "serials": [
-                  "QBAB-CDEF-GHIJ"
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Remove a switch from a stack",
-        "tags": [
-          "Switch stacks"
         ]
       }
     },
@@ -729,6 +676,11 @@
                 "timeZone": "America/Los_Angeles",
                 "tags": " tag1 tag2 ",
                 "type": "combined",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
                 "disableMyMerakiCom": false
               }
             }
@@ -757,7 +709,7 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "The name of the new network"
+                  "description": "The name of the network"
                 },
                 "timeZone": {
                   "type": "string",
@@ -800,6 +752,11 @@
                 "timeZone": "America/Los_Angeles",
                 "tags": " tag1 tag2 ",
                 "type": "combined",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
                 "disableMyMerakiCom": false
               }
             }
@@ -897,7 +854,8 @@
             "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -1360,6 +1318,19 @@
             "required": true
           },
           {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 7 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 7 days. The default is 1 day."
+          },
+          {
             "type": "integer",
             "name": "perPage",
             "in": "query",
@@ -1376,12 +1347,6 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          },
-          {
-            "type": "integer",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan, in seconds, used to look back from now for bluetooth clients"
           },
           {
             "type": "boolean",
@@ -1406,8 +1371,20 @@
             "examples": {
               "application/json": [
                 {
-                  "mac": "00:11:22:33:44:55",
-                  "networkId": "N_24329156"
+                  "id": "1284392014819",
+                  "mac": "22:33:44:55:66:77",
+                  "networkId": "N_24329156",
+                  "name": "Miles's phone",
+                  "deviceName": "Bose QuietComfort 35",
+                  "manufacturer": "Bose",
+                  "lastSeen": 1526087474,
+                  "seenByDeviceMac": "00:11:22:33:44:55",
+                  "inSightAlert": false,
+                  "outOfSightAlert": false,
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ]
                 }
               ]
             }
@@ -1458,8 +1435,20 @@
             },
             "examples": {
               "application/json": {
-                "mac": "00:11:22:33:44:55",
-                "networkId": "N_24329156"
+                "id": "1284392014819",
+                "mac": "22:33:44:55:66:77",
+                "networkId": "N_24329156",
+                "name": "Miles's phone",
+                "deviceName": "Bose QuietComfort 35",
+                "manufacturer": "Bose",
+                "lastSeen": 1526087474,
+                "seenByDeviceMac": "00:11:22:33:44:55",
+                "inSightAlert": false,
+                "outOfSightAlert": false,
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ]
               }
             }
           }
@@ -1535,6 +1524,10 @@
                 },
                 "majorMinorAssignmentMode": {
                   "type": "string",
+                  "enum": [
+                    "Unique",
+                    "Non-unique"
+                  ],
                   "description": "The way major and minor number should be assigned to nodes in the network. ('Unique', 'Non-unique')"
                 },
                 "major": {
@@ -1746,10 +1739,20 @@
                       },
                       "policy": {
                         "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
                         "description": "'allow' or 'deny' traffic specified by this rule"
                       },
                       "protocol": {
                         "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
                         "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
                       },
                       "srcPort": {
@@ -1847,7 +1850,8 @@
             "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -1936,7 +1940,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -2033,7 +2038,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -2303,7 +2309,8 @@
                     "Two-port MAC Relay"
                   ]
                 ],
-                "cdp": null
+                "cdp": null,
+                "status": "Online"
               }
             }
           }
@@ -2344,7 +2351,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -2495,7 +2503,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 791 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 1 day.",
@@ -2623,7 +2632,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -2826,7 +2836,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 791 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 31 days."
@@ -3164,7 +3175,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -3522,7 +3534,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -3609,7 +3622,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -3961,7 +3975,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -4042,7 +4057,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -4213,7 +4229,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day.",
@@ -4227,6 +4244,11 @@
           },
           {
             "type": "string",
+            "enum": [
+              "wan1",
+              "wan2",
+              "cellular"
+            ],
             "name": "uplink",
             "in": "query",
             "description": "The WAN uplink used to obtain the requested stats. Valid uplinks are wan1, wan2, cellular. The default is wan1.",
@@ -4305,6 +4327,11 @@
             },
             "examples": {
               "application/json": {
+                "ddnsHostnames": {
+                  "activeDdnsHostname": "mx1-sample.dynamic-m.com",
+                  "ddnsHostnameWan1": "mx1-sample-1.dynamic-m.com",
+                  "ddnsHostnameWan2": "mx1-sample-2.dynamic-m.com"
+                },
                 "wan1": {
                   "wanEnabled": "not configured",
                   "usingStaticIp": true,
@@ -4709,7 +4736,7 @@
               "properties": {
                 "rfProfileId": {
                   "type": "integer",
-                  "description": "The ID of an RF profile to assign to the device. If the value of this parameter is null, the appropriate basic RF profile\n(indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides\non the device (channel width, channel, power).\n"
+                  "description": "    The ID of an RF profile to assign to the device. If the value of this parameter is null, the appropriate basic RF profile\n    (indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides\n    on the device (channel width, channel, power).\n"
                 }
               },
               "example": {
@@ -4826,7 +4853,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -4955,13 +4983,15 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "service": "web",
-                "access": "restricted",
-                "allowedIps": [
-                  "123.123.123.1"
-                ]
-              }
+              "application/json": [
+                {
+                  "service": "web",
+                  "access": "restricted",
+                  "allowedIps": [
+                    "123.123.123.1"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -7870,10 +7900,20 @@
                       },
                       "policy": {
                         "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
                         "description": "'allow' or 'deny' traffic specified by this rule"
                       },
                       "protocol": {
                         "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
                         "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
                       },
                       "srcPort": {
@@ -8295,7 +8335,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -9879,7 +9920,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -10025,7 +10067,12 @@
               "properties": {
                 "mode": {
                   "type": "string",
-                  "description": "The site-to-site VPN mode: hub, spoke, or none"
+                  "enum": [
+                    "none",
+                    "spoke",
+                    "hub"
+                  ],
+                  "description": "The site-to-site VPN mode. Can be one of 'none', 'spoke' or 'hub'"
                 },
                 "hubs": {
                   "type": "array",
@@ -10090,8 +10137,12 @@
                     "useVpn": true
                   }
                 ]
-              }
-            }
+              },
+              "required": [
+                "mode"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -12859,6 +12910,9 @@
                     "timeZone": "America/Los_Angeles",
                     "tags": " tag1 tag2 ",
                     "type": "switch",
+                    "productTypes": [
+                      "switch"
+                    ],
                     "disableMyMerakiCom": false
                   },
                   {
@@ -12868,6 +12922,9 @@
                     "timeZone": "America/Los_Angeles",
                     "tags": " tag1 tag2 ",
                     "type": "wireless",
+                    "productTypes": [
+                      "wireless"
+                    ],
                     "disableMyMerakiCom": false
                   }
                 ]
@@ -13030,11 +13087,11 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "The name of an SSID"
+                  "description": "The name of the SSID"
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "Whether or not an SSID is enabled"
+                  "description": "Whether or not the SSID is enabled"
                 },
                 "authMode": {
                   "type": "string",
@@ -13047,14 +13104,21 @@
                   ],
                   "description": "The association control method for the SSID ('open', 'psk', 'open-with-radius', '8021x-meraki' or '8021x-radius')"
                 },
+                "enterpriseAdminAccess": {
+                  "type": "string",
+                  "enum": [
+                    "access disabled",
+                    "access enabled"
+                  ],
+                  "description": "Whether or not an SSID is accessible by 'enterprise' administrators ('access disabled' or 'access enabled')"
+                },
                 "encryptionMode": {
                   "type": "string",
                   "enum": [
-                    "wpa",
                     "wep",
-                    "wpa-eap"
+                    "wpa"
                   ],
-                  "description": "The psk encryption mode for the SSID ('wpa', 'wep' or 'wpa-eap')"
+                  "description": "The psk encryption mode for the SSID ('wep' or 'wpa'). This param is only valid if the authMode is 'psk'"
                 },
                 "psk": {
                   "type": "string",
@@ -13103,7 +13167,11 @@
                         "type": "string",
                         "description": "RADIUS client shared secret"
                       }
-                    }
+                    },
+                    "required": [
+                      "host",
+                      "secret"
+                    ]
                   },
                   "description": "The RADIUS 802.1x servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius' or '8021x-radius'"
                 },
@@ -13148,36 +13216,37 @@
                         "type": "string",
                         "description": "Shared key used to authenticate messages between the APs and RADIUS server"
                       }
-                    }
+                    },
+                    "required": [
+                      "host",
+                      "secret"
+                    ]
                   },
                   "description": "The RADIUS accounting 802.1x servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius' or '8021x-radius' and radiusAccountingEnabled is 'true'"
                 },
+                "radiusAttributeForGroupPolicies": {
+                  "type": "string",
+                  "description": "Specify the RADIUS attribute used to look up group policies ('Filter-Id', 'Reply-Message', 'Airespace-ACL-Name' or 'Aruba-User-Role'). Access points must receive this attribute in the RADIUS Access-Accept message"
+                },
                 "ipAssignmentMode": {
                   "type": "string",
-                  "enum": [
-                    "NAT mode",
-                    "Bridge mode",
-                    "Layer 3 roaming",
-                    "Layer 3 roaming with a concentrator",
-                    "VPN"
-                  ],
                   "description": "The client IP assignment mode ('NAT mode', 'Bridge mode', 'Layer 3 roaming', 'Layer 3 roaming with a concentrator' or 'VPN')"
                 },
                 "useVlanTagging": {
                   "type": "boolean",
-                  "description": "Direct trafic to use specific VLANs. This param is only valid with 'Bridge mode' and 'Layer 3 roaming'"
+                  "description": "Whether or not traffic should be directed to use specific VLANs. This param is only valid if the ipAssignmentMode is 'Bridge mode' or 'Layer 3 roaming'"
                 },
                 "concentratorNetworkId": {
                   "type": "string",
-                  "description": "The concentrator to use for 'Layer 3 roaming with a concentrator' or 'VPN'."
+                  "description": "The concentrator to use when the ipAssignmentMode is 'Layer 3 roaming with a concentrator' or 'VPN'."
                 },
                 "vlanId": {
                   "type": "integer",
-                  "description": "The VLAN ID used for VLAN tagging. This param is only valid with 'Layer 3 roaming with a concentrator' and 'VPN'"
+                  "description": "The VLAN ID used for VLAN tagging. This param is only valid when the ipAssignmentMode is 'Layer 3 roaming with a concentrator' or 'VPN'"
                 },
                 "defaultVlanId": {
                   "type": "integer",
-                  "description": "The default VLAN ID used for 'all other APs'. This param is only valid with 'Bridge mode' and 'Layer 3 roaming'"
+                  "description": "The default VLAN ID used for 'all other APs'. This param is only valid when the ipAssignmentMode is 'Bridge mode' or 'Layer 3 roaming'"
                 },
                 "apTagsAndVlanIds": {
                   "type": "array",
@@ -13194,7 +13263,7 @@
                       }
                     }
                   },
-                  "description": "The list of tags and VLAN IDs used for VLAN tagging. This param is only valid with 'Bridge mode', 'Layer 3 roaming'"
+                  "description": "The list of tags and VLAN IDs used for VLAN tagging. This param is only valid when the ipAssignmentMode is 'Bridge mode' or 'Layer 3 roaming'"
                 },
                 "walledGardenEnabled": {
                   "type": "boolean",
@@ -13204,6 +13273,10 @@
                   "type": "string",
                   "description": "Specify your walled garden by entering space-separated addresses, ranges using CIDR notation, domain names, and domain wildcards (e.g. 192.168.1.1/24 192.168.37.10/32 www.yahoo.com *.google.com). Meraki's splash page is automatically included in your walled garden."
                 },
+                "radiusOverride": {
+                  "type": "boolean",
+                  "description": "If true, the RADIUS response can override VLAN tag. This is not valid when ipAssignmentMode is 'NAT mode'."
+                },
                 "minBitrate": {
                   "type": "number",
                   "format": "float",
@@ -13211,11 +13284,6 @@
                 },
                 "bandSelection": {
                   "type": "string",
-                  "enum": [
-                    "Dual band operation",
-                    "5 GHz band only",
-                    "Dual band operation with Band Steering"
-                  ],
                   "description": "The client-serving radio frequencies. ('Dual band operation', '5 GHz band only' or 'Dual band operation with Band Steering')"
                 },
                 "perClientBandwidthLimitUp": {
@@ -13228,7 +13296,7 @@
                 },
                 "lanIsolationEnabled": {
                   "type": "boolean",
-                  "description": "Boolean indicating whether Layer 2 LAN isolation should be enabled or disabled. Only configurable on SSIDs in bridge mode."
+                  "description": "Boolean indicating whether Layer 2 LAN isolation should be enabled or disabled. Only configurable when ipAssignmentMode is 'Bridge mode'."
                 }
               },
               "example": {
@@ -13361,10 +13429,20 @@
                       },
                       "policy": {
                         "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
                         "description": "'allow' or 'deny' traffic specified by this rule"
                       },
                       "protocol": {
                         "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
                         "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
                       },
                       "destPort": {
@@ -14803,7 +14881,8 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ]
+                ],
+                "vlan": 100
               }
             }
           }
@@ -14858,6 +14937,10 @@
                     ]
                   },
                   "description": "Exceptions on a per switch basis to \"useCombinedPower\""
+                },
+                "vlan": {
+                  "type": "integer",
+                  "description": "Management VLAN"
                 }
               },
               "example": {
@@ -14879,7 +14962,8 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ]
+                ],
+                "vlan": 100
               }
             }
           }
@@ -14911,12 +14995,406 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ]
+                ],
+                "vlan": 100
               }
             }
           }
         },
         "summary": "Update switch network settings",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/qosRules": {
+      "get": {
+        "description": "List quality of service rules",
+        "operationId": "getNetworkSwitchSettingsQosRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "vlan": 100,
+                  "protocol": "TCP",
+                  "srcPort": 2000,
+                  "srcPortRange": null,
+                  "dstPort": null,
+                  "dstPortRange": "3000-3100",
+                  "dscp": 0
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List quality of service rules",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "post": {
+        "description": "Add a quality of service rule",
+        "operationId": "createNetworkSwitchSettingsQosRule",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchSettingsQosRule",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vlan": {
+                  "type": "integer",
+                  "description": "The VLAN of the incoming packet. A null value will match any VLAN."
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "ANY",
+                    "TCP",
+                    "UDP"
+                  ],
+                  "description": "The protocol of the incoming packet. Can be one of \"ANY\", \"TCP\" or \"UDP\". Default value is \"ANY\""
+                },
+                "srcPort": {
+                  "type": "integer",
+                  "description": "The source port of the incoming packet. Applicable only if protocol is TCP or UDP."
+                },
+                "srcPortRange": {
+                  "type": "string",
+                  "description": "The source port range of the incoming packet. Applicable only if protocol is set to TCP or UDP. Example: 70-80"
+                },
+                "dstPort": {
+                  "type": "integer",
+                  "description": "The destination port of the incoming packet. Applicable only if protocol is TCP or UDP."
+                },
+                "dstPortRange": {
+                  "type": "string",
+                  "description": "The destination port range of the incoming packet. Applicable only if protocol is set to TCP or UDP. Example: 70-80"
+                },
+                "dscp": {
+                  "type": "integer",
+                  "description": "DSCP tag. Set this to -1 to trust incoming DSCP. Default value is 0"
+                }
+              },
+              "example": {
+                "vlan": 100,
+                "protocol": "TCP",
+                "srcPort": 2000,
+                "srcPortRange": null,
+                "dstPort": null,
+                "dstPortRange": "3000-3100",
+                "dscp": 0
+              },
+              "required": [
+                "vlan"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "vlan": 100,
+                "protocol": "TCP",
+                "srcPort": 2000,
+                "srcPortRange": null,
+                "dstPort": null,
+                "dstPortRange": "3000-3100",
+                "dscp": 0
+              }
+            }
+          }
+        },
+        "summary": "Add a quality of service rule",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/qosRules/order": {
+      "get": {
+        "description": "Return the quality of service rule IDs by order in which they will be processed by the switch",
+        "operationId": "getNetworkSwitchSettingsQosRulesOrder",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "ruleIds": [
+                  "1284392014819",
+                  "2983092129865"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the quality of service rule IDs by order in which they will be processed by the switch",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update the order in which the rules should be processed by the switch",
+        "operationId": "updateNetworkSwitchSettingsQosRulesOrder",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsQosRulesOrder",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ruleIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of quality of service rule IDs arranged in order in which they should be processed by the switch."
+                }
+              },
+              "example": {
+                "ruleIds": [
+                  "1284392014819",
+                  "2983092129865"
+                ]
+              },
+              "required": [
+                "ruleIds"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "ruleIds": [
+                  "1284392014819",
+                  "2983092129865"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the order in which the rules should be processed by the switch",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/qosRules/{qosRuleId}": {
+      "get": {
+        "description": "Return a quality of service rule",
+        "operationId": "getNetworkSwitchSettingsQosRule",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qosRuleId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "vlan": 100,
+                "protocol": "TCP",
+                "srcPort": 2000,
+                "srcPortRange": null,
+                "dstPort": null,
+                "dstPortRange": "3000-3100",
+                "dscp": 0
+              }
+            }
+          }
+        },
+        "summary": "Return a quality of service rule",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "delete": {
+        "description": "Delete a quality of service rule",
+        "operationId": "deleteNetworkSwitchSettingsQosRule",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qosRuleId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a quality of service rule",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update a quality of service rule",
+        "operationId": "updateNetworkSwitchSettingsQosRule",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qosRuleId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsQosRule",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vlan": {
+                  "type": "integer",
+                  "description": "The VLAN of the incoming packet. A null value will match any VLAN."
+                },
+                "protocol": {
+                  "type": "string",
+                  "enum": [
+                    "ANY",
+                    "TCP",
+                    "UDP"
+                  ],
+                  "description": "The protocol of the incoming packet. Can be one of \"ANY\", \"TCP\" or \"UDP\". Default value is \"ANY\"."
+                },
+                "srcPort": {
+                  "type": "integer",
+                  "description": "The source port of the incoming packet. Applicable only if protocol is TCP or UDP."
+                },
+                "srcPortRange": {
+                  "type": "string",
+                  "description": "The source port range of the incoming packet. Applicable only if protocol is set to TCP or UDP. Example: 70-80"
+                },
+                "dstPort": {
+                  "type": "integer",
+                  "description": "The destination port of the incoming packet. Applicable only if protocol is TCP or UDP."
+                },
+                "dstPortRange": {
+                  "type": "string",
+                  "description": "The destination port range of the incoming packet. Applicable only if protocol is set to TCP or UDP. Example: 70-80"
+                },
+                "dscp": {
+                  "type": "integer",
+                  "description": "DSCP tag that should be assigned to incoming packet. Set this to -1 to trust incoming DSCP. Default value is 0."
+                }
+              },
+              "example": {
+                "vlan": 100,
+                "protocol": "TCP",
+                "srcPort": 2000,
+                "srcPortRange": null,
+                "dstPort": null,
+                "dstPortRange": "3000-3100",
+                "dscp": 0
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "vlan": 100,
+                "protocol": "TCP",
+                "srcPort": 2000,
+                "srcPortRange": null,
+                "dstPort": null,
+                "dstPortRange": "3000-3100",
+                "dscp": 0
+              }
+            }
+          }
+        },
+        "summary": "Update a quality of service rule",
         "tags": [
           "Switch settings"
         ]
@@ -15161,6 +15639,68 @@
         ]
       }
     },
+    "/networks/{networkId}/switchStacks/{switchStackId}/remove": {
+      "post": {
+        "description": "Remove a switch from a stack",
+        "operationId": "removeNetworkSwitchStack",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "removeNetworkSwitchStack",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serial": {
+                  "type": "string",
+                  "description": "The serial of the switch to be removed"
+                }
+              },
+              "example": {
+                "serial": "QBZY-XWVU-TSRQ"
+              },
+              "required": [
+                "serial"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "8473",
+                "name": "A cool stack",
+                "serials": [
+                  "QBAB-CDEF-GHIJ"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Remove a switch from a stack",
+        "tags": [
+          "Switch stacks"
+        ]
+      }
+    },
     "/networks/{networkId}/syslogServers": {
       "get": {
         "description": "List the syslog servers for a network",
@@ -15293,7 +15833,7 @@
     },
     "/networks/{networkId}/traffic": {
       "get": {
-        "description": "The traffic analysis data for this network.\n<a href=\"https://documentation.meraki.com/MR/Monitoring_and_Reporting/Hostname_Visibility\">Traffic Analysis with Hostname Visibility</a> must be enabled on the network.\n",
+        "description": "    The traffic analysis data for this network.\n    <a href=\"https://documentation.meraki.com/MR/Monitoring_and_Reporting/Hostname_Visibility\">Traffic Analysis with Hostname Visibility</a> must be enabled on the network.\n",
         "operationId": "getNetworkTraffic",
         "parameters": [
           {
@@ -15304,16 +15844,23 @@
           },
           {
             "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 30 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
-            "required": true,
-            "description": "The timespan for the data. Must be an integer representing a duration in seconds between two hours and one month. (Mandatory.)"
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 30 days.",
+            "x-example": 604800
           },
           {
             "type": "string",
             "name": "deviceType",
             "in": "query",
-            "description": "Filter the data by device type: combined (default), wireless, switch, appliance. When using combined, for each rule the data will come from the device type with the most usage."
+            "description": "    Filter the data by device type: combined (default), wireless, switch, appliance.\n    When using combined, for each rule the data will come from the device type with the most usage.\n"
           }
         ],
         "responses": {
@@ -15340,7 +15887,7 @@
             }
           }
         },
-        "summary": "The traffic analysis data for this network.\n<a href=\"https://documentation.meraki.com/MR/Monitoring_and_Reporting/Hostname_Visibility\">Traffic Analysis with Hostname Visibility</a> must be enabled on the network.\n",
+        "summary": "    The traffic analysis data for this network.\n    <a href=\"https://documentation.meraki.com/MR/Monitoring_and_Reporting/Hostname_Visibility\">Traffic Analysis with Hostname Visibility</a> must be enabled on the network.\n",
         "tags": [
           "Networks"
         ]
@@ -16037,16 +16584,50 @@
                 "bandwidthLimits": {
                   "type": "object",
                   "properties": {
-                    "limitUp": {
-                      "type": "integer",
-                      "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                    "wan1": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                        }
+                      },
+                      "description": "The bandwidth settings for the 'wan1' uplink"
                     },
-                    "limitDown": {
-                      "type": "integer",
-                      "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                    "wan2": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                        }
+                      },
+                      "description": "The bandwidth settings for the 'wan2' uplink"
+                    },
+                    "cellular": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                        }
+                      },
+                      "description": "The bandwidth settings for the 'cellular' uplink"
                     }
                   },
-                  "description": "A mapping of uplinks ('wan1', 'wan2' or 'cellular') to their bandwidth settings (be sure to check which uplinks are supported for your network). Bandwidth setting objects have the following structure"
+                  "description": "A mapping of uplinks to their bandwidth settings (be sure to check which uplinks are supported for your network)"
                 }
               },
               "example": {
@@ -16359,7 +16940,12 @@
                 },
                 "dhcpHandling": {
                   "type": "string",
-                  "description": "The appliance's handling of DHCP requests on this VLAN. One of: \"Run a DHCP server\", \"Relay DHCP to another server\", or \"Do not respond to DHCP requests\""
+                  "enum": [
+                    "Run a DHCP server",
+                    "Relay DHCP to another server",
+                    "Do not respond to DHCP requests"
+                  ],
+                  "description": "The appliance's handling of DHCP requests on this VLAN. One of: 'Run a DHCP server', 'Relay DHCP to another server' or 'Do not respond to DHCP requests'"
                 },
                 "dhcpRelayServerIps": {
                   "type": "array",
@@ -16370,7 +16956,15 @@
                 },
                 "dhcpLeaseTime": {
                   "type": "string",
-                  "description": "The term of DHCP leases if the appliance is running a DHCP server on this VLAN. One of: \"30 minutes\", \"1 hour\", \"4 hours\", \"12 hours\", \"1 day\", \"1 week\"."
+                  "enum": [
+                    "30 minutes",
+                    "1 hour",
+                    "4 hours",
+                    "12 hours",
+                    "1 day",
+                    "1 week"
+                  ],
+                  "description": "The term of DHCP leases if the appliance is running a DHCP server on this VLAN. One of: '30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week'"
                 },
                 "dhcpBootOptionsEnabled": {
                   "type": "boolean",
@@ -16432,7 +17026,13 @@
                       },
                       "type": {
                         "type": "string",
-                        "description": "The type for the DHCP option. One of: \"text\", \"ip\", \"hex\", or \"integer\"."
+                        "enum": [
+                          "text",
+                          "ip",
+                          "hex",
+                          "integer"
+                        ],
+                        "description": "The type for the DHCP option. One of: 'text', 'ip', 'hex' or 'integer'"
                       },
                       "value": {
                         "type": "string",
@@ -16782,7 +17382,7 @@
             "type": "boolean",
             "name": "includeTemplateProfiles",
             "in": "query",
-            "description": "      If the network is bound to a template, this parameter controls whether or not the non-basic RF profiles defined on the template\n      should be included in the response alongside the non-basic profiles defined on the bound network. Defaults to false.\n"
+            "description": "    If the network is bound to a template, this parameter controls whether or not the non-basic RF profiles defined on the template\n    should be included in the response alongside the non-basic profiles defined on the bound network. Defaults to false.\n"
           }
         ],
         "responses": {
@@ -17152,7 +17752,8 @@
                       "description": "Sets min power (dBm) of 2.4Ghz band. Can be integer between 5 and 30."
                     },
                     "minBitrate": {
-                      "type": "string",
+                      "type": "number",
+                      "format": "float",
                       "description": "Sets min bitrate (Mbps) of 2.4Ghz band. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
                     },
                     "validAutoChannels": {
@@ -17185,7 +17786,7 @@
                       "description": "Sets min power (dBm) of 5Ghz band. Can be integer between 8 and 30."
                     },
                     "minBitrate": {
-                      "type": "string",
+                      "type": "integer",
                       "description": "Sets min bitrate (Mbps) of 5Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'."
                     },
                     "validAutoChannels": {
@@ -18309,7 +18910,13 @@
                 },
                 "orgAccess": {
                   "type": "string",
-                  "description": "The privilege of the dashboard administrator on the organization (full, read-only, none)"
+                  "enum": [
+                    "full",
+                    "read-only",
+                    "enterprise",
+                    "none"
+                  ],
+                  "description": "The privilege of the dashboard administrator on the organization. Can be one of 'full', 'read-only', 'enterprise' or 'none'"
                 },
                 "tags": {
                   "type": "array",
@@ -18436,17 +19043,19 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
-                  "type": "string",
-                  "description": "The email of the dashboard administrator. This attribute can not be updated."
-                },
                 "name": {
                   "type": "string",
                   "description": "The name of the dashboard administrator"
                 },
                 "orgAccess": {
                   "type": "string",
-                  "description": "The privilege of the dashboard administrator on the organization (full, read-only, none)"
+                  "enum": [
+                    "full",
+                    "read-only",
+                    "enterprise",
+                    "none"
+                  ],
+                  "description": "The privilege of the dashboard administrator on the organization. Can be one of 'full', 'read-only', 'enterprise' or 'none'"
                 },
                 "tags": {
                   "type": "array",
@@ -18595,7 +19204,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
@@ -18675,6 +19285,752 @@
         "summary": "List the API requests made by an organization",
         "tags": [
           "API usage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/brandingPolicies": {
+      "get": {
+        "description": "List the branding policies of an organization",
+        "operationId": "getOrganizationBrandingPolicies",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "brandingPolicyId": "456",
+                  "name": "My Branding Policy",
+                  "enabled": true,
+                  "adminSettings": {
+                    "appliesTo": "All admins of networks...",
+                    "values": [
+                      "N_1234",
+                      "L_5678"
+                    ]
+                  },
+                  "helpSettings": {
+                    "helpTab": "show",
+                    "getHelpSubtab": "default or inherit",
+                    "communitySubtab": "show",
+                    "casesSubtab": "hide",
+                    "dataProtectionRequestsSubtab": "default or inherit",
+                    "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                    "universalSearchKnowledgeBaseSearch": "hide",
+                    "ciscoMerakiProductDocumentation": "show",
+                    "supportContactInfo": "show",
+                    "newFeaturesSubtab": "show",
+                    "firewallInfoSubtab": "hide",
+                    "apiDocsSubtab": "default or inherit",
+                    "hardwareReplacementsSubtab": "hide",
+                    "smForums": "hide"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the branding policies of an organization",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      },
+      "post": {
+        "description": "Add a new branding policy to an organization",
+        "operationId": "createOrganizationBrandingPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationBrandingPolicy",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Dashboard branding policy."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether this policy is enabled."
+                },
+                "adminSettings": {
+                  "type": "object",
+                  "properties": {
+                    "appliesTo": {
+                      "type": "string",
+                      "enum": [
+                        "All organization admins",
+                        "All enterprise admins",
+                        "All network admins",
+                        "All admins of networks...",
+                        "All admins of networks tagged...",
+                        "Specific admins...",
+                        "All admins",
+                        "All SAML admins"
+                      ],
+                      "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "    If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n    entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n    networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n    specify an array of tag names.\n"
+                    }
+                  },
+                  "description": "Settings for describing which kinds of admins this policy applies to."
+                },
+                "helpSettings": {
+                  "type": "object",
+                  "properties": {
+                    "helpTab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n    customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n    that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n    and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "communitySubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "casesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n    of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "dataProtectionRequestsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n    be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtabKnowledgeBaseSearch": {
+                      "type": "string",
+                      "description": "    The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "universalSearchKnowledgeBaseSearch": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n    whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "ciscoMerakiProductDocumentation": {
+                      "type": "string",
+                      "description": "    The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "supportContactInfo": {
+                      "type": "string",
+                      "description": "    The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "newFeaturesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "firewallInfoSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n    listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "apiDocsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "hardwareReplacementsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "smForums": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n    organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    }
+                  },
+                  "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n Each property defaults to 'default or inherit' when not provided."
+                }
+              },
+              "example": {
+                "brandingPolicyId": "456",
+                "name": "My Branding Policy",
+                "enabled": true,
+                "adminSettings": {
+                  "appliesTo": "All admins of networks...",
+                  "values": [
+                    "N_1234",
+                    "L_5678"
+                  ]
+                },
+                "helpSettings": {
+                  "helpTab": "show",
+                  "getHelpSubtab": "default or inherit",
+                  "communitySubtab": "show",
+                  "casesSubtab": "hide",
+                  "dataProtectionRequestsSubtab": "default or inherit",
+                  "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                  "universalSearchKnowledgeBaseSearch": "hide",
+                  "ciscoMerakiProductDocumentation": "show",
+                  "supportContactInfo": "show",
+                  "newFeaturesSubtab": "show",
+                  "firewallInfoSubtab": "hide",
+                  "apiDocsSubtab": "default or inherit",
+                  "hardwareReplacementsSubtab": "hide",
+                  "smForums": "hide"
+                }
+              },
+              "required": [
+                "name",
+                "enabled",
+                "adminSettings"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "brandingPolicyId": "456",
+                "name": "My Branding Policy",
+                "enabled": true,
+                "adminSettings": {
+                  "appliesTo": "All admins of networks...",
+                  "values": [
+                    "N_1234",
+                    "L_5678"
+                  ]
+                },
+                "helpSettings": {
+                  "helpTab": "show",
+                  "getHelpSubtab": "default or inherit",
+                  "communitySubtab": "show",
+                  "casesSubtab": "hide",
+                  "dataProtectionRequestsSubtab": "default or inherit",
+                  "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                  "universalSearchKnowledgeBaseSearch": "hide",
+                  "ciscoMerakiProductDocumentation": "show",
+                  "supportContactInfo": "show",
+                  "newFeaturesSubtab": "show",
+                  "firewallInfoSubtab": "hide",
+                  "apiDocsSubtab": "default or inherit",
+                  "hardwareReplacementsSubtab": "hide",
+                  "smForums": "hide"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Add a new branding policy to an organization",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/brandingPolicies/priorities": {
+      "get": {
+        "description": "Return the branding policy IDs of an organization in priority order. IDs are ordered in ascending order of priority (IDs later in the array have higher priority).",
+        "operationId": "getOrganizationBrandingPoliciesPriorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "brandingPolicyIds": [
+                  "123",
+                  "456",
+                  "789"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the branding policy IDs of an organization in priority order. IDs are ordered in ascending order of priority (IDs later in the array have higher priority).",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      },
+      "put": {
+        "description": "Update the priority ordering of an organization's branding policies.",
+        "operationId": "updateOrganizationBrandingPoliciesPriorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationBrandingPoliciesPriorities",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "brandingPolicyIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of branding policy IDs arranged in ascending priority order (IDs later in the array have higher priority)."
+                }
+              },
+              "example": {
+                "brandingPolicyIds": [
+                  "123",
+                  "456",
+                  "789"
+                ]
+              },
+              "required": [
+                "brandingPolicyIds"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "brandingPolicyIds": [
+                  "123",
+                  "456",
+                  "789"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the priority ordering of an organization's branding policies.",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/brandingPolicies/{brandingPolicyId}": {
+      "get": {
+        "description": "Return a branding policy",
+        "operationId": "getOrganizationBrandingPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "brandingPolicyId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "brandingPolicyId": "456",
+                "name": "My Branding Policy",
+                "enabled": true,
+                "adminSettings": {
+                  "appliesTo": "All admins of networks...",
+                  "values": [
+                    "N_1234",
+                    "L_5678"
+                  ]
+                },
+                "helpSettings": {
+                  "helpTab": "show",
+                  "getHelpSubtab": "default or inherit",
+                  "communitySubtab": "show",
+                  "casesSubtab": "hide",
+                  "dataProtectionRequestsSubtab": "default or inherit",
+                  "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                  "universalSearchKnowledgeBaseSearch": "hide",
+                  "ciscoMerakiProductDocumentation": "show",
+                  "supportContactInfo": "show",
+                  "newFeaturesSubtab": "show",
+                  "firewallInfoSubtab": "hide",
+                  "apiDocsSubtab": "default or inherit",
+                  "hardwareReplacementsSubtab": "hide",
+                  "smForums": "hide"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a branding policy",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      },
+      "put": {
+        "description": "Update a branding policy",
+        "operationId": "updateOrganizationBrandingPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "brandingPolicyId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationBrandingPolicy",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Dashboard branding policy."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether this policy is enabled."
+                },
+                "adminSettings": {
+                  "type": "object",
+                  "properties": {
+                    "appliesTo": {
+                      "type": "string",
+                      "enum": [
+                        "All organization admins",
+                        "All enterprise admins",
+                        "All network admins",
+                        "All admins of networks...",
+                        "All admins of networks tagged...",
+                        "Specific admins...",
+                        "All admins",
+                        "All SAML admins"
+                      ],
+                      "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "    If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n    entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n    networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n    specify an array of tag names.\n"
+                    }
+                  },
+                  "description": "Settings for describing which kinds of admins this policy applies to."
+                },
+                "helpSettings": {
+                  "type": "object",
+                  "properties": {
+                    "helpTab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n    customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n    that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n    and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "communitySubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "casesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n    of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "dataProtectionRequestsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n    be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtabKnowledgeBaseSearch": {
+                      "type": "string",
+                      "description": "    The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "universalSearchKnowledgeBaseSearch": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n    whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "ciscoMerakiProductDocumentation": {
+                      "type": "string",
+                      "description": "    The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "supportContactInfo": {
+                      "type": "string",
+                      "description": "    The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "newFeaturesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "firewallInfoSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n    listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "apiDocsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "hardwareReplacementsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "smForums": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "    The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n    organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    }
+                  },
+                  "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n"
+                }
+              },
+              "example": {
+                "brandingPolicyId": "456",
+                "name": "My Branding Policy",
+                "enabled": true,
+                "adminSettings": {
+                  "appliesTo": "All admins of networks...",
+                  "values": [
+                    "N_1234",
+                    "L_5678"
+                  ]
+                },
+                "helpSettings": {
+                  "helpTab": "show",
+                  "getHelpSubtab": "default or inherit",
+                  "communitySubtab": "show",
+                  "casesSubtab": "hide",
+                  "dataProtectionRequestsSubtab": "default or inherit",
+                  "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                  "universalSearchKnowledgeBaseSearch": "hide",
+                  "ciscoMerakiProductDocumentation": "show",
+                  "supportContactInfo": "show",
+                  "newFeaturesSubtab": "show",
+                  "firewallInfoSubtab": "hide",
+                  "apiDocsSubtab": "default or inherit",
+                  "hardwareReplacementsSubtab": "hide",
+                  "smForums": "hide"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "brandingPolicyId": "456",
+                "name": "My Branding Policy",
+                "enabled": true,
+                "adminSettings": {
+                  "appliesTo": "All admins of networks...",
+                  "values": [
+                    "N_1234",
+                    "L_5678"
+                  ]
+                },
+                "helpSettings": {
+                  "helpTab": "show",
+                  "getHelpSubtab": "default or inherit",
+                  "communitySubtab": "show",
+                  "casesSubtab": "hide",
+                  "dataProtectionRequestsSubtab": "default or inherit",
+                  "getHelpSubtabKnowledgeBaseSearch": "<h1>Some custom HTML content</h1>",
+                  "universalSearchKnowledgeBaseSearch": "hide",
+                  "ciscoMerakiProductDocumentation": "show",
+                  "supportContactInfo": "show",
+                  "newFeaturesSubtab": "show",
+                  "firewallInfoSubtab": "hide",
+                  "apiDocsSubtab": "default or inherit",
+                  "hardwareReplacementsSubtab": "hide",
+                  "smForums": "hide"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a branding policy",
+        "tags": [
+          "Dashboard branding policies"
+        ]
+      },
+      "delete": {
+        "description": "Delete a branding policy",
+        "operationId": "deleteOrganizationBrandingPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "brandingPolicyId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a branding policy",
+        "tags": [
+          "Dashboard branding policies"
         ]
       }
     },
@@ -19037,7 +20393,8 @@
                 "serial": "Q234-ABCD-5678",
                 "model": "MR34",
                 "mac": "00:11:22:33:44:55",
-                "lanIp": "1.2.3.4"
+                "lanIp": "1.2.3.4",
+                "firmware": "wireless-25-14"
               }
             }
           }
@@ -19158,6 +20515,11 @@
                   "timeZone": "America/Los_Angeles",
                   "tags": " tag1 tag2 ",
                   "type": "combined",
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ],
                   "disableMyMerakiCom": false
                 }
               ]
@@ -19244,6 +20606,11 @@
                 "timeZone": "America/Los_Angeles",
                 "tags": " tag1 tag2 ",
                 "type": "combined",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
                 "disableMyMerakiCom": false
               }
             }
@@ -19315,6 +20682,11 @@
                   "timeZone": "America/Los_Angeles",
                   "tags": " tag1 tag2 ",
                   "type": "combined",
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ],
                   "disableMyMerakiCom": false
                 }
               }
@@ -19857,7 +21229,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -20385,13 +21758,19 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 5 minutes after t0. The latest possible time that t1 can be is 2 minutes into the past."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 5 minutes. The default is 5 minutes."
           },
           {
             "type": "string",
+            "enum": [
+              "wan1",
+              "wan2",
+              "cellular"
+            ],
             "name": "uplink",
             "in": "query",
             "description": "Optional filter for a specific WAN uplink. Valid uplinks are wan1, wan2, cellular. Default will return all uplinks."
@@ -20502,10 +21881,20 @@
                       },
                       "policy": {
                         "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
                         "description": "'allow' or 'deny' traffic specified by this rule"
                       },
                       "protocol": {
                         "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
                         "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
                       },
                       "srcPort": {
@@ -20613,7 +22002,8 @@
             "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
           },
           {
-            "type": "integer",
+            "type": "number",
+            "format": "float",
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -20709,6 +22099,9 @@
     },
     {
       "name": "Content filtering rules"
+    },
+    {
+      "name": "Dashboard branding policies"
     },
     {
       "name": "Devices"
