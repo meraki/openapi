@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.4.0",
+    "version": "0.5.0",
     "title": "Meraki Dashboard API",
     "description": "The Cisco Meraki Dashboard API is a modern REST API based on the [OpenAPI](https://swagger.io/docs/specification/about/) specification.\n\n## What can the API be used for?\nThe Dashboard API can be used for many purposes. It's meant to be an open-ended tool. Here are some examples of use cases:\n\n* Add new organizations, admins, networks, devices, VLANs, and more\n* Configure networks at scale\n* Automatically on-board and off-board new employees' teleworker setups\n* Build your own dashboard for store managers, field techs, or unique use cases\n\n## Enabling the Dashboard API\n1. Begin by logging into [Meraki Dashboard](https://dashboard.meraki.com) and navigating to **Organization > Settings**\n\n2. Locate the section titled **Dashboard API access** and select **Enable Access**, then **Save** your changes\n\n3. After enabling the API, choose your username at the top-right of the Meraki Dashboard and select **my profile**\n\n4. Locate the section titled **Dashboard API access** and select **Generate new API key**\n\n*Note: The API key is associated with a Dashboard administrator account. You can generate, revoke, and regenerate your API key on your profile.*\n\n**Keep your API key safe as it provides authentication to all of your organizations with the API enabled. If your API key is shared, you can regenerate your API key at any time. This will revoke the existing API key.**\n\nCopy and store your API key in a safe place. Dashboard does not store API keys in plaintext for security reasons, so this is the only time you will be able to record it. If you lose or forget your API key, you will have to revoke it and generate a new one.\n\nEvery request must specify an API key via a request header.\n\nThe API key must be specified in the URL header. The API will return a 404 (rather than a 403) in response to a request with a missing or incorrect API key in order to prevent leaking the existence of resources to unauthorized users.\n\n`X-Cisco-Meraki-API-Key: <secret key>`\n\nRead more about API [authorization](../api/#/python/getting-started/authorizing-your-client)\n\n\n## Versioning\nOnce an API version is released, we will make only backwards-compatible changes to it. Backwards-compatible changes include:\n\n* Adding new API resources\n\n* Adding new optional request parameters to existing API methods\n\n* Adding new properties to existing API responses\n\n* Changing the order of properties in existing API responses\n\n## Rate Limit\n* The Dashboard API is limited to **5 calls per second**, per organization.\n* A burst of 5 additional calls are allowed in the first second, so a maximum of 15 calls in the first 2 seconds.\n* The rate limiting technique is based off of the [token bucket model](https://en.wikipedia.org/wiki/Token_bucket).\n* An error with a `429` status code will be returned when the rate limit has been exceeded.\n* Expect to backoff for 1 - 2 seconds if the limit has been exceeded. You may have to wait potentially longer if a large number of requests were made within this timeframe.\n\n\n## Additional Details\nIdentifiers in the API are opaque strings. A `{networkId}`, for example, might be the string \"126043\", whereas an `{orderId}` might contain characters, such as \"4S1234567\". Client applications must not try to parse them as numbers. Even identifiers that look like numbers might be too long to encode without loss of precision in Javascript, where the only numeric type is IEEE 754 floating point.\n\nVerbs in the API follow the usual REST conventions:\n\n`GET` returns the value of a resource or a list of resources, depending on whether an identifier is specified. For example, a `GET` of `/organizations` returns a list of organizations, whereas a `GET` of `/organizations/{organizationId}` returns a particular organization.\n\n`POST` adds a new resource, as in a `POST` to `/organizations/{organizationId}/admins`, or performs some other non-idempotent change.\n\n`PUT` updates a resource. `PUTs` are idempotent; they update a resource, creating it first if it does not already exist. A `PUT` should specify all the fields of a resource; the API will revert omitted fields to their default value.\n\n`DELETE` removes a resource.\n",
     "x-codegen-settings": {
@@ -572,14 +572,14 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "Only devices with MAC addresses specified in this list will have access to this port.  Up to 20 MAC addresses can be defined."
+                  "description": "Only devices with MAC addresses specified in this list will have access to this port. Up to 20 MAC addresses can be defined. To disable MAC whitelist, set accessPolicyNumber to null."
                 },
                 "stickyMacWhitelist": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The initial list of MAC addresses for sticky Mac whitelist."
+                  "description": "The initial list of MAC addresses for sticky Mac whitelist. To reset Sticky MAC whitelist, set accessPolicyNumber to null."
                 },
                 "stickyMacWhitelistLimit": {
                   "type": "integer",
@@ -2916,7 +2916,7 @@
     },
     "/networks/{networkId}/clients/{clientId}/splashAuthorizationStatus": {
       "get": {
-        "description": "Return the splash authorization for a client, for each SSID they've associated with through splash. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
+        "description": "Return the splash authorization for a client, for each SSID they've associated with through splash. Only enabled SSIDs with Click-through splash enabled will be included. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
         "operationId": "getNetworkClientSplashAuthorizationStatus",
         "parameters": [
           {
@@ -2955,7 +2955,7 @@
             }
           }
         },
-        "summary": "Return the splash authorization for a client, for each SSID they've associated with through splash. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
+        "summary": "Return the splash authorization for a client, for each SSID they've associated with through splash. Only enabled SSIDs with Click-through splash enabled will be included. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
         "tags": [
           "Clients"
         ]
@@ -2983,7 +2983,7 @@
               "type": "object",
               "properties": {
                 "ssids": {
-                  "description": "The target SSIDs. For each SSID where isAuthorized is true, the expiration time will automatically be set according to the SSID's splash frequency.",
+                  "description": "The target SSIDs. Each SSID must be enabled and must have Click-through splash enabled. For each SSID where isAuthorized is true, the expiration time will automatically be set according to the SSID's splash frequency.",
                   "type": "object",
                   "properties": {
                     "isAuthorized": {
@@ -3224,6 +3224,150 @@
         ]
       }
     },
+    "/networks/{networkId}/connectivityMonitoringDestinations": {
+      "get": {
+        "description": "Return the connectivity testing destinations for an MX network",
+        "operationId": "getNetworkConnectivityMonitoringDestinations",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6",
+                    "description": null,
+                    "default": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the connectivity testing destinations for an MX network",
+        "tags": [
+          "Connectivity monitoring destinations"
+        ]
+      },
+      "put": {
+        "description": "Update the connectivity testing destinations for an MX network",
+        "operationId": "updateNetworkConnectivityMonitoringDestinations",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkConnectivityMonitoringDestinations",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "destinations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address to test connectivity with"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the testing destination. Optional, defaults to null"
+                      },
+                      "default": {
+                        "type": "boolean",
+                        "description": "Boolean indicating whether this is the default testing destination (true) or not (false). Defaults to false. Only one default is allowed"
+                      }
+                    },
+                    "required": [
+                      "ip"
+                    ]
+                  },
+                  "description": "The list of connectivity monitoring destinations"
+                }
+              },
+              "example": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6",
+                    "description": null,
+                    "default": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the connectivity testing destinations for an MX network",
+        "tags": [
+          "Connectivity monitoring destinations"
+        ]
+      }
+    },
     "/networks/{networkId}/contentFiltering": {
       "get": {
         "description": "Return the content filtering settings for an MX network",
@@ -3455,7 +3599,8 @@
                     "major": 5,
                     "minor": 3
                   },
-                  "firmware": "wireless-25-14"
+                  "firmware": "wireless-25-14",
+                  "floorPlanId": "g_1234567"
                 }
               ]
             }
@@ -3767,7 +3912,8 @@
                   "major": 5,
                   "minor": 3
                 },
-                "firmware": "wireless-25-14"
+                "firmware": "wireless-25-14",
+                "floorPlanId": "g_1234567"
               }
             }
           }
@@ -3832,6 +3978,10 @@
                 "switchProfileId": {
                   "type": "string",
                   "description": "The ID of a switch profile to bind to the device (for available switch profiles, see the 'Switch Profiles' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch profile, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template."
+                },
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "The floor plan to associate to this device. null disassociates the device from the floorplan."
                 }
               },
               "example": {
@@ -3870,7 +4020,8 @@
                   "major": 5,
                   "minor": 3
                 },
-                "firmware": "wireless-25-14"
+                "firmware": "wireless-25-14",
+                "floorPlanId": "g_1234567"
               }
             }
           }
@@ -4829,6 +4980,195 @@
         ]
       }
     },
+    "/networks/{networkId}/events": {
+      "get": {
+        "description": "List the events for the network",
+        "operationId": "getNetworkEvents",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "productType",
+            "in": "query",
+            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, and camera"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "includedEventTypes",
+            "in": "query",
+            "description": "A list of event types. The returned events will be filtered to only include events with these types."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "excludedEventTypes",
+            "in": "query",
+            "description": "A list of event types. The returned events will be filtered to exclude events with these types."
+          },
+          {
+            "type": "string",
+            "name": "deviceMac",
+            "in": "query",
+            "description": "The MAC address of the Meraki device which the list of events will be filtered with"
+          },
+          {
+            "type": "string",
+            "name": "deviceSerial",
+            "in": "query",
+            "description": "The serial of the Meraki device which the list of events will be filtered with"
+          },
+          {
+            "type": "string",
+            "name": "deviceName",
+            "in": "query",
+            "description": "The name of the Meraki device which the list of events will be filtered with"
+          },
+          {
+            "type": "string",
+            "name": "clientIp",
+            "in": "query",
+            "description": "The IP of the client which the list of events will be filtered with. Only supported for track-by-IP networks."
+          },
+          {
+            "type": "string",
+            "name": "clientMac",
+            "in": "query",
+            "description": "The MAC address of the client which the list of events will be filtered with. Only supported for track-by-MAC networks."
+          },
+          {
+            "type": "string",
+            "name": "clientName",
+            "in": "query",
+            "description": "The name, or partial name, of the client which the list of events will be filtered with"
+          },
+          {
+            "type": "string",
+            "name": "smDeviceMac",
+            "in": "query",
+            "description": "The MAC address of the Systems Manager device which the list of events will be filtered with"
+          },
+          {
+            "type": "string",
+            "name": "smDeviceName",
+            "in": "query",
+            "description": "The name of the Systems Manager device which the list of events will be filtered with"
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "message": null,
+                "pageStartAt": "2018-02-11T00:00:00.090210Z",
+                "pageEndAt": "2018-02-11T00:00:00.090210Z",
+                "events": [
+                  {
+                    "occurredAt": "2018-02-11T00:00:00.090210Z",
+                    "networkId": "N_24329156",
+                    "type": "association",
+                    "description": "802.11 association",
+                    "clientId": "k74272e",
+                    "clientDescription": "Miles's phone",
+                    "deviceSerial": "Q234-ABCD-5678",
+                    "deviceName": "My AP",
+                    "ssidNumber": 1,
+                    "ssidName": "My SSID",
+                    "eventData": {
+                      "radio": "1",
+                      "vap": "1",
+                      "client_mac": "22:33:44:55:66:77",
+                      "client_ip": "1.2.3.4",
+                      "channel": "36",
+                      "rssi": "12",
+                      "aid": "2104009183"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "List the events for the network",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
+    "/networks/{networkId}/events/eventTypes": {
+      "get": {
+        "description": "List the event type to human-readable description",
+        "operationId": "getNetworkEventsEventTypes",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "category": "802.11",
+                  "type": "association",
+                  "description": "802.11 association"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the event type to human-readable description",
+        "tags": [
+          "Events"
+        ]
+      }
+    },
     "/networks/{networkId}/failedConnections": {
       "get": {
         "description": "List of all failed client connection events on this network in a given time range",
@@ -5115,6 +5455,574 @@
         "summary": "Updates the accessibility settings for the given service ('ICMP', 'web', or 'SNMP')",
         "tags": [
           "Firewalled services"
+        ]
+      }
+    },
+    "/networks/{networkId}/floorPlans": {
+      "get": {
+        "description": "List the floor plans that belong to your network",
+        "operationId": "getNetworkFloorPlans",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "floorPlanId": "g_1234567",
+                  "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                  "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                  "imageExtension": "png",
+                  "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                  "name": "HQ Floor Plan",
+                  "devices": [
+                    {
+                      "name": "My AP",
+                      "lat": 37.4180951010362,
+                      "lng": -122.098531723022,
+                      "serial": "Q234-ABCD-5678",
+                      "mac": "00:11:22:33:44:55",
+                      "model": "MR34",
+                      "address": "1600 Pennsylvania Ave",
+                      "notes": "My AP's note",
+                      "lanIp": "1.2.3.4",
+                      "tags": " recently-added ",
+                      "networkId": "N_24329156",
+                      "beaconIdParams": {
+                        "uuid": "00000000-0000-0000-0000-000000000000",
+                        "major": 5,
+                        "minor": 3
+                      },
+                      "firmware": "wireless-25-14",
+                      "floorPlanId": "g_1234567"
+                    }
+                  ],
+                  "width": 100,
+                  "height": 150,
+                  "center": {
+                    "lat": 37.770040510499996,
+                    "lng": -122.38714009525
+                  },
+                  "bottomLeftCorner": {
+                    "lat": 37.7696461495,
+                    "lng": -122.3880815506
+                  },
+                  "bottomRightCorner": {
+                    "lat": 37.771524649766654,
+                    "lng": -122.38795275055205
+                  },
+                  "topLeftCorner": {
+                    "lat": 37.769700101836364,
+                    "lng": -122.3888684251381
+                  },
+                  "topRightCorner": {
+                    "lat": 37.77157860210302,
+                    "lng": -122.38873962509012
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the floor plans that belong to your network",
+        "tags": [
+          "Floorplans"
+        ]
+      },
+      "post": {
+        "description": "Upload a floor plan",
+        "operationId": "createNetworkFloorPlan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkFloorPlan",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                },
+                "imageContents": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                }
+              },
+              "example": {
+
+              },
+              "required": [
+                "name",
+                "imageContents"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "floorPlanId": "g_1234567",
+                "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                "imageExtension": "png",
+                "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                "name": "HQ Floor Plan",
+                "devices": [
+                  {
+                    "name": "My AP",
+                    "lat": 37.4180951010362,
+                    "lng": -122.098531723022,
+                    "serial": "Q234-ABCD-5678",
+                    "mac": "00:11:22:33:44:55",
+                    "model": "MR34",
+                    "address": "1600 Pennsylvania Ave",
+                    "notes": "My AP's note",
+                    "lanIp": "1.2.3.4",
+                    "tags": " recently-added ",
+                    "networkId": "N_24329156",
+                    "beaconIdParams": {
+                      "uuid": "00000000-0000-0000-0000-000000000000",
+                      "major": 5,
+                      "minor": 3
+                    },
+                    "firmware": "wireless-25-14",
+                    "floorPlanId": "g_1234567"
+                  }
+                ],
+                "width": 100,
+                "height": 150,
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.7696461495,
+                  "lng": -122.3880815506
+                },
+                "bottomRightCorner": {
+                  "lat": 37.771524649766654,
+                  "lng": -122.38795275055205
+                },
+                "topLeftCorner": {
+                  "lat": 37.769700101836364,
+                  "lng": -122.3888684251381
+                },
+                "topRightCorner": {
+                  "lat": 37.77157860210302,
+                  "lng": -122.38873962509012
+                }
+              }
+            }
+          }
+        },
+        "summary": "Upload a floor plan",
+        "tags": [
+          "Floorplans"
+        ]
+      }
+    },
+    "/networks/{networkId}/floorPlans/{floorPlanId}": {
+      "get": {
+        "description": "Find a floor plan by ID",
+        "operationId": "getNetworkFloorPlan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "floorPlanId": "g_1234567",
+                "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                "imageExtension": "png",
+                "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                "name": "HQ Floor Plan",
+                "devices": [
+                  {
+                    "name": "My AP",
+                    "lat": 37.4180951010362,
+                    "lng": -122.098531723022,
+                    "serial": "Q234-ABCD-5678",
+                    "mac": "00:11:22:33:44:55",
+                    "model": "MR34",
+                    "address": "1600 Pennsylvania Ave",
+                    "notes": "My AP's note",
+                    "lanIp": "1.2.3.4",
+                    "tags": " recently-added ",
+                    "networkId": "N_24329156",
+                    "beaconIdParams": {
+                      "uuid": "00000000-0000-0000-0000-000000000000",
+                      "major": 5,
+                      "minor": 3
+                    },
+                    "firmware": "wireless-25-14",
+                    "floorPlanId": "g_1234567"
+                  }
+                ],
+                "width": 100,
+                "height": 150,
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.7696461495,
+                  "lng": -122.3880815506
+                },
+                "bottomRightCorner": {
+                  "lat": 37.771524649766654,
+                  "lng": -122.38795275055205
+                },
+                "topLeftCorner": {
+                  "lat": 37.769700101836364,
+                  "lng": -122.3888684251381
+                },
+                "topRightCorner": {
+                  "lat": 37.77157860210302,
+                  "lng": -122.38873962509012
+                }
+              }
+            }
+          }
+        },
+        "summary": "Find a floor plan by ID",
+        "tags": [
+          "Floorplans"
+        ]
+      },
+      "put": {
+        "description": "Update a floor plan's geolocation and other meta data",
+        "operationId": "updateNetworkFloorPlan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkFloorPlan",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. If you want to change the geolocation data of your floor plan, either the 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                },
+                "imageContents": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "floorPlanId": "g_1234567",
+                "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                "imageExtension": "png",
+                "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                "name": "HQ Floor Plan",
+                "devices": [
+                  {
+                    "name": "My AP",
+                    "lat": 37.4180951010362,
+                    "lng": -122.098531723022,
+                    "serial": "Q234-ABCD-5678",
+                    "mac": "00:11:22:33:44:55",
+                    "model": "MR34",
+                    "address": "1600 Pennsylvania Ave",
+                    "notes": "My AP's note",
+                    "lanIp": "1.2.3.4",
+                    "tags": " recently-added ",
+                    "networkId": "N_24329156",
+                    "beaconIdParams": {
+                      "uuid": "00000000-0000-0000-0000-000000000000",
+                      "major": 5,
+                      "minor": 3
+                    },
+                    "firmware": "wireless-25-14",
+                    "floorPlanId": "g_1234567"
+                  }
+                ],
+                "width": 100,
+                "height": 150,
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.7696461495,
+                  "lng": -122.3880815506
+                },
+                "bottomRightCorner": {
+                  "lat": 37.771524649766654,
+                  "lng": -122.38795275055205
+                },
+                "topLeftCorner": {
+                  "lat": 37.769700101836364,
+                  "lng": -122.3888684251381
+                },
+                "topRightCorner": {
+                  "lat": 37.77157860210302,
+                  "lng": -122.38873962509012
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a floor plan's geolocation and other meta data",
+        "tags": [
+          "Floorplans"
+        ]
+      },
+      "delete": {
+        "description": "Destroy a floor plan",
+        "operationId": "deleteNetworkFloorPlan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Destroy a floor plan",
+        "tags": [
+          "Floorplans"
         ]
       }
     },
@@ -10666,6 +11574,35 @@
         ]
       }
     },
+    "/networks/{networkId}/sm/device/{deviceId}/refreshDetails": {
+      "post": {
+        "description": "Refresh the details of a device",
+        "operationId": "refreshNetworkSmDeviceDetails",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Refresh the details of a device",
+        "tags": [
+          "SM"
+        ]
+      }
+    },
     "/networks/{networkId}/sm/devices": {
       "get": {
         "description": "List the devices enrolled in an SM network with various specified fields and filters",
@@ -10708,10 +11645,16 @@
             "description": "Specify a scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags as comma separated values."
           },
           {
+            "type": "integer",
+            "name": "batchSize",
+            "in": "query",
+            "description": "Number of devices to return, 1000 is the default as well as the max."
+          },
+          {
             "type": "string",
             "name": "batchToken",
             "in": "query",
-            "description": "On networks with more than 1000 devices, the device list will be limited to 1000 devices per query.\n    If there are more devices to be seen, a batch token will be returned as a part of the device list. To see the remainder of\n    the devices, pass in the batchToken as a parameter in the next request. Requests made with the batchToken do not require\n    additional parameters as the batchToken includes the parameters passed in with the original request. Additional parameters\n    passed in with the batchToken will be ignored."
+            "description": "If the network has more devices than the batch size, a batch token will be returned\n    as a part of the device list. To see the remainder of the devices, pass in the batchToken as a parameter in the next request.\n    Requests made with the batchToken do not require additional parameters as the batchToken includes the parameters passed in\n    with the original request. Additional parameters passed in with the batchToken will be ignored."
           }
         ],
         "responses": {
@@ -13939,7 +14882,7 @@
     },
     "/networks/{networkId}/staticRoutes": {
       "get": {
-        "description": "List the static routes for this network",
+        "description": "List the static routes for an MX or teleworker network",
         "operationId": "getNetworkStaticRoutes",
         "parameters": [
           {
@@ -13972,13 +14915,13 @@
             }
           }
         },
-        "summary": "List the static routes for this network",
+        "summary": "List the static routes for an MX or teleworker network",
         "tags": [
-          "Static routes"
+          "MX static routes"
         ]
       },
       "post": {
-        "description": "Add a static route",
+        "description": "Add a static route for an MX or teleworker network",
         "operationId": "createNetworkStaticRoute",
         "parameters": [
           {
@@ -14030,15 +14973,15 @@
             }
           }
         },
-        "summary": "Add a static route",
+        "summary": "Add a static route for an MX or teleworker network",
         "tags": [
-          "Static routes"
+          "MX static routes"
         ]
       }
     },
     "/networks/{networkId}/staticRoutes/{srId}": {
       "get": {
-        "description": "Return a static route",
+        "description": "Return a static route for an MX or teleworker network",
         "operationId": "getNetworkStaticRoute",
         "parameters": [
           {
@@ -14075,13 +15018,13 @@
             }
           }
         },
-        "summary": "Return a static route",
+        "summary": "Return a static route for an MX or teleworker network",
         "tags": [
-          "Static routes"
+          "MX static routes"
         ]
       },
       "put": {
-        "description": "Update a static route",
+        "description": "Update a static route for an MX or teleworker network",
         "operationId": "updateNetworkStaticRoute",
         "parameters": [
           {
@@ -14157,13 +15100,13 @@
             }
           }
         },
-        "summary": "Update a static route",
+        "summary": "Update a static route for an MX or teleworker network",
         "tags": [
-          "Static routes"
+          "MX static routes"
         ]
       },
       "delete": {
-        "description": "Delete a static route from a network",
+        "description": "Delete a static route from an MX or teleworker network",
         "operationId": "deleteNetworkStaticRoute",
         "parameters": [
           {
@@ -14184,9 +15127,9 @@
             "description": "Successful operation"
           }
         },
-        "summary": "Delete a static route from a network",
+        "summary": "Delete a static route from an MX or teleworker network",
         "tags": [
-          "Static routes"
+          "MX static routes"
         ]
       }
     },
@@ -14863,6 +15806,7 @@
             },
             "examples": {
               "application/json": {
+                "vlan": 100,
                 "useCombinedPower": false,
                 "powerExceptions": [
                   {
@@ -14881,8 +15825,7 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ],
-                "vlan": 100
+                ]
               }
             }
           }
@@ -14908,6 +15851,10 @@
             "schema": {
               "type": "object",
               "properties": {
+                "vlan": {
+                  "type": "integer",
+                  "description": "Management VLAN"
+                },
                 "useCombinedPower": {
                   "type": "boolean",
                   "description": "The use Combined Power as the default behavior of secondary power supplies on supported devices."
@@ -14937,13 +15884,10 @@
                     ]
                   },
                   "description": "Exceptions on a per switch basis to \"useCombinedPower\""
-                },
-                "vlan": {
-                  "type": "integer",
-                  "description": "Management VLAN"
                 }
               },
               "example": {
+                "vlan": 100,
                 "useCombinedPower": false,
                 "powerExceptions": [
                   {
@@ -14962,8 +15906,7 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ],
-                "vlan": 100
+                ]
               }
             }
           }
@@ -14977,6 +15920,7 @@
             },
             "examples": {
               "application/json": {
+                "vlan": 100,
                 "useCombinedPower": false,
                 "powerExceptions": [
                   {
@@ -14995,13 +15939,171 @@
                     "serial": "Q234-ABCD-0004",
                     "powerType": "useNetworkSetting"
                   }
-                ],
-                "vlan": 100
+                ]
               }
             }
           }
         },
         "summary": "Update switch network settings",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/mtu": {
+      "get": {
+        "description": "Return the MTU configuration",
+        "operationId": "getNetworkSwitchSettingsMtu",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultMtuSize": 9578,
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "mtuSize": 1500
+                  },
+                  {
+                    "switchProfiles": [
+                      "1284392014819",
+                      "2983092129865"
+                    ],
+                    "mtuSize": 1600
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the MTU configuration",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update the MTU configuration",
+        "operationId": "updateNetworkSwitchSettingsMtu",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsMtu",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "defaultMtuSize": {
+                  "type": "integer",
+                  "description": "MTU size for the entire network. Default value is 9578."
+                },
+                "overrides": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch serials. Applicable only for switch network."
+                      },
+                      "switchProfiles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch profile IDs. Applicable only for template network."
+                      },
+                      "mtuSize": {
+                        "type": "integer",
+                        "description": "MTU size for the switches or switch profiles."
+                      }
+                    },
+                    "required": [
+                      "mtuSize"
+                    ]
+                  },
+                  "description": "Override MTU size for individual switches or switch profiles. An empty array will clear overrides."
+                }
+              },
+              "example": {
+                "defaultMtuSize": 9578,
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "mtuSize": 1500
+                  },
+                  {
+                    "switchProfiles": [
+                      "1284392014819",
+                      "2983092129865"
+                    ],
+                    "mtuSize": 1600
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultMtuSize": 9578,
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "mtuSize": 1500
+                  },
+                  {
+                    "switchProfiles": [
+                      "1284392014819",
+                      "2983092129865"
+                    ],
+                    "mtuSize": 1600
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the MTU configuration",
         "tags": [
           "Switch settings"
         ]
@@ -15395,6 +16497,267 @@
           }
         },
         "summary": "Update a quality of service rule",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/stormControl": {
+      "get": {
+        "description": "Return the global enhanced storm control configuration",
+        "operationId": "getNetworkSwitchSettingsStormControl",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "broadcastThreshold": 30,
+                "multicastThreshold": 30,
+                "unknownUnicastThreshold": 30
+              }
+            }
+          }
+        },
+        "summary": "Return the global enhanced storm control configuration",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update the global enhanced storm control configuration",
+        "operationId": "updateNetworkSwitchSettingsStormControl",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsStormControl",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "broadcastThreshold": {
+                  "type": "integer",
+                  "description": "Percentage (1 to 99) of total available port bandwidth for broadcast traffic type. Default value 100 percent rate is to clear the configuration."
+                },
+                "multicastThreshold": {
+                  "type": "integer",
+                  "description": "Percentage (1 to 99) of total available port bandwidth for multicast traffic type. Default value 100 percent rate is to clear the configuration."
+                },
+                "unknownUnicastThreshold": {
+                  "type": "integer",
+                  "description": "Percentage (1 to 99) of total available port bandwidth for unknown unicast (dlf-destination lookup failure) traffic type. Default value 100 percent rate is to clear the configuration."
+                }
+              },
+              "example": {
+                "broadcastThreshold": 30,
+                "multicastThreshold": 30,
+                "unknownUnicastThreshold": 30
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "broadcastThreshold": 30,
+                "multicastThreshold": 30,
+                "unknownUnicastThreshold": 30
+              }
+            }
+          }
+        },
+        "summary": "Update the global enhanced storm control configuration",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/stp": {
+      "get": {
+        "description": "Returns STP settings",
+        "operationId": "getNetworkSwitchSettingsStp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rstpEnabled": true,
+                "stpBridgePriority": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "stpPriority": 4096
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "stpPriority": 28672
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Returns STP settings",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Updates STP settings",
+        "operationId": "updateNetworkSwitchSettingsStp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsStp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rstpEnabled": {
+                  "type": "boolean",
+                  "description": "The spanning tree protocol status in network"
+                },
+                "stpBridgePriority": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "switchProfiles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch profile IDs"
+                      },
+                      "switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch serial numbers"
+                      },
+                      "stacks": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of stack IDs"
+                      },
+                      "stpPriority": {
+                        "type": "integer",
+                        "description": "STP priority for switch, stacks, or switch profiles"
+                      }
+                    },
+                    "required": [
+                      "stpPriority"
+                    ]
+                  },
+                  "description": "STP bridge priority for switches/stacks or switch profiles. An empty array will clear the STP bridge priority settings."
+                }
+              },
+              "example": {
+                "rstpEnabled": true,
+                "stpBridgePriority": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "stpPriority": 4096
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "stpPriority": 28672
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rstpEnabled": true,
+                "stpBridgePriority": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "stpPriority": 4096
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "stpPriority": 28672
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates STP settings",
         "tags": [
           "Switch settings"
         ]
@@ -18007,6 +19370,98 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/settings": {
+      "get": {
+        "description": "Return the wireless settings for a network",
+        "operationId": "getNetworkWirelessSettings",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "meshingEnabled": true,
+                "ipv6BridgeEnabled": false,
+                "locationAnalyticsEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Return the wireless settings for a network",
+        "tags": [
+          "Wireless settings"
+        ]
+      },
+      "put": {
+        "description": "Update the wireless settings for a network",
+        "operationId": "updateNetworkWirelessSettings",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meshingEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling meshing in a network"
+                },
+                "ipv6BridgeEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling IPv6 bridging in a network (Note: if enabled, SSIDs must also be configured to use bridge mode)"
+                },
+                "locationAnalyticsEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling location analytics for your network"
+                }
+              },
+              "example": {
+                "meshingEnabled": true,
+                "ipv6BridgeEnabled": false,
+                "locationAnalyticsEnabled": false
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "meshingEnabled": true,
+                "ipv6BridgeEnabled": false,
+                "locationAnalyticsEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Update the wireless settings for a network",
+        "tags": [
+          "Wireless settings"
+        ]
+      }
+    },
     "/networks/{network_id}/sm/devices/lock": {
       "put": {
         "description": "Lock a set of devices",
@@ -18350,7 +19805,8 @@
               "application/json": [
                 {
                   "id": "2930418",
-                  "name": "My organization"
+                  "name": "My organization",
+                  "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
                 }
               ]
             }
@@ -18396,7 +19852,8 @@
             "examples": {
               "application/json": {
                 "id": "2930418",
-                "name": "My organization"
+                "name": "My organization",
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
               }
             }
           }
@@ -18429,7 +19886,8 @@
             "examples": {
               "application/json": {
                 "id": "2930418",
-                "name": "My organization"
+                "name": "My organization",
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
               }
             }
           }
@@ -18476,7 +19934,8 @@
             "examples": {
               "application/json": {
                 "id": "2930418",
-                "name": "My organization"
+                "name": "My organization",
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
               }
             }
           }
@@ -20084,8 +21543,7 @@
                       }
                     },
                     "required": [
-                      "key",
-                      "mode"
+                      "key"
                     ]
                   },
                   "description": "The licenses that should be claimed"
@@ -20181,7 +21639,8 @@
             "examples": {
               "application/json": {
                 "id": "2930418",
-                "name": "My organization"
+                "name": "My organization",
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
               }
             }
           }
@@ -22095,6 +23554,9 @@
       "name": "Config templates"
     },
     {
+      "name": "Connectivity monitoring destinations"
+    },
+    {
       "name": "Content filtering categories"
     },
     {
@@ -22107,7 +23569,13 @@
       "name": "Devices"
     },
     {
+      "name": "Events"
+    },
+    {
       "name": "Firewalled services"
+    },
+    {
+      "name": "Floorplans"
     },
     {
       "name": "Group policies"
@@ -22150,6 +23618,9 @@
     },
     {
       "name": "MX port forwarding rules"
+    },
+    {
+      "name": "MX static routes"
     },
     {
       "name": "MX warm spare settings"
@@ -22206,9 +23677,6 @@
       "name": "Splash settings"
     },
     {
-      "name": "Static routes"
-    },
-    {
       "name": "Switch port schedules"
     },
     {
@@ -22243,6 +23711,9 @@
     },
     {
       "name": "Wireless health"
+    },
+    {
+      "name": "Wireless settings"
     }
   ]
 }
