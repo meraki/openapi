@@ -1,734 +1,620 @@
 Meraki Dashboard API Changelog
 
-# Changelog
+Changelog
+=========
 
-Version 0.4.0 to 0.5.0
+Version 0.5.0 to 0.6.0
 
-## Changes
+Changes
+-------
 
-### Clients
+### SAML roles
 
-**Return the splash authorization for a client, for each SSID they've associated with through splash. Only enabled SSIDs with Click-through splash enabled will be included. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.**
-
-#### GET
-
-`/networks/{networkId}/clients/{clientId}/splashAuthorizationStatus`
-
-> Summary changed from `Return the splash authorization for a client, for each SSID they've associated with through splash. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.` to `Return the splash authorization for a client, for each SSID they've associated with through splash. Only enabled SSIDs with Click-through splash enabled will be included. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.`
-
----
-
-### Devices
-
-**List the devices in a network**
-
-#### GET
-
-`/networks/{networkId}/devices`
-
-> Response property `floorPlanId` value added:
->
->             {
->               floorPlanId: "g_1234567"
->             }
-
----
-
-**Return a single device**
-
-#### GET
-
-`/networks/{networkId}/devices/{serial}`
-
-> Response property `floorPlanId` value added:
->
->             {
->               floorPlanId: "g_1234567"
->             }
-
----
-
-**Update the attributes of a device**
-
-#### PUT
-
-`/networks/{networkId}/devices/{serial}`
-
-> Optional property `floorPlanId` Added
-
----
-
-### SM
-
-**List the devices enrolled in an SM network with various specified fields and filters**
-
-#### GET
-
-`/networks/{networkId}/sm/devices`
-
-> Optional param `batchSize` added
-
----
-
-#### PATH
-
-`/networks/{networkId}/sm/device/{deviceId}/refreshDetails`
-
-> Path added
->
-> POST
->
-> _refreshNetworkSmDeviceDetails_  
-> **Refresh the details of a device**
-
----
-
-### MX static routes
-
-**List the static routes for an MX or teleworker network**
-
-#### GET
-
-`/networks/{networkId}/staticRoutes`
-
-> Summary changed from `List the static routes for this network` to `List the static routes for an MX or teleworker network`
-
----
-
-**Return a static route for an MX or teleworker network**
-
-#### GET
-
-`/networks/{networkId}/staticRoutes/{srId}`
-
-> Summary changed from `Return a static route` to `Return a static route for an MX or teleworker network`
-
----
-
-**Update a static route for an MX or teleworker network**
-
-#### PUT
-
-`/networks/{networkId}/staticRoutes/{srId}`
-
-> Summary changed from `Update a static route` to `Update a static route for an MX or teleworker network`
-
----
-
-**Add a static route for an MX or teleworker network**
+**Create a SAML role**
 
 #### POST
 
-`/networks/{networkId}/staticRoutes`
+`/organizations/{organizationId}/samlRoles`
 
-> Summary changed from `Add a static route` to `Add a static route for an MX or teleworker network`
+> Response `200` Deleted
 
----
+> Response property `201` value added:
+> 
+>            
+>             {
+>               201: {"description":"Successful operation","schema":{"type":"object","x-is-dynamic":true},"examples":{"application/json":{"id":"TEdJIEN1c3RvbWVy","role":"myrole","orgAccess":"none","networks":[{"id":"N_1234","access":"full"}],"tags":[{"tag":"west","access":"read-only"}]}}}
+>             }
+>     
 
-**Delete a static route from an MX or teleworker network**
+* * *
 
-#### DELETE
+### Switch ports
 
-`/networks/{networkId}/staticRoutes/{srId}`
+**List the switch ports for a switch**
 
-> Summary changed from `Delete a static route from a network` to `Delete a static route from an MX or teleworker network`
+#### GET
 
----
+`/devices/{serial}/switchPorts`
+
+> Response property `macWhitelist` value added:
+> 
+>            
+>             {
+>               macWhitelist: ["34:56:fe:ce:8e:a0","34:56:fe:ce:8e:a1"]
+>             }
+>     
+
+> Response property `stormControlEnabled` value added:
+> 
+>            
+>             {
+>               stormControlEnabled: true
+>             }
+>     
+
+* * *
+
+**Return a switch port**
+
+#### GET
+
+`/devices/{serial}/switchPorts/{number}`
+
+> Response property `macWhitelist` value added:
+> 
+>            
+>             {
+>               macWhitelist: ["34:56:fe:ce:8e:a0","34:56:fe:ce:8e:a1"]
+>             }
+>     
+
+> Response property `stormControlEnabled` value added:
+> 
+>            
+>             {
+>               stormControlEnabled: true
+>             }
+>     
+
+* * *
+
+**Update a switch port**
+
+#### PUT
+
+`/devices/{serial}/switchPorts/{number}`
+
+> Optional property `stormControlEnabled` Added
+
+* * *
+
+### Networks
+
+**Combine multiple networks into a single network**
+
+#### POST
+
+`/organizations/{organizationId}/networks/combine`
+
+> Optional property `enrollmentString` Added
+
+* * *
+
+**Return a network**
+
+#### GET
+
+`/networks/{networkId}`
+
+> Response property `enrollmentString` value added:
+> 
+>            
+>             {
+>               enrollmentString: "long-island-office"
+>             }
+>     
+
+* * *
+
+**List the networks in an organization**
+
+#### GET
+
+`/organizations/{organizationId}/networks`
+
+> Response property `enrollmentString` value added:
+> 
+>            
+>             {
+>               enrollmentString: "long-island-office"
+>             }
+>     
+
+* * *
+
+**Update a network**
+
+#### PUT
+
+`/networks/{networkId}`
+
+> Optional property `enrollmentString` Added
+
+* * *
+
+### SM
+
+**Get a list of softwares associated with a user**
+
+#### GET
+
+`/networks/{networkId}/sm/user/{userId}/softwares`
+
+> Response property `appId` value added:
+> 
+>            
+>             {
+>               appId: "1234"
+>             }
+>     
+
+* * *
+
+**Get a list of softwares associated with a device**
+
+#### GET
+
+`/networks/{networkId}/sm/{deviceId}/softwares`
+
+> Response property `appId` value added:
+> 
+>            
+>             {
+>               appId: "1234"
+>             }
+>     
+
+* * *
+
+### API usage
+
+**List the API requests made by an organization**
+
+#### GET
+
+`/organizations/{organizationId}/apiRequests`
+
+> Optional param `sourceIp` added
+
+> Response property `sourceIp` value added:
+> 
+>            
+>             {
+>               sourceIp: "123.123.123.1"
+>             }
+>     
+
+* * *
 
 ### Organizations
 
-**List the organizations that the user has privileges on**
+**Return the inventory for an organization**
 
 #### GET
 
-`/organizations`
+`/organizations/{organizationId}/inventory`
 
-> Response property `url` value added:
->
->             {
->               url: "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
->             }
+> Optional param `includeLicenseInfo` added
 
----
+* * *
 
-**Return an organization**
+**Return the third party VPN peers for an organization**
 
 #### GET
 
-`/organizations/{organizationId}`
+`/organizations/{organizationId}/thirdPartyVPNPeers`
 
-> Response property `url` value added:
->
+> Response property `remoteId` value added:
+> 
+>            
 >             {
->               url: "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+>               remoteId: "miles@meraki.com"
 >             }
+>     
 
----
+* * *
 
-### Connectivity monitoring destinations
+**Update the third party VPN peers for an organization**
+
+#### PUT
+
+`/organizations/{organizationId}/thirdPartyVPNPeers`
+
+> Optional property `remoteId` Added
+
+* * *
+
+### Switch ACLs
 
 #### PATH
 
-`/networks/{networkId}/connectivityMonitoringDestinations`
+`/networks/{networkId}/switch/accessControlLists`
 
-> Path added
->
+> Path added  
+> 
 > GET
->
-> _getNetworkConnectivityMonitoringDestinations_  
-> **Return the connectivity testing destinations for an MX network**
->
+> 
+> _getNetworkSwitchAccessControlLists_  
+> **Return the access control lists for a MS network**
+> 
 >     {
->         "destinations": [
+>         "rules": [
 >             {
->                 "ip": "8.8.8.8",
->                 "description": "Google",
->                 "default": false
+>                 "comment": "Deny SSH",
+>                 "policy": "deny",
+>                 "ipVersion": "ipv4",
+>                 "protocol": "tcp",
+>                 "srcCidr": "10.1.10.0/24",
+>                 "srcPort": "any",
+>                 "dstCidr": "172.16.30/24",
+>                 "dstPort": 22,
+>                 "vlan": 10
 >             },
 >             {
->                 "ip": "1.23.45.67",
->                 "description": "test description",
->                 "default": true
->             },
->             {
->                 "ip": "9.8.7.6",
->                 "description": null,
->                 "default": false
+>                 "comment": "Default rule",
+>                 "policy": "allow",
+>                 "ipVersion": "any",
+>                 "protocol": "any",
+>                 "srcCidr": "any",
+>                 "srcPort": "any",
+>                 "dstCidr": "any",
+>                 "dstPort": "any",
+>                 "vlan": "any"
 >             }
 >         ]
 >     }
->
+> 
+>   
+> 
 > PUT
->
-> _updateNetworkConnectivityMonitoringDestinations_  
-> **Update the connectivity testing destinations for an MX network**
->
+> 
+> _updateNetworkSwitchAccessControlLists_  
+> **Update the access control lists for a MS network**
+> 
 >     {
->         "destinations": [
+>         "rules": [
 >             {
->                 "ip": "8.8.8.8",
->                 "description": "Google",
->                 "default": false
+>                 "comment": "Deny SSH",
+>                 "policy": "deny",
+>                 "ipVersion": "ipv4",
+>                 "protocol": "tcp",
+>                 "srcCidr": "10.1.10.0/24",
+>                 "srcPort": "any",
+>                 "dstCidr": "172.16.30/24",
+>                 "dstPort": 22,
+>                 "vlan": 10
 >             },
 >             {
->                 "ip": "1.23.45.67",
->                 "description": "test description",
->                 "default": true
->             },
->             {
->                 "ip": "9.8.7.6",
->                 "description": null,
->                 "default": false
+>                 "comment": "Default rule",
+>                 "policy": "allow",
+>                 "ipVersion": "any",
+>                 "protocol": "any",
+>                 "srcCidr": "any",
+>                 "srcPort": "any",
+>                 "dstCidr": "any",
+>                 "dstPort": "any",
+>                 "vlan": "any"
 >             }
 >         ]
 >     }
 
----
-
-### Events
-
-#### PATH
-
-`/networks/{networkId}/events`
-
-> Path added
->
-> GET
->
-> _getNetworkEvents_  
-> **List the events for the network**
->
->     {
->         "message": null,
->         "pageStartAt": "2018-02-11T00:00:00.090210Z",
->         "pageEndAt": "2018-02-11T00:00:00.090210Z",
->         "events": [
->             {
->                 "occurredAt": "2018-02-11T00:00:00.090210Z",
->                 "networkId": "N_24329156",
->                 "type": "association",
->                 "description": "802.11 association",
->                 "clientId": "k74272e",
->                 "clientDescription": "Miles's phone",
->                 "deviceSerial": "Q234-ABCD-5678",
->                 "deviceName": "My AP",
->                 "ssidNumber": 1,
->                 "ssidName": "My SSID",
->                 "eventData": {
->                     "radio": "1",
->                     "vap": "1",
->                     "client_mac": "22:33:44:55:66:77",
->                     "client_ip": "1.2.3.4",
->                     "channel": "36",
->                     "rssi": "12",
->                     "aid": "2104009183"
->                 }
->             }
->         ]
->     }
-
----
-
-#### PATH
-
-`/networks/{networkId}/events/eventTypes`
-
-> Path added
->
-> GET
->
-> _getNetworkEventsEventTypes_  
-> **List the event type to human-readable description**
->
->     [
->         {
->             "category": "802.11",
->             "type": "association",
->             "description": "802.11 association"
->         }
->     ]
-
----
-
-### Floorplans
-
-#### PATH
-
-`/networks/{networkId}/floorPlans`
-
-> Path added
->
-> GET
->
-> _getNetworkFloorPlans_  
-> **List the floor plans that belong to your network**
->
->     [
->         {
->             "floorPlanId": "g_1234567",
->             "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
->             "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
->             "imageExtension": "png",
->             "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
->             "name": "HQ Floor Plan",
->             "devices": [
->                 {
->                     "name": "My AP",
->                     "lat": 37.4180951010362,
->                     "lng": -122.098531723022,
->                     "serial": "Q234-ABCD-5678",
->                     "mac": "00:11:22:33:44:55",
->                     "model": "MR34",
->                     "address": "1600 Pennsylvania Ave",
->                     "notes": "My AP's note",
->                     "lanIp": "1.2.3.4",
->                     "tags": " recently-added ",
->                     "networkId": "N_24329156",
->                     "beaconIdParams": {
->                         "uuid": "00000000-0000-0000-0000-000000000000",
->                         "major": 5,
->                         "minor": 3
->                     },
->                     "firmware": "wireless-25-14",
->                     "floorPlanId": "g_1234567"
->                 }
->             ],
->             "width": 100,
->             "height": 150,
->             "center": {
->                 "lat": 37.770040510499996,
->                 "lng": -122.38714009525
->             },
->             "bottomLeftCorner": {
->                 "lat": 37.7696461495,
->                 "lng": -122.3880815506
->             },
->             "bottomRightCorner": {
->                 "lat": 37.771524649766654,
->                 "lng": -122.38795275055205
->             },
->             "topLeftCorner": {
->                 "lat": 37.769700101836364,
->                 "lng": -122.3888684251381
->             },
->             "topRightCorner": {
->                 "lat": 37.77157860210302,
->                 "lng": -122.38873962509012
->             }
->         }
->     ]
->
-> POST
->
-> _createNetworkFloorPlan_  
-> **Upload a floor plan**
->
->     {
->         "floorPlanId": "g_1234567",
->         "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
->         "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
->         "imageExtension": "png",
->         "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
->         "name": "HQ Floor Plan",
->         "devices": [
->             {
->                 "name": "My AP",
->                 "lat": 37.4180951010362,
->                 "lng": -122.098531723022,
->                 "serial": "Q234-ABCD-5678",
->                 "mac": "00:11:22:33:44:55",
->                 "model": "MR34",
->                 "address": "1600 Pennsylvania Ave",
->                 "notes": "My AP's note",
->                 "lanIp": "1.2.3.4",
->                 "tags": " recently-added ",
->                 "networkId": "N_24329156",
->                 "beaconIdParams": {
->                     "uuid": "00000000-0000-0000-0000-000000000000",
->                     "major": 5,
->                     "minor": 3
->                 },
->                 "firmware": "wireless-25-14",
->                 "floorPlanId": "g_1234567"
->             }
->         ],
->         "width": 100,
->         "height": 150,
->         "center": {
->             "lat": 37.770040510499996,
->             "lng": -122.38714009525
->         },
->         "bottomLeftCorner": {
->             "lat": 37.7696461495,
->             "lng": -122.3880815506
->         },
->         "bottomRightCorner": {
->             "lat": 37.771524649766654,
->             "lng": -122.38795275055205
->         },
->         "topLeftCorner": {
->             "lat": 37.769700101836364,
->             "lng": -122.3888684251381
->         },
->         "topRightCorner": {
->             "lat": 37.77157860210302,
->             "lng": -122.38873962509012
->         }
->     }
-
----
-
-#### PATH
-
-`/networks/{networkId}/floorPlans/{floorPlanId}`
-
-> Path added
->
-> GET
->
-> _getNetworkFloorPlan_  
-> **Find a floor plan by ID**
->
->     {
->         "floorPlanId": "g_1234567",
->         "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
->         "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
->         "imageExtension": "png",
->         "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
->         "name": "HQ Floor Plan",
->         "devices": [
->             {
->                 "name": "My AP",
->                 "lat": 37.4180951010362,
->                 "lng": -122.098531723022,
->                 "serial": "Q234-ABCD-5678",
->                 "mac": "00:11:22:33:44:55",
->                 "model": "MR34",
->                 "address": "1600 Pennsylvania Ave",
->                 "notes": "My AP's note",
->                 "lanIp": "1.2.3.4",
->                 "tags": " recently-added ",
->                 "networkId": "N_24329156",
->                 "beaconIdParams": {
->                     "uuid": "00000000-0000-0000-0000-000000000000",
->                     "major": 5,
->                     "minor": 3
->                 },
->                 "firmware": "wireless-25-14",
->                 "floorPlanId": "g_1234567"
->             }
->         ],
->         "width": 100,
->         "height": 150,
->         "center": {
->             "lat": 37.770040510499996,
->             "lng": -122.38714009525
->         },
->         "bottomLeftCorner": {
->             "lat": 37.7696461495,
->             "lng": -122.3880815506
->         },
->         "bottomRightCorner": {
->             "lat": 37.771524649766654,
->             "lng": -122.38795275055205
->         },
->         "topLeftCorner": {
->             "lat": 37.769700101836364,
->             "lng": -122.3888684251381
->         },
->         "topRightCorner": {
->             "lat": 37.77157860210302,
->             "lng": -122.38873962509012
->         }
->     }
->
-> PUT
->
-> _updateNetworkFloorPlan_  
-> **Update a floor plan's geolocation and other meta data**
->
->     {
->         "floorPlanId": "g_1234567",
->         "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
->         "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
->         "imageExtension": "png",
->         "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
->         "name": "HQ Floor Plan",
->         "devices": [
->             {
->                 "name": "My AP",
->                 "lat": 37.4180951010362,
->                 "lng": -122.098531723022,
->                 "serial": "Q234-ABCD-5678",
->                 "mac": "00:11:22:33:44:55",
->                 "model": "MR34",
->                 "address": "1600 Pennsylvania Ave",
->                 "notes": "My AP's note",
->                 "lanIp": "1.2.3.4",
->                 "tags": " recently-added ",
->                 "networkId": "N_24329156",
->                 "beaconIdParams": {
->                     "uuid": "00000000-0000-0000-0000-000000000000",
->                     "major": 5,
->                     "minor": 3
->                 },
->                 "firmware": "wireless-25-14",
->                 "floorPlanId": "g_1234567"
->             }
->         ],
->         "width": 100,
->         "height": 150,
->         "center": {
->             "lat": 37.770040510499996,
->             "lng": -122.38714009525
->         },
->         "bottomLeftCorner": {
->             "lat": 37.7696461495,
->             "lng": -122.3880815506
->         },
->         "bottomRightCorner": {
->             "lat": 37.771524649766654,
->             "lng": -122.38795275055205
->         },
->         "topLeftCorner": {
->             "lat": 37.769700101836364,
->             "lng": -122.3888684251381
->         },
->         "topRightCorner": {
->             "lat": 37.77157860210302,
->             "lng": -122.38873962509012
->         }
->     }
->
-> DELETE
->
-> _deleteNetworkFloorPlan_  
-> **Destroy a floor plan**
-
----
+* * *
 
 ### Switch settings
 
 #### PATH
 
-`/networks/{networkId}/switch/settings/mtu`
+`/networks/{networkId}/switch/settings/dhcpServerPolicy`
 
-> Path added
->
+> Path added  
+> 
 > GET
->
-> _getNetworkSwitchSettingsMtu_  
-> **Return the MTU configuration**
->
+> 
+> _getNetworkSwitchSettingsDhcpServerPolicy_  
+> **Return the DHCP server policy**
+> 
 >     {
->         "defaultMtuSize": 9578,
->         "overrides": [
->             {
->                 "switches": [
->                     "Q234-ABCD-0001",
->                     "Q234-ABCD-0002",
->                     "Q234-ABCD-0003"
->                 ],
->                 "mtuSize": 1500
->             },
->             {
->                 "switchProfiles": [
->                     "1284392014819",
->                     "2983092129865"
->                 ],
->                 "mtuSize": 1600
->             }
+>         "defaultPolicy": "block",
+>         "allowedServers": [
+>             "00:50:56:00:00:01",
+>             "00:50:56:00:00:02"
 >         ]
 >     }
->
+> 
+>   
+> 
 > PUT
->
-> _updateNetworkSwitchSettingsMtu_  
-> **Update the MTU configuration**
->
+> 
+> _updateNetworkSwitchSettingsDhcpServerPolicy_  
+> **Update the DHCP server policy**
+> 
 >     {
->         "defaultMtuSize": 9578,
->         "overrides": [
->             {
->                 "switches": [
->                     "Q234-ABCD-0001",
->                     "Q234-ABCD-0002",
->                     "Q234-ABCD-0003"
->                 ],
->                 "mtuSize": 1500
->             },
->             {
->                 "switchProfiles": [
->                     "1284392014819",
->                     "2983092129865"
->                 ],
->                 "mtuSize": 1600
->             }
+>         "defaultPolicy": "block",
+>         "allowedServers": [
+>             "00:50:56:00:00:01",
+>             "00:50:56:00:00:02"
 >         ]
 >     }
 
----
+* * *
 
 #### PATH
 
-`/networks/{networkId}/switch/settings/stormControl`
+`/networks/{networkId}/switch/settings/dscpToCosMappings`
 
-> Path added
->
+> Path added  
+> 
 > GET
->
-> _getNetworkSwitchSettingsStormControl_  
-> **Return the global enhanced storm control configuration**
->
+> 
+> _getNetworkSwitchSettingsDscpToCosMappings_  
+> **Return the DSCP to CoS mappings**
+> 
 >     {
->         "broadcastThreshold": 30,
->         "multicastThreshold": 30,
->         "unknownUnicastThreshold": 30
->     }
->
-> PUT
->
-> _updateNetworkSwitchSettingsStormControl_  
-> **Update the global enhanced storm control configuration**
->
->     {
->         "broadcastThreshold": 30,
->         "multicastThreshold": 30,
->         "unknownUnicastThreshold": 30
->     }
-
----
-
-#### PATH
-
-`/networks/{networkId}/switch/settings/stp`
-
-> Path added
->
-> GET
->
-> _getNetworkSwitchSettingsStp_  
-> **Returns STP settings**
->
->     {
->         "rstpEnabled": true,
->         "stpBridgePriority": [
+>         "mappings": [
 >             {
->                 "switches": [
->                     "Q234-ABCD-0001",
->                     "Q234-ABCD-0002",
->                     "Q234-ABCD-0003"
->                 ],
->                 "stpPriority": 4096
->             },
->             {
->                 "stacks": [
->                     "789102",
->                     "123456",
->                     "129102"
->                 ],
->                 "stpPriority": 28672
+>                 "dscp": 1,
+>                 "cos": 1,
+>                 "title": "Video"
 >             }
 >         ]
 >     }
->
+> 
+>   
+> 
 > PUT
->
-> _updateNetworkSwitchSettingsStp_  
-> **Updates STP settings**
->
+> 
+> _updateNetworkSwitchSettingsDscpToCosMappings_  
+> **Update the DSCP to CoS mappings**
+> 
 >     {
->         "rstpEnabled": true,
->         "stpBridgePriority": [
+>         "mappings": [
 >             {
->                 "switches": [
->                     "Q234-ABCD-0001",
->                     "Q234-ABCD-0002",
->                     "Q234-ABCD-0003"
->                 ],
->                 "stpPriority": 4096
->             },
->             {
->                 "stacks": [
->                     "789102",
->                     "123456",
->                     "129102"
->                 ],
->                 "stpPriority": 28672
+>                 "dscp": 1,
+>                 "cos": 1,
+>                 "title": "Video"
 >             }
 >         ]
 >     }
 
----
+* * *
 
-### Wireless settings
+### Licenses
 
 #### PATH
 
-`/networks/{networkId}/wireless/settings`
+`/organizations/{organizationId}/licenses`
 
-> Path added
->
+> Path added  
+> 
 > GET
->
-> _getNetworkWirelessSettings_  
-> **Return the wireless settings for a network**
->
+> 
+> _getOrganizationLicenses_  
+> **List the licenses for an organization**
+> 
+>     [
+>         {
+>             "id": "1234",
+>             "licenseType": "MX64-ENT",
+>             "licenseKey": "Z21234567890",
+>             "orderNumber": "4C1234567",
+>             "deviceSerial": "Q234-ABCD-5678",
+>             "networkId": "N_24329156",
+>             "state": "active",
+>             "seatCount": null,
+>             "totalDurationInDays": 425,
+>             "durationInDays": 365,
+>             "permanentlyQueuedLicenses": [
+>                 {
+>                     "id": "5678",
+>                     "licenseType": "MX64-ENT",
+>                     "licenseKey": "Z21234567890",
+>                     "orderNumber": "4C1234567",
+>                     "durationInDays": 60
+>                 }
+>             ],
+>             "claimDate": "2019-08-29T12:40:10Z",
+>             "activationDate": "2019-09-01T15:01:46Z",
+>             "expirationDate": "2020-10-30T15:01:46Z"
+>         }
+>     ]
+
+* * *
+
+#### PATH
+
+`/organizations/{organizationId}/licenses/assignSeats`
+
+> Path added  
+> 
+> POST
+> 
+> _assignOrganizationLicensesSeats_  
+> **Assign SM seats to a network. This will increase the managed SM device limit of the network**
+> 
 >     {
->         "meshingEnabled": true,
->         "ipv6BridgeEnabled": false,
->         "locationAnalyticsEnabled": false
->     }
->
-> PUT
->
-> _updateNetworkWirelessSettings_  
-> **Update the wireless settings for a network**
->
->     {
->         "meshingEnabled": true,
->         "ipv6BridgeEnabled": false,
->         "locationAnalyticsEnabled": false
+>         "resultingLicenses": [
+>             {
+>                 "id": "1234",
+>                 "licenseType": "SME",
+>                 "licenseKey": "Z21234567890",
+>                 "orderNumber": "4C1234567",
+>                 "deviceSerial": null,
+>                 "networkId": "N_24329156",
+>                 "state": "active",
+>                 "seatCount": 25,
+>                 "totalDurationInDays": 365,
+>                 "durationInDays": 365,
+>                 "permanentlyQueuedLicenses": [],
+>                 "claimDate": "2019-08-29T12:40:10Z",
+>                 "activationDate": "2019-09-01T15:01:46Z",
+>                 "expirationDate": "2020-08-31T15:01:46Z"
+>             }
+>         ]
 >     }
 
----
+* * *
+
+#### PATH
+
+`/organizations/{organizationId}/licenses/move`
+
+> Path added  
+> 
+> POST
+> 
+> _moveOrganizationLicenses_  
+> **Move licenses to another organization. This will also move any devices that the licenses are assigned to**
+> 
+>     {
+>         "destOrganizationId": "2930418",
+>         "licenseIds": [
+>             "123",
+>             "456"
+>         ]
+>     }
+
+* * *
+
+#### PATH
+
+`/organizations/{organizationId}/licenses/moveSeats`
+
+> Path added  
+> 
+> POST
+> 
+> _moveOrganizationLicensesSeats_  
+> **Move SM seats to another organization**
+> 
+>     {
+>         "destOrganizationId": "2930418",
+>         "licenseId": "1234",
+>         "seatCount": 20
+>     }
+
+* * *
+
+#### PATH
+
+`/organizations/{organizationId}/licenses/renewSeats`
+
+> Path added  
+> 
+> POST
+> 
+> _renewOrganizationLicensesSeats_  
+> **Renew SM seats of a license. This will extend the license expiration date of managed SM devices covered by this license**
+> 
+>     {
+>         "resultingLicenses": [
+>             {
+>                 "id": "1234",
+>                 "licenseType": "SME",
+>                 "licenseKey": "Z21234567890",
+>                 "orderNumber": "4C1234567",
+>                 "deviceSerial": null,
+>                 "networkId": "N_24329156",
+>                 "state": "active",
+>                 "seatCount": 25,
+>                 "totalDurationInDays": 365,
+>                 "durationInDays": 365,
+>                 "permanentlyQueuedLicenses": [],
+>                 "claimDate": "2019-08-29T12:40:10Z",
+>                 "activationDate": "2019-09-01T15:01:46Z",
+>                 "expirationDate": "2020-08-31T15:01:46Z"
+>             }
+>         ]
+>     }
+
+* * *
+
+#### PATH
+
+`/organizations/{organizationId}/licenses/{licenseId}`
+
+> Path added  
+> 
+> GET
+> 
+> _getOrganizationLicense_  
+> **Display a license**
+> 
+>     {
+>         "id": "1234",
+>         "licenseType": "MX64-ENT",
+>         "licenseKey": "Z21234567890",
+>         "orderNumber": "4C1234567",
+>         "deviceSerial": "Q234-ABCD-5678",
+>         "networkId": "N_24329156",
+>         "state": "active",
+>         "seatCount": null,
+>         "totalDurationInDays": 425,
+>         "durationInDays": 365,
+>         "permanentlyQueuedLicenses": [
+>             {
+>                 "id": "5678",
+>                 "licenseType": "MX64-ENT",
+>                 "licenseKey": "Z21234567890",
+>                 "orderNumber": "4C1234567",
+>                 "durationInDays": 60
+>             }
+>         ],
+>         "claimDate": "2019-08-29T12:40:10Z",
+>         "activationDate": "2019-09-01T15:01:46Z",
+>         "expirationDate": "2020-10-30T15:01:46Z"
+>     }
+> 
+>   
+> 
+> PUT
+> 
+> _updateOrganizationLicense_  
+> **Update a license**
+> 
+>     {
+>         "id": "1234",
+>         "licenseType": "MX64-ENT",
+>         "licenseKey": "Z21234567890",
+>         "orderNumber": "4C1234567",
+>         "deviceSerial": "Q234-ABCD-5678",
+>         "networkId": "N_24329156",
+>         "state": "active",
+>         "seatCount": null,
+>         "totalDurationInDays": 425,
+>         "durationInDays": 365,
+>         "permanentlyQueuedLicenses": [
+>             {
+>                 "id": "5678",
+>                 "licenseType": "MX64-ENT",
+>                 "licenseKey": "Z21234567890",
+>                 "orderNumber": "4C1234567",
+>                 "durationInDays": 60
+>             }
+>         ],
+>         "claimDate": "2019-08-29T12:40:10Z",
+>         "activationDate": "2019-09-01T15:01:46Z",
+>         "expirationDate": "2020-10-30T15:01:46Z"
+>     }
+
+* * *
+
+Renamed
+-------
+
+#### PATH
+
+`/organizations/{organizationId}/samlRoles/{id}`
+
+> Path `/organizations/{organizationId}/samlRoles/{id}` renamed to `/organizations/{organizationId}/samlRoles/{samlRoleId}`
+
+* * *
