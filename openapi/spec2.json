@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.5.0",
+    "version": "0.6.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the [OpenAPI](https://swagger.io/docs/specification/about/) specification.\n\n## What can the API be used for?\nThe Dashboard API can be used for many purposes. It's meant to be an open-ended tool. Here are some examples of use cases:\n\n* Add new organizations, admins, networks, devices, VLANs, and more\n* Configure networks at scale\n* Automatically on-board and off-board new employees' teleworker setups\n* Build your own dashboard for store managers, field techs, or unique use cases\n\n## Enabling the Dashboard API\n1. Begin by logging into [Meraki Dashboard](https://dashboard.meraki.com) and navigating to **Organization > Settings**\n\n2. Locate the section titled **Dashboard API access** and select **Enable Access**, then **Save** your changes\n\n3. After enabling the API, choose your username at the top-right of the Meraki Dashboard and select **my profile**\n\n4. Locate the section titled **Dashboard API access** and select **Generate new API key**\n\n*Note: The API key is associated with a Dashboard administrator account. You can generate, revoke, and regenerate your API key on your profile.*\n\n**Keep your API key safe as it provides authentication to all of your organizations with the API enabled. If your API key is shared, you can regenerate your API key at any time. This will revoke the existing API key.**\n\nCopy and store your API key in a safe place. Dashboard does not store API keys in plaintext for security reasons, so this is the only time you will be able to record it. If you lose or forget your API key, you will have to revoke it and generate a new one.\n\nEvery request must specify an API key via a request header.\n\nThe API key must be specified in the URL header. The API will return a 404 (rather than a 403) in response to a request with a missing or incorrect API key in order to prevent leaking the existence of resources to unauthorized users.\n\n`X-Cisco-Meraki-API-Key: <secret key>`\n\nRead more about API [authorization](../api/#/python/getting-started/authorizing-your-client)\n\n\n## Versioning\nOnce an API version is released, we will make only backwards-compatible changes to it. Backwards-compatible changes include:\n\n* Adding new API resources\n\n* Adding new optional request parameters to existing API methods\n\n* Adding new properties to existing API responses\n\n* Changing the order of properties in existing API responses\n\n## Rate Limit\n* The Dashboard API is limited to **5 calls per second**, per organization.\n* A burst of 5 additional calls are allowed in the first second, so a maximum of 15 calls in the first 2 seconds.\n* The rate limiting technique is based off of the [token bucket model](https://en.wikipedia.org/wiki/Token_bucket).\n* An error with a `429` status code will be returned when the rate limit has been exceeded.\n* Expect to backoff for 1 - 2 seconds if the limit has been exceeded. You may have to wait potentially longer if a large number of requests were made within this timeframe.\n\n\n## Additional Details\nIdentifiers in the API are opaque strings. A `{networkId}`, for example, might be the string \"126043\", whereas an `{orderId}` might contain characters, such as \"4S1234567\". Client applications must not try to parse them as numbers. Even identifiers that look like numbers might be too long to encode without loss of precision in Javascript, where the only numeric type is IEEE 754 floating point.\n\nVerbs in the API follow the usual REST conventions:\n\n`GET` returns the value of a resource or a list of resources, depending on whether an identifier is specified. For example, a `GET` of `/organizations` returns a list of organizations, whereas a `GET` of `/organizations/{organizationId}` returns a particular organization.\n\n`POST` adds a new resource, as in a `POST` to `/organizations/{organizationId}/admins`, or performs some other non-idempotent change.\n\n`PUT` updates a resource. `PUTs` are idempotent; they update a resource, creating it first if it does not already exist. A `PUT` should specify all the fields of a resource; the API will revert omitted fields to their default value.\n\n`DELETE` removes a resource.\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 December, 2019\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -409,11 +409,16 @@
                   "linkNegotiation": "Auto negotiate",
                   "portScheduleId": "1234",
                   "udld": "Alert only",
+                  "macWhitelist": [
+                    "34:56:fe:ce:8e:a0",
+                    "34:56:fe:ce:8e:a1"
+                  ],
                   "stickyMacWhitelist": [
                     "34:56:fe:ce:8e:b0",
                     "34:56:fe:ce:8e:b1"
                   ],
-                  "stickyMacWhitelistLimit": 5
+                  "stickyMacWhitelistLimit": 5,
+                  "stormControlEnabled": true
                 }
               ]
             }
@@ -467,11 +472,16 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "macWhitelist": [
+                  "34:56:fe:ce:8e:a0",
+                  "34:56:fe:ce:8e:a1"
+                ],
                 "stickyMacWhitelist": [
                   "34:56:fe:ce:8e:b0",
                   "34:56:fe:ce:8e:b1"
                 ],
-                "stickyMacWhitelistLimit": 5
+                "stickyMacWhitelistLimit": 5,
+                "stormControlEnabled": true
               }
             }
           }
@@ -584,6 +594,10 @@
                 "stickyMacWhitelistLimit": {
                   "type": "integer",
                   "description": "The maximum number of MAC addresses for sticky MAC whitelist."
+                },
+                "stormControlEnabled": {
+                  "type": "boolean",
+                  "description": "The storm control status of the switch port"
                 }
               },
               "example": {
@@ -601,11 +615,16 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "macWhitelist": [
+                  "34:56:fe:ce:8e:a0",
+                  "34:56:fe:ce:8e:a1"
+                ],
                 "stickyMacWhitelist": [
                   "34:56:fe:ce:8e:b0",
                   "34:56:fe:ce:8e:b1"
                 ],
-                "stickyMacWhitelistLimit": 5
+                "stickyMacWhitelistLimit": 5,
+                "stormControlEnabled": true
               }
             }
           }
@@ -634,11 +653,16 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "macWhitelist": [
+                  "34:56:fe:ce:8e:a0",
+                  "34:56:fe:ce:8e:a1"
+                ],
                 "stickyMacWhitelist": [
                   "34:56:fe:ce:8e:b0",
                   "34:56:fe:ce:8e:b1"
                 ],
-                "stickyMacWhitelistLimit": 5
+                "stickyMacWhitelistLimit": 5,
+                "stormControlEnabled": true
               }
             }
           }
@@ -681,7 +705,8 @@
                   "switch",
                   "wireless"
                 ],
-                "disableMyMerakiCom": false
+                "disableMyMerakiCom": false,
+                "enrollmentString": "long-island-office"
               }
             }
           }
@@ -726,6 +751,10 @@
                 "disableRemoteStatusPage": {
                   "type": "boolean",
                   "description": "Disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if disableMyMerakiCom is set to false"
+                },
+                "enrollmentString": {
+                  "type": "string",
+                  "description": "A unique identifier which can be used for device enrollment or easy access through the Meraki SM Registration page or the Self Service Portal. Please note that changing this field may cause existing bookmarks to break."
                 }
               },
               "example": {
@@ -757,7 +786,8 @@
                   "switch",
                   "wireless"
                 ],
-                "disableMyMerakiCom": false
+                "disableMyMerakiCom": false,
+                "enrollmentString": "long-island-office"
               }
             }
           }
@@ -13141,6 +13171,7 @@
             "examples": {
               "application/json": [
                 {
+                  "appId": "1234",
                   "bundleSize": null,
                   "createdAt": "2018-02-11T00:00:00Z",
                   "dynamicSize": null,
@@ -13321,7 +13352,7 @@
                   "certPem": "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----\n",
                   "issuer": "",
                   "subject": "",
-                  "id": 15
+                  "id": "15"
                 }
               ]
             }
@@ -13548,6 +13579,7 @@
             "examples": {
               "application/json": [
                 {
+                  "appId": "1234",
                   "bundleSize": null,
                   "createdAt": "2018-02-11T00:00:00Z",
                   "dynamicSize": null,
@@ -13856,7 +13888,8 @@
                     "productTypes": [
                       "switch"
                     ],
-                    "disableMyMerakiCom": false
+                    "disableMyMerakiCom": false,
+                    "enrollmentString": "long-island-office"
                   },
                   {
                     "id": "N_5678",
@@ -13868,7 +13901,8 @@
                     "productTypes": [
                       "wireless"
                     ],
-                    "disableMyMerakiCom": false
+                    "disableMyMerakiCom": false,
+                    "enrollmentString": "long-island-office"
                   }
                 ]
               }
@@ -15165,6 +15199,207 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/accessControlLists": {
+      "get": {
+        "description": "Return the access control lists for a MS network",
+        "operationId": "getNetworkSwitchAccessControlLists",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Deny SSH",
+                    "policy": "deny",
+                    "ipVersion": "ipv4",
+                    "protocol": "tcp",
+                    "srcCidr": "10.1.10.0/24",
+                    "srcPort": "any",
+                    "dstCidr": "172.16.30/24",
+                    "dstPort": 22,
+                    "vlan": 10
+                  },
+                  {
+                    "comment": "Default rule",
+                    "policy": "allow",
+                    "ipVersion": "any",
+                    "protocol": "any",
+                    "srcCidr": "any",
+                    "srcPort": "any",
+                    "dstCidr": "any",
+                    "dstPort": "any",
+                    "vlan": "any"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the access control lists for a MS network",
+        "tags": [
+          "Switch ACLs"
+        ]
+      },
+      "put": {
+        "description": "Update the access control lists for a MS network",
+        "operationId": "updateNetworkSwitchAccessControlLists",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchAccessControlLists",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)."
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule."
+                      },
+                      "ipVersion": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "description": "IP address version (must be 'any', 'ipv4' or 'ipv6'). Applicable only if network supports IPv6. Default value is 'ipv4'."
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', or 'any')."
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Source IP address (in IP or CIDR notation) or 'any'."
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Source port. Must be in the range  of 1-65535 or 'any'. Default is 'any'."
+                      },
+                      "dstCidr": {
+                        "type": "string",
+                        "description": "Destination IP address (in IP or CIDR notation) or 'any'."
+                      },
+                      "dstPort": {
+                        "type": "string",
+                        "description": "Destination port. Must be in the range of 1-65535 or 'any'. Default is 'any'."
+                      },
+                      "vlan": {
+                        "type": "string",
+                        "description": "Incoming traffic VLAN. Must be in the range of 1-4095 or 'any'. Default is 'any'."
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol",
+                      "srcCidr",
+                      "dstCidr"
+                    ]
+                  },
+                  "description": "An ordered array of the access control list rules (not including the default rule). An empty array will clear the rules."
+                }
+              },
+              "example": {
+                "rules": [
+                  {
+                    "comment": "Deny SSH",
+                    "policy": "deny",
+                    "ipVersion": "ipv4",
+                    "protocol": "tcp",
+                    "srcCidr": "10.1.10.0/24",
+                    "srcPort": "any",
+                    "dstCidr": "172.16.30/24",
+                    "dstPort": "22",
+                    "vlan": "10"
+                  }
+                ]
+              },
+              "required": [
+                "rules"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Deny SSH",
+                    "policy": "deny",
+                    "ipVersion": "ipv4",
+                    "protocol": "tcp",
+                    "srcCidr": "10.1.10.0/24",
+                    "srcPort": "any",
+                    "dstCidr": "172.16.30/24",
+                    "dstPort": 22,
+                    "vlan": 10
+                  },
+                  {
+                    "comment": "Default rule",
+                    "policy": "allow",
+                    "ipVersion": "any",
+                    "protocol": "any",
+                    "srcCidr": "any",
+                    "srcPort": "any",
+                    "dstCidr": "any",
+                    "dstPort": "any",
+                    "vlan": "any"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the access control lists for a MS network",
+        "tags": [
+          "Switch ACLs"
+        ]
+      }
+    },
     "/networks/{networkId}/switch/portSchedules": {
       "get": {
         "description": "List switch port schedules",
@@ -15945,6 +16180,235 @@
           }
         },
         "summary": "Update switch network settings",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/dhcpServerPolicy": {
+      "get": {
+        "description": "Return the DHCP server policy",
+        "operationId": "getNetworkSwitchSettingsDhcpServerPolicy",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultPolicy": "block",
+                "allowedServers": [
+                  "00:50:56:00:00:01",
+                  "00:50:56:00:00:02"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the DHCP server policy",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update the DHCP server policy",
+        "operationId": "updateNetworkSwitchSettingsDhcpServerPolicy",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsDhcpServerPolicy",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "defaultPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "allow",
+                    "block"
+                  ],
+                  "description": "'allow' or 'block' new DHCP servers. Default value is 'allow'."
+                },
+                "allowedServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List the MAC addresses of DHCP servers to permit on the network. Applicable only if defaultPolicy is set to block. An empty array will clear the entries."
+                },
+                "blockedServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List the MAC addresses of DHCP servers to block on the network. Applicable only if defaultPolicy is set to allow. An empty array will clear the entries."
+                }
+              },
+              "example": {
+                "defaultPolicy": "block",
+                "allowedServers": [
+                  "00:50:56:00:00:01",
+                  "00:50:56:00:00:02"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultPolicy": "block",
+                "allowedServers": [
+                  "00:50:56:00:00:01",
+                  "00:50:56:00:00:02"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the DHCP server policy",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/settings/dscpToCosMappings": {
+      "get": {
+        "description": "Return the DSCP to CoS mappings",
+        "operationId": "getNetworkSwitchSettingsDscpToCosMappings",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "mappings": [
+                  {
+                    "dscp": 1,
+                    "cos": 1,
+                    "title": "Video"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the DSCP to CoS mappings",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update the DSCP to CoS mappings",
+        "operationId": "updateNetworkSwitchSettingsDscpToCosMappings",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsDscpToCosMappings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mappings": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "dscp": {
+                        "type": "integer",
+                        "description": "The Differentiated Services Code Point (DSCP) tag in the IP header that will be mapped to a particular Class-of-Service (CoS) queue. Value can be in the range of 0 to 63 inclusive."
+                      },
+                      "cos": {
+                        "type": "integer",
+                        "description": "The actual layer-2 CoS queue the DSCP value is mapped to. These are not bits set on outgoing frames. Value can be in the range of 0 to 5 inclusive."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Label for the mapping (optional)."
+                      }
+                    },
+                    "required": [
+                      "dscp",
+                      "cos"
+                    ]
+                  },
+                  "description": "An array of DSCP to CoS mappings. An empty array will reset the mappings to default."
+                }
+              },
+              "example": {
+                "mappings": [
+                  {
+                    "dscp": 1,
+                    "cos": 1,
+                    "title": "Video"
+                  }
+                ]
+              },
+              "required": [
+                "mappings"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "mappings": [
+                  {
+                    "dscp": 1,
+                    "cos": 1,
+                    "title": "Video"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the DSCP to CoS mappings",
         "tags": [
           "Switch settings"
         ]
@@ -20010,7 +20474,10 @@
                         "properties": {
 
                         },
-                        "description": "The body of the action"
+                        "description": "The body of the action",
+                        "default": {
+
+                        }
                       }
                     },
                     "required": [
@@ -20710,6 +21177,12 @@
             "name": "responseCode",
             "in": "query",
             "description": "Filter the results by the response code of the API requests"
+          },
+          {
+            "type": "string",
+            "name": "sourceIp",
+            "in": "query",
+            "description": "Filter the results by the IP address of the originating API request"
           }
         ],
         "responses": {
@@ -20735,7 +21208,8 @@
                   "queryString": "timespan=604800",
                   "userAgent": "PostmanRuntime/7.6.0",
                   "ts": "2019-02-20T17:31:23Z",
-                  "responseCode": 200
+                  "responseCode": 200,
+                  "sourceIp": "123.123.123.1"
                 }
               ]
             }
@@ -21539,7 +22013,7 @@
                           "addDevices",
                           "renew"
                         ],
-                        "description": "Either 'renew' or 'addDevices'. 'addDevices' will increase the license limit, while 'renew' will extend the amount of time until expiration. Please see <a target='_blank' href='https://documentation.meraki.com/zGeneral_Administration/Licensing/Adding_an_Enterprise_license_to_an_existing_Dashboard_account'>this article</a> for more information."
+                        "description": "Either 'renew' or 'addDevices'. 'addDevices' will increase the license limit, while 'renew' will extend the amount of time until expiration. This parameter is legacy and only applies to coterm licensing; it should not be specified when claiming per-device licenses. Please see <a target='_blank' href='https://documentation.meraki.com/zGeneral_Administration/Licensing/Adding_an_Enterprise_license_to_an_existing_Dashboard_account'>this article</a> for more information."
                       }
                     },
                     "required": [
@@ -21874,6 +22348,12 @@
             "in": "path",
             "type": "string",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "name": "includeLicenseInfo",
+            "in": "query",
+            "description": "When this parameter is true, each entity in the response will include the license expiration date of the device (if any). Only applies to organizations that support per-device licensing. Defaults to false."
           }
         ],
         "responses": {
@@ -21940,6 +22420,537 @@
         ]
       }
     },
+    "/organizations/{organizationId}/licenses": {
+      "get": {
+        "description": "List the licenses for an organization",
+        "operationId": "getOrganizationLicenses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "deviceSerial",
+            "in": "query",
+            "description": "Filter the licenses to those assigned to a particular device"
+          },
+          {
+            "type": "string",
+            "name": "networkId",
+            "in": "query",
+            "description": "Filter the licenses to those assigned in a particular network"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "expiring",
+              "unused",
+              "unusedActive",
+              "recentlyQueued"
+            ],
+            "name": "state",
+            "in": "query",
+            "description": "Filter the licenses to those in a particular state. Can be one of 'active', 'expired', 'expiring', 'unused', 'unusedActive' or 'recentlyQueued'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "licenseType": "MX64-ENT",
+                  "licenseKey": "Z21234567890",
+                  "orderNumber": "4C1234567",
+                  "deviceSerial": "Q234-ABCD-5678",
+                  "networkId": "N_24329156",
+                  "state": "active",
+                  "seatCount": null,
+                  "totalDurationInDays": 425,
+                  "durationInDays": 365,
+                  "permanentlyQueuedLicenses": [
+                    {
+                      "id": "5678",
+                      "licenseType": "MX64-ENT",
+                      "licenseKey": "Z21234567890",
+                      "orderNumber": "4C1234567",
+                      "durationInDays": 60
+                    }
+                  ],
+                  "claimDate": "2019-08-29T12:40:10Z",
+                  "activationDate": "2019-09-01T15:01:46Z",
+                  "expirationDate": "2020-10-30T15:01:46Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the licenses for an organization",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenses/assignSeats": {
+      "post": {
+        "description": "Assign SM seats to a network. This will increase the managed SM device limit of the network",
+        "operationId": "assignOrganizationLicensesSeats",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "assignOrganizationLicensesSeats",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "licenseId": {
+                  "type": "string",
+                  "description": "The ID of the SM license to assign seats from"
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "The ID of the SM network to assign the seats to"
+                },
+                "seatCount": {
+                  "type": "integer",
+                  "description": "The number of seats to assign to the SM network. Must be less than or equal to the total number of seats of the license"
+                }
+              },
+              "example": {
+                "licenseId": "1234",
+                "networkId": "N_24329156",
+                "seatCount": 20
+              },
+              "required": [
+                "licenseId",
+                "networkId",
+                "seatCount"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "resultingLicenses": [
+                  {
+                    "id": "1234",
+                    "licenseType": "SME",
+                    "licenseKey": "Z21234567890",
+                    "orderNumber": "4C1234567",
+                    "deviceSerial": null,
+                    "networkId": "N_24329156",
+                    "state": "active",
+                    "seatCount": 25,
+                    "totalDurationInDays": 365,
+                    "durationInDays": 365,
+                    "permanentlyQueuedLicenses": [
+
+                    ],
+                    "claimDate": "2019-08-29T12:40:10Z",
+                    "activationDate": "2019-09-01T15:01:46Z",
+                    "expirationDate": "2020-08-31T15:01:46Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Assign SM seats to a network. This will increase the managed SM device limit of the network",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenses/move": {
+      "post": {
+        "description": "Move licenses to another organization. This will also move any devices that the licenses are assigned to",
+        "operationId": "moveOrganizationLicenses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "moveOrganizationLicenses",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "destOrganizationId": {
+                  "type": "string",
+                  "description": "The ID of the organization to move the licenses to"
+                },
+                "licenseIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of IDs of licenses to move to the new organization"
+                }
+              },
+              "example": {
+                "destOrganizationId": "2930418",
+                "licenseIds": [
+                  "123",
+                  "456"
+                ]
+              },
+              "required": [
+                "destOrganizationId",
+                "licenseIds"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destOrganizationId": "2930418",
+                "licenseIds": [
+                  "123",
+                  "456"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Move licenses to another organization. This will also move any devices that the licenses are assigned to",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenses/moveSeats": {
+      "post": {
+        "description": "Move SM seats to another organization",
+        "operationId": "moveOrganizationLicensesSeats",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "moveOrganizationLicensesSeats",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "destOrganizationId": {
+                  "type": "string",
+                  "description": "The ID of the organization to move the SM seats to"
+                },
+                "licenseId": {
+                  "type": "string",
+                  "description": "The ID of the SM license to move the seats from"
+                },
+                "seatCount": {
+                  "type": "integer",
+                  "description": "The number of seats to move to the new organization. Must be less than or equal to the total number of seats of the license"
+                }
+              },
+              "example": {
+                "destOrganizationId": "2930418",
+                "licenseId": "1234",
+                "seatCount": 20
+              },
+              "required": [
+                "destOrganizationId",
+                "licenseId",
+                "seatCount"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destOrganizationId": "2930418",
+                "licenseId": "1234",
+                "seatCount": 20
+              }
+            }
+          }
+        },
+        "summary": "Move SM seats to another organization",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenses/renewSeats": {
+      "post": {
+        "description": "Renew SM seats of a license. This will extend the license expiration date of managed SM devices covered by this license",
+        "operationId": "renewOrganizationLicensesSeats",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "renewOrganizationLicensesSeats",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "licenseIdToRenew": {
+                  "type": "string",
+                  "description": "The ID of the SM license to renew. This license must already be assigned to an SM network"
+                },
+                "unusedLicenseId": {
+                  "type": "string",
+                  "description": "The SM license to use to renew the seats on 'licenseIdToRenew'. This license must have at least as many seats available as there are seats on 'licenseIdToRenew'"
+                }
+              },
+              "example": {
+                "licenseIdToRenew": "123",
+                "unusedLicenseId": "1234"
+              },
+              "required": [
+                "licenseIdToRenew",
+                "unusedLicenseId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "resultingLicenses": [
+                  {
+                    "id": "1234",
+                    "licenseType": "SME",
+                    "licenseKey": "Z21234567890",
+                    "orderNumber": "4C1234567",
+                    "deviceSerial": null,
+                    "networkId": "N_24329156",
+                    "state": "active",
+                    "seatCount": 25,
+                    "totalDurationInDays": 365,
+                    "durationInDays": 365,
+                    "permanentlyQueuedLicenses": [
+
+                    ],
+                    "claimDate": "2019-08-29T12:40:10Z",
+                    "activationDate": "2019-09-01T15:01:46Z",
+                    "expirationDate": "2020-08-31T15:01:46Z"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Renew SM seats of a license. This will extend the license expiration date of managed SM devices covered by this license",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licenses/{licenseId}": {
+      "get": {
+        "description": "Display a license",
+        "operationId": "getOrganizationLicense",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "licenseId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "licenseType": "MX64-ENT",
+                "licenseKey": "Z21234567890",
+                "orderNumber": "4C1234567",
+                "deviceSerial": "Q234-ABCD-5678",
+                "networkId": "N_24329156",
+                "state": "active",
+                "seatCount": null,
+                "totalDurationInDays": 425,
+                "durationInDays": 365,
+                "permanentlyQueuedLicenses": [
+                  {
+                    "id": "5678",
+                    "licenseType": "MX64-ENT",
+                    "licenseKey": "Z21234567890",
+                    "orderNumber": "4C1234567",
+                    "durationInDays": 60
+                  }
+                ],
+                "claimDate": "2019-08-29T12:40:10Z",
+                "activationDate": "2019-09-01T15:01:46Z",
+                "expirationDate": "2020-10-30T15:01:46Z"
+              }
+            }
+          }
+        },
+        "summary": "Display a license",
+        "tags": [
+          "Licenses"
+        ]
+      },
+      "put": {
+        "description": "Update a license",
+        "operationId": "updateOrganizationLicense",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "licenseId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationLicense",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "deviceSerial": {
+                  "type": "string",
+                  "description": "The serial number of the device to assign this license to. Set this to null to unassign the license. If a different license is already active on the device, this parameter will control queueing/dequeuing this license."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "licenseType": "MX64-ENT",
+                "licenseKey": "Z21234567890",
+                "orderNumber": "4C1234567",
+                "deviceSerial": "Q234-ABCD-5678",
+                "networkId": "N_24329156",
+                "state": "active",
+                "seatCount": null,
+                "totalDurationInDays": 425,
+                "durationInDays": 365,
+                "permanentlyQueuedLicenses": [
+                  {
+                    "id": "5678",
+                    "licenseType": "MX64-ENT",
+                    "licenseKey": "Z21234567890",
+                    "orderNumber": "4C1234567",
+                    "durationInDays": 60
+                  }
+                ],
+                "claimDate": "2019-08-29T12:40:10Z",
+                "activationDate": "2019-09-01T15:01:46Z",
+                "expirationDate": "2020-10-30T15:01:46Z"
+              }
+            }
+          }
+        },
+        "summary": "Update a license",
+        "tags": [
+          "Licenses"
+        ]
+      }
+    },
     "/organizations/{organizationId}/networks": {
       "get": {
         "description": "List the networks in an organization",
@@ -21979,7 +22990,8 @@
                     "switch",
                     "wireless"
                   ],
-                  "disableMyMerakiCom": false
+                  "disableMyMerakiCom": false,
+                  "enrollmentString": "long-island-office"
                 }
               ]
             }
@@ -22070,7 +23082,8 @@
                   "switch",
                   "wireless"
                 ],
-                "disableMyMerakiCom": false
+                "disableMyMerakiCom": false,
+                "enrollmentString": "long-island-office"
               }
             }
           }
@@ -22108,6 +23121,10 @@
                     "type": "string"
                   },
                   "description": "A list of the network IDs that will be combined. If an ID of a combined network is included in this list, the other networks in the list will be grouped into that network"
+                },
+                "enrollmentString": {
+                  "type": "string",
+                  "description": "A unique identifier which can be used for device enrollment or easy access through the Meraki SM Registration page or the Self Service Portal. Please note that changing this field may cause existing bookmarks to break. All networks that are part of this combined network will have their enrollment string appended by '-network_type'. If left empty, all exisitng enrollment strings will be deleted."
                 }
               },
               "example": {
@@ -22146,7 +23163,8 @@
                     "switch",
                     "wireless"
                   ],
-                  "disableMyMerakiCom": false
+                  "disableMyMerakiCom": false,
+                  "enrollmentString": "long-island-office"
                 }
               }
             }
@@ -22280,53 +23298,56 @@
               "type": "object",
               "properties": {
                 "role": {
-                  "description": "The role of the SAML administrator",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The role of the SAML administrator"
                 },
                 "orgAccess": {
-                  "description": "The privilege of the SAML administrator on the organization",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The privilege of the SAML administrator on the organization"
                 },
                 "tags": {
-                  "description": "The list of tags that the SAML administrator has privileges on",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "tag": {
-                        "description": "The name of the tag",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The name of the tag"
                       },
                       "access": {
-                        "description": "The privilege of the SAML administrator on the tag",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The privilege of the SAML administrator on the tag"
                       }
                     }
-                  }
+                  },
+                  "description": "The list of tags that the SAML administrator has privleges on"
                 },
                 "networks": {
-                  "description": "The list of networks that the SAML administrator has privileges on",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "id": {
-                        "description": "The network ID",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The network ID"
                       },
                       "access": {
-                        "description": "The privilege of the SAML administrator on the network",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The privilege of the SAML administrator on the network"
                       }
                     }
-                  }
+                  },
+                  "description": "The list of networks that the SAML administrator has privileges on"
                 }
+              },
+              "example": {
+
               }
             }
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Successful operation",
             "schema": {
               "type": "object",
@@ -22359,7 +23380,7 @@
         ]
       }
     },
-    "/organizations/{organizationId}/samlRoles/{id}": {
+    "/organizations/{organizationId}/samlRoles/{samlRoleId}": {
       "get": {
         "description": "Return a SAML role",
         "operationId": "getOrganizationSamlRole",
@@ -22371,7 +23392,7 @@
             "required": true
           },
           {
-            "name": "id",
+            "name": "samlRoleId",
             "in": "path",
             "type": "string",
             "required": true
@@ -22421,7 +23442,7 @@
             "required": true
           },
           {
-            "name": "id",
+            "name": "samlRoleId",
             "in": "path",
             "type": "string",
             "required": true
@@ -22433,47 +23454,50 @@
               "type": "object",
               "properties": {
                 "role": {
-                  "description": "The role of the SAML administrator",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The role of the SAML administrator"
                 },
                 "orgAccess": {
-                  "description": "The privilege of the SAML administrator on the organization",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The privilege of the SAML administrator on the organization"
                 },
                 "tags": {
-                  "description": "The list of tags that the SAML administrator has privileges on",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "tag": {
-                        "description": "The name of the tag",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The name of the tag"
                       },
                       "access": {
-                        "description": "The privilege of the SAML administrator on the tag",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The privilege of the SAML administrator on the tag"
                       }
                     }
-                  }
+                  },
+                  "description": "The list of tags that the SAML administrator has privleges on"
                 },
                 "networks": {
-                  "description": "The list of networks that the SAML administrator has privileges on",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "id": {
-                        "description": "The network ID",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The network ID"
                       },
                       "access": {
-                        "description": "The privilege of the SAML administrator on the network",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The privilege of the SAML administrator on the network"
                       }
                     }
-                  }
+                  },
+                  "description": "The list of networks that the SAML administrator has privileges on"
                 }
+              },
+              "example": {
+
               }
             }
           }
@@ -22522,14 +23546,14 @@
             "required": true
           },
           {
-            "name": "id",
+            "name": "samlRoleId",
             "in": "path",
             "type": "string",
             "required": true
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successful operation"
           }
         },
@@ -22947,6 +23971,7 @@
                 {
                   "name": "My peer 2",
                   "publicIp": "123.123.123.2",
+                  "remoteId": "miles@meraki.com",
                   "privateSubnets": [
                     "192.168.2.0/24",
                     "192.168.129.0/24"
@@ -22991,6 +24016,10 @@
                       "publicIp": {
                         "type": "string",
                         "description": "The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
                       },
                       "privateSubnets": {
                         "type": "array",
@@ -23117,6 +24146,7 @@
                   {
                     "name": "My peer 2",
                     "publicIp": "123.123.123.2",
+                    "remoteId": "miles@meraki.com",
                     "privateSubnets": [
                       "192.168.2.0/24",
                       "192.168.129.0/24"
@@ -23176,6 +24206,7 @@
                 {
                   "name": "My peer 2",
                   "publicIp": "123.123.123.2",
+                  "remoteId": "miles@meraki.com",
                   "privateSubnets": [
                     "192.168.2.0/24",
                     "192.168.129.0/24"
@@ -23587,6 +24618,9 @@
       "name": "Intrusion settings"
     },
     {
+      "name": "Licenses"
+    },
+    {
       "name": "MR L3 firewall"
     },
     {
@@ -23677,6 +24711,9 @@
       "name": "Splash settings"
     },
     {
+      "name": "Switch ACLs"
+    },
+    {
       "name": "Switch port schedules"
     },
     {
@@ -23714,6 +24751,278 @@
     },
     {
       "name": "Wireless settings"
+    }
+  ],
+  "x-batchable-actions": [
+    {
+      "group": "Connectivity monitoring destination",
+      "summary": "Update the connectivity testing destinations for an MX network",
+      "resource": "/networks/{networkId}/connectivityMonitoringDestinations",
+      "operation": "update"
+    },
+    {
+      "group": "Device",
+      "summary": "Claim a device into a network",
+      "resource": "/networks/{networkId}/devices",
+      "operation": "claim"
+    },
+    {
+      "group": "Device",
+      "summary": "Remove a single device",
+      "resource": "/networks/{networkId}/devices/{serial}",
+      "operation": "remove"
+    },
+    {
+      "group": "Device",
+      "summary": "Update the attributes of a device",
+      "resource": "/networks/{networkId}/devices/{serial}",
+      "operation": "update"
+    },
+    {
+      "group": "Dhcp server policy",
+      "summary": "Update the DHCP server policy",
+      "resource": "/networks/{networkId}/switch/settings/dhcpServerPolicy",
+      "operation": "update"
+    },
+    {
+      "group": "Dscp cos mapping",
+      "summary": "Update the DSCP to CoS mappings",
+      "resource": "/networks/{networkId}/switch/settings/dscpToCosMappings",
+      "operation": "update"
+    },
+    {
+      "group": "Floor plan",
+      "summary": "Destroy a floor plan",
+      "resource": "/networks/{networkId}/floorPlans/{floorPlanId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Floor plan",
+      "summary": "Update a floor plan's geolocation and other meta data",
+      "resource": "/networks/{networkId}/floorPlans/{floorPlanId}",
+      "operation": "update"
+    },
+    {
+      "group": "Group policy",
+      "summary": "Create a group policy",
+      "resource": "/networks/{networkId}/groupPolicies",
+      "operation": "create"
+    },
+    {
+      "group": "Group policy",
+      "summary": "Delete a group policy",
+      "resource": "/networks/{networkId}/groupPolicies/{groupPolicyId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Group policy",
+      "summary": "Update a group policy",
+      "resource": "/networks/{networkId}/groupPolicies/{groupPolicyId}",
+      "operation": "update"
+    },
+    {
+      "group": "License",
+      "summary": "Assign SM seats to a network. This will increase the managed SM device limit of the network",
+      "resource": "/organizations/{organizationId}/licenses",
+      "operation": "assignSeats"
+    },
+    {
+      "group": "License",
+      "summary": "Move licenses to another organization. This will also move any devices that the licenses are assigned to",
+      "resource": "/organizations/{organizationId}/licenses",
+      "operation": "move"
+    },
+    {
+      "group": "License",
+      "summary": "Move SM seats to another organization",
+      "resource": "/organizations/{organizationId}/licenses",
+      "operation": "moveSeats"
+    },
+    {
+      "group": "License",
+      "summary": "Renew SM seats of a license. This will extend the license expiration date of managed SM devices covered by this license",
+      "resource": "/organizations/{organizationId}/licenses",
+      "operation": "renewSeats"
+    },
+    {
+      "group": "License",
+      "summary": "Update a license",
+      "resource": "/organizations/{organizationId}/licenses/{licenseId}",
+      "operation": "update"
+    },
+    {
+      "group": "MTU configuration",
+      "summary": "Update the MTU configuration",
+      "resource": "/networks/{networkId}/switch/settings/mtu",
+      "operation": "update"
+    },
+    {
+      "group": "MX l7 firewall",
+      "summary": "Update the MX L7 firewall rules for an MX network",
+      "resource": "/networks/{networkId}/l7FirewallRules",
+      "operation": "update"
+    },
+    {
+      "group": "MX port",
+      "summary": "Update the per-port VLAN settings for a single MX port.",
+      "resource": "/networks/{networkId}/appliancePorts/{appliancePortId}",
+      "operation": "update"
+    },
+    {
+      "group": "Management interface settings",
+      "summary": "Update the management interface settings for a device",
+      "resource": "/networks/{networkId}/devices/{serial}/managementInterfaceSettings",
+      "operation": "update"
+    },
+    {
+      "group": "Network",
+      "summary": "Delete a network",
+      "resource": "/networks/{networkId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Network",
+      "summary": "Split a combined network into individual networks for each type of device",
+      "resource": "/networks/{networkId}",
+      "operation": "split"
+    },
+    {
+      "group": "Network",
+      "summary": "Update a network",
+      "resource": "/networks/{networkId}",
+      "operation": "update"
+    },
+    {
+      "group": "Network",
+      "summary": "Combine multiple networks into a single network",
+      "resource": "/organizations/{organizationId}/networks",
+      "operation": "combine"
+    },
+    {
+      "group": "Network",
+      "summary": "Create a network",
+      "resource": "/organizations/{organizationId}/networks",
+      "operation": "create"
+    },
+    {
+      "group": "Qos rule",
+      "summary": "Add a quality of service rule",
+      "resource": "/networks/{networkId}/switch/settings/qosRules",
+      "operation": "create"
+    },
+    {
+      "group": "Qos rule",
+      "summary": "Update the order in which the rules should be processed by the switch",
+      "resource": "/networks/{networkId}/switch/settings/qosRules/order",
+      "operation": "update_order"
+    },
+    {
+      "group": "Qos rule",
+      "summary": "Delete a quality of service rule",
+      "resource": "/networks/{networkId}/switch/settings/qosRules/{qosRuleId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Qos rule",
+      "summary": "Update a quality of service rule",
+      "resource": "/networks/{networkId}/switch/settings/qosRules/{qosRuleId}",
+      "operation": "update"
+    },
+    {
+      "group": "RF profile",
+      "summary": "Creates new RF profile for this network",
+      "resource": "/networks/{networkId}/wireless/rfProfiles",
+      "operation": "create"
+    },
+    {
+      "group": "RF profile",
+      "summary": "Delete a RF Profile",
+      "resource": "/networks/{networkId}/wireless/rfProfiles/{rfProfileId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "RF profile",
+      "summary": "Updates specified RF profile for this network",
+      "resource": "/networks/{networkId}/wireless/rfProfiles/{rfProfileId}",
+      "operation": "update"
+    },
+    {
+      "group": "Radio settings",
+      "summary": "Update the radio settings of a device",
+      "resource": "/networks/{networkId}/devices/{serial}/wireless/radioSettings",
+      "operation": "update"
+    },
+    {
+      "group": "STP configuration",
+      "summary": "Updates STP settings",
+      "resource": "/networks/{networkId}/switch/settings/stp",
+      "operation": "update"
+    },
+    {
+      "group": "Storm control",
+      "summary": "Update the global enhanced storm control configuration",
+      "resource": "/networks/{networkId}/switch/settings/stormControl",
+      "operation": "update"
+    },
+    {
+      "group": "Switch port",
+      "summary": "Update a switch port",
+      "resource": "/devices/{serial}/switchPorts/{number}",
+      "operation": "update"
+    },
+    {
+      "group": "Switch port schedule",
+      "summary": "Update a switch port schedule",
+      "resource": "/networks/{networkId}/switch/portSchedules/{portScheduleId}",
+      "operation": "update"
+    },
+    {
+      "group": "Traffic shaping settings",
+      "summary": "Update the traffic shaping settings for an SSID on an MR network",
+      "resource": "/networks/{networkId}/ssids/{number}/trafficShaping",
+      "operation": "update"
+    },
+    {
+      "group": "Traffic shaping settings",
+      "summary": "Update the traffic shaping settings for an MX network",
+      "resource": "/networks/{networkId}/trafficShaping",
+      "operation": "update"
+    },
+    {
+      "group": "VLAN",
+      "summary": "Add a VLAN",
+      "resource": "/networks/{networkId}/vlans",
+      "operation": "create"
+    },
+    {
+      "group": "VLAN",
+      "summary": "Delete a VLAN from a network",
+      "resource": "/networks/{networkId}/vlans/{vlanId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "VLAN",
+      "summary": "Update a VLAN",
+      "resource": "/networks/{networkId}/vlans/{vlanId}",
+      "operation": "update"
+    },
+    {
+      "group": "Warm spare",
+      "summary": "Swap MX primary and warm spare appliances",
+      "resource": "/networks/{networkId}/swapWarmSpare",
+      "operation": "swap"
+    },
+    {
+      "group": "Warm spare",
+      "summary": "Update MX warm spare settings",
+      "resource": "/networks/{networkId}/warmSpareSettings",
+      "operation": "update"
+    },
+    {
+      "group": "Wireless settings",
+      "summary": "Update the wireless settings for a network",
+      "resource": "/networks/{networkId}/wireless/settings",
+      "operation": "update"
     }
   ]
 }
