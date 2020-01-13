@@ -1,14 +1,15 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.6.0",
+    "version": "0.7.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 December, 2019\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 January, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
       "collectParameters": true,
       "doNotSplitWords": [
+        "ACLs",
         "NetFlow",
         "SSIDs",
         "VLANs"
@@ -225,7 +226,13 @@
                 {
                   "id": "0",
                   "type": "occupancy",
-                  "label": "Full Frame"
+                  "label": "Full Frame",
+                  "regionOfInterest": {
+                    "x0": "0.00",
+                    "y0": "0.00",
+                    "x1": "1.00",
+                    "y1": "1.00"
+                  }
                 }
               ]
             }
@@ -315,6 +322,508 @@
         ]
       }
     },
+    "/devices/{serial}/camera/qualityAndRetentionSettings": {
+      "get": {
+        "description": "Returns quality and retention settings for the given camera",
+        "operationId": "getDeviceCameraQualityAndRetentionSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "restrictedBandwidthModeEnabled": false,
+                "profileId": null,
+                "quality": "Standard",
+                "resolution": 720
+              }
+            }
+          }
+        },
+        "summary": "Returns quality and retention settings for the given camera",
+        "tags": [
+          "Cameras"
+        ]
+      },
+      "put": {
+        "description": "Update quality and retention settings for the given camera",
+        "operationId": "updateDeviceCameraQualityAndRetentionSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCameraQualityAndRetentionSettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "The ID of a quality and retention profile to assign to the camera. The profile's settings will override all of the per-camera quality and retention settings. If the value of this parameter is null, any existing profile will be unassigned from the camera."
+                },
+                "motionBasedRetentionEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating if motion-based retention is enabled(true) or disabled(false) on the camera"
+                },
+                "audioRecordingEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating if audio recording is enabled(true) or disabled(false) on the camera"
+                },
+                "restrictedBandwidthModeEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating if restricted bandwidth is enabled(true) or disabled(false) on the camera"
+                },
+                "quality": {
+                  "type": "string",
+                  "enum": [
+                    "Standard",
+                    "High",
+                    "Enhanced"
+                  ],
+                  "description": "Quality of the camera. Can be one of 'Standard', 'High' or 'Enhanced'. Not all qualities are supported by every camera model."
+                },
+                "resolution": {
+                  "type": "string",
+                  "enum": [
+                    "1280x720",
+                    "1920x1080",
+                    "1080x1080",
+                    "2058x2058"
+                  ],
+                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080' or '2058x2058'. Not all resolutions are supported by every camera model."
+                }
+              },
+              "example": {
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "restrictedBandwidthModeEnabled": false,
+                "profileId": null,
+                "quality": "Standard",
+                "resolution": 720
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "restrictedBandwidthModeEnabled": false,
+                "profileId": null,
+                "quality": "Standard",
+                "resolution": 720
+              }
+            }
+          }
+        },
+        "summary": "Update quality and retention settings for the given camera",
+        "tags": [
+          "Cameras"
+        ]
+      }
+    },
+    "/devices/{serial}/cellularGateway/settings": {
+      "get": {
+        "description": "Show the LAN Settings of a MG",
+        "operationId": "getDeviceCellularGatewaySettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "deviceName": "name of the MG",
+                "deviceLanIp": "192.168.0.33",
+                "deviceSubnet": "192.168.0.32/27",
+                "fixedIpAssignments": [
+                  {
+                    "mac": "0b:00:00:00:00:ac",
+                    "name": "server 1",
+                    "ip": "192.168.0.10"
+                  },
+                  {
+                    "mac": "0b:00:00:00:00:ab",
+                    "name": "server 2",
+                    "ip": "192.168.0.20"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Show the LAN Settings of a MG",
+        "tags": [
+          "MG LAN settings"
+        ]
+      },
+      "put": {
+        "description": "Update the LAN Settings for a single MG.",
+        "operationId": "updateDeviceCellularGatewaySettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCellularGatewaySettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reservedIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "Starting IP included in the reserved range of IPs"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "Ending IP included in the reserved range of IPs"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Comment explaining the reserved IP range"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end",
+                      "comment"
+                    ]
+                  },
+                  "description": "list of all reserved IP ranges for a single MG"
+                },
+                "fixedIpAssignments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "A descriptive name of the assignment"
+                      },
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address you want to assign to a specific server or device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the server or device that hosts the internal resource that you wish to receive the specified IP address"
+                      }
+                    },
+                    "required": [
+                      "ip",
+                      "mac"
+                    ]
+                  },
+                  "description": "list of all fixed IP assignments for a single MG"
+                }
+              },
+              "example": {
+                "deviceName": "name of the MG",
+                "deviceLanIp": "192.168.0.33",
+                "deviceSubnet": "192.168.0.32/27",
+                "fixedIpAssignments": [
+                  {
+                    "mac": "0b:00:00:00:00:ac",
+                    "name": "server 1",
+                    "ip": "192.168.0.10"
+                  },
+                  {
+                    "mac": "0b:00:00:00:00:ab",
+                    "name": "server 2",
+                    "ip": "192.168.0.20"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "deviceName": "name of the MG",
+                "deviceLanIp": "192.168.0.33",
+                "deviceSubnet": "192.168.0.32/27",
+                "fixedIpAssignments": [
+                  {
+                    "mac": "0b:00:00:00:00:ac",
+                    "name": "server 1",
+                    "ip": "192.168.0.10"
+                  },
+                  {
+                    "mac": "0b:00:00:00:00:ab",
+                    "name": "server 2",
+                    "ip": "192.168.0.20"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the LAN Settings for a single MG.",
+        "tags": [
+          "MG LAN settings"
+        ]
+      }
+    },
+    "/devices/{serial}/cellularGateway/settings/portForwardingRules": {
+      "get": {
+        "description": "Returns the port forwarding rules for a single MG.",
+        "operationId": "getDeviceCellularGatewaySettingsPortForwardingRules",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test",
+                    "access": "any",
+                    "publicPort": "11-12",
+                    "localPort": "4",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  },
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test 2",
+                    "access": "restricted",
+                    "allowedIps": [
+                      "10.10.10.10",
+                      "10.10.10.11"
+                    ],
+                    "publicPort": "99",
+                    "localPort": "5",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Returns the port forwarding rules for a single MG.",
+        "tags": [
+          "MG port forwarding rules"
+        ]
+      },
+      "put": {
+        "description": "Updates the port forwarding rules for a single MG.",
+        "operationId": "updateDeviceCellularGatewaySettingsPortForwardingRules",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCellularGatewaySettingsPortForwardingRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "A descriptive name for the rule"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "The IP address of the server or device that hosts the internal resource that you wish to make available on the WAN"
+                      },
+                      "publicPort": {
+                        "type": "string",
+                        "description": "A port or port ranges that will be forwarded to the host on the LAN"
+                      },
+                      "localPort": {
+                        "type": "string",
+                        "description": "A port or port ranges that will receive the forwarded traffic from the WAN"
+                      },
+                      "allowedIps": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "An array of ranges of WAN IP addresses that are allowed to make inbound connections on the specified ports or port ranges."
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "description": "TCP or UDP"
+                      },
+                      "access": {
+                        "type": "string",
+                        "description": "`any` or `restricted`. Specify the right to make inbound connections on the specified ports or port ranges. If `restricted`, a list of allowed IPs is mandatory."
+                      }
+                    },
+                    "required": [
+                      "lanIp",
+                      "publicPort",
+                      "localPort",
+                      "protocol",
+                      "access"
+                    ]
+                  },
+                  "description": "An array of port forwarding params"
+                }
+              },
+              "example": {
+                "rules": [
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test",
+                    "access": "any",
+                    "publicPort": "11-12",
+                    "localPort": "4",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  },
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test 2",
+                    "access": "restricted",
+                    "allowedIps": [
+                      "10.10.10.10",
+                      "10.10.10.11"
+                    ],
+                    "publicPort": "99",
+                    "localPort": "5",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test",
+                    "access": "any",
+                    "publicPort": "11-12",
+                    "localPort": "4",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  },
+                  {
+                    "lanIp": "172.31.128.5",
+                    "name": "test 2",
+                    "access": "restricted",
+                    "allowedIps": [
+                      "10.10.10.10",
+                      "10.10.10.11"
+                    ],
+                    "publicPort": "99",
+                    "localPort": "5",
+                    "uplink": "both",
+                    "protocol": "tcp"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates the port forwarding rules for a single MG.",
+        "tags": [
+          "MG port forwarding rules"
+        ]
+      }
+    },
     "/devices/{serial}/clients": {
       "get": {
         "description": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null.",
@@ -369,6 +878,94 @@
         "summary": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null.",
         "tags": [
           "Clients"
+        ]
+      }
+    },
+    "/devices/{serial}/switchPortStatuses": {
+      "get": {
+        "description": "Return the status for all the ports of a switch",
+        "operationId": "getDeviceSwitchPortStatuses",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "portId": "1",
+                  "enabled": true,
+                  "status": "Connected",
+                  "errors": [
+                    "PoE overload",
+                    "Very high proportion of CRC errors"
+                  ],
+                  "warnings": [
+                    "PoE port was denied power",
+                    "High proportion of CRC errors"
+                  ],
+                  "speed": "10 Gbps",
+                  "duplex": "full",
+                  "usageInKb": {
+                    "total": 40867,
+                    "sent": 23008,
+                    "recv": 17859
+                  },
+                  "cdp": {
+                    "systemName": "",
+                    "platform": "MS350-24X",
+                    "deviceId": "0c8ddbddee:ff",
+                    "portId": "Port 20",
+                    "nativeVlan": 1,
+                    "address": "10.0,0.1",
+                    "managementAddress": "10.0.0.100",
+                    "version": "1",
+                    "vtpManagementDomain": "",
+                    "capabilities": "Switch"
+                  },
+                  "lldp": {
+                    "systemName": "MS350-24X - Test",
+                    "systemDescription": "MS350-24X Cloud Managed PoE Switch",
+                    "portId": "20",
+                    "portDescription": "Port 20",
+                    "chassisId": "0c:8d:db:dd:ee:ff",
+                    "managementVlan": 1,
+                    "portVlan": 1,
+                    "managementAddress": "10.0.0.100",
+                    "systemCapabilities": "switch"
+                  },
+                  "clientCount": 10
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the status for all the ports of a switch",
+        "tags": [
+          "Switch ports"
         ]
       }
     },
@@ -1125,6 +1722,176 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/firewall/inboundFirewallRules": {
+      "get": {
+        "description": "Return the inbound firewall rules for an MX network",
+        "operationId": "getNetworkApplianceFirewallInboundFirewallRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ],
+                "syslogDefaultRule": true
+              }
+            }
+          }
+        },
+        "summary": "Return the inbound firewall rules for an MX network",
+        "tags": [
+          "MX inbound firewall"
+        ]
+      },
+      "put": {
+        "description": "Update the inbound firewall rules of an MX network",
+        "operationId": "updateNetworkApplianceFirewallInboundFirewallRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceFirewallInboundFirewallRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
+                      },
+                      "destPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "destCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
+                      },
+                      "syslogEnabled": {
+                        "type": "boolean",
+                        "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol",
+                      "srcCidr",
+                      "destCidr"
+                    ]
+                  },
+                  "description": "An ordered array of the firewall rules (not including the default rule)"
+                },
+                "syslogDefaultRule": {
+                  "type": "boolean",
+                  "description": "Log the special default rule (boolean value - enable only if you've configured a syslog server) (optional)"
+                }
+              },
+              "example": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ],
+                "syslogDefaultRule": true
+              }
+            }
+          }
+        },
+        "summary": "Update the inbound firewall rules of an MX network",
+        "tags": [
+          "MX inbound firewall"
+        ]
+      }
+    },
     "/networks/{networkId}/appliancePorts": {
       "get": {
         "description": "List per-port VLAN settings for all ports of a MX.",
@@ -1603,6 +2370,622 @@
         ]
       }
     },
+    "/networks/{networkId}/camera/qualityRetentionProfiles": {
+      "get": {
+        "description": "List the quality retention profiles for this network",
+        "operationId": "getNetworkCameraQualityRetentionProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "networkId": "N_24329156",
+                  "name": "Sample quality retention profile",
+                  "restrictedBandwidthModeEnabled": true,
+                  "motionBasedRetentionEnabled": false,
+                  "audioRecordingEnabled": false,
+                  "cloudArchiveEnabled": false,
+                  "maxRetentionDays": 7,
+                  "scheduleId": null,
+                  "videoSettings": {
+                    "MV32": {
+                      "quality": "Enhanced",
+                      "resolution": "1080x1080"
+                    },
+                    "MV21/MV71": {
+                      "quality": "High",
+                      "resolution": "1280x720"
+                    },
+                    "MV12/MV22/MV72": {
+                      "quality": "High",
+                      "resolution": "1920x1080"
+                    },
+                    "MV12WE": {
+                      "quality": "High",
+                      "resolution": "1920x1080"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the quality retention profiles for this network",
+        "tags": [
+          "Camera quality retention profiles"
+        ]
+      },
+      "post": {
+        "description": "Creates new quality retention profile for this network.",
+        "operationId": "createNetworkCameraQualityRetentionProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkCameraQualityRetentionProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new profile. Must be unique. This parameter is required."
+                },
+                "motionBasedRetentionEnabled": {
+                  "type": "boolean",
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                },
+                "restrictedBandwidthModeEnabled": {
+                  "type": "boolean",
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                },
+                "audioRecordingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not to record audio. Can be either true or false. Defaults to false."
+                },
+                "cloudArchiveEnabled": {
+                  "type": "boolean",
+                  "description": "Create redundant video backup using Cloud Archive. Can be either true or false. Defaults to false."
+                },
+                "scheduleId": {
+                  "type": "string",
+                  "description": "Schedule for which this camera will record video, or 'null' to always record."
+                },
+                "maxRetentionDays": {
+                  "type": "integer",
+                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days"
+                },
+                "videoSettings": {
+                  "type": "object",
+                  "properties": {
+                    "MV21/MV71": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV21/MV71 camera models."
+                    },
+                    "MV12/MV22/MV72": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV12/MV22/MV72 camera models."
+                    },
+                    "MV32": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard' or 'Enhanced'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2058x2058"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV32 camera models."
+                    },
+                    "MV12WE": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV12WE camera models."
+                    }
+                  },
+                  "description": "Video quality and resolution settings for all the camera models."
+                }
+              },
+              "example": {
+
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Sample quality retention profile",
+                "restrictedBandwidthModeEnabled": true,
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "cloudArchiveEnabled": false,
+                "maxRetentionDays": 7,
+                "scheduleId": null,
+                "videoSettings": {
+                  "MV32": {
+                    "quality": "Enhanced",
+                    "resolution": "1080x1080"
+                  },
+                  "MV21/MV71": {
+                    "quality": "High",
+                    "resolution": "1280x720"
+                  },
+                  "MV12/MV22/MV72": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  },
+                  "MV12WE": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Creates new quality retention profile for this network.",
+        "tags": [
+          "Camera quality retention profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/camera/qualityRetentionProfiles/{qualityRetentionProfileId}": {
+      "get": {
+        "description": "Retrieve a single quality retention profile",
+        "operationId": "getNetworkCameraQualityRetentionProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qualityRetentionProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Sample quality retention profile",
+                "restrictedBandwidthModeEnabled": true,
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "cloudArchiveEnabled": false,
+                "maxRetentionDays": 7,
+                "scheduleId": null,
+                "videoSettings": {
+                  "MV32": {
+                    "quality": "Enhanced",
+                    "resolution": "1080x1080"
+                  },
+                  "MV21/MV71": {
+                    "quality": "High",
+                    "resolution": "1280x720"
+                  },
+                  "MV12/MV22/MV72": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  },
+                  "MV12WE": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single quality retention profile",
+        "tags": [
+          "Camera quality retention profiles"
+        ]
+      },
+      "put": {
+        "description": "Update an existing quality retention profile for this network.",
+        "operationId": "updateNetworkCameraQualityRetentionProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qualityRetentionProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCameraQualityRetentionProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new profile. Must be unique."
+                },
+                "motionBasedRetentionEnabled": {
+                  "type": "boolean",
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                },
+                "restrictedBandwidthModeEnabled": {
+                  "type": "boolean",
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                },
+                "audioRecordingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not to record audio. Can be either true or false. Defaults to false."
+                },
+                "cloudArchiveEnabled": {
+                  "type": "boolean",
+                  "description": "Create redundant video backup using Cloud Archive. Can be either true or false. Defaults to false."
+                },
+                "scheduleId": {
+                  "type": "string",
+                  "description": "Schedule for which this camera will record video, or 'null' to always record."
+                },
+                "maxRetentionDays": {
+                  "type": "integer",
+                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days"
+                },
+                "videoSettings": {
+                  "type": "object",
+                  "properties": {
+                    "MV21/MV71": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV21/MV71 camera models."
+                    },
+                    "MV12/MV22/MV72": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV12/MV22/MV72 camera models."
+                    },
+                    "MV32": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard' or 'Enhanced'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2058x2058"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV32 camera models."
+                    },
+                    "MV12WE": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV12WE camera models."
+                    }
+                  },
+                  "description": "Video quality and resolution settings for all the camera models."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Sample quality retention profile",
+                "restrictedBandwidthModeEnabled": true,
+                "motionBasedRetentionEnabled": false,
+                "audioRecordingEnabled": false,
+                "cloudArchiveEnabled": false,
+                "maxRetentionDays": 7,
+                "scheduleId": null,
+                "videoSettings": {
+                  "MV32": {
+                    "quality": "Enhanced",
+                    "resolution": "1080x1080"
+                  },
+                  "MV21/MV71": {
+                    "quality": "High",
+                    "resolution": "1280x720"
+                  },
+                  "MV12/MV22/MV72": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  },
+                  "MV12WE": {
+                    "quality": "High",
+                    "resolution": "1920x1080"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing quality retention profile for this network.",
+        "tags": [
+          "Camera quality retention profiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete an existing quality retention profile for this network.",
+        "operationId": "deleteNetworkCameraQualityRetentionProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "qualityRetentionProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an existing quality retention profile for this network.",
+        "tags": [
+          "Camera quality retention profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/camera/schedules": {
+      "get": {
+        "description": "Returns a list of all camera recording schedules.",
+        "operationId": "getNetworkCameraSchedules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "123",
+                  "name": "Weekday schedule"
+                },
+                {
+                  "id": "124",
+                  "name": "Office hours"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns a list of all camera recording schedules.",
+        "tags": [
+          "Cameras"
+        ]
+      }
+    },
     "/networks/{networkId}/cameras/{serial}/snapshot": {
       "post": {
         "description": "Generate a snapshot of what the camera sees at the specified time and return a link to that image.",
@@ -1859,6 +3242,463 @@
         "summary": "Update the cellular firewall rules of an MX network",
         "tags": [
           "MX cellular firewall"
+        ]
+      }
+    },
+    "/networks/{networkId}/cellularGateway/settings/connectivityMonitoringDestinations": {
+      "get": {
+        "description": "Return the connectivity testing destinations for an MG network",
+        "operationId": "getNetworkCellularGatewaySettingsConnectivityMonitoringDestinations",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6",
+                    "description": null,
+                    "default": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the connectivity testing destinations for an MG network",
+        "tags": [
+          "MG connectivity monitoring destinations"
+        ]
+      },
+      "put": {
+        "description": "Update the connectivity testing destinations for an MG network",
+        "operationId": "updateNetworkCellularGatewaySettingsConnectivityMonitoringDestinations",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCellularGatewaySettingsConnectivityMonitoringDestinations",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "destinations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address to test connectivity with"
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of the testing destination. Optional, defaults to null",
+                        "default": null
+                      },
+                      "default": {
+                        "type": "boolean",
+                        "description": "Boolean indicating whether this is the default testing destination (true) or not (false). Defaults to false. Only one default is allowed",
+                        "default": false
+                      }
+                    },
+                    "required": [
+                      "ip"
+                    ]
+                  },
+                  "description": "The list of connectivity monitoring destinations"
+                }
+              },
+              "example": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "destinations": [
+                  {
+                    "ip": "8.8.8.8",
+                    "description": "Google",
+                    "default": false
+                  },
+                  {
+                    "ip": "1.23.45.67",
+                    "description": "test description",
+                    "default": true
+                  },
+                  {
+                    "ip": "9.8.7.6",
+                    "description": null,
+                    "default": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the connectivity testing destinations for an MG network",
+        "tags": [
+          "MG connectivity monitoring destinations"
+        ]
+      }
+    },
+    "/networks/{networkId}/cellularGateway/settings/dhcp": {
+      "get": {
+        "description": "List common DHCP settings of MGs",
+        "operationId": "getNetworkCellularGatewaySettingsDhcp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpLeaseTime": "1 hour",
+                "dnsNameservers": "custom",
+                "dnsCustomNameservers": [
+                  "172.16.2.111",
+                  "172.16.2.30"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "List common DHCP settings of MGs",
+        "tags": [
+          "MG DHCP settings"
+        ]
+      },
+      "put": {
+        "description": "Update common DHCP settings of MGs",
+        "operationId": "updateNetworkCellularGatewaySettingsDhcp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCellularGatewaySettingsDhcp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dhcpLeaseTime": {
+                  "type": "string",
+                  "description": "DHCP Lease time for all MG of the network. It can be '30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week'."
+                },
+                "dnsNameservers": {
+                  "type": "string",
+                  "description": "DNS name servers mode for all MG of the network. It can take 4 different values: 'upstream_dns', 'google_dns', 'opendns', 'custom'."
+                },
+                "dnsCustomNameservers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "list of fixed IP representing the the DNS Name servers when the mode is 'custom'"
+                }
+              },
+              "example": {
+                "dhcpLeaseTime": "1 hour",
+                "dnsNameservers": "custom",
+                "dnsCustomNameservers": [
+                  "172.16.2.111",
+                  "172.16.2.30"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpLeaseTime": "1 hour",
+                "dnsNameservers": "custom",
+                "dnsCustomNameservers": [
+                  "172.16.2.111",
+                  "172.16.2.30"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update common DHCP settings of MGs",
+        "tags": [
+          "MG DHCP settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/cellularGateway/settings/subnetPool": {
+      "get": {
+        "description": "Return the subnet pool and mask configured for MGs in the network.",
+        "operationId": "getNetworkCellularGatewaySettingsSubnetPool",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24",
+                "subnets": [
+                  {
+                    "serial": "AAAA-AAAA-AAAA",
+                    "name": "my first MG",
+                    "applianceIp": "192.168.0.1",
+                    "subnet": "192.168.0.0/24"
+                  },
+                  {
+                    "serial": "BBBB-BBBB-BBBB",
+                    "name": "my second MG",
+                    "applianceIp": "192.168.0.33",
+                    "subnet": "192.168.0.32/24"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the subnet pool and mask configured for MGs in the network.",
+        "tags": [
+          "MG subnet pool settings"
+        ]
+      },
+      "put": {
+        "description": "Update the subnet pool and mask configuration for MGs in the network.",
+        "operationId": "updateNetworkCellularGatewaySettingsSubnetPool",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCellularGatewaySettingsSubnetPool",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mask": {
+                  "type": "integer",
+                  "description": "Mask used for the subnet of all MGs in  this network."
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR of the pool of subnets. Each MG in this network will automatically pick a subnet from this pool."
+                }
+              },
+              "example": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24",
+                "subnets": [
+                  {
+                    "serial": "AAAA-AAAA-AAAA",
+                    "name": "my first MG",
+                    "applianceIp": "192.168.0.1",
+                    "subnet": "192.168.0.0/24"
+                  },
+                  {
+                    "serial": "BBBB-BBBB-BBBB",
+                    "name": "my second MG",
+                    "applianceIp": "192.168.0.33",
+                    "subnet": "192.168.0.32/24"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the subnet pool and mask configuration for MGs in the network.",
+        "tags": [
+          "MG subnet pool settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/cellularGateway/settings/uplink": {
+      "get": {
+        "description": "Returns the uplink settings for your MG network.",
+        "operationId": "getNetworkCellularGatewaySettingsUplink",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "bandwidthLimits": {
+                  "limitUp": 51200,
+                  "limitDown": 51200
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the uplink settings for your MG network.",
+        "tags": [
+          "MG uplink settings"
+        ]
+      },
+      "put": {
+        "description": "Updates the uplink settings for your MG network.",
+        "operationId": "updateNetworkCellularGatewaySettingsUplink",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCellularGatewaySettingsUplink",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bandwidthLimits": {
+                  "type": "object",
+                  "properties": {
+                    "limitUp": {
+                      "type": "integer",
+                      "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                    },
+                    "limitDown": {
+                      "type": "integer",
+                      "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                    }
+                  },
+                  "description": "The bandwidth settings for the 'cellular' uplink"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "bandwidthLimits": {
+                  "limitUp": 51200,
+                  "limitDown": 51200
+                }
+              }
+            }
+          }
+        },
+        "summary": "Updates the uplink settings for your MG network.",
+        "tags": [
+          "MG uplink settings"
         ]
       }
     },
@@ -3666,12 +5506,8 @@
               },
               "example": {
                 "serial": "Q234-ABCD-5678"
-              },
-              "required": [
-                "serial"
-              ]
-            },
-            "required": true
+              }
+            }
           }
         ],
         "responses": {
@@ -5025,7 +6861,7 @@
             "type": "string",
             "name": "productType",
             "in": "query",
-            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, and camera"
+            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, camera, and cellularGateway"
           },
           {
             "type": "array",
@@ -13124,6 +14960,7 @@
             },
             "examples": {
               "application/json": {
+                "deviceId": "1234",
                 "id": "1284392014819",
                 "isEncrypted": true,
                 "isManaged": true,
@@ -13174,6 +15011,7 @@
                   "appId": "1234",
                   "bundleSize": null,
                   "createdAt": "2018-02-11T00:00:00Z",
+                  "deviceId": "1234",
                   "dynamicSize": null,
                   "id": "1284392014819",
                   "identifier": "com.test.app",
@@ -13350,6 +15188,7 @@
                   "notValidAfter": "May 12, 2018",
                   "notValidBefore": "Feb 11, 2018",
                   "certPem": "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----\n",
+                  "deviceId": "1234",
                   "issuer": "",
                   "subject": "",
                   "id": "15"
@@ -13391,6 +15230,7 @@
             },
             "examples": {
               "application/json": {
+                "deviceId": "1234",
                 "id": "1284392014819",
                 "isEncrypted": true,
                 "isManaged": true,
@@ -13582,6 +15422,7 @@
                   "appId": "1234",
                   "bundleSize": null,
                   "createdAt": "2018-02-11T00:00:00Z",
+                  "deviceId": "1234",
                   "dynamicSize": null,
                   "id": "1284392014819",
                   "identifier": "com.test.app",
@@ -15400,6 +17241,412 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/linkAggregations": {
+      "get": {
+        "description": "List link aggregation groups",
+        "operationId": "getNetworkSwitchLinkAggregations",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "NDU2N18yXzM=",
+                  "switchPorts": [
+                    {
+                      "serial": "Q234-ABCD-0001",
+                      "portId": "1"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0002",
+                      "portId": "2"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0003",
+                      "portId": "3"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0004",
+                      "portId": "4"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0005",
+                      "portId": "5"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0006",
+                      "portId": "6"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0007",
+                      "portId": "7"
+                    },
+                    {
+                      "serial": "Q234-ABCD-0008",
+                      "portId": "8"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List link aggregation groups",
+        "tags": [
+          "Link aggregations"
+        ]
+      },
+      "post": {
+        "description": "Create a link aggregation group",
+        "operationId": "createNetworkSwitchLinkAggregation",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchLinkAggregation",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "switchPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the switch."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Port identifier of switch port. For modules, the identifier is \"SlotNumber_ModuleType_PortNumber\" (Ex: “1_8X10G_1”), otherwise it is just the port number (Ex: \"8\")."
+                      }
+                    },
+                    "required": [
+                      "serial",
+                      "portId"
+                    ]
+                  },
+                  "description": "Array of switch or stack ports for creating aggregation group. Minimum 2 and maximum 8 ports are supported."
+                },
+                "switchProfilePorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "profile": {
+                        "type": "string",
+                        "description": "Profile identifier."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Port identifier of switch port. For modules, the identifier is \"SlotNumber_ModuleType_PortNumber\" (Ex: “1_8X10G_1”), otherwise it is just the port number (Ex: \"8\")."
+                      }
+                    },
+                    "required": [
+                      "profile",
+                      "portId"
+                    ]
+                  },
+                  "description": "Array of switch profile ports for creating aggregation group. Minimum 2 and maximum 8 ports are supported."
+                }
+              },
+              "example": {
+                "switchPorts": [
+                  {
+                    "serial": "Q234-ABCD-0001",
+                    "portId": "1"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0002",
+                    "portId": "2"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0003",
+                    "portId": "3"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0004",
+                    "portId": "4"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0005",
+                    "portId": "5"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0006",
+                    "portId": "6"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0007",
+                    "portId": "7"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0008",
+                    "portId": "8"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "NDU2N18yXzM=",
+                "switchPorts": [
+                  {
+                    "serial": "Q234-ABCD-0001",
+                    "portId": "1"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0002",
+                    "portId": "2"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0003",
+                    "portId": "3"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0004",
+                    "portId": "4"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0005",
+                    "portId": "5"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0006",
+                    "portId": "6"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0007",
+                    "portId": "7"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0008",
+                    "portId": "8"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create a link aggregation group",
+        "tags": [
+          "Link aggregations"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/linkAggregations/{linkAggregationId}": {
+      "put": {
+        "description": "Update a link aggregation group",
+        "operationId": "updateNetworkSwitchLinkAggregation",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "linkAggregationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchLinkAggregation",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "switchPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the switch."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Port identifier of switch port. For modules, the identifier is \"SlotNumber_ModuleType_PortNumber\" (Ex: “1_8X10G_1”), otherwise it is just the port number (Ex: \"8\")."
+                      }
+                    },
+                    "required": [
+                      "serial",
+                      "portId"
+                    ]
+                  },
+                  "description": "Array of switch or stack ports for updating aggregation group. Minimum 2 and maximum 8 ports are supported."
+                },
+                "switchProfilePorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "profile": {
+                        "type": "string",
+                        "description": "Profile identifier."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Port identifier of switch port. For modules, the identifier is \"SlotNumber_ModuleType_PortNumber\" (Ex: “1_8X10G_1”), otherwise it is just the port number (Ex: \"8\")."
+                      }
+                    },
+                    "required": [
+                      "profile",
+                      "portId"
+                    ]
+                  },
+                  "description": "Array of switch profile ports for updating aggregation group. Minimum 2 and maximum 8 ports are supported."
+                }
+              },
+              "example": {
+                "id": "NDU2N18yXzM=",
+                "switchPorts": [
+                  {
+                    "serial": "Q234-ABCD-0001",
+                    "portId": "1"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0002",
+                    "portId": "2"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0003",
+                    "portId": "3"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0004",
+                    "portId": "4"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0005",
+                    "portId": "5"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0006",
+                    "portId": "6"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0007",
+                    "portId": "7"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0008",
+                    "portId": "8"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "NDU2N18yXzM=",
+                "switchPorts": [
+                  {
+                    "serial": "Q234-ABCD-0001",
+                    "portId": "1"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0002",
+                    "portId": "2"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0003",
+                    "portId": "3"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0004",
+                    "portId": "4"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0005",
+                    "portId": "5"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0006",
+                    "portId": "6"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0007",
+                    "portId": "7"
+                  },
+                  {
+                    "serial": "Q234-ABCD-0008",
+                    "portId": "8"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a link aggregation group",
+        "tags": [
+          "Link aggregations"
+        ]
+      },
+      "delete": {
+        "description": "Split a link aggregation group into separate ports",
+        "operationId": "deleteNetworkSwitchLinkAggregation",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "linkAggregationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Split a link aggregation group into separate ports",
+        "tags": [
+          "Link aggregations"
+        ]
+      }
+    },
     "/networks/{networkId}/switch/portSchedules": {
       "get": {
         "description": "List switch port schedules",
@@ -16968,7 +19215,7 @@
     },
     "/networks/{networkId}/switch/settings/stormControl": {
       "get": {
-        "description": "Return the global enhanced storm control configuration",
+        "description": "Return the storm control configuration for a switch network",
         "operationId": "getNetworkSwitchSettingsStormControl",
         "parameters": [
           {
@@ -16994,13 +19241,13 @@
             }
           }
         },
-        "summary": "Return the global enhanced storm control configuration",
+        "summary": "Return the storm control configuration for a switch network",
         "tags": [
           "Switch settings"
         ]
       },
       "put": {
-        "description": "Update the global enhanced storm control configuration",
+        "description": "Update the storm control configuration for a switch network",
         "operationId": "updateNetworkSwitchSettingsStormControl",
         "parameters": [
           {
@@ -17052,7 +19299,7 @@
             }
           }
         },
-        "summary": "Update the global enhanced storm control configuration",
+        "summary": "Update the storm control configuration for a switch network",
         "tags": [
           "Switch settings"
         ]
@@ -19894,6 +22141,10 @@
                 "locationAnalyticsEnabled": {
                   "type": "boolean",
                   "description": "Toggle for enabling or disabling location analytics for your network"
+                },
+                "ledLightsOn": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling LED lights on all APs in the network (making them run dark)"
                 }
               },
               "example": {
@@ -22299,6 +24550,12 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "configurationUpdatedAfter",
+            "in": "query",
+            "description": "Filter results by whether or not the device's configuration has been updated after the given timestamp"
           }
         ],
         "responses": {
@@ -23024,7 +25281,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "The type of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, or a space-separated list of those for a combined network."
+                  "description": "The type of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, or a space-separated list of those for a combined network."
                 },
                 "tags": {
                   "type": "string",
@@ -24576,6 +26833,9 @@
       "name": "Bluetooth clients"
     },
     {
+      "name": "Camera quality retention profiles"
+    },
+    {
       "name": "Cameras"
     },
     {
@@ -24621,6 +26881,27 @@
       "name": "Licenses"
     },
     {
+      "name": "Link aggregations"
+    },
+    {
+      "name": "MG DHCP settings"
+    },
+    {
+      "name": "MG LAN settings"
+    },
+    {
+      "name": "MG connectivity monitoring destinations"
+    },
+    {
+      "name": "MG port forwarding rules"
+    },
+    {
+      "name": "MG subnet pool settings"
+    },
+    {
+      "name": "MG uplink settings"
+    },
+    {
       "name": "MR L3 firewall"
     },
     {
@@ -24649,6 +26930,9 @@
     },
     {
       "name": "MX cellular firewall"
+    },
+    {
+      "name": "MX inbound firewall"
     },
     {
       "name": "MX port forwarding rules"
@@ -24755,9 +27039,39 @@
   ],
   "x-batchable-actions": [
     {
-      "group": "Connectivity monitoring destination",
-      "summary": "Update the connectivity testing destinations for an MX network",
-      "resource": "/networks/{networkId}/connectivityMonitoringDestinations",
+      "group": "Cellular gateway connectivity monitoring destination",
+      "summary": "Update the connectivity testing destinations for an MG network",
+      "resource": "/networks/{networkId}/cellularGateway/settings/connectivityMonitoringDestinations",
+      "operation": "update"
+    },
+    {
+      "group": "Cellular gateway device lan",
+      "summary": "Update the LAN Settings for a single MG.",
+      "resource": "/devices/{serial}/cellularGateway/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Cellular gateway dhcp setting",
+      "summary": "Update common DHCP settings of MGs",
+      "resource": "/networks/{networkId}/cellularGateway/settings/dhcp",
+      "operation": "update"
+    },
+    {
+      "group": "Cellular gateway port forwarding rules",
+      "summary": "Updates the port forwarding rules for a single MG.",
+      "resource": "/devices/{serial}/cellularGateway/settings/portForwardingRules",
+      "operation": "update"
+    },
+    {
+      "group": "Cellular gateway subnet pool",
+      "summary": "Update the subnet pool and mask configuration for MGs in the network.",
+      "resource": "/networks/{networkId}/cellularGateway/settings/subnetPool",
+      "operation": "update"
+    },
+    {
+      "group": "Cellular gateway uplink setting",
+      "summary": "Updates the uplink settings for your MG network.",
+      "resource": "/networks/{networkId}/cellularGateway/settings/uplink",
       "operation": "update"
     },
     {
@@ -24851,9 +27165,33 @@
       "operation": "update"
     },
     {
+      "group": "Link aggregation",
+      "summary": "Create a link aggregation group",
+      "resource": "/networks/{networkId}/switch/linkAggregations",
+      "operation": "create"
+    },
+    {
+      "group": "Link aggregation",
+      "summary": "Split a link aggregation group into separate ports",
+      "resource": "/networks/{networkId}/switch/linkAggregations/{linkAggregationId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Link aggregation",
+      "summary": "Update a link aggregation group",
+      "resource": "/networks/{networkId}/switch/linkAggregations/{linkAggregationId}",
+      "operation": "update"
+    },
+    {
       "group": "MTU configuration",
       "summary": "Update the MTU configuration",
       "resource": "/networks/{networkId}/switch/settings/mtu",
+      "operation": "update"
+    },
+    {
+      "group": "MX connectivity monitoring destination",
+      "summary": "Update the connectivity testing destinations for an MX network",
+      "resource": "/networks/{networkId}/connectivityMonitoringDestinations",
       "operation": "update"
     },
     {
@@ -24866,6 +27204,12 @@
       "group": "MX port",
       "summary": "Update the per-port VLAN settings for a single MX port.",
       "resource": "/networks/{networkId}/appliancePorts/{appliancePortId}",
+      "operation": "update"
+    },
+    {
+      "group": "MX uplink setting",
+      "summary": "Updates the uplink settings for your MX network.",
+      "resource": "/networks/{networkId}/uplinkSettings",
       "operation": "update"
     },
     {
@@ -24959,8 +27303,14 @@
       "operation": "update"
     },
     {
+      "group": "Ssid",
+      "summary": "Update the attributes of an SSID",
+      "resource": "/networks/{networkId}/ssids/{number}",
+      "operation": "update"
+    },
+    {
       "group": "Storm control",
-      "summary": "Update the global enhanced storm control configuration",
+      "summary": "Update the storm control configuration for a switch network",
       "resource": "/networks/{networkId}/switch/settings/stormControl",
       "operation": "update"
     },
