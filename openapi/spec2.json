@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.7.0",
+    "version": "0.8.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 January, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 February, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -964,6 +964,99 @@
           }
         },
         "summary": "Return the status for all the ports of a switch",
+        "tags": [
+          "Switch ports"
+        ]
+      }
+    },
+    "/devices/{serial}/switchPortStatuses/packets": {
+      "get": {
+        "description": "Return the packet counters for all the ports of a switch",
+        "operationId": "getDeviceSwitchPortStatusesPackets",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 1 day from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 1 day. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "portId": "1",
+                  "packets": [
+                    {
+                      "desc": "Total",
+                      "total": 112081,
+                      "sent": 104135,
+                      "recv": 7946,
+                      "ratePerSec": {
+                        "total": 1,
+                        "sent": 1,
+                        "recv": 0
+                      }
+                    },
+                    {
+                      "desc": "Broadcast",
+                      "total": 30884,
+                      "sent": 30370,
+                      "recv": 514,
+                      "ratePerSec": {
+                        "total": 0,
+                        "sent": 0,
+                        "recv": 0
+                      }
+                    },
+                    {
+                      "desc": "Multicast",
+                      "total": 67620,
+                      "sent": 66849,
+                      "recv": 771,
+                      "ratePerSec": {
+                        "total": 0,
+                        "sent": 0,
+                        "recv": 0
+                      }
+                    },
+                    {
+                      "desc": "CRC align errors",
+                      "total": 0,
+                      "sent": 0,
+                      "recv": 0,
+                      "ratePerSec": {
+                        "total": 0,
+                        "sent": 0,
+                        "recv": 0
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the packet counters for all the ports of a switch",
         "tags": [
           "Switch ports"
         ]
@@ -4054,20 +4147,26 @@
               "type": "object",
               "properties": {
                 "mac": {
-                  "description": "The MAC address of the client. Required.",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The MAC address of the client. Required."
                 },
                 "name": {
-                  "description": "The display name for the client. Optional. Limited to 255 bytes.",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The display name for the client. Optional. Limited to 255 bytes."
                 },
                 "devicePolicy": {
-                  "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required.",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "Whitelisted",
+                    "Blocked",
+                    "Normal",
+                    "Group policy"
+                  ],
+                  "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
                 },
                 "groupPolicyId": {
-                  "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored.",
-                  "type": "string"
+                  "type": "integer",
+                  "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
                 }
               },
               "example": {
@@ -4075,8 +4174,13 @@
                 "name": "Miles's phone",
                 "devicePolicy": "Group policy",
                 "groupPolicyId": "101"
-              }
-            }
+              },
+              "required": [
+                "mac",
+                "devicePolicy"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -11444,52 +11548,70 @@
               "type": "object",
               "properties": {
                 "rules": {
-                  "description": "An array of 1:Many nat rules",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "publicIp": {
-                        "description": "The IP address that will be used to access the internal resource from the WAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The IP address that will be used to access the internal resource from the WAN"
                       },
                       "uplink": {
-                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2')",
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "internet1",
+                          "internet2"
+                        ],
+                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2')"
                       },
                       "portRules": {
-                        "description": "An array of associated forwarding rules",
                         "type": "array",
                         "items": {
-                          "type": "object"
-                        }
-                      },
-                      "name": {
-                        "description": "A description of the rule",
-                        "type": "string"
-                      },
-                      "protocol": {
-                        "description": "'tcp' or 'udp'",
-                        "type": "string"
-                      },
-                      "publicPort": {
-                        "description": "Destination port of the traffic that is arriving on the WAN",
-                        "type": "string"
-                      },
-                      "localIp": {
-                        "description": "Local IP address to which traffic will be forwarded",
-                        "type": "string"
-                      },
-                      "localPort": {
-                        "description": "Destination port of the forwarded traffic that will be sent from the MX to the specified host on the LAN. If you simply wish to forward the traffic without translating the port, this should be the same as the Public port",
-                        "type": "string"
-                      },
-                      "allowedIps": {
-                        "description": "Remote IP addresses or ranges that are permitted to access the internal resource via this port forwarding rule, or 'any'",
-                        "type": "string"
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "A description of the rule"
+                            },
+                            "protocol": {
+                              "type": "string",
+                              "enum": [
+                                "tcp",
+                                "udp"
+                              ],
+                              "description": "'tcp' or 'udp'"
+                            },
+                            "publicPort": {
+                              "type": "string",
+                              "description": "Destination port of the traffic that is arriving on the WAN"
+                            },
+                            "localIp": {
+                              "type": "string",
+                              "description": "Local IP address to which traffic will be forwarded"
+                            },
+                            "localPort": {
+                              "type": "string",
+                              "description": "Destination port of the forwarded traffic that will be sent from the MX to the specified host on the LAN. If you simply wish to forward the traffic without translating the port, this should be the same as the Public port"
+                            },
+                            "allowedIps": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Remote IP addresses or ranges that are permitted to access the internal resource via this port forwarding rule, or 'any'"
+                            }
+                          }
+                        },
+                        "description": "An array of associated forwarding rules"
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "publicIp",
+                      "uplink",
+                      "portRules"
+                    ]
+                  },
+                  "description": "An array of 1:Many nat rules"
                 }
               },
               "example": {
@@ -11522,8 +11644,12 @@
                     ]
                   }
                 ]
-              }
-            }
+              },
+              "required": [
+                "rules"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -13343,7 +13469,8 @@
               "example": {
                 "id": "1284392014819",
                 "deviceFields": {
-                  "name": "My name"
+                  "name": "Miles's phone",
+                  "notes": "Here's some info about my device"
                 }
               },
               "required": [
@@ -13367,7 +13494,8 @@
                     "id": "1284392014819",
                     "serial": "F5XKHEBX",
                     "wifiMac": "00:11:22:33:44:55",
-                    "name": "My name"
+                    "name": "Miles's phone",
+                    "notes": "Here's some info about my device"
                   }
                 ]
               }
@@ -13812,841 +13940,6 @@
         ]
       }
     },
-    "/networks/{networkId}/sm/profile/clarity": {
-      "post": {
-        "description": "Create a new profile containing a Cisco Clarity payload",
-        "operationId": "createNetworkSmProfileClarity",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkSmProfileClarity",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name to be given to the new profile"
-                },
-                "scope": {
-                  "type": "string",
-                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be assigned"
-                },
-                "PluginBundleID": {
-                  "type": "string",
-                  "description": "The bundle ID of the application, defaults to com.cisco.ciscosecurity.app"
-                },
-                "FilterBrowsers": {
-                  "type": "boolean",
-                  "description": "Whether or not to enable browser traffic filtering (one of true, false). Default true."
-                },
-                "FilterSockets": {
-                  "type": "boolean",
-                  "description": "Whether or not to enable socket traffic filtering (one of true, false). Default true."
-                },
-                "VendorConfig": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in VendorConfig"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in VendorConfig. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in VendorConfig"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "The specific VendorConfig to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                }
-              },
-              "example": {
-                "name": "Cisco Clarity Config",
-                "scope": "withAny, tag1, tag2",
-                "PluginBundleID": "com.cisco.security.app",
-                "FilterBrowsers": true,
-                "FilterSockets": true,
-                "VendorConfig": [
-                  {
-                    "key": "cloud_asn1_server_host",
-                    "type": "manual_string",
-                    "value": "immunet.com"
-                  },
-                  {
-                    "key": "cloud_asn1_server_port",
-                    "type": "manual_int",
-                    "value": 443
-                  }
-                ]
-              },
-              "required": [
-                "name",
-                "scope",
-                "VendorConfig"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Create a new profile containing a Cisco Clarity payload",
-        "tags": [
-          "SM"
-        ]
-      }
-    },
-    "/networks/{networkId}/sm/profile/clarity/{profileId}": {
-      "put": {
-        "description": "Update an existing profile containing a Cisco Clarity payload",
-        "operationId": "updateNetworkSmProfileClarity",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkSmProfileClarity",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "optional: A new name for the profile"
-                },
-                "scope": {
-                  "type": "string",
-                  "description": "optional: A new scope for the profile (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be assigned"
-                },
-                "PluginBundleID": {
-                  "type": "string",
-                  "description": "optional: The new bundle ID of the application"
-                },
-                "FilterBrowsers": {
-                  "type": "boolean",
-                  "description": "optional: Whether or not to enable browser traffic filtering (one of true, false)."
-                },
-                "FilterSockets": {
-                  "type": "boolean",
-                  "description": "optional: Whether or not to enable socket traffic filtering (one of true, false)."
-                },
-                "VendorConfig": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in VendorConfig"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in VendorConfig. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in VendorConfig"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "optional: The specific VendorConfig to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                }
-              },
-              "example": {
-                "name": "Cisco Clarity Config",
-                "scope": "withAny, tag1, tag2",
-                "VendorConfig": [
-                  {
-                    "key": "cloud_asn1_server_host",
-                    "type": "manual_string",
-                    "value": "immunet.com"
-                  },
-                  {
-                    "key": "cloud_asn1_server_port",
-                    "type": "manual_int",
-                    "value": 443
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Update an existing profile containing a Cisco Clarity payload",
-        "tags": [
-          "SM"
-        ]
-      },
-      "post": {
-        "description": "Add a Cisco Clarity payload to an existing profile",
-        "operationId": "addNetworkSmProfileClarity",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "addNetworkSmProfileClarity",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "PluginBundleID": {
-                  "type": "string",
-                  "description": "The bundle ID of the application, defaults to com.cisco.ciscosecurity.app"
-                },
-                "FilterBrowsers": {
-                  "type": "boolean",
-                  "description": "Whether or not to enable browser traffic filtering (one of true, false). Defaults to true"
-                },
-                "FilterSockets": {
-                  "type": "boolean",
-                  "description": "Whether or not to enable socket traffic filtering (one of true, false). Defaults to true"
-                },
-                "VendorConfig": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in VendorConfig"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in VendorConfig. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in VendorConfig"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "The specific VendorConfig to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                }
-              },
-              "example": {
-                "VendorConfig": [
-                  {
-                    "key": "cloud_asn1_server_host",
-                    "type": "manual_string",
-                    "value": "immunet.com"
-                  },
-                  {
-                    "key": "cloud_asn1_server_port",
-                    "type": "manual_int",
-                    "value": 443
-                  }
-                ]
-              },
-              "required": [
-                "VendorConfig"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Add a Cisco Clarity payload to an existing profile",
-        "tags": [
-          "SM"
-        ]
-      },
-      "get": {
-        "description": "Get details for a Cisco Clarity payload",
-        "operationId": "getNetworkSmProfileClarity",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "profile_id": "12345",
-                "name": "Cisco Clarity Config",
-                "PluginBundleID": "com.cisco.security.app",
-                "FilterBrowsers": true,
-                "FilterSockets": true,
-                "VendorConfig": [
-                  {
-                    "key": "cloud_asn1_server_host",
-                    "type": "manual_string",
-                    "value": "immunet.com"
-                  },
-                  {
-                    "key": "cloud_asn1_server_port",
-                    "type": "manual_int",
-                    "value": 443
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Get details for a Cisco Clarity payload",
-        "tags": [
-          "SM"
-        ]
-      },
-      "delete": {
-        "description": "Delete a Cisco Clarity payload. Deletes the entire profile if it's empty after removing the payload.",
-        "operationId": "deleteNetworkSmProfileClarity",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "payload_deleted": true,
-                "profile_deleted": true
-              }
-            }
-          }
-        },
-        "summary": "Delete a Cisco Clarity payload. Deletes the entire profile if it's empty after removing the payload.",
-        "tags": [
-          "SM"
-        ]
-      }
-    },
-    "/networks/{networkId}/sm/profile/umbrella": {
-      "post": {
-        "description": "Create a new profile containing a Cisco Umbrella payload",
-        "operationId": "createNetworkSmProfileUmbrella",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkSmProfileUmbrella",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name to be given to the new profile"
-                },
-                "scope": {
-                  "type": "string",
-                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be assigned"
-                },
-                "AppBundleIdentifier": {
-                  "type": "string",
-                  "description": "The bundle ID of the application, defaults to com.cisco.ciscosecurity.app"
-                },
-                "ProviderBundleIdentifier": {
-                  "type": "string",
-                  "description": "The bundle ID of the provider, defaults to com.cisco.ciscosecurity.app.CiscoUmbrella"
-                },
-                "ProviderConfiguration": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in ProviderConfiguration"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in ProviderConfiguration. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in ProviderConfiguration"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "The specific ProviderConfiguration to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                },
-                "usesCert": {
-                  "type": "boolean",
-                  "description": "Whether the certificate should be attached to this profile (one of true, false). False by default"
-                }
-              },
-              "example": {
-                "name": "Cisco Umbrella Config",
-                "scope": "withAny, tag1, tag2",
-                "AppBundleIdentifier": "com.cisco.security",
-                "ProviderBundleIdentifier": "com.cisco.umbrella",
-                "ProviderConfiguration": [
-                  {
-                    "key": "internalDomains",
-                    "type": "manual_list",
-                    "value": [
-                      "meraki.com",
-                      "cisco.com"
-                    ]
-                  },
-                  {
-                    "key": "user_id",
-                    "type": "manual_string",
-                    "value": "miles"
-                  }
-                ],
-                "usesCert": true
-              },
-              "required": [
-                "name",
-                "scope",
-                "ProviderConfiguration"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Create a new profile containing a Cisco Umbrella payload",
-        "tags": [
-          "SM"
-        ]
-      }
-    },
-    "/networks/{networkId}/sm/profile/umbrella/{profileId}": {
-      "put": {
-        "description": "Update an existing profile containing a Cisco Umbrella payload",
-        "operationId": "updateNetworkSmProfileUmbrella",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkSmProfileUmbrella",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "optional: A new name for the profile"
-                },
-                "scope": {
-                  "type": "string",
-                  "description": "optional: A new scope for the profile (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be assigned"
-                },
-                "AppBundleIdentifier": {
-                  "type": "string",
-                  "description": "optional: The bundle ID of the application"
-                },
-                "ProviderBundleIdentifier": {
-                  "type": "string",
-                  "description": "optional: The bundle ID of the provider"
-                },
-                "ProviderConfiguration": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in ProviderConfiguration"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in ProviderConfiguration. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in ProviderConfiguration"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "optional: The specific ProviderConfiguration to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                },
-                "usesCert": {
-                  "type": "boolean",
-                  "description": "optional: Whether the certificate should be attached to this profile (one of true, false)"
-                }
-              },
-              "example": {
-                "name": "Cisco Umbrella Config",
-                "scope": "withAny, tag1, tag2",
-                "ProviderConfiguration": [
-                  {
-                    "key": "internalDomains",
-                    "type": "manual_list",
-                    "value": [
-                      "meraki.com",
-                      "cisco.com"
-                    ]
-                  },
-                  {
-                    "key": "user_id",
-                    "type": "manual_string",
-                    "value": "miles"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Update an existing profile containing a Cisco Umbrella payload",
-        "tags": [
-          "SM"
-        ]
-      },
-      "post": {
-        "description": "Add a Cisco Umbrella payload to an existing profile",
-        "operationId": "addNetworkSmProfileUmbrella",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "addNetworkSmProfileUmbrella",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "AppBundleIdentifier": {
-                  "type": "string",
-                  "description": "The bundle ID of the application, defaults to com.cisco.ciscosecurity.app"
-                },
-                "ProviderBundleIdentifier": {
-                  "type": "string",
-                  "description": "The bundle ID of the provider, defaults to com.cisco.ciscosecurity.app.CiscoUmbrella"
-                },
-                "ProviderConfiguration": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "key": {
-                        "type": "string",
-                        "description": "The key for an object in ProviderConfiguration"
-                      },
-                      "type": {
-                        "type": "string",
-                        "description": "The type for an object in ProviderConfiguration. Can be one of 'manual_string', 'manual_int', 'manual_boolean', 'manual_choice', 'manual_multiselect', 'manual_list', 'auto_username', 'auto_email', 'auto_mac_address', 'auto_serial_number', 'auto_notes' or 'auto_name'"
-                      },
-                      "value": {
-                        "type": "string",
-                        "description": "The value for an object in ProviderConfiguration"
-                      }
-                    },
-                    "required": [
-                      "key",
-                      "type"
-                    ]
-                  },
-                  "description": "The specific ProviderConfiguration to be passed to the filtering framework, in the form of an array of objects (as JSON)."
-                },
-                "usesCert": {
-                  "type": "boolean",
-                  "description": "Whether the certificate should be attached to this profile (one of true, false). False by default"
-                }
-              },
-              "example": {
-                "ProviderConfiguration": [
-                  {
-                    "key": "internalDomains",
-                    "type": "manual_list",
-                    "value": [
-                      "meraki.com",
-                      "cisco.com"
-                    ]
-                  },
-                  {
-                    "key": "user_id",
-                    "type": "manual_string",
-                    "value": "miles"
-                  }
-                ]
-              },
-              "required": [
-                "ProviderConfiguration"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "profile_id": "12345"
-              }
-            }
-          }
-        },
-        "summary": "Add a Cisco Umbrella payload to an existing profile",
-        "tags": [
-          "SM"
-        ]
-      },
-      "get": {
-        "description": "Get details for a Cisco Umbrella payload",
-        "operationId": "getNetworkSmProfileUmbrella",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "profile_id": "12345",
-                "name": "Cisco Umbrella Config",
-                "AppBundleIdentifier": "com.cisco.security",
-                "ProviderBundleIdentifier": "com.cisco.umbrella",
-                "ProviderConfiguration": [
-                  {
-                    "key": "internalDomains",
-                    "type": "manual_list",
-                    "value": [
-                      "meraki.com",
-                      "cisco.com"
-                    ]
-                  },
-                  {
-                    "key": "user_id",
-                    "type": "manual_string",
-                    "value": "miles"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Get details for a Cisco Umbrella payload",
-        "tags": [
-          "SM"
-        ]
-      },
-      "delete": {
-        "description": "Delete a Cisco Umbrella payload. Deletes the entire profile if it's empty after removing the payload",
-        "operationId": "deleteNetworkSmProfileUmbrella",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "profileId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "success": true,
-                "payload_deleted": true,
-                "profile_deleted": true
-              }
-            }
-          }
-        },
-        "summary": "Delete a Cisco Umbrella payload. Deletes the entire profile if it's empty after removing the payload",
-        "tags": [
-          "SM"
-        ]
-      }
-    },
     "/networks/{networkId}/sm/profiles": {
       "get": {
         "description": "List all the profiles in the network",
@@ -14959,18 +14252,20 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "deviceId": "1234",
-                "id": "1284392014819",
-                "isEncrypted": true,
-                "isManaged": true,
-                "profileData": {
+              "application/json": [
+                {
+                  "deviceId": "1234",
+                  "id": "1284392014819",
+                  "isEncrypted": true,
+                  "isManaged": true,
+                  "profileData": {
 
-                },
-                "profileIdentifier": "com.test.app",
-                "name": "My profile",
-                "version": "0.0.1"
-              }
+                  },
+                  "profileIdentifier": "com.test.app",
+                  "name": "My profile",
+                  "version": "0.0.1"
+                }
+              ]
             }
           }
         },
@@ -15086,27 +14381,29 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "id": "1234",
-                "email": "miles@meraki.com",
-                "fullName": "Miles Meraki",
-                "username": "",
-                "hasPassword": false,
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
-                "adGroups": [
+              "application/json": [
+                {
+                  "id": "1234",
+                  "email": "miles@meraki.com",
+                  "fullName": "Miles Meraki",
+                  "username": "",
+                  "hasPassword": false,
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "adGroups": [
 
-                ],
-                "asmGroups": [
+                  ],
+                  "asmGroups": [
 
-                ],
-                "isExternal": false,
-                "displayName": "Miles Meraki <miles@meraki.com>",
-                "hasIdentityCertificate": false,
-                "userThumbnail": "https://s3.amazonaws.com/image.extension"
-              }
+                  ],
+                  "isExternal": false,
+                  "displayName": "Miles Meraki <miles@meraki.com>",
+                  "hasIdentityCertificate": false,
+                  "userThumbnail": "https://s3.amazonaws.com/image.extension"
+                }
+              ]
             }
           }
         },
@@ -15229,18 +14526,20 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "deviceId": "1234",
-                "id": "1284392014819",
-                "isEncrypted": true,
-                "isManaged": true,
-                "profileData": {
+              "application/json": [
+                {
+                  "deviceId": "1234",
+                  "id": "1284392014819",
+                  "isEncrypted": true,
+                  "isManaged": true,
+                  "profileData": {
 
-                },
-                "profileIdentifier": "com.test.app",
-                "name": "My profile",
-                "version": "0.0.1"
-              }
+                  },
+                  "profileIdentifier": "com.test.app",
+                  "name": "My profile",
+                  "version": "0.0.1"
+                }
+              ]
             }
           }
         },
@@ -18820,6 +18119,205 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/settings/multicast": {
+      "get": {
+        "description": "Return Multicast settings for a network",
+        "operationId": "getNetworkSwitchSettingsMulticast",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultSettings": {
+                  "igmpSnoopingEnabled": true,
+                  "floodUnknownMulticastTrafficEnabled": true
+                },
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return Multicast settings for a network",
+        "tags": [
+          "Switch settings"
+        ]
+      },
+      "put": {
+        "description": "Update multicast settings for a network",
+        "operationId": "updateNetworkSwitchSettingsMulticast",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSettingsMulticast",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "defaultSettings": {
+                  "type": "object",
+                  "properties": {
+                    "igmpSnoopingEnabled": {
+                      "type": "boolean",
+                      "description": "IGMP snooping setting for entire network"
+                    },
+                    "floodUnknownMulticastTrafficEnabled": {
+                      "type": "boolean",
+                      "description": "Flood unknown multicast traffic setting for entire network"
+                    }
+                  },
+                  "description": "Default multicast setting for entire network. IGMP snooping and Flood unknown multicast traffic settings are enabled by default."
+                },
+                "overrides": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "switchProfiles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch profiles ids for template network"
+                      },
+                      "switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch serials for non-template network"
+                      },
+                      "stacks": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch stack ids for non-template network"
+                      },
+                      "igmpSnoopingEnabled": {
+                        "type": "boolean",
+                        "description": "IGMP snooping setting for switches, switch stacks or switch profiles"
+                      },
+                      "floodUnknownMulticastTrafficEnabled": {
+                        "type": "boolean",
+                        "description": "Flood unknown multicast traffic setting for switches, switch stacks or switch profiles"
+                      }
+                    },
+                    "required": [
+                      "igmpSnoopingEnabled",
+                      "floodUnknownMulticastTrafficEnabled"
+                    ]
+                  },
+                  "description": "Array of paired switches/stacks/profiles and corresponding multicast settings. An empty array will clear the multicast settings."
+                }
+              },
+              "example": {
+                "defaultSettings": {
+                  "igmpSnoopingEnabled": true,
+                  "floodUnknownMulticastTrafficEnabled": true
+                },
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultSettings": {
+                  "igmpSnoopingEnabled": true,
+                  "floodUnknownMulticastTrafficEnabled": true
+                },
+                "overrides": [
+                  {
+                    "switches": [
+                      "Q234-ABCD-0001",
+                      "Q234-ABCD-0002",
+                      "Q234-ABCD-0003"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  },
+                  {
+                    "stacks": [
+                      "789102",
+                      "123456",
+                      "129102"
+                    ],
+                    "igmpSnoopingEnabled": true,
+                    "floodUnknownMulticastTrafficEnabled": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update multicast settings for a network",
+        "tags": [
+          "Switch settings"
+        ]
+      }
+    },
     "/networks/{networkId}/switch/settings/qosRules": {
       "get": {
         "description": "List quality of service rules",
@@ -22259,22 +21757,22 @@
             "required": true
           },
           {
+            "type": "integer",
             "name": "perPage",
-            "description": "The number of entries per page returned",
             "in": "query",
-            "type": "string"
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
+            "type": "string",
             "name": "startingAfter",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
+            "type": "string",
             "name": "endingBefore",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
@@ -22284,11 +21782,19 @@
               "type": "object",
               "x-is-dynamic": true
             },
-            "examples": {
-              "application/json": {
-                "firstSeenAt": 1518365681.0,
-                "lastSeenAt": 1526087474.0
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "firstSeenAt": 1518365681.0,
+                  "lastSeenAt": 1526087474.0
+                }
+              ]
             }
           }
         },
@@ -22316,22 +21822,22 @@
             "required": true
           },
           {
+            "type": "integer",
             "name": "perPage",
-            "description": "The number of entries per page returned",
             "in": "query",
-            "type": "string"
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
+            "type": "string",
             "name": "startingAfter",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
+            "type": "string",
             "name": "endingBefore",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
@@ -22340,6 +21846,12 @@
             "schema": {
               "type": "object",
               "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
             },
             "examples": {
               "application/json": [
@@ -22391,22 +21903,22 @@
             "required": true
           },
           {
+            "type": "integer",
             "name": "perPage",
-            "description": "The number of entries per page returned",
             "in": "query",
-            "type": "string"
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
+            "type": "string",
             "name": "startingAfter",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
+            "type": "string",
             "name": "endingBefore",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
@@ -22416,14 +21928,22 @@
               "type": "object",
               "x-is-dynamic": true
             },
-            "examples": {
-              "application/json": {
-                "action": "UpdateProfile",
-                "name": "My profile",
-                "details": "{}",
-                "dashboardUser": "Miles Meraki",
-                "ts": 1526087474.0
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "action": "UpdateProfile",
+                  "name": "My profile",
+                  "details": "{}",
+                  "dashboardUser": "Miles Meraki",
+                  "ts": 1526087474.0
+                }
+              ]
             }
           }
         },
@@ -22451,22 +21971,22 @@
             "required": true
           },
           {
+            "type": "integer",
             "name": "perPage",
-            "description": "The number of entries per page returned",
             "in": "query",
-            "type": "string"
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
+            "type": "string",
             "name": "startingAfter",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
+            "type": "string",
             "name": "endingBefore",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, next or prev page in the HTTP Link header should define it.",
             "in": "query",
-            "type": "string"
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
@@ -22475,6 +21995,12 @@
             "schema": {
               "type": "object",
               "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
             },
             "examples": {
               "application/json": [
@@ -24592,6 +24118,226 @@
         "summary": "List the devices in an organization",
         "tags": [
           "Devices"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/insight/monitoredMediaServers": {
+      "get": {
+        "description": "List the monitored media servers for this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "getOrganizationInsightMonitoredMediaServers",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "Sample VoIP Provider",
+                  "address": "123.123.123.1"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the monitored media servers for this organization. Only valid for organizations with Meraki Insight.",
+        "tags": [
+          "Monitored media servers"
+        ]
+      },
+      "post": {
+        "description": "Add a media server to be monitored for this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "createOrganizationInsightMonitoredMediaServer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInsightMonitoredMediaServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the VoIP provider"
+                },
+                "address": {
+                  "type": "string",
+                  "description": "The IP address (IPv4 only) or hostname of the media server to monitor"
+                }
+              },
+              "example": {
+                "name": "Sample VoIP Provider",
+                "address": "123.123.123.1"
+              },
+              "required": [
+                "name",
+                "address"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "name": "Sample VoIP Provider",
+                "address": "123.123.123.1"
+              }
+            }
+          }
+        },
+        "summary": "Add a media server to be monitored for this organization. Only valid for organizations with Meraki Insight.",
+        "tags": [
+          "Monitored media servers"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/insight/monitoredMediaServers/{monitoredMediaServerId}": {
+      "get": {
+        "description": "Return a monitored media server for this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "getOrganizationInsightMonitoredMediaServer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "monitoredMediaServerId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "name": "Sample VoIP Provider",
+                "address": "123.123.123.1"
+              }
+            }
+          }
+        },
+        "summary": "Return a monitored media server for this organization. Only valid for organizations with Meraki Insight.",
+        "tags": [
+          "Monitored media servers"
+        ]
+      },
+      "put": {
+        "description": "Update a monitored media server for this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "updateOrganizationInsightMonitoredMediaServer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "monitoredMediaServerId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationInsightMonitoredMediaServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the VoIP provider"
+                },
+                "address": {
+                  "type": "string",
+                  "description": "The IP address (IPv4 only) or hostname of the media server to monitor"
+                }
+              },
+              "example": {
+                "name": "Sample VoIP Provider",
+                "address": "123.123.123.1"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "name": "Sample VoIP Provider",
+                "address": "123.123.123.1"
+              }
+            }
+          }
+        },
+        "summary": "Update a monitored media server for this organization. Only valid for organizations with Meraki Insight.",
+        "tags": [
+          "Monitored media servers"
+        ]
+      },
+      "delete": {
+        "description": "Delete a monitored media server from this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "deleteOrganizationInsightMonitoredMediaServer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "monitoredMediaServerId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a monitored media server from this organization. Only valid for organizations with Meraki Insight.",
+        "tags": [
+          "Monitored media servers"
         ]
       }
     },
@@ -26953,6 +26699,9 @@
       "name": "Meraki auth users"
     },
     {
+      "name": "Monitored media servers"
+    },
+    {
       "name": "Named tag scope"
     },
     {
@@ -27219,6 +26968,30 @@
       "operation": "update"
     },
     {
+      "group": "Monitored media server",
+      "summary": "Add a media server to be monitored for this organization. Only valid for organizations with Meraki Insight.",
+      "resource": "/organizations/{organizationId}/insight/monitoredMediaServers",
+      "operation": "create"
+    },
+    {
+      "group": "Monitored media server",
+      "summary": "Delete a monitored media server from this organization. Only valid for organizations with Meraki Insight.",
+      "resource": "/organizations/{organizationId}/insight/monitoredMediaServers/{monitoredMediaServerId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Monitored media server",
+      "summary": "Update a monitored media server for this organization. Only valid for organizations with Meraki Insight.",
+      "resource": "/organizations/{organizationId}/insight/monitoredMediaServers/{monitoredMediaServerId}",
+      "operation": "update"
+    },
+    {
+      "group": "Multicast",
+      "summary": "Update multicast settings for a network",
+      "resource": "/networks/{networkId}/switch/settings/multicast",
+      "operation": "update"
+    },
+    {
       "group": "Network",
       "summary": "Delete a network",
       "resource": "/networks/{networkId}",
@@ -27270,6 +27043,12 @@
       "group": "Qos rule",
       "summary": "Update a quality of service rule",
       "resource": "/networks/{networkId}/switch/settings/qosRules/{qosRuleId}",
+      "operation": "update"
+    },
+    {
+      "group": "Quality and retention setting",
+      "summary": "Update quality and retention settings for the given camera",
+      "resource": "/devices/{serial}/camera/qualityAndRetentionSettings",
       "operation": "update"
     },
     {
