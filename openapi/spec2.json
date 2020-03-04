@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.8.0",
+    "version": "0.9.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 February, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 March, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -857,27 +857,94 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "usage": {
-                  "sent": 138.0,
-                  "recv": 61.0
-                },
-                "id": "k74272e",
-                "description": "Miles's phone",
-                "mac": "00:11:22:33:44:55",
-                "ip": "1.2.3.4",
-                "user": "milesmeraki",
-                "vlan": 255,
-                "switchport": null,
-                "mdnsName": "Miles's phone",
-                "dhcpHostname": "MilesPhone"
-              }
+              "application/json": [
+                {
+                  "usage": {
+                    "sent": 138.0,
+                    "recv": 61.0
+                  },
+                  "id": "k74272e",
+                  "description": "Miles's phone",
+                  "mac": "22:33:44:55:66:77",
+                  "ip": "1.2.3.4",
+                  "user": "milesmeraki",
+                  "vlan": 255,
+                  "switchport": null,
+                  "mdnsName": "Miles's phone",
+                  "dhcpHostname": "MilesPhone"
+                }
+              ]
             }
           }
         },
         "summary": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null.",
         "tags": [
           "Clients"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/ports/cycle": {
+      "post": {
+        "description": "Cycle a set of switch ports",
+        "operationId": "cycleDeviceSwitchPorts",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "cycleDeviceSwitchPorts",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of switch ports. Example: [1, 2-5, 1_MA-MOD-8X10G_1, 1_MA-MOD-8X10G_2-1_MA-MOD-8X10G_8]"
+                }
+              },
+              "example": {
+                "ports": [
+                  "1",
+                  "2-5",
+                  "1_MA-MOD-8X10G_1",
+                  "1_MA-MOD-8X10G_2-1_MA-MOD-8X10G_8"
+                ]
+              },
+              "required": [
+                "ports"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "ports": [
+                  "1",
+                  "2-5",
+                  "1_MA-MOD-8X10G_1",
+                  "1_MA-MOD-8X10G_2-1_MA-MOD-8X10G_8"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Cycle a set of switch ports",
+        "tags": [
+          "Devices"
         ]
       }
     },
@@ -957,7 +1024,8 @@
                     "managementAddress": "10.0.0.100",
                     "systemCapabilities": "switch"
                   },
-                  "clientCount": 10
+                  "clientCount": 10,
+                  "powerUsageInWh": 55.9
                 }
               ]
             }
@@ -1217,7 +1285,11 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "The type of the switch port (\"access\" or \"trunk\")"
+                  "enum": [
+                    "trunk",
+                    "access"
+                  ],
+                  "description": "The type of the switch port ('trunk' or 'access')"
                 },
                 "vlan": {
                   "type": "integer",
@@ -1245,7 +1317,13 @@
                 },
                 "stpGuard": {
                   "type": "string",
-                  "description": "The state of the STP guard (\"disabled\", \"Root guard\", \"BPDU guard\", \"Loop guard\")"
+                  "enum": [
+                    "disabled",
+                    "root guard",
+                    "bpdu guard",
+                    "loop guard"
+                  ],
+                  "description": "The state of the STP guard ('disabled', 'root guard', 'bpdu guard' or 'loop guard')"
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
@@ -1360,6 +1438,98 @@
         "summary": "Update a switch port",
         "tags": [
           "Switch ports"
+        ]
+      }
+    },
+    "/devices/{serial}/wireless/bluetooth/settings": {
+      "get": {
+        "description": "Return the bluetooth settings for a wireless device",
+        "operationId": "getDeviceWirelessBluetoothSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        },
+        "summary": "Return the bluetooth settings for a wireless device",
+        "tags": [
+          "Bluetooth settings"
+        ]
+      },
+      "put": {
+        "description": "Update the bluetooth settings for a wireless device",
+        "operationId": "updateDeviceWirelessBluetoothSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceWirelessBluetoothSettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "major": {
+                  "type": "integer",
+                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "minor": {
+                  "type": "integer",
+                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                }
+              },
+              "example": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        },
+        "summary": "Update the bluetooth settings for a wireless device",
+        "tags": [
+          "Bluetooth settings"
         ]
       }
     },
@@ -2381,7 +2551,7 @@
         },
         "summary": "Return the Bluetooth settings for a network. <a href=\"https://documentation.meraki.com/MR/Bluetooth/Bluetooth_Low_Energy_(BLE)\">Bluetooth settings</a> must be enabled on the network.",
         "tags": [
-          "Networks"
+          "Bluetooth settings"
         ]
       },
       "put": {
@@ -2459,7 +2629,7 @@
         },
         "summary": "Update the Bluetooth settings for a network. See the docs page for <a href=\"https://documentation.meraki.com/MR/Bluetooth/Bluetooth_Low_Energy_(BLE)\">Bluetooth settings</a>.",
         "tags": [
-          "Networks"
+          "Bluetooth settings"
         ]
       }
     },
@@ -2494,6 +2664,7 @@
                   "cloudArchiveEnabled": false,
                   "maxRetentionDays": 7,
                   "scheduleId": null,
+                  "motionDetectorVersion": 2,
                   "videoSettings": {
                     "MV32": {
                       "quality": "Enhanced",
@@ -2557,6 +2728,10 @@
                 "cloudArchiveEnabled": {
                   "type": "boolean",
                   "description": "Create redundant video backup using Cloud Archive. Can be either true or false. Defaults to false."
+                },
+                "motionDetectorVersion": {
+                  "type": "integer",
+                  "description": "The version of the motion detector that will be used by the camera. Only applies to Gen 2 cameras. Defaults to v2."
                 },
                 "scheduleId": {
                   "type": "string",
@@ -2674,6 +2849,34 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV12WE camera models."
+                    },
+                    "MV22X/MV72X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV22X/MV72X camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -2707,6 +2910,7 @@
                 "cloudArchiveEnabled": false,
                 "maxRetentionDays": 7,
                 "scheduleId": null,
+                "motionDetectorVersion": 2,
                 "videoSettings": {
                   "MV32": {
                     "quality": "Enhanced",
@@ -2771,6 +2975,7 @@
                 "cloudArchiveEnabled": false,
                 "maxRetentionDays": 7,
                 "scheduleId": null,
+                "motionDetectorVersion": 2,
                 "videoSettings": {
                   "MV32": {
                     "quality": "Enhanced",
@@ -2840,6 +3045,10 @@
                   "type": "boolean",
                   "description": "Create redundant video backup using Cloud Archive. Can be either true or false. Defaults to false."
                 },
+                "motionDetectorVersion": {
+                  "type": "integer",
+                  "description": "The version of the motion detector that will be used by the camera. Only applies to Gen 2 cameras. Defaults to v2."
+                },
                 "scheduleId": {
                   "type": "string",
                   "description": "Schedule for which this camera will record video, or 'null' to always record."
@@ -2956,6 +3165,34 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV12WE camera models."
+                    },
+                    "MV22X/MV72X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV22X/MV72X camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -2985,6 +3222,7 @@
                 "cloudArchiveEnabled": false,
                 "maxRetentionDays": 7,
                 "scheduleId": null,
+                "motionDetectorVersion": 2,
                 "videoSettings": {
                   "MV32": {
                     "quality": "Enhanced",
@@ -3105,6 +3343,10 @@
                 "timestamp": {
                   "type": "string",
                   "description": "[optional] The snapshot will be taken from this time on the camera. The timestamp is expected to be in ISO 8601 format. If no timestamp is specified, we will assume current time."
+                },
+                "fullframe": {
+                  "type": "boolean",
+                  "description": "[optional] If set to \"true\" the snapshot will be taken at full sensor resolution. This will error if used with timestamp."
                 }
               },
               "example": {
@@ -3852,24 +4094,31 @@
               }
             },
             "examples": {
-              "application/json": {
-                "usage": {
-                  "sent": 138.0,
-                  "recv": 61.0
-                },
-                "id": "k74272e",
-                "description": "Miles's phone",
-                "mac": "00:11:22:33:44:55",
-                "ip": "1.2.3.4",
-                "user": "milesmeraki",
-                "vlan": 255,
-                "switchport": null,
-                "ip6": "",
-                "firstSeen": 1518365681,
-                "lastSeen": 1526087474,
-                "manufacturer": "Apple",
-                "os": "iOS"
-              }
+              "application/json": [
+                {
+                  "usage": {
+                    "sent": 138.0,
+                    "recv": 61.0
+                  },
+                  "id": "k74272e",
+                  "description": "Miles's phone",
+                  "mac": "22:33:44:55:66:77",
+                  "ip": "1.2.3.4",
+                  "user": "milesmeraki",
+                  "vlan": 255,
+                  "switchport": null,
+                  "ip6": "",
+                  "firstSeen": 1518365681,
+                  "lastSeen": 1526087474,
+                  "manufacturer": "Apple",
+                  "os": "iOS",
+                  "recentDeviceSerial": "Q234-ABCD-5678",
+                  "recentDeviceName": "My AP",
+                  "recentDeviceMac": "00:11:22:33:44:55",
+                  "ssid": "My SSID",
+                  "status": "Online"
+                }
+              ]
             }
           }
         },
@@ -4157,16 +4406,383 @@
                 "devicePolicy": {
                   "type": "string",
                   "enum": [
+                    "Group policy",
                     "Whitelisted",
                     "Blocked",
-                    "Normal",
-                    "Group policy"
+                    "Per connection",
+                    "Normal"
                   ],
-                  "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                  "description": "The policy to apply to the specified client. Can be 'Group policy', 'Whitelisted', 'Blocked', 'Per connection' or 'Normal'. Required."
                 },
                 "groupPolicyId": {
-                  "type": "integer",
+                  "type": "string",
                   "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                },
+                "policiesBySecurityAppliance": {
+                  "type": "object",
+                  "properties": {
+                    "devicePolicy": {
+                      "type": "string",
+                      "enum": [
+                        "Whitelisted",
+                        "Blocked",
+                        "Normal"
+                      ],
+                      "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked' or 'Normal'. Required."
+                    }
+                  },
+                  "description": "An object, describing what the policy-connection association is for the security appliance. (Only relevant if the security appliance is actually within the network)"
+                },
+                "policiesBySsid": {
+                  "type": "object",
+                  "properties": {
+                    "0": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "5": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "6": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "7": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "8": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "9": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "10": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "11": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "12": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "13": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    },
+                    "14": {
+                      "type": "object",
+                      "properties": {
+                        "devicePolicy": {
+                          "type": "string",
+                          "enum": [
+                            "Whitelisted",
+                            "Blocked",
+                            "Normal",
+                            "Group policy"
+                          ],
+                          "description": "The policy to apply to the specified client. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
+                        },
+                        "groupPolicyId": {
+                          "type": "string",
+                          "description": "The ID of the desired group policy to apply to the client. Required if 'devicePolicy' is set to \"Group policy\". Otherwise this is ignored."
+                        }
+                      },
+                      "required": [
+                        "devicePolicy"
+                      ],
+                      "description": "The number for the SSID"
+                    }
+                  },
+                  "description": "An object, describing the policy-connection associations for each active SSID within the network. Keys should be the number of enabled SSIDs, mapping to an object describing the client's policy"
                 }
               },
               "example": {
@@ -4236,7 +4852,7 @@
               "application/json": {
                 "id": "k74272e",
                 "description": "Miles's phone",
-                "mac": "00:11:22:33:44:55",
+                "mac": "22:33:44:55:66:77",
                 "ip": "1.2.3.4",
                 "user": "null",
                 "vlan": "255",
@@ -4742,20 +5358,24 @@
               "type": "object",
               "properties": {
                 "devicePolicy": {
-                  "description": "The group policy (Whitelisted, Blocked, Normal, Group policy)",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The policy to assign. Can be 'Whitelisted', 'Blocked', 'Normal' or 'Group policy'. Required."
                 },
                 "groupPolicyId": {
-                  "description": "[optional] If devicePolicy param is set to 'Group policy' this param is used to specify the group ID.",
-                  "type": "string"
+                  "type": "string",
+                  "description": "[optional] If 'devicePolicy' is set to 'Group policy' this param is used to specify the group policy ID."
                 }
               },
               "example": {
                 "mac": "00:11:22:33:44:55",
                 "type": "Group policy",
                 "groupPolicyId": "101"
-              }
-            }
+              },
+              "required": [
+                "devicePolicy"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -4957,29 +5577,177 @@
               "type": "object",
               "properties": {
                 "ssids": {
-                  "description": "The target SSIDs. Each SSID must be enabled and must have Click-through splash enabled. For each SSID where isAuthorized is true, the expiration time will automatically be set according to the SSID's splash frequency.",
                   "type": "object",
                   "properties": {
-                    "isAuthorized": {
-                      "description": "New authorization status for SSID (true, false).",
-                      "type": "string"
+                    "0": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 0"
+                    },
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 1"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 2"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 3"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 4"
+                    },
+                    "5": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 5"
+                    },
+                    "6": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 6"
+                    },
+                    "7": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 7"
+                    },
+                    "8": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 8"
+                    },
+                    "9": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 9"
+                    },
+                    "10": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 10"
+                    },
+                    "11": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 11"
+                    },
+                    "12": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 12"
+                    },
+                    "13": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 13"
+                    },
+                    "14": {
+                      "type": "object",
+                      "properties": {
+                        "isAuthorized": {
+                          "type": "boolean",
+                          "description": "New authorization status for the SSID (true, false)."
+                        }
+                      },
+                      "description": "Splash authorization for SSID 14"
                     }
-                  }
+                  },
+                  "description": "The target SSIDs. Each SSID must be enabled and must have Click-through splash enabled. For each SSID where isAuthorized is true, the expiration time will automatically be set according to the SSID's splash frequency. Not all networks support configuring all SSIDs"
                 }
               },
               "example": {
                 "ssids": {
                   "0": {
-                    "isAuthorized": true,
-                    "authorizedAt": "2017-07-19 16:24:13 UTC",
-                    "expiresAt": "2017-07-20 16:24:13 UTC"
+                    "isAuthorized": true
                   },
                   "2": {
                     "isAuthorized": false
                   }
                 }
-              }
-            }
+              },
+              "required": [
+                "ssids"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -5408,29 +6176,33 @@
               "type": "object",
               "properties": {
                 "allowedUrlPatterns": {
-                  "description": "A whitelist of URL patterns to allow",
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "A whitelist of URL patterns to allow"
                 },
                 "blockedUrlPatterns": {
-                  "description": "A blacklist of URL patterns to block",
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "A blacklist of URL patterns to block"
                 },
                 "blockedUrlCategories": {
-                  "description": "A list of URL categories to block",
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "A list of URL categories to block"
                 },
                 "urlCategoryListSize": {
-                  "description": "URL category list size which is either 'topSites' or 'fullList'",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "topSites",
+                    "fullList"
+                  ],
+                  "description": "URL category list size which is either 'topSites' or 'fullList'"
                 }
               },
               "example": {
@@ -5588,7 +6360,7 @@
     },
     "/networks/{networkId}/devices/claim": {
       "post": {
-        "description": "Claim a device into a network",
+        "description": "Claim devices into a network",
         "operationId": "claimNetworkDevices",
         "parameters": [
           {
@@ -5603,13 +6375,24 @@
             "schema": {
               "type": "object",
               "properties": {
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of serials of devices to claim"
+                },
                 "serial": {
                   "type": "string",
-                  "description": "The serial of a device"
+                  "description": "[DEPRECATED] The serial of a device to claim"
                 }
               },
               "example": {
-                "serial": "Q234-ABCD-5678"
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
               }
             }
           }
@@ -5619,7 +6402,7 @@
             "description": "Successful operation"
           }
         },
-        "summary": "Claim a device into a network",
+        "summary": "Claim devices into a network",
         "tags": [
           "Devices"
         ]
@@ -11777,48 +12560,69 @@
               "type": "object",
               "properties": {
                 "rules": {
-                  "description": "An array of 1:1 nat rules",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "name": {
-                        "description": "A descriptive name for the rule",
-                        "type": "string"
+                        "type": "string",
+                        "description": "A descriptive name for the rule"
                       },
                       "publicIp": {
-                        "description": "The IP address that will be used to access the internal resource from the WAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The IP address that will be used to access the internal resource from the WAN"
                       },
                       "lanIp": {
-                        "description": "The IP address of the server or device that hosts the internal resource that you wish to make available on the WAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The IP address of the server or device that hosts the internal resource that you wish to make available on the WAN"
                       },
                       "uplink": {
-                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2')",
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "internet1",
+                          "internet2"
+                        ],
+                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2')"
                       },
                       "allowedInbound": {
-                        "description": "The ports this mapping will provide access on, and the remote IPs that will be allowed access to the resource",
                         "type": "array",
                         "items": {
-                          "type": "object"
-                        }
-                      },
-                      "protocol": {
-                        "description": "Either of the following: 'tcp', 'udp', 'icmp-ping' or 'any'",
-                        "type": "string"
-                      },
-                      "destinationPorts": {
-                        "description": "An array of ports or port ranges that will be forwarded to the host on the LAN",
-                        "type": "string"
-                      },
-                      "allowedIps": {
-                        "description": "An array of ranges of WAN IP addresses that are allowed to make inbound connections on the specified ports or port ranges, or 'any'",
-                        "type": "string"
+                          "type": "object",
+                          "properties": {
+                            "protocol": {
+                              "type": "string",
+                              "enum": [
+                                "tcp",
+                                "udp",
+                                "icmp-ping",
+                                "any"
+                              ],
+                              "description": "Either of the following: 'tcp', 'udp', 'icmp-ping' or 'any'"
+                            },
+                            "destinationPorts": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "An array of ports or port ranges that will be forwarded to the host on the LAN"
+                            },
+                            "allowedIps": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "An array of ranges of WAN IP addresses that are allowed to make inbound connections on the specified ports or port ranges, or 'any'"
+                            }
+                          }
+                        },
+                        "description": "The ports this mapping will provide access on, and the remote IPs that will be allowed access to the resource"
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "lanIp"
+                    ]
+                  },
+                  "description": "An array of 1:1 nat rules"
                 }
               },
               "example": {
@@ -11852,8 +12656,12 @@
                     ]
                   }
                 ]
-              }
-            }
+              },
+              "required": [
+                "rules"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -12398,44 +13206,60 @@
               "type": "object",
               "properties": {
                 "rules": {
-                  "description": "An array of port forwarding params",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "name": {
-                        "description": "A descriptive name for the rule",
-                        "type": "string"
+                        "type": "string",
+                        "description": "A descriptive name for the rule"
                       },
                       "lanIp": {
-                        "description": "The IP address of the server or device that hosts the internal resource that you wish to make available on the WAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The IP address of the server or device that hosts the internal resource that you wish to make available on the WAN"
                       },
                       "uplink": {
-                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2' or 'both')",
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "internet1",
+                          "internet2",
+                          "both"
+                        ],
+                        "description": "The physical WAN interface on which the traffic will arrive ('internet1' or, if available, 'internet2' or 'both')"
                       },
                       "publicPort": {
-                        "description": "A port or port ranges that will be forwarded to the host on the LAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "A port or port ranges that will be forwarded to the host on the LAN"
                       },
                       "localPort": {
-                        "description": "A port or port ranges that will receive the forwarded traffic from the WAN",
-                        "type": "string"
+                        "type": "string",
+                        "description": "A port or port ranges that will receive the forwarded traffic from the WAN"
                       },
                       "allowedIps": {
-                        "description": "An array of ranges of WAN IP addresses that are allowed to make inbound connections on the specified ports or port ranges (or any)",
                         "type": "array",
                         "items": {
                           "type": "string"
-                        }
+                        },
+                        "description": "An array of ranges of WAN IP addresses that are allowed to make inbound connections on the specified ports or port ranges (or any)"
                       },
                       "protocol": {
-                        "description": "TCP or UDP",
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "TCP or UDP"
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "lanIp",
+                      "publicPort",
+                      "localPort",
+                      "allowedIps",
+                      "protocol"
+                    ]
+                  },
+                  "description": "An array of port forwarding params"
                 }
               },
               "example": {
@@ -12452,8 +13276,12 @@
                     "uplink": "both"
                   }
                 ]
-              }
-            }
+              },
+              "required": [
+                "rules"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -12550,36 +13378,46 @@
               "type": "object",
               "properties": {
                 "mode": {
-                  "description": "Set mode to 'disabled'/'detection'/'prevention' (optional - omitting will leave current config unchanged)",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "prevention",
+                    "detection",
+                    "disabled"
+                  ],
+                  "description": "Set mode to 'disabled'/'detection'/'prevention' (optional - omitting will leave current config unchanged)"
                 },
                 "idsRulesets": {
-                  "description": "Set the detection ruleset 'connectivity'/'balanced'/'security' (optional - omitting will leave current config unchanged). Default value is 'balanced' if none currently saved",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "connectivity",
+                    "balanced",
+                    "security"
+                  ],
+                  "description": "Set the detection ruleset 'connectivity'/'balanced'/'security' (optional - omitting will leave current config unchanged). Default value is 'balanced' if none currently saved"
                 },
                 "protectedNetworks": {
-                  "description": "Set the included/excluded networks from the intrusion engine (optional - omitting will leave current config unchanged). This is available only in 'passthrough' mode",
                   "type": "object",
                   "properties": {
                     "useDefault": {
-                      "description": "true/false whether to use special IPv4 addresses: https://tools.ietf.org/html/rfc5735 (required). Default value is true if none currently saved",
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "true/false whether to use special IPv4 addresses: https://tools.ietf.org/html/rfc5735 (required). Default value is true if none currently saved"
                     },
                     "includedCidr": {
-                      "description": "list of IP addresses or subnets being protected (required if 'useDefault' is false)",
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "list of IP addresses or subnets being protected (required if 'useDefault' is false)"
                     },
                     "excludedCidr": {
-                      "description": "list of IP addresses or subnets being excluded from protection (required if 'useDefault' is false)",
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "list of IP addresses or subnets being excluded from protection (required if 'useDefault' is false)"
                     }
-                  }
+                  },
+                  "description": "Set the included/excluded networks from the intrusion engine (optional - omitting will leave current config unchanged). This is available only in 'passthrough' mode"
                 }
               },
               "example": {
@@ -12700,42 +13538,54 @@
               "type": "object",
               "properties": {
                 "mode": {
-                  "description": "Set mode to 'enabled' to enable malware prevention, otherwise 'disabled'",
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "enabled",
+                    "disabled"
+                  ],
+                  "description": "Set mode to 'enabled' to enable malware prevention, otherwise 'disabled'"
                 },
                 "allowedUrls": {
-                  "description": "The urls that should be permitted by the malware detection engine. If omitted, the current config will remain unchanged. This is available only if your network supports AMP whitelisting",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "url": {
-                        "description": "The url to whitelist",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The url to whitelist"
                       },
                       "comment": {
-                        "description": "Comment about the whitelisted entity",
-                        "type": "string"
+                        "type": "string",
+                        "description": "Comment about the whitelisted entity"
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "url",
+                      "comment"
+                    ]
+                  },
+                  "description": "The urls that should be permitted by the malware detection engine. If omitted, the current config will remain unchanged. This is available only if your network supports AMP whitelisting"
                 },
                 "allowedFiles": {
-                  "description": "The sha256 digests of files that should be permitted by the malware detection engine. If omitted, the current config will remain unchanged. This is available only if your network supports AMP whitelisting",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "sha256": {
-                        "description": "The file sha256 hash to whitelist",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The file sha256 hash to whitelist"
                       },
                       "comment": {
-                        "description": "Comment about the whitelisted entity",
-                        "type": "string"
+                        "type": "string",
+                        "description": "Comment about the whitelisted entity"
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "sha256",
+                      "comment"
+                    ]
+                  },
+                  "description": "The sha256 digests of files that should be permitted by the malware detection engine. If omitted, the current config will remain unchanged. This is available only if your network supports AMP whitelisting"
                 }
               },
               "example": {
@@ -12756,8 +13606,12 @@
                     "comment": "allow ZIP file"
                   }
                 ]
-              }
-            }
+              },
+              "required": [
+                "mode"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -15244,10 +16098,13 @@
                 "wpaEncryptionMode": {
                   "type": "string",
                   "enum": [
+                    "WPA1 only",
                     "WPA1 and WPA2",
-                    "WPA2 only"
+                    "WPA2 only",
+                    "WPA3 Transition Mode",
+                    "WPA3 only"
                   ],
-                  "description": "The types of WPA encryption. ('WPA1 and WPA2' or 'WPA2 only')"
+                  "description": "The types of WPA encryption. ('WPA1 only', 'WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode' or 'WPA3 only')"
                 },
                 "splashPage": {
                   "type": "string",
@@ -16078,12 +16935,23 @@
                 {
                   "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
                   "networkId": "N_24329156",
+                  "enabled": true,
                   "name": "My route",
-                  "gatewayIp": "1.2.3.5",
                   "subnet": "192.168.1.0/24",
-                  "fixedIpAssignments": "{}",
-                  "reservedIpRanges": "[]",
-                  "enabled": true
+                  "gatewayIp": "1.2.3.5",
+                  "fixedIpAssignments": {
+                    "22:33:44:55:66:77": {
+                      "ip": "1.2.3.4",
+                      "name": "Some client name"
+                    }
+                  },
+                  "reservedIpRanges": [
+                    {
+                      "start": "192.168.1.0",
+                      "end": "192.168.1.1",
+                      "comment": "A reserved IP range"
+                    }
+                  ]
                 }
               ]
             }
@@ -16111,24 +16979,30 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The name of the new static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the new static route"
                 },
                 "subnet": {
-                  "description": "The subnet of the static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The subnet of the static route"
                 },
                 "gatewayIp": {
-                  "description": "The gateway IP (next hop) of the static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The gateway IP (next hop) of the static route"
                 }
               },
               "example": {
                 "name": "My route",
                 "subnet": "192.168.1.0/24",
                 "gatewayIp": "1.2.3.5"
-              }
-            }
+              },
+              "required": [
+                "name",
+                "subnet",
+                "gatewayIp"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -16140,9 +17014,18 @@
             },
             "examples": {
               "application/json": {
+                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
+                "networkId": "N_24329156",
+                "enabled": true,
                 "name": "My route",
                 "subnet": "192.168.1.0/24",
-                "gatewayIp": "1.2.3.5"
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+
+                },
+                "reservedIpRanges": [
+
+                ]
               }
             }
           }
@@ -16153,7 +17036,7 @@
         ]
       }
     },
-    "/networks/{networkId}/staticRoutes/{srId}": {
+    "/networks/{networkId}/staticRoutes/{staticRouteId}": {
       "get": {
         "description": "Return a static route for an MX or teleworker network",
         "operationId": "getNetworkStaticRoute",
@@ -16165,7 +17048,7 @@
             "required": true
           },
           {
-            "name": "srId",
+            "name": "staticRouteId",
             "in": "path",
             "type": "string",
             "required": true
@@ -16182,12 +17065,23 @@
               "application/json": {
                 "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
                 "networkId": "N_24329156",
+                "enabled": true,
                 "name": "My route",
-                "gatewayIp": "1.2.3.5",
                 "subnet": "192.168.1.0/24",
-                "fixedIpAssignments": "{}",
-                "reservedIpRanges": "[]",
-                "enabled": true
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
               }
             }
           }
@@ -16208,7 +17102,7 @@
             "required": true
           },
           {
-            "name": "srId",
+            "name": "staticRouteId",
             "in": "path",
             "type": "string",
             "required": true
@@ -16220,35 +17114,71 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "description": "The name of the static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The name of the static route"
                 },
                 "subnet": {
-                  "description": "The subnet of the static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The subnet of the static route"
                 },
                 "gatewayIp": {
-                  "description": "The gateway IP (next hop) of the static route",
-                  "type": "string"
+                  "type": "string",
+                  "description": "The gateway IP (next hop) of the static route"
                 },
                 "enabled": {
-                  "description": "The enabled state of the static route",
-                  "type": "string"
+                  "type": "boolean",
+                  "description": "The enabled state of the static route"
                 },
                 "fixedIpAssignments": {
-                  "description": "The DHCP fixed IP assignments on the static route",
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+
+                  },
+                  "description": "The DHCP fixed IP assignments on the static route. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                 },
                 "reservedIpRanges": {
-                  "description": "The DHCP reserved IP ranges on the static route",
-                  "type": "string"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "The first IP in the reserved range"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "The last IP in the reserved range"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "A text comment for the reserved range"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end",
+                      "comment"
+                    ]
+                  },
+                  "description": "The DHCP reserved IP ranges on the static route"
                 }
               },
               "example": {
                 "name": "My route",
                 "subnet": "192.168.1.0/24",
-                "fixedIpAssignments": "{}",
-                "reservedIpRanges": "[]"
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
               }
             }
           }
@@ -16264,12 +17194,23 @@
               "application/json": {
                 "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
                 "networkId": "N_24329156",
+                "enabled": true,
                 "name": "My route",
-                "gatewayIp": "1.2.3.5",
                 "subnet": "192.168.1.0/24",
-                "fixedIpAssignments": "{}",
-                "reservedIpRanges": "[]",
-                "enabled": true
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
               }
             }
           }
@@ -16290,7 +17231,7 @@
             "required": true
           },
           {
-            "name": "srId",
+            "name": "staticRouteId",
             "in": "path",
             "type": "string",
             "required": true
@@ -18121,7 +19062,7 @@
     },
     "/networks/{networkId}/switch/settings/multicast": {
       "get": {
-        "description": "Return Multicast settings for a network",
+        "description": "Return multicast settings for a network",
         "operationId": "getNetworkSwitchSettingsMulticast",
         "parameters": [
           {
@@ -18168,7 +19109,7 @@
             }
           }
         },
-        "summary": "Return Multicast settings for a network",
+        "summary": "Return multicast settings for a network",
         "tags": [
           "Switch settings"
         ]
@@ -22998,6 +23939,64 @@
         ]
       }
     },
+    "/organizations/{organizationId}/apiRequests/overview": {
+      "get": {
+        "description": "Return an aggregated overview of API requests data",
+        "operationId": "getOrganizationApiRequestsOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "responseCodeCounts": {
+                  "200": 50000,
+                  "201": 4000,
+                  "204": 1000,
+                  "400": 3500,
+                  "404": 1500,
+                  "429": 10000
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return an aggregated overview of API requests data",
+        "tags": [
+          "API usage"
+        ]
+      }
+    },
     "/organizations/{organizationId}/brandingPolicies": {
       "get": {
         "description": "List the branding policies of an organization",
@@ -23925,7 +24924,12 @@
               "application/json": [
                 {
                   "id": "N_24329156",
-                  "name": "My config template"
+                  "name": "My config template",
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ]
                 }
               ]
             }
@@ -24005,6 +25009,102 @@
         "summary": "List the switch profiles for your switch template configuration",
         "tags": [
           "Switch profiles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/configurationChanges": {
+      "get": {
+        "description": "View the Change Log for your organization",
+        "operationId": "getOrganizationConfigurationChanges",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 365 days."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 5000. Default is 5000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "networkId",
+            "in": "query",
+            "description": "Filters on the given network"
+          },
+          {
+            "type": "string",
+            "name": "adminId",
+            "in": "query",
+            "description": "Filters on the given Admin"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "adminName": "Miles Meraki",
+                  "adminEmail": "miles@meraki.com",
+                  "adminId": "212406",
+                  "page": "via API",
+                  "label": "PUT /api/v1/organizations/2930418",
+                  "oldValue": "{\"id\":\"2930418\",\"name\":\"My organization\",\"url\":\"https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview\"}",
+                  "newValue": "{\"id\":\"2930418\",\"name\":\"My organization changed\",\"url\":\"https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview\"}"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "View the Change Log for your organization",
+        "tags": [
+          "Change log"
         ]
       }
     },
@@ -24098,20 +25198,22 @@
               }
             },
             "examples": {
-              "application/json": {
-                "name": "My AP",
-                "lat": 37.4180951010362,
-                "lng": -122.098531723022,
-                "address": "1600 Pennsylvania Ave",
-                "notes": "My AP's note",
-                "tags": " recently-added ",
-                "networkId": "N_24329156",
-                "serial": "Q234-ABCD-5678",
-                "model": "MR34",
-                "mac": "00:11:22:33:44:55",
-                "lanIp": "1.2.3.4",
-                "firmware": "wireless-25-14"
-              }
+              "application/json": [
+                {
+                  "name": "My AP",
+                  "lat": 37.4180951010362,
+                  "lng": -122.098531723022,
+                  "address": "1600 Pennsylvania Ave",
+                  "notes": "My AP's note",
+                  "tags": " recently-added ",
+                  "networkId": "N_24329156",
+                  "serial": "Q234-ABCD-5678",
+                  "model": "MR34",
+                  "mac": "00:11:22:33:44:55",
+                  "lanIp": "1.2.3.4",
+                  "firmware": "wireless-25-14"
+                }
+              ]
             }
           }
         },
@@ -24389,7 +25491,7 @@
     },
     "/organizations/{organizationId}/licenseState": {
       "get": {
-        "description": "Return the license state for an organization",
+        "description": "Return an overview of the license state for an organization",
         "operationId": "getOrganizationLicenseState",
         "parameters": [
           {
@@ -24417,7 +25519,7 @@
             }
           }
         },
-        "summary": "Return the license state for an organization",
+        "summary": "Return an overview of the license state for an organization",
         "tags": [
           "Organizations"
         ]
@@ -26579,10 +27681,16 @@
       "name": "Bluetooth clients"
     },
     {
+      "name": "Bluetooth settings"
+    },
+    {
       "name": "Camera quality retention profiles"
     },
     {
       "name": "Cameras"
+    },
+    {
+      "name": "Change log"
     },
     {
       "name": "Clients"
@@ -26788,6 +27896,12 @@
   ],
   "x-batchable-actions": [
     {
+      "group": "Bluetooth device setting",
+      "summary": "Update the bluetooth settings for a wireless device",
+      "resource": "/devices/{serial}/wireless/bluetooth/settings",
+      "operation": "update"
+    },
+    {
       "group": "Cellular gateway connectivity monitoring destination",
       "summary": "Update the connectivity testing destinations for an MG network",
       "resource": "/networks/{networkId}/cellularGateway/settings/connectivityMonitoringDestinations",
@@ -26825,7 +27939,7 @@
     },
     {
       "group": "Device",
-      "summary": "Claim a device into a network",
+      "summary": "Claim devices into a network",
       "resource": "/networks/{networkId}/devices",
       "operation": "claim"
     },
@@ -27092,6 +28206,12 @@
       "summary": "Update the storm control configuration for a switch network",
       "resource": "/networks/{networkId}/switch/settings/stormControl",
       "operation": "update"
+    },
+    {
+      "group": "Switch port",
+      "summary": "Cycle a set of switch ports",
+      "resource": "/devices/{serial}/switch/ports",
+      "operation": "cycle"
     },
     {
       "group": "Switch port",
