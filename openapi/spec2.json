@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "0.9.0",
+    "version": "0.10.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 March, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 April, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -348,6 +348,7 @@
                 "restrictedBandwidthModeEnabled": false,
                 "profileId": null,
                 "quality": "Standard",
+                "motionDetectorVersion": 2,
                 "resolution": 720
               }
             }
@@ -408,6 +409,14 @@
                     "2058x2058"
                   ],
                   "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080' or '2058x2058'. Not all resolutions are supported by every camera model."
+                },
+                "motionDetectorVersion": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2
+                  ],
+                  "description": "The version of the motion detector that will be used by the camera. Only applies to Gen 2 cameras. Defaults to v2."
                 }
               },
               "example": {
@@ -416,6 +425,7 @@
                 "restrictedBandwidthModeEnabled": false,
                 "profileId": null,
                 "quality": "Standard",
+                "motionDetectorVersion": 2,
                 "resolution": 720
               }
             }
@@ -435,6 +445,7 @@
                 "restrictedBandwidthModeEnabled": false,
                 "profileId": null,
                 "quality": "Standard",
+                "motionDetectorVersion": 2,
                 "resolution": 720
               }
             }
@@ -1025,7 +1036,12 @@
                     "systemCapabilities": "switch"
                   },
                   "clientCount": 10,
-                  "powerUsageInWh": 55.9
+                  "powerUsageInWh": 55.9,
+                  "trafficInKbps": {
+                    "total": 2.2,
+                    "sent": 1.2,
+                    "recv": 1.0
+                  }
                 }
               ]
             }
@@ -1869,50 +1885,87 @@
               "type": "object",
               "properties": {
                 "defaultDestinations": {
-                  "description": "The network_wide destinations for all alerts on the network.",
                   "type": "object",
                   "properties": {
                     "emails": {
-                      "description": "A list of emails that will recieve the alert(s).",
                       "type": "array",
                       "items": {
                         "type": "string"
-                      }
+                      },
+                      "description": "A list of emails that will recieve the alert(s)."
                     },
                     "allAdmins": {
-                      "description": "If true, then all network admins will receive emails.",
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If true, then all network admins will receive emails."
                     },
                     "snmp": {
-                      "description": "If true, then an SNMP trap will be sent if there is an SNMP trap server configured for this network.",
-                      "type": "boolean"
+                      "type": "boolean",
+                      "description": "If true, then an SNMP trap will be sent if there is an SNMP trap server configured for this network."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of HTTP server IDs to send a Webhook to"
                     }
-                  }
+                  },
+                  "description": "The network-wide destinations for all alerts on the network."
                 },
                 "alerts": {
-                  "description": "Alert-specific configuration for each type. Only alerts that pertain to the network can be updated.",
                   "type": "array",
                   "items": {
                     "type": "object",
                     "properties": {
                       "type": {
-                        "description": "The type of alert",
-                        "type": "string"
+                        "type": "string",
+                        "description": "The type of alert"
                       },
                       "enabled": {
-                        "description": "A boolean depicting if the alert is turned on or off",
-                        "type": "boolean"
+                        "type": "boolean",
+                        "description": "A boolean depicting if the alert is turned on or off"
                       },
                       "alertDestinations": {
-                        "description": "A hash of destinations for this specific alert. Keys include: emails: A list of emails that will recieve information about the alert, allAdmins: If true, then all network admins will receive emails, and snmp: If true, then an SNMP trap will be sent if there is an SNMP trap server configured for this network.",
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+                          "emails": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "A list of emails that will receive information about the alert"
+                          },
+                          "allAdmins": {
+                            "type": "boolean",
+                            "description": "If true, then all network admins will receive emails for this alert"
+                          },
+                          "snmp": {
+                            "type": "boolean",
+                            "description": "If true, then an SNMP trap will be sent for this alert if there is an SNMP trap server configured for this network"
+                          },
+                          "httpServerIds": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "A list of HTTP server IDs to send a Webhook to for this alert"
+                          }
+                        },
+                        "description": "A hash of destinations for this specific alert"
                       },
                       "filters": {
-                        "description": "A hash of specific configuration data for the alert. Only filters specific to the alert will be updated.",
-                        "type": "object"
+                        "type": "object",
+                        "properties": {
+
+                        },
+                        "description": "A hash of specific configuration data for the alert. Only filters specific to the alert will be updated."
                       }
-                    }
-                  }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  "description": "Alert-specific configuration for each type. Only alerts that pertain to the network can be updated."
                 }
               },
               "example": {
@@ -2877,6 +2930,33 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV22X/MV72X camera models."
+                    },
+                    "MV02": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV02 camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -3193,6 +3273,33 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV22X/MV72X camera models."
+                    },
+                    "MV02": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720' or '1920x1080'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV02 camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -4116,7 +4223,11 @@
                   "recentDeviceName": "My AP",
                   "recentDeviceMac": "00:11:22:33:44:55",
                   "ssid": "My SSID",
-                  "status": "Online"
+                  "status": "Online",
+                  "notes": "My client note",
+                  "ip6Local": "fe80:0:0:0:1430:aac1:6826:75ab",
+                  "smInstalled": true,
+                  "groupPolicy8021x": "Student_Access"
                 }
               ]
             }
@@ -4157,6 +4268,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -4255,6 +4376,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -4948,6 +5079,16 @@
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
           },
           {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
+          },
+          {
             "type": "integer",
             "name": "ssid",
             "in": "query",
@@ -5227,6 +5368,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -5924,6 +6075,16 @@
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
           },
           {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
+          },
+          {
             "type": "integer",
             "name": "ssid",
             "in": "query",
@@ -6439,6 +6600,16 @@
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
           },
           {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
+          },
+          {
             "type": "integer",
             "name": "ssid",
             "in": "query",
@@ -6525,6 +6696,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -6886,6 +7067,16 @@
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
           },
           {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
+          },
+          {
             "type": "integer",
             "name": "ssid",
             "in": "query",
@@ -6966,6 +7157,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -7951,6 +8152,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -12001,6 +12212,16 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'). Note that data prior to February 2020 will not have band information."
           },
           {
             "type": "integer",
@@ -16071,9 +16292,11 @@
                     "psk",
                     "open-with-radius",
                     "8021x-meraki",
-                    "8021x-radius"
+                    "8021x-radius",
+                    "ipsk-with-radius",
+                    "ipsk-without-radius"
                   ],
-                  "description": "The association control method for the SSID ('open', 'psk', 'open-with-radius', '8021x-meraki' or '8021x-radius')"
+                  "description": "The association control method for the SSID ('open', 'psk', 'open-with-radius', '8021x-meraki', '8021x-radius', 'ipsk-with-radius' or 'ipsk-without-radius')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -16147,7 +16370,7 @@
                       "secret"
                     ]
                   },
-                  "description": "The RADIUS 802.1x servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius' or '8021x-radius'"
+                  "description": "The RADIUS 802.1X servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius'"
                 },
                 "radiusCoaEnabled": {
                   "type": "boolean",
@@ -16171,7 +16394,7 @@
                 },
                 "radiusAccountingEnabled": {
                   "type": "boolean",
-                  "description": "Whether or not RADIUS accounting is enabled. This param is only valid if the authMode is 'open-with-radius' or '8021x-radius'"
+                  "description": "Whether or not RADIUS accounting is enabled. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius'"
                 },
                 "radiusAccountingServers": {
                   "type": "array",
@@ -16196,7 +16419,7 @@
                       "secret"
                     ]
                   },
-                  "description": "The RADIUS accounting 802.1x servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius' or '8021x-radius' and radiusAccountingEnabled is 'true'"
+                  "description": "The RADIUS accounting 802.1X servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius' and radiusAccountingEnabled is 'true'"
                 },
                 "radiusAttributeForGroupPolicies": {
                   "type": "string",
@@ -20371,9 +20594,15 @@
           },
           {
             "type": "string",
+            "enum": [
+              "combined",
+              "wireless",
+              "switch",
+              "appliance"
+            ],
             "name": "deviceType",
             "in": "query",
-            "description": "    Filter the data by device type: combined (default), wireless, switch, appliance.\n    When using combined, for each rule the data will come from the device type with the most usage.\n"
+            "description": "    Filter the data by device type: 'combined', 'wireless', 'switch' or 'appliance'. Defaults to 'combined'.\n    When using 'combined', for each rule the data will come from the device type with the most usage.\n"
           }
         ],
         "responses": {
@@ -21220,8 +21449,9 @@
                   "id": "1234",
                   "networkId": "N_24329156",
                   "name": "My VLAN",
-                  "applianceIp": "1.2.3.4",
+                  "applianceIp": "192.168.1.1",
                   "subnet": "192.168.1.0/24",
+                  "groupPolicyId": "101",
                   "fixedIpAssignments": {
                     "22:33:44:55:66:77": {
                       "ip": "1.2.3.4",
@@ -21289,13 +21519,18 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the VLAN"
+                },
+                "groupPolicyId": {
+                  "type": "string",
+                  "description": "The id of the desired group policy to apply to the VLAN"
                 }
               },
               "example": {
                 "id": "1234",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
-                "applianceIp": "1.2.3.4"
+                "applianceIp": "192.168.1.1",
+                "groupPolicyId": "101"
               },
               "required": [
                 "id",
@@ -21319,8 +21554,9 @@
                 "id": "1234",
                 "networkId": "N_24329156",
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
 
                 },
@@ -21376,8 +21612,9 @@
                 "id": "1234",
                 "networkId": "N_24329156",
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
                   "22:33:44:55:66:77": {
                     "ip": "1.2.3.4",
@@ -21446,6 +21683,10 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the VLAN"
+                },
+                "groupPolicyId": {
+                  "type": "string",
+                  "description": "The id of the desired group policy to apply to the VLAN"
                 },
                 "vpnNatSubnet": {
                   "type": "string",
@@ -21563,8 +21804,9 @@
               },
               "example": {
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
                   "22:33:44:55:66:77": {
                     "ip": "1.2.3.4",
@@ -21607,8 +21849,9 @@
                 "id": "1234",
                 "networkId": "N_24329156",
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
                   "22:33:44:55:66:77": {
                     "ip": "1.2.3.4",
@@ -24746,7 +24989,7 @@
     "/organizations/{organizationId}/claim": {
       "post": {
         "description": "Claim a list of devices, licenses, and/or orders into an organization. When claiming by order, all devices and licenses in the order will be claimed; licenses will be added to the organization and devices will be placed in the organization's inventory.",
-        "operationId": "claimOrganization",
+        "operationId": "claimIntoOrganization",
         "parameters": [
           {
             "name": "organizationId",
@@ -24755,7 +24998,7 @@
             "required": true
           },
           {
-            "name": "claimOrganization",
+            "name": "claimIntoOrganization",
             "in": "body",
             "schema": {
               "type": "object",
@@ -27071,7 +27314,10 @@
                       "disabled"
                     ],
                     "childLifetime": 28800
-                  }
+                  },
+                  "networkTags": [
+                    "all"
+                  ]
                 },
                 {
                   "name": "My peer 2",
@@ -27082,6 +27328,9 @@
                     "192.168.129.0/24"
                   ],
                   "secret": "asdf56785678567856785678",
+                  "networkTags": [
+                    "none"
+                  ],
                   "ipsecPoliciesPreset": "default"
                 }
               ]
@@ -27246,7 +27495,10 @@
                         "disabled"
                       ],
                       "childLifetime": 28800
-                    }
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
                   },
                   {
                     "name": "My peer 2",
@@ -27257,6 +27509,9 @@
                       "192.168.129.0/24"
                     ],
                     "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -27306,7 +27561,10 @@
                       "disabled"
                     ],
                     "childLifetime": 28800
-                  }
+                  },
+                  "networkTags": [
+                    "all"
+                  ]
                 },
                 {
                   "name": "My peer 2",
@@ -27317,6 +27575,9 @@
                     "192.168.129.0/24"
                   ],
                   "secret": "asdf56785678567856785678",
+                  "networkTags": [
+                    "none"
+                  ],
                   "ipsecPoliciesPreset": "default"
                 }
               ]
@@ -28193,6 +28454,12 @@
       "group": "STP configuration",
       "summary": "Updates STP settings",
       "resource": "/networks/{networkId}/switch/settings/stp",
+      "operation": "update"
+    },
+    {
+      "group": "Site to site vpn",
+      "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
+      "resource": "/networks/{networkId}/siteToSiteVpn",
       "operation": "update"
     },
     {
