@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.0",
+    "version": "1.0.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 March, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 April, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -618,10 +618,10 @@
         ]
       }
     },
-    "/devices/{serial}/camera/qualityAndRetentionSettings": {
+    "/devices/{serial}/camera/qualityAndRetention": {
       "get": {
         "description": "Returns quality and retention settings for the given camera",
-        "operationId": "getDeviceCameraQualityAndRetentionSettings",
+        "operationId": "getDeviceCameraQualityAndRetention",
         "parameters": [
           {
             "name": "serial",
@@ -657,7 +657,7 @@
       },
       "put": {
         "description": "Update quality and retention settings for the given camera",
-        "operationId": "updateDeviceCameraQualityAndRetentionSettings",
+        "operationId": "updateDeviceCameraQualityAndRetention",
         "parameters": [
           {
             "name": "serial",
@@ -666,7 +666,7 @@
             "required": true
           },
           {
-            "name": "updateDeviceCameraQualityAndRetentionSettings",
+            "name": "updateDeviceCameraQualityAndRetention",
             "in": "body",
             "schema": {
               "type": "object",
@@ -1386,10 +1386,10 @@
         ]
       }
     },
-    "/devices/{serial}/managementInterfaceSettings": {
+    "/devices/{serial}/managementInterface": {
       "get": {
         "description": "Return the management interface settings for a device",
-        "operationId": "getDeviceManagementInterfaceSettings",
+        "operationId": "getDeviceManagementInterface",
         "parameters": [
           {
             "name": "serial",
@@ -1440,7 +1440,7 @@
       },
       "put": {
         "description": "Update the management interface settings for a device",
-        "operationId": "updateDeviceManagementInterfaceSettings",
+        "operationId": "updateDeviceManagementInterface",
         "parameters": [
           {
             "name": "serial",
@@ -1449,7 +1449,7 @@
             "required": true
           },
           {
-            "name": "updateDeviceManagementInterfaceSettings",
+            "name": "updateDeviceManagementInterface",
             "in": "body",
             "schema": {
               "type": "object",
@@ -2982,6 +2982,114 @@
         "summary": "Update the alert configuration for this network",
         "tags": [
           "Alert settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/clients/{clientId}/security/events": {
+      "get": {
+        "description": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
+        "operationId": "getNetworkApplianceClientSecurityEvents",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "clientId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 791 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 791 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 31 days."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "deviceMac": "00:18:0a:01:02:03",
+                  "clientMac": "A1:B2:C3:D4:E5:F6",
+                  "srcIp": "1.2.3.4:34195",
+                  "destIp": "10.20.30.40:80",
+                  "protocol": "tcp/ip",
+                  "priority": "2",
+                  "classification": "4",
+                  "blocked": true,
+                  "message": "SERVER-WEBAPP JBoss JMX console access attempt",
+                  "signature": "1:21516:9",
+                  "sigSource": ""
+                },
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "deviceMac": "00:18:0a:01:02:03",
+                  "clientMac": "A1:B2:C3:D4:E5:F6",
+                  "srcIp": "1.2.3.4:56023",
+                  "destIp": "10.20.30.40:80",
+                  "protocol": "tcp/ip",
+                  "priority": "1",
+                  "classification": "33",
+                  "blocked": true,
+                  "message": "POLICY-OTHER Adobe ColdFusion admin interface access attempt",
+                  "signature": "1:25975:2",
+                  "sigSource": ""
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
+        "tags": [
+          "Security events"
         ]
       }
     },
@@ -4698,6 +4806,316 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/trafficShaping/rules": {
+      "put": {
+        "description": "Update the traffic shaping settings for an MX network",
+        "operationId": "updateNetworkApplianceTrafficShapingRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceTrafficShapingRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "defaultRulesEnabled": {
+                  "type": "boolean",
+                  "description": "    Whether default traffic shaping rules are enabled (true) or disabled (false).\n    There are 4 default rules, which can\n    be seen on your network's traffic shaping page. Note that default rules\n    count against the rule limit of 8.\n"
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "definitions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "application",
+                                "applicationCategory",
+                                "host",
+                                "port",
+                                "ipRange",
+                                "localNet"
+                              ],
+                              "description": "The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'."
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "    If \"type\" is 'host', 'port', 'ipRange' or 'localNet', then \"value\" must be a string, matching either\n    a hostname (e.g. \"somesite.com\"), a port (e.g. 8080), or an IP range (\"192.1.0.0\",\n    \"192.1.0.0/16\", or \"10.1.0.0/16:80\"). 'localNet' also supports CIDR notation, excluding\n    custom ports.\n     If \"type\" is 'application' or 'applicationCategory', then \"value\" must be an object\n    with the structure { \"id\": \"meraki:layer7/...\" }, where \"id\" is the application category or\n    application ID (for a list of IDs for your network, use the trafficShaping/applicationCategories\n    endpoint).\n"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "    A list of objects describing the definitions of your traffic shaping rule. At least one definition is required.\n"
+                      },
+                      "perClientBandwidthLimits": {
+                        "type": "object",
+                        "properties": {
+                          "settings": {
+                            "type": "string",
+                            "description": "How bandwidth limits are applied by your rule. Can be one of 'network default', 'ignore' or 'custom'."
+                          },
+                          "bandwidthLimits": {
+                            "type": "object",
+                            "properties": {
+                              "limitUp": {
+                                "type": "integer",
+                                "description": "The maximum upload limit (integer, in Kbps)."
+                              },
+                              "limitDown": {
+                                "type": "integer",
+                                "description": "The maximum download limit (integer, in Kbps)."
+                              }
+                            },
+                            "description": "The bandwidth limits object, specifying the upload ('limitUp') and download ('limitDown') speed in Kbps. These are only enforced if 'settings' is set to 'custom'."
+                          }
+                        },
+                        "description": "    An object describing the bandwidth settings for your rule.\n"
+                      },
+                      "dscpTagValue": {
+                        "type": "integer",
+                        "description": "    The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.\n    For a list of possible tag values, use the trafficShaping/dscpTaggingOptions endpoint.\n"
+                      },
+                      "priority": {
+                        "type": "string",
+                        "description": "    A string, indicating the priority level for packets bound to your rule.\n    Can be 'low', 'normal' or 'high'.\n"
+                      }
+                    },
+                    "required": [
+                      "definitions"
+                    ]
+                  },
+                  "description": "    An array of traffic shaping rules. Rules are applied in the order that\n    they are specified in. An empty list (or null) means no rules. Note that\n    you are allowed a maximum of 8 rules.\n"
+                }
+              },
+              "example": {
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "priority": "normal"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "priority": "normal"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the traffic shaping settings for an MX network",
+        "tags": [
+          "Traffic shaping"
+        ]
+      },
+      "get": {
+        "description": "Display the traffic shaping settings for an MX network",
+        "operationId": "getNetworkApplianceTrafficShapingRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "priority": "normal"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Display the traffic shaping settings for an MX network",
+        "tags": [
+          "Traffic shaping"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/trafficShaping/uplinkBandwidth": {
       "get": {
         "description": "Returns the uplink bandwidth settings for your MX network.",
@@ -4829,7 +5247,49 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "networkId": "N_24329156",
+                  "name": "My VLAN",
+                  "applianceIp": "192.168.1.1",
+                  "subnet": "192.168.1.0/24",
+                  "groupPolicyId": "101",
+                  "fixedIpAssignments": {
+                    "22:33:44:55:66:77": {
+                      "ip": "1.2.3.4",
+                      "name": "Some client name"
+                    }
+                  },
+                  "reservedIpRanges": [
+                    {
+                      "start": "192.168.1.0",
+                      "end": "192.168.1.1",
+                      "comment": "A reserved IP range"
+                    }
+                  ],
+                  "dnsNameservers": "google_dns",
+                  "dhcpHandling": "Run a DHCP server",
+                  "dhcpLeaseTime": "1 day",
+                  "dhcpBootOptionsEnabled": false,
+                  "dhcpBootNextServer": null,
+                  "dhcpBootFilename": null,
+                  "dhcpOptions": [
+                    {
+                      "code": 5,
+                      "type": "text",
+                      "value": "five"
+                    }
+                  ]
+                }
+              ]
+            }
           }
         },
         "summary": "List the VLANs for an MX network",
@@ -4868,13 +5328,18 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the VLAN"
+                },
+                "groupPolicyId": {
+                  "type": "string",
+                  "description": "The id of the desired group policy to apply to the VLAN"
                 }
               },
               "example": {
                 "id": "1234",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
-                "applianceIp": "1.2.3.4"
+                "applianceIp": "192.168.1.1",
+                "groupPolicyId": "101"
               },
               "required": [
                 "id",
@@ -4898,8 +5363,9 @@
                 "id": "1234",
                 "networkId": "N_24329156",
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
 
                 },
@@ -5023,7 +5489,47 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "My VLAN",
+                "applianceIp": "192.168.1.1",
+                "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "dnsNameservers": "google_dns",
+                "dhcpHandling": "Run a DHCP server",
+                "dhcpLeaseTime": "1 day",
+                "dhcpBootOptionsEnabled": false,
+                "dhcpBootNextServer": null,
+                "dhcpBootFilename": null,
+                "dhcpOptions": [
+                  {
+                    "code": 5,
+                    "type": "text",
+                    "value": "five"
+                  }
+                ]
+              }
+            }
           }
         },
         "summary": "Return a VLAN",
@@ -5064,6 +5570,10 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the VLAN"
+                },
+                "groupPolicyId": {
+                  "type": "string",
+                  "description": "The id of the desired group policy to apply to the VLAN"
                 },
                 "vpnNatSubnet": {
                   "type": "string",
@@ -5181,8 +5691,9 @@
               },
               "example": {
                 "name": "My VLAN",
-                "applianceIp": "1.2.3.4",
+                "applianceIp": "192.168.1.1",
                 "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
                 "fixedIpAssignments": {
                   "22:33:44:55:66:77": {
                     "ip": "1.2.3.4",
@@ -5215,7 +5726,47 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "My VLAN",
+                "applianceIp": "192.168.1.1",
+                "subnet": "192.168.1.0/24",
+                "groupPolicyId": "101",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "dnsNameservers": "google_dns",
+                "dhcpHandling": "Run a DHCP server",
+                "dhcpLeaseTime": "1 day",
+                "dhcpBootOptionsEnabled": false,
+                "dhcpBootNextServer": null,
+                "dhcpBootFilename": null,
+                "dhcpOptions": [
+                  {
+                    "code": 5,
+                    "type": "text",
+                    "value": "five"
+                  }
+                ]
+              }
+            }
           }
         },
         "summary": "Update a VLAN",
@@ -5248,6 +5799,193 @@
         "summary": "Delete a VLAN from a network",
         "tags": [
           "VLANs"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/vpn/siteToSiteVpn": {
+      "get": {
+        "description": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
+        "operationId": "getNetworkApplianceVpnSiteToSiteVpn",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "mode": "spoke",
+                "hubs": [
+                  {
+                    "hubId": "N_4901849",
+                    "useDefaultRoute": true
+                  },
+                  {
+                    "hubId": "N_1892489",
+                    "useDefaultRoute": false
+                  }
+                ],
+                "subnets": [
+                  {
+                    "localSubnet": "192.168.1.0/24",
+                    "useVpn": true
+                  },
+                  {
+                    "localSubnet": "192.168.128.0/24",
+                    "useVpn": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
+        "tags": [
+          "Networks"
+        ]
+      },
+      "put": {
+        "description": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
+        "operationId": "updateNetworkApplianceVpnSiteToSiteVpn",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceVpnSiteToSiteVpn",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "spoke",
+                    "hub"
+                  ],
+                  "description": "The site-to-site VPN mode. Can be one of 'none', 'spoke' or 'hub'"
+                },
+                "hubs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "hubId": {
+                        "type": "string",
+                        "description": "The network ID of the hub."
+                      },
+                      "useDefaultRoute": {
+                        "type": "boolean",
+                        "description": "Only valid in 'spoke' mode. Indicates whether default route traffic should be sent to this hub."
+                      }
+                    },
+                    "required": [
+                      "hubId"
+                    ]
+                  },
+                  "description": "The list of VPN hubs, in order of preference. In spoke mode, at least 1 hub is required."
+                },
+                "subnets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "localSubnet": {
+                        "type": "string",
+                        "description": "The CIDR notation subnet used within the VPN"
+                      },
+                      "useVpn": {
+                        "type": "boolean",
+                        "description": "Indicates the presence of the subnet in the VPN"
+                      }
+                    },
+                    "required": [
+                      "localSubnet"
+                    ]
+                  },
+                  "description": "The list of subnets and their VPN presence."
+                }
+              },
+              "example": {
+                "mode": "spoke",
+                "hubs": [
+                  {
+                    "hubId": "N_4901849",
+                    "useDefaultRoute": true
+                  },
+                  {
+                    "hubId": "N_1892489",
+                    "useDefaultRoute": false
+                  }
+                ],
+                "subnets": [
+                  {
+                    "localSubnet": "192.168.1.0/24",
+                    "useVpn": true
+                  },
+                  {
+                    "localSubnet": "192.168.128.0/24",
+                    "useVpn": true
+                  }
+                ]
+              },
+              "required": [
+                "mode"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "mode": "spoke",
+                "hubs": [
+                  {
+                    "hubId": "N_4901849",
+                    "useDefaultRoute": true
+                  },
+                  {
+                    "hubId": "N_1892489",
+                    "useDefaultRoute": false
+                  }
+                ],
+                "subnets": [
+                  {
+                    "localSubnet": "192.168.1.0/24",
+                    "useVpn": true
+                  },
+                  {
+                    "localSubnet": "192.168.128.0/24",
+                    "useVpn": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
+        "tags": [
+          "Networks"
         ]
       }
     },
@@ -7292,76 +8030,6 @@
         ]
       }
     },
-    "/networks/{networkId}/clients/{clientId}/events": {
-      "get": {
-        "description": "Return the events associated with this client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
-        "operationId": "getNetworkClientEvents",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "clientId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "type": "integer",
-            "name": "perPage",
-            "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
-          },
-          {
-            "type": "string",
-            "name": "startingAfter",
-            "in": "query",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          },
-          {
-            "type": "string",
-            "name": "endingBefore",
-            "in": "query",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "headers": {
-              "Link": {
-                "type": "string",
-                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "deviceSerial": "Q234-ABCD-5678",
-                  "occurredAt": "2018-02-11T00:00:00Z",
-                  "type": "l3roaming_assoc_start",
-                  "details": {
-                    "vap": "1",
-                    "on_packet": "true"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Return the events associated with this client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
-        "tags": [
-          "Clients"
-        ]
-      }
-    },
     "/networks/{networkId}/clients/{clientId}/policy": {
       "get": {
         "description": "Return the policy assigned to a client on the network. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
@@ -7463,114 +8131,6 @@
         "summary": "Update the policy assigned to a client on the network. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
         "tags": [
           "Clients"
-        ]
-      }
-    },
-    "/networks/{networkId}/clients/{clientId}/securityEvents": {
-      "get": {
-        "description": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
-        "operationId": "getNetworkClientSecurityEvents",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "clientId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "t0",
-            "in": "query",
-            "description": "The beginning of the timespan for the data. The maximum lookback period is 791 days from today."
-          },
-          {
-            "type": "string",
-            "name": "t1",
-            "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 791 days after t0."
-          },
-          {
-            "type": "number",
-            "format": "float",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 31 days."
-          },
-          {
-            "type": "integer",
-            "name": "perPage",
-            "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
-          },
-          {
-            "type": "string",
-            "name": "startingAfter",
-            "in": "query",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          },
-          {
-            "type": "string",
-            "name": "endingBefore",
-            "in": "query",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "headers": {
-              "Link": {
-                "type": "string",
-                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "ts": "2018-02-11T00:00:00.090210Z",
-                  "deviceMac": "00:18:0a:01:02:03",
-                  "clientMac": "A1:B2:C3:D4:E5:F6",
-                  "srcIp": "1.2.3.4:34195",
-                  "destIp": "10.20.30.40:80",
-                  "protocol": "tcp/ip",
-                  "priority": "2",
-                  "classification": "4",
-                  "blocked": true,
-                  "message": "SERVER-WEBAPP JBoss JMX console access attempt",
-                  "signature": "1:21516:9",
-                  "sigSource": ""
-                },
-                {
-                  "ts": "2018-02-11T00:00:00.090210Z",
-                  "deviceMac": "00:18:0a:01:02:03",
-                  "clientMac": "A1:B2:C3:D4:E5:F6",
-                  "srcIp": "1.2.3.4:56023",
-                  "destIp": "10.20.30.40:80",
-                  "protocol": "tcp/ip",
-                  "priority": "1",
-                  "classification": "33",
-                  "blocked": true,
-                  "message": "POLICY-OTHER Adobe ColdFusion admin interface access attempt",
-                  "signature": "1:25975:2",
-                  "sigSource": ""
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
-        "tags": [
-          "Security events"
         ]
       }
     },
@@ -12823,193 +13383,6 @@
         ]
       }
     },
-    "/networks/{networkId}/siteToSiteVpn": {
-      "get": {
-        "description": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
-        "operationId": "getNetworkSiteToSiteVpn",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "mode": "spoke",
-                "hubs": [
-                  {
-                    "hubId": "N_4901849",
-                    "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
-                  }
-                ],
-                "subnets": [
-                  {
-                    "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
-                    "useVpn": true
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
-        "tags": [
-          "Networks"
-        ]
-      },
-      "put": {
-        "description": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
-        "operationId": "updateNetworkSiteToSiteVpn",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkSiteToSiteVpn",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "mode": {
-                  "type": "string",
-                  "enum": [
-                    "none",
-                    "spoke",
-                    "hub"
-                  ],
-                  "description": "The site-to-site VPN mode. Can be one of 'none', 'spoke' or 'hub'"
-                },
-                "hubs": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "hubId": {
-                        "type": "string",
-                        "description": "The network ID of the hub."
-                      },
-                      "useDefaultRoute": {
-                        "type": "boolean",
-                        "description": "Only valid in 'spoke' mode. Indicates whether default route traffic should be sent to this hub."
-                      }
-                    },
-                    "required": [
-                      "hubId"
-                    ]
-                  },
-                  "description": "The list of VPN hubs, in order of preference. In spoke mode, at least 1 hub is required."
-                },
-                "subnets": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "localSubnet": {
-                        "type": "string",
-                        "description": "The CIDR notation subnet used within the VPN"
-                      },
-                      "useVpn": {
-                        "type": "boolean",
-                        "description": "Indicates the presence of the subnet in the VPN"
-                      }
-                    },
-                    "required": [
-                      "localSubnet"
-                    ]
-                  },
-                  "description": "The list of subnets and their VPN presence."
-                }
-              },
-              "example": {
-                "mode": "spoke",
-                "hubs": [
-                  {
-                    "hubId": "N_4901849",
-                    "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
-                  }
-                ],
-                "subnets": [
-                  {
-                    "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
-                    "useVpn": true
-                  }
-                ]
-              },
-              "required": [
-                "mode"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "mode": "spoke",
-                "hubs": [
-                  {
-                    "hubId": "N_4901849",
-                    "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
-                  }
-                ],
-                "subnets": [
-                  {
-                    "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
-                    "useVpn": true
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
-        "tags": [
-          "Networks"
-        ]
-      }
-    },
     "/networks/{networkId}/sm/app/polaris": {
       "post": {
         "description": "Create a new Polaris app",
@@ -15335,335 +15708,6 @@
         "summary": "Split a combined network into individual networks for each type of device",
         "tags": [
           "Networks"
-        ]
-      }
-    },
-    "/networks/{networkId}/ssids/{number}/trafficShaping": {
-      "put": {
-        "description": "Update the traffic shaping settings for an SSID on an MR network",
-        "operationId": "updateNetworkSsidTrafficShaping",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "number",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkSsidTrafficShaping",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "trafficShapingEnabled": {
-                  "type": "boolean",
-                  "description": "Whether traffic shaping rules are applied to clients on your SSID."
-                },
-                "defaultRulesEnabled": {
-                  "type": "boolean",
-                  "description": "    Whether default traffic shaping rules are enabled (true) or disabled (false).\n    There are 4 default rules, which can\n    be seen on your network's traffic shaping page. Note that default rules\n    count against the rule limit of 8.\n"
-                },
-                "rules": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "definitions": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "enum": [
-                                "application",
-                                "applicationCategory",
-                                "host",
-                                "port",
-                                "ipRange",
-                                "localNet"
-                              ],
-                              "description": "The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'."
-                            },
-                            "value": {
-                              "type": "string",
-                              "description": "    If \"type\" is 'host', 'port', 'ipRange' or 'localNet', then \"value\" must be a string, matching either\n    a hostname (e.g. \"somesite.com\"), a port (e.g. 8080), or an IP range (\"192.1.0.0\",\n    \"192.1.0.0/16\", or \"10.1.0.0/16:80\"). 'localNet' also supports CIDR notation, excluding\n    custom ports.\n     If \"type\" is 'application' or 'applicationCategory', then \"value\" must be an object\n    with the structure { \"id\": \"meraki:layer7/...\" }, where \"id\" is the application category or\n    application ID (for a list of IDs for your network, use the trafficShaping/applicationCategories\n    endpoint).\n"
-                            }
-                          },
-                          "required": [
-                            "type",
-                            "value"
-                          ]
-                        },
-                        "description": "    A list of objects describing the definitions of your traffic shaping rule. At least one definition is required.\n"
-                      },
-                      "perClientBandwidthLimits": {
-                        "type": "object",
-                        "properties": {
-                          "settings": {
-                            "type": "string",
-                            "description": "How bandwidth limits are applied by your rule. Can be one of 'network default', 'ignore' or 'custom'."
-                          },
-                          "bandwidthLimits": {
-                            "type": "object",
-                            "properties": {
-                              "limitUp": {
-                                "type": "integer",
-                                "description": "The maximum upload limit (integer, in Kbps)."
-                              },
-                              "limitDown": {
-                                "type": "integer",
-                                "description": "The maximum download limit (integer, in Kbps)."
-                              }
-                            },
-                            "description": "The bandwidth limits object, specifying the upload ('limitUp') and download ('limitDown') speed in Kbps. These are only enforced if 'settings' is set to 'custom'."
-                          }
-                        },
-                        "description": "    An object describing the bandwidth settings for your rule.\n"
-                      },
-                      "dscpTagValue": {
-                        "type": "integer",
-                        "description": "    The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.\n    For a list of possible tag values, use the trafficShaping/dscpTaggingOptions endpoint.\n"
-                      },
-                      "pcpTagValue": {
-                        "type": "integer",
-                        "description": "    The PCP tag applied by your rule. Can be 0 (lowest priority) through 7 (highest priority).\n    null means 'Do not set PCP tag'.\n"
-                      }
-                    },
-                    "required": [
-                      "definitions"
-                    ]
-                  },
-                  "description": "    An array of traffic shaping rules. Rules are applied in the order that\n    they are specified in. An empty list (or null) means no rules. Note that\n    you are allowed a maximum of 8 rules.\n"
-                }
-              },
-              "example": {
-                "trafficShapingEnabled": true,
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "trafficShapingEnabled": true,
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the traffic shaping settings for an SSID on an MR network",
-        "tags": [
-          "Traffic shaping"
-        ]
-      },
-      "get": {
-        "description": "Display the traffic shaping settings for a SSID on an MR network",
-        "operationId": "getNetworkSsidTrafficShaping",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "number",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "trafficShapingEnabled": true,
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Display the traffic shaping settings for a SSID on an MR network",
-        "tags": [
-          "Traffic shaping"
         ]
       }
     },
@@ -19162,9 +19206,15 @@
           },
           {
             "type": "string",
+            "enum": [
+              "combined",
+              "wireless",
+              "switch",
+              "appliance"
+            ],
             "name": "deviceType",
             "in": "query",
-            "description": "    Filter the data by device type: combined (default), wireless, switch, appliance.\n    When using combined, for each rule the data will come from the device type with the most usage.\n"
+            "description": "    Filter the data by device type: 'combined', 'wireless', 'switch' or 'appliance'. Defaults to 'combined'.\n    When using 'combined', for each rule the data will come from the device type with the most usage.\n"
           }
         ],
         "responses": {
@@ -19389,316 +19439,6 @@
         "summary": "Update the traffic analysis settings for a network",
         "tags": [
           "Traffic analysis settings"
-        ]
-      }
-    },
-    "/networks/{networkId}/trafficShaping": {
-      "put": {
-        "description": "Update the traffic shaping settings for an MX network",
-        "operationId": "updateNetworkTrafficShaping",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkTrafficShaping",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "defaultRulesEnabled": {
-                  "type": "boolean",
-                  "description": "    Whether default traffic shaping rules are enabled (true) or disabled (false).\n    There are 4 default rules, which can\n    be seen on your network's traffic shaping page. Note that default rules\n    count against the rule limit of 8.\n"
-                },
-                "rules": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "definitions": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "type": {
-                              "type": "string",
-                              "enum": [
-                                "application",
-                                "applicationCategory",
-                                "host",
-                                "port",
-                                "ipRange",
-                                "localNet"
-                              ],
-                              "description": "The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'."
-                            },
-                            "value": {
-                              "type": "string",
-                              "description": "    If \"type\" is 'host', 'port', 'ipRange' or 'localNet', then \"value\" must be a string, matching either\n    a hostname (e.g. \"somesite.com\"), a port (e.g. 8080), or an IP range (\"192.1.0.0\",\n    \"192.1.0.0/16\", or \"10.1.0.0/16:80\"). 'localNet' also supports CIDR notation, excluding\n    custom ports.\n     If \"type\" is 'application' or 'applicationCategory', then \"value\" must be an object\n    with the structure { \"id\": \"meraki:layer7/...\" }, where \"id\" is the application category or\n    application ID (for a list of IDs for your network, use the trafficShaping/applicationCategories\n    endpoint).\n"
-                            }
-                          },
-                          "required": [
-                            "type",
-                            "value"
-                          ]
-                        },
-                        "description": "    A list of objects describing the definitions of your traffic shaping rule. At least one definition is required.\n"
-                      },
-                      "perClientBandwidthLimits": {
-                        "type": "object",
-                        "properties": {
-                          "settings": {
-                            "type": "string",
-                            "description": "How bandwidth limits are applied by your rule. Can be one of 'network default', 'ignore' or 'custom'."
-                          },
-                          "bandwidthLimits": {
-                            "type": "object",
-                            "properties": {
-                              "limitUp": {
-                                "type": "integer",
-                                "description": "The maximum upload limit (integer, in Kbps)."
-                              },
-                              "limitDown": {
-                                "type": "integer",
-                                "description": "The maximum download limit (integer, in Kbps)."
-                              }
-                            },
-                            "description": "The bandwidth limits object, specifying the upload ('limitUp') and download ('limitDown') speed in Kbps. These are only enforced if 'settings' is set to 'custom'."
-                          }
-                        },
-                        "description": "    An object describing the bandwidth settings for your rule.\n"
-                      },
-                      "dscpTagValue": {
-                        "type": "integer",
-                        "description": "    The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.\n    For a list of possible tag values, use the trafficShaping/dscpTaggingOptions endpoint.\n"
-                      },
-                      "priority": {
-                        "type": "string",
-                        "description": "    A string, indicating the priority level for packets bound to your rule.\n    Can be 'low', 'normal' or 'high'.\n"
-                      }
-                    },
-                    "required": [
-                      "definitions"
-                    ]
-                  },
-                  "description": "    An array of traffic shaping rules. Rules are applied in the order that\n    they are specified in. An empty list (or null) means no rules. Note that\n    you are allowed a maximum of 8 rules.\n"
-                }
-              },
-              "example": {
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "priority": "normal"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "priority": "normal"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the traffic shaping settings for an MX network",
-        "tags": [
-          "Traffic shaping"
-        ]
-      },
-      "get": {
-        "description": "Display the traffic shaping settings for an MX network",
-        "operationId": "getNetworkTrafficShaping",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "defaultRulesEnabled": true,
-                "rules": [
-                  {
-                    "definitions": [
-                      {
-                        "type": "host",
-                        "value": "google.com"
-                      },
-                      {
-                        "type": "port",
-                        "value": "9090"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "192.1.0.0/16"
-                      },
-                      {
-                        "type": "ipRange",
-                        "value": "10.1.0.0/16:80"
-                      },
-                      {
-                        "type": "localNet",
-                        "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
-                      }
-                    ],
-                    "perClientBandwidthLimits": {
-                      "settings": "custom",
-                      "bandwidthLimits": {
-                        "limitUp": 1000000,
-                        "limitDown": 1000000
-                      }
-                    },
-                    "dscpTagValue": null,
-                    "priority": "normal"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Display the traffic shaping settings for an MX network",
-        "tags": [
-          "Traffic shaping"
         ]
       }
     },
@@ -22319,6 +22059,21 @@
                 "lanIsolationEnabled": {
                   "type": "boolean",
                   "description": "Boolean indicating whether Layer 2 LAN isolation should be enabled or disabled. Only configurable when ipAssignmentMode is 'Bridge mode'."
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether APs should advertise or hide this SSID. APs will only broadcast this SSID if set to true"
+                },
+                "availableOnAllAps": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether all APs should broadcast the SSID or if it should be restricted to APs matching any availability tags. Can only be false if the SSID has availability tags."
+                },
+                "availabilityTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Accepts a list of tags for this SSID. If availableOnAllAps is false, then the SSID will only be broadcast by APs with tags matching any of the tags in this list."
                 }
               },
               "example": {
@@ -22634,6 +22389,335 @@
         "summary": "Modify the splash page settings for the given SSID",
         "tags": [
           "Splash settings"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ssids/{number}/trafficShaping/rules": {
+      "put": {
+        "description": "Update the traffic shaping settings for an SSID on an MR network",
+        "operationId": "updateNetworkWirelessSsidTrafficShapingRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSsidTrafficShapingRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "trafficShapingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether traffic shaping rules are applied to clients on your SSID."
+                },
+                "defaultRulesEnabled": {
+                  "type": "boolean",
+                  "description": "    Whether default traffic shaping rules are enabled (true) or disabled (false).\n    There are 4 default rules, which can\n    be seen on your network's traffic shaping page. Note that default rules\n    count against the rule limit of 8.\n"
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "definitions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "application",
+                                "applicationCategory",
+                                "host",
+                                "port",
+                                "ipRange",
+                                "localNet"
+                              ],
+                              "description": "The type of definition. Can be one of 'application', 'applicationCategory', 'host', 'port', 'ipRange' or 'localNet'."
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "    If \"type\" is 'host', 'port', 'ipRange' or 'localNet', then \"value\" must be a string, matching either\n    a hostname (e.g. \"somesite.com\"), a port (e.g. 8080), or an IP range (\"192.1.0.0\",\n    \"192.1.0.0/16\", or \"10.1.0.0/16:80\"). 'localNet' also supports CIDR notation, excluding\n    custom ports.\n     If \"type\" is 'application' or 'applicationCategory', then \"value\" must be an object\n    with the structure { \"id\": \"meraki:layer7/...\" }, where \"id\" is the application category or\n    application ID (for a list of IDs for your network, use the trafficShaping/applicationCategories\n    endpoint).\n"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "    A list of objects describing the definitions of your traffic shaping rule. At least one definition is required.\n"
+                      },
+                      "perClientBandwidthLimits": {
+                        "type": "object",
+                        "properties": {
+                          "settings": {
+                            "type": "string",
+                            "description": "How bandwidth limits are applied by your rule. Can be one of 'network default', 'ignore' or 'custom'."
+                          },
+                          "bandwidthLimits": {
+                            "type": "object",
+                            "properties": {
+                              "limitUp": {
+                                "type": "integer",
+                                "description": "The maximum upload limit (integer, in Kbps)."
+                              },
+                              "limitDown": {
+                                "type": "integer",
+                                "description": "The maximum download limit (integer, in Kbps)."
+                              }
+                            },
+                            "description": "The bandwidth limits object, specifying the upload ('limitUp') and download ('limitDown') speed in Kbps. These are only enforced if 'settings' is set to 'custom'."
+                          }
+                        },
+                        "description": "    An object describing the bandwidth settings for your rule.\n"
+                      },
+                      "dscpTagValue": {
+                        "type": "integer",
+                        "description": "    The DSCP tag applied by your rule. null means 'Do not change DSCP tag'.\n    For a list of possible tag values, use the trafficShaping/dscpTaggingOptions endpoint.\n"
+                      },
+                      "pcpTagValue": {
+                        "type": "integer",
+                        "description": "    The PCP tag applied by your rule. Can be 0 (lowest priority) through 7 (highest priority).\n    null means 'Do not set PCP tag'.\n"
+                      }
+                    },
+                    "required": [
+                      "definitions"
+                    ]
+                  },
+                  "description": "    An array of traffic shaping rules. Rules are applied in the order that\n    they are specified in. An empty list (or null) means no rules. Note that\n    you are allowed a maximum of 8 rules.\n"
+                }
+              },
+              "example": {
+                "trafficShapingEnabled": true,
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "pcpTagValue": null
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "trafficShapingEnabled": true,
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "pcpTagValue": null
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the traffic shaping settings for an SSID on an MR network",
+        "tags": [
+          "Traffic shaping"
+        ]
+      },
+      "get": {
+        "description": "Display the traffic shaping settings for a SSID on an MR network",
+        "operationId": "getNetworkWirelessSsidTrafficShapingRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "trafficShapingEnabled": true,
+                "defaultRulesEnabled": true,
+                "rules": [
+                  {
+                    "definitions": [
+                      {
+                        "type": "host",
+                        "value": "google.com"
+                      },
+                      {
+                        "type": "port",
+                        "value": "9090"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "192.1.0.0/16"
+                      },
+                      {
+                        "type": "ipRange",
+                        "value": "10.1.0.0/16:80"
+                      },
+                      {
+                        "type": "localNet",
+                        "value": "192.168.0.0/16"
+                      },
+                      {
+                        "type": "applicationCategory",
+                        "value": {
+                          "id": "meraki:layer7/category/2",
+                          "name": "Blogging"
+                        }
+                      },
+                      {
+                        "type": "application",
+                        "value": {
+                          "id": "meraki:layer7/application/133",
+                          "name": "Battle.net"
+                        }
+                      }
+                    ],
+                    "perClientBandwidthLimits": {
+                      "settings": "custom",
+                      "bandwidthLimits": {
+                        "limitUp": 1000000,
+                        "limitDown": 1000000
+                      }
+                    },
+                    "dscpTagValue": null,
+                    "pcpTagValue": null
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Display the traffic shaping settings for a SSID on an MR network",
+        "tags": [
+          "Traffic shaping"
         ]
       }
     },
@@ -24536,7 +24620,7 @@
     "/organizations/{organizationId}/claim": {
       "post": {
         "description": "Claim a list of devices, licenses, and/or orders into an organization. When claiming by order, all devices and licenses in the order will be claimed; licenses will be added to the organization and devices will be placed in the organization's inventory.",
-        "operationId": "claimOrganization",
+        "operationId": "claimIntoOrganization",
         "parameters": [
           {
             "name": "organizationId",
@@ -24545,7 +24629,7 @@
             "required": true
           },
           {
-            "name": "claimOrganization",
+            "name": "claimIntoOrganization",
             "in": "body",
             "schema": {
               "type": "object",
@@ -26966,7 +27050,10 @@
                         "disabled"
                       ],
                       "childLifetime": 28800
-                    }
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
                   },
                   {
                     "name": "My peer 2",
@@ -26977,6 +27064,9 @@
                       "192.168.129.0/24"
                     ],
                     "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -27142,7 +27232,10 @@
                         "disabled"
                       ],
                       "childLifetime": 28800
-                    }
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
                   },
                   {
                     "name": "My peer 2",
@@ -27153,6 +27246,9 @@
                       "192.168.129.0/24"
                     ],
                     "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -27203,7 +27299,10 @@
                         "disabled"
                       ],
                       "childLifetime": 28800
-                    }
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
                   },
                   {
                     "name": "My peer 2",
@@ -27214,6 +27313,9 @@
                       "192.168.129.0/24"
                     ],
                     "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -27903,7 +28005,7 @@
     {
       "group": "Management interface settings",
       "summary": "Update the management interface settings for a device",
-      "resource": "/devices/{serial}/managementInterfaceSettings",
+      "resource": "/devices/{serial}/managementInterface",
       "operation": "update"
     },
     {
@@ -27975,7 +28077,7 @@
     {
       "group": "Quality and retention setting",
       "summary": "Update quality and retention settings for the given camera",
-      "resource": "/devices/{serial}/camera/qualityAndRetentionSettings",
+      "resource": "/devices/{serial}/camera/qualityAndRetention",
       "operation": "update"
     },
     {
@@ -28011,7 +28113,7 @@
     {
       "group": "Site to site vpn",
       "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
-      "resource": "/networks/{networkId}/siteToSiteVpn",
+      "resource": "/networks/{networkId}/appliance/vpn/siteToSiteVpn",
       "operation": "update"
     },
     {
@@ -28046,14 +28148,14 @@
     },
     {
       "group": "Traffic shaping settings",
-      "summary": "Update the traffic shaping settings for an SSID on an MR network",
-      "resource": "/networks/{networkId}/ssids/{number}/trafficShaping",
+      "summary": "Update the traffic shaping settings for an MX network",
+      "resource": "/networks/{networkId}/appliance/trafficShaping/rules",
       "operation": "update"
     },
     {
       "group": "Traffic shaping settings",
-      "summary": "Update the traffic shaping settings for an MX network",
-      "resource": "/networks/{networkId}/trafficShaping",
+      "summary": "Update the traffic shaping settings for an SSID on an MR network",
+      "resource": "/networks/{networkId}/wireless/ssids/{number}/trafficShaping/rules",
       "operation": "update"
     },
     {
