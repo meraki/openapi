@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.2",
+    "version": "1.0.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 April, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 May, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -200,6 +200,46 @@
         "tags": [
           "devices",
           "configure"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/dhcp/subnets": {
+      "get": {
+        "description": "Return the DHCP subnet information for an appliance",
+        "operationId": "getDeviceApplianceDhcpSubnets",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "subnet": "192.168.1.0/24",
+                  "vlanId": 100,
+                  "usedCount": 2,
+                  "freeCount": 251
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the DHCP subnet information for an appliance",
+        "tags": [
+          "appliance",
+          "monitor",
+          "dhcp",
+          "subnets"
         ]
       }
     },
@@ -3215,6 +3255,16 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sorted order of security events based on event detection time. Order options are 'ascending' or 'descending'. Default is ascending order."
           }
         ],
         "responses": {
@@ -3233,7 +3283,26 @@
             "examples": {
               "application/json": [
                 {
+                  "ts": "2020-03-20T16:00:10.144989Z",
+                  "eventType": "File Scanned",
+                  "clientName": "COMPUTER-M-V78J",
+                  "clientMac": "10:dd:b1:eb:88:f8",
+                  "clientIp": "192.168.128.2",
+                  "srcIp": "192.168.128.2",
+                  "destIp": "119.192.233.48",
+                  "protocol": "http",
+                  "uri": "http://www.favorite-icons.com/program/FavoriteIconsUninstall.exe",
+                  "canonicalName": "PUA.Win.Dropper.Kraddare::1201",
+                  "destinationPort": 80,
+                  "fileHash": "3ec1b9a95fe62aa25fc959643a0f227b76d253094681934daaf628d3574b3463",
+                  "fileType": "MS_EXE",
+                  "fileSizeBytes": 193688,
+                  "disposition": "Malicious",
+                  "action": "Blocked"
+                },
+                {
                   "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
                   "deviceMac": "00:18:0a:01:02:03",
                   "clientMac": "A1:B2:C3:D4:E5:F6",
                   "srcIp": "1.2.3.4:34195",
@@ -3249,6 +3318,7 @@
                 },
                 {
                   "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
                   "deviceMac": "00:18:0a:01:02:03",
                   "clientMac": "A1:B2:C3:D4:E5:F6",
                   "srcIp": "1.2.3.4:56023",
@@ -3421,6 +3491,161 @@
           "appliance",
           "configure",
           "connectivityMonitoringDestinations"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/contentFiltering": {
+      "get": {
+        "description": "Return the content filtering settings for an MX network",
+        "operationId": "getNetworkApplianceContentFiltering",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "allowedUrlPatterns": [
+                  "http://www.example.org",
+                  "http://help.com.au"
+                ],
+                "blockedUrlPatterns": [
+                  "http://www.example.com",
+                  "http://www.betting.com"
+                ],
+                "blockedUrlCategories": [
+                  {
+                    "id": "meraki:contentFiltering/category/1",
+                    "name": "Real Estate"
+                  },
+                  {
+                    "id": "meraki:contentFiltering/category/7",
+                    "name": "Shopping"
+                  }
+                ],
+                "urlCategoryListSize": "topSites"
+              }
+            }
+          }
+        },
+        "summary": "Return the content filtering settings for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "contentFiltering"
+        ]
+      },
+      "put": {
+        "description": "Update the content filtering settings for an MX network",
+        "operationId": "updateNetworkApplianceContentFiltering",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceContentFiltering",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "allowedUrlPatterns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A whitelist of URL patterns to allow"
+                },
+                "blockedUrlPatterns": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A blacklist of URL patterns to block"
+                },
+                "blockedUrlCategories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of URL categories to block"
+                },
+                "urlCategoryListSize": {
+                  "type": "string",
+                  "enum": [
+                    "topSites",
+                    "fullList"
+                  ],
+                  "description": "URL category list size which is either 'topSites' or 'fullList'"
+                }
+              },
+              "example": {
+                "allowedUrlPatterns": [
+                  "http://www.example.org",
+                  "http://help.com.au"
+                ],
+                "blockedUrlPatterns": [
+                  "http://www.example.com",
+                  "http://www.betting.com"
+                ],
+                "blockedUrlCategories": [
+                  "meraki:contentFiltering/category/1",
+                  "meraki:contentFiltering/category/7"
+                ],
+                "urlCategoryListSize": "topSites"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "allowedUrlPatterns": [
+                  "http://www.example.org",
+                  "http://help.com.au"
+                ],
+                "blockedUrlPatterns": [
+                  "http://www.example.com",
+                  "http://www.betting.com"
+                ],
+                "blockedUrlCategories": [
+                  {
+                    "id": "meraki:contentFiltering/category/1",
+                    "name": "Real Estate"
+                  },
+                  {
+                    "id": "meraki:contentFiltering/category/7",
+                    "name": "Shopping"
+                  }
+                ],
+                "urlCategoryListSize": "topSites"
+              }
+            }
+          }
+        },
+        "summary": "Update the content filtering settings for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "contentFiltering"
         ]
       }
     },
@@ -5263,6 +5488,16 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sorted order of security events based on event detection time. Order options are 'ascending' or 'descending'. Default is ascending order."
           }
         ],
         "responses": {
@@ -5281,7 +5516,26 @@
             "examples": {
               "application/json": [
                 {
+                  "ts": "2020-03-20T16:00:10.144989Z",
+                  "eventType": "File Scanned",
+                  "clientName": "COMPUTER-M-V78J",
+                  "clientMac": "10:dd:b1:eb:88:f8",
+                  "clientIp": "192.168.128.2",
+                  "srcIp": "192.168.128.2",
+                  "destIp": "119.192.233.48",
+                  "protocol": "http",
+                  "uri": "http://www.favorite-icons.com/program/FavoriteIconsUninstall.exe",
+                  "canonicalName": "PUA.Win.Dropper.Kraddare::1201",
+                  "destinationPort": 80,
+                  "fileHash": "3ec1b9a95fe62aa25fc959643a0f227b76d253094681934daaf628d3574b3463",
+                  "fileType": "MS_EXE",
+                  "fileSizeBytes": 193688,
+                  "disposition": "Malicious",
+                  "action": "Blocked"
+                },
+                {
                   "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
                   "deviceMac": "00:18:0a:01:02:03",
                   "clientMac": "A1:B2:C3:D4:E5:F6",
                   "srcIp": "1.2.3.4:34195",
@@ -5297,6 +5551,7 @@
                 },
                 {
                   "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
                   "deviceMac": "00:18:0a:01:02:03",
                   "clientMac": "A1:B2:C3:D4:E5:F6",
                   "srcIp": "1.2.3.4:56023",
@@ -5666,6 +5921,441 @@
           "configure",
           "security",
           "malware"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/singleLan": {
+      "get": {
+        "description": "Return single LAN configuration",
+        "operationId": "getNetworkApplianceSingleLan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "subnet": "192.168.1.0/24",
+                "applianceIp": "192.168.1.1"
+              }
+            }
+          }
+        },
+        "summary": "Return single LAN configuration",
+        "tags": [
+          "appliance",
+          "configure",
+          "singleLan"
+        ]
+      },
+      "put": {
+        "description": "Update single LAN configuration",
+        "operationId": "updateNetworkApplianceSingleLan",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceSingleLan",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet of the single LAN configuration"
+                },
+                "applianceIp": {
+                  "type": "string",
+                  "description": "The appliance IP address of the single LAN"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "subnet": "192.168.1.0/24",
+                "applianceIp": "192.168.1.1"
+              }
+            }
+          }
+        },
+        "summary": "Update single LAN configuration",
+        "tags": [
+          "appliance",
+          "configure",
+          "singleLan"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/staticRoutes": {
+      "get": {
+        "description": "List the static routes for an MX or teleworker network",
+        "operationId": "getNetworkApplianceStaticRoutes",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
+                  "networkId": "N_24329156",
+                  "enabled": true,
+                  "name": "My route",
+                  "subnet": "192.168.1.0/24",
+                  "gatewayIp": "1.2.3.5",
+                  "fixedIpAssignments": {
+                    "22:33:44:55:66:77": {
+                      "ip": "1.2.3.4",
+                      "name": "Some client name"
+                    }
+                  },
+                  "reservedIpRanges": [
+                    {
+                      "start": "192.168.1.0",
+                      "end": "192.168.1.1",
+                      "comment": "A reserved IP range"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the static routes for an MX or teleworker network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticRoutes"
+        ]
+      },
+      "post": {
+        "description": "Add a static route for an MX or teleworker network",
+        "operationId": "createNetworkApplianceStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkApplianceStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet of the static route"
+                },
+                "gatewayIp": {
+                  "type": "string",
+                  "description": "The gateway IP (next hop) of the static route"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "gatewayIp": "1.2.3.5"
+              },
+              "required": [
+                "name",
+                "subnet",
+                "gatewayIp"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
+                "networkId": "N_24329156",
+                "enabled": true,
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+
+                },
+                "reservedIpRanges": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Add a static route for an MX or teleworker network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticRoutes"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/staticRoutes/{staticRouteId}": {
+      "get": {
+        "description": "Return a static route for an MX or teleworker network",
+        "operationId": "getNetworkApplianceStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
+                "networkId": "N_24329156",
+                "enabled": true,
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a static route for an MX or teleworker network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticRoutes"
+        ]
+      },
+      "put": {
+        "description": "Update a static route for an MX or teleworker network",
+        "operationId": "updateNetworkApplianceStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet of the static route"
+                },
+                "gatewayIp": {
+                  "type": "string",
+                  "description": "The gateway IP (next hop) of the static route"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "The enabled state of the static route"
+                },
+                "fixedIpAssignments": {
+                  "type": "object",
+                  "properties": {
+
+                  },
+                  "description": "The DHCP fixed IP assignments on the static route. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
+                },
+                "reservedIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "The first IP in the reserved range"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "The last IP in the reserved range"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "A text comment for the reserved range"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end",
+                      "comment"
+                    ]
+                  },
+                  "description": "The DHCP reserved IP ranges on the static route"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
+                "networkId": "N_24329156",
+                "enabled": true,
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "gatewayIp": "1.2.3.5",
+                "fixedIpAssignments": {
+                  "22:33:44:55:66:77": {
+                    "ip": "1.2.3.4",
+                    "name": "Some client name"
+                  }
+                },
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.1",
+                    "comment": "A reserved IP range"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a static route for an MX or teleworker network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticRoutes"
+        ]
+      },
+      "delete": {
+        "description": "Delete a static route from an MX or teleworker network",
+        "operationId": "deleteNetworkApplianceStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a static route from an MX or teleworker network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticRoutes"
         ]
       }
     },
@@ -7192,6 +7882,179 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/warmSpare": {
+      "get": {
+        "description": "Return MX warm spare settings",
+        "operationId": "getNetworkApplianceWarmSpare",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "primarySerial": "Q234-ABCD-5678",
+                "spareSerial": "Q234-ABCD-5678",
+                "uplinkMode": "virtual",
+                "wan1": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.1.0/24"
+                },
+                "wan2": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.128.0/24"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return MX warm spare settings",
+        "tags": [
+          "appliance",
+          "configure",
+          "warmSpare"
+        ]
+      },
+      "put": {
+        "description": "Update MX warm spare settings",
+        "operationId": "updateNetworkApplianceWarmSpare",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceWarmSpare",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable warm spare"
+                },
+                "spareSerial": {
+                  "type": "string",
+                  "description": "Serial number of the warm spare appliance"
+                },
+                "uplinkMode": {
+                  "type": "string",
+                  "description": "Uplink mode, either virtual or public"
+                },
+                "virtualIp1": {
+                  "type": "string",
+                  "description": "The WAN 1 shared IP"
+                },
+                "virtualIp2": {
+                  "type": "string",
+                  "description": "The WAN 2 shared IP"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "spareSerial": "Q234-ABCD-5678",
+                "uplinkMode": "virtual",
+                "virtualIp1": "1.2.3.4",
+                "virtualIp2": "1.2.3.4"
+              },
+              "required": [
+                "enabled"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "primarySerial": "Q234-ABCD-5678",
+                "spareSerial": "Q234-ABCD-5678",
+                "uplinkMode": "virtual",
+                "wan1": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.1.0/24"
+                },
+                "wan2": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.128.0/24"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update MX warm spare settings",
+        "tags": [
+          "appliance",
+          "configure",
+          "warmSpare"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/warmSpare/swap": {
+      "post": {
+        "description": "Swap MX primary and warm spare appliances",
+        "operationId": "swapNetworkApplianceWarmSpare",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "primarySerial": "Q234-ABCD-5678",
+                "spareSerial": "Q234-ABCD-5678",
+                "uplinkMode": "virtual",
+                "wan1": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.1.0/24"
+                },
+                "wan2": {
+                  "ip": "1.2.3.4",
+                  "subnet": "192.168.128.0/24"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Swap MX primary and warm spare appliances",
+        "tags": [
+          "appliance",
+          "configure",
+          "warmSpare"
+        ]
+      }
+    },
     "/networks/{networkId}/bind": {
       "post": {
         "description": "Bind a network to a template.",
@@ -8428,125 +9291,6 @@
         ]
       }
     },
-    "/networks/{networkId}/cellularGateway/settings/subnetPool": {
-      "get": {
-        "description": "Return the subnet pool and mask configured for MGs in the network.",
-        "operationId": "getNetworkCellularGatewaySettingsSubnetPool",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "cidr": "192.168.0.0/16",
-                "mask": "24",
-                "subnets": [
-                  {
-                    "serial": "AAAA-AAAA-AAAA",
-                    "name": "my first MG",
-                    "applianceIp": "192.168.0.1",
-                    "subnet": "192.168.0.0/24"
-                  },
-                  {
-                    "serial": "BBBB-BBBB-BBBB",
-                    "name": "my second MG",
-                    "applianceIp": "192.168.0.33",
-                    "subnet": "192.168.0.32/24"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Return the subnet pool and mask configured for MGs in the network.",
-        "tags": [
-          "cellularGateway",
-          "configure",
-          "settings",
-          "subnetPool"
-        ]
-      },
-      "put": {
-        "description": "Update the subnet pool and mask configuration for MGs in the network.",
-        "operationId": "updateNetworkCellularGatewaySettingsSubnetPool",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkCellularGatewaySettingsSubnetPool",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "mask": {
-                  "type": "integer",
-                  "description": "Mask used for the subnet of all MGs in  this network."
-                },
-                "cidr": {
-                  "type": "string",
-                  "description": "CIDR of the pool of subnets. Each MG in this network will automatically pick a subnet from this pool."
-                }
-              },
-              "example": {
-                "cidr": "192.168.0.0/16",
-                "mask": "24"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "cidr": "192.168.0.0/16",
-                "mask": "24",
-                "subnets": [
-                  {
-                    "serial": "AAAA-AAAA-AAAA",
-                    "name": "my first MG",
-                    "applianceIp": "192.168.0.1",
-                    "subnet": "192.168.0.0/24"
-                  },
-                  {
-                    "serial": "BBBB-BBBB-BBBB",
-                    "name": "my second MG",
-                    "applianceIp": "192.168.0.33",
-                    "subnet": "192.168.0.32/24"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the subnet pool and mask configuration for MGs in the network.",
-        "tags": [
-          "cellularGateway",
-          "configure",
-          "settings",
-          "subnetPool"
-        ]
-      }
-    },
     "/networks/{networkId}/cellularGateway/settings/uplink": {
       "get": {
         "description": "Returns the uplink settings for your MG network.",
@@ -8644,6 +9388,123 @@
           "configure",
           "settings",
           "uplink"
+        ]
+      }
+    },
+    "/networks/{networkId}/cellularGateway/subnetPool": {
+      "get": {
+        "description": "Return the subnet pool and mask configured for MGs in the network.",
+        "operationId": "getNetworkCellularGatewaySubnetPool",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24",
+                "subnets": [
+                  {
+                    "serial": "AAAA-AAAA-AAAA",
+                    "name": "my first MG",
+                    "applianceIp": "192.168.0.1",
+                    "subnet": "192.168.0.0/24"
+                  },
+                  {
+                    "serial": "BBBB-BBBB-BBBB",
+                    "name": "my second MG",
+                    "applianceIp": "192.168.0.33",
+                    "subnet": "192.168.0.32/24"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the subnet pool and mask configured for MGs in the network.",
+        "tags": [
+          "cellularGateway",
+          "configure",
+          "subnetPool"
+        ]
+      },
+      "put": {
+        "description": "Update the subnet pool and mask configuration for MGs in the network.",
+        "operationId": "updateNetworkCellularGatewaySubnetPool",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCellularGatewaySubnetPool",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mask": {
+                  "type": "integer",
+                  "description": "Mask used for the subnet of all MGs in  this network."
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR of the pool of subnets. Each MG in this network will automatically pick a subnet from this pool."
+                }
+              },
+              "example": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "cidr": "192.168.0.0/16",
+                "mask": "24",
+                "subnets": [
+                  {
+                    "serial": "AAAA-AAAA-AAAA",
+                    "name": "my first MG",
+                    "applianceIp": "192.168.0.1",
+                    "subnet": "192.168.0.0/24"
+                  },
+                  {
+                    "serial": "BBBB-BBBB-BBBB",
+                    "name": "my second MG",
+                    "applianceIp": "192.168.0.33",
+                    "subnet": "192.168.0.32/24"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the subnet pool and mask configuration for MGs in the network.",
+        "tags": [
+          "cellularGateway",
+          "configure",
+          "subnetPool"
         ]
       }
     },
@@ -9806,161 +10667,6 @@
           "monitor",
           "clients",
           "usageHistory"
-        ]
-      }
-    },
-    "/networks/{networkId}/contentFiltering": {
-      "get": {
-        "description": "Return the content filtering settings for an MX network",
-        "operationId": "getNetworkContentFiltering",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "allowedUrlPatterns": [
-                  "http://www.example.org",
-                  "http://help.com.au"
-                ],
-                "blockedUrlPatterns": [
-                  "http://www.example.com",
-                  "http://www.betting.com"
-                ],
-                "blockedUrlCategories": [
-                  {
-                    "id": "meraki:contentFiltering/category/1",
-                    "name": "Real Estate"
-                  },
-                  {
-                    "id": "meraki:contentFiltering/category/7",
-                    "name": "Shopping"
-                  }
-                ],
-                "urlCategoryListSize": "topSites"
-              }
-            }
-          }
-        },
-        "summary": "Return the content filtering settings for an MX network",
-        "tags": [
-          "networks",
-          "configure",
-          "contentFiltering"
-        ]
-      },
-      "put": {
-        "description": "Update the content filtering settings for an MX network",
-        "operationId": "updateNetworkContentFiltering",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkContentFiltering",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "allowedUrlPatterns": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "A whitelist of URL patterns to allow"
-                },
-                "blockedUrlPatterns": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "A blacklist of URL patterns to block"
-                },
-                "blockedUrlCategories": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "A list of URL categories to block"
-                },
-                "urlCategoryListSize": {
-                  "type": "string",
-                  "enum": [
-                    "topSites",
-                    "fullList"
-                  ],
-                  "description": "URL category list size which is either 'topSites' or 'fullList'"
-                }
-              },
-              "example": {
-                "allowedUrlPatterns": [
-                  "http://www.example.org",
-                  "http://help.com.au"
-                ],
-                "blockedUrlPatterns": [
-                  "http://www.example.com",
-                  "http://www.betting.com"
-                ],
-                "blockedUrlCategories": [
-                  "meraki:contentFiltering/category/1",
-                  "meraki:contentFiltering/category/7"
-                ],
-                "urlCategoryListSize": "topSites"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "allowedUrlPatterns": [
-                  "http://www.example.org",
-                  "http://help.com.au"
-                ],
-                "blockedUrlPatterns": [
-                  "http://www.example.com",
-                  "http://www.betting.com"
-                ],
-                "blockedUrlCategories": [
-                  {
-                    "id": "meraki:contentFiltering/category/1",
-                    "name": "Real Estate"
-                  },
-                  {
-                    "id": "meraki:contentFiltering/category/7",
-                    "name": "Shopping"
-                  }
-                ],
-                "urlCategoryListSize": "topSites"
-              }
-            }
-          }
-        },
-        "summary": "Update the content filtering settings for an MX network",
-        "tags": [
-          "networks",
-          "configure",
-          "contentFiltering"
         ]
       }
     },
@@ -13806,10 +14512,10 @@
         ]
       }
     },
-    "/networks/{networkId}/netflowSettings": {
+    "/networks/{networkId}/netflow": {
       "get": {
         "description": "Return the NetFlow traffic reporting settings for a network",
-        "operationId": "getNetworkNetflowSettings",
+        "operationId": "getNetworkNetflow",
         "parameters": [
           {
             "name": "networkId",
@@ -13838,12 +14544,12 @@
         "tags": [
           "networks",
           "configure",
-          "netflowSettings"
+          "netflow"
         ]
       },
       "put": {
         "description": "Update the NetFlow traffic reporting settings for a network",
-        "operationId": "updateNetworkNetflowSettings",
+        "operationId": "updateNetworkNetflow",
         "parameters": [
           {
             "name": "networkId",
@@ -13852,7 +14558,7 @@
             "required": true
           },
           {
-            "name": "updateNetworkNetflowSettings",
+            "name": "updateNetworkNetflow",
             "in": "body",
             "schema": {
               "type": "object",
@@ -13898,7 +14604,7 @@
         "tags": [
           "networks",
           "configure",
-          "netflowSettings"
+          "netflow"
         ]
       }
     },
@@ -15879,7 +16585,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all the profiles in the network",
+        "description": "List all profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -15897,32 +16603,24 @@
               "x-is-dynamic": true
             },
             "examples": {
-              "application/json": {
-                "profiles": [
-                  {
-                    "id": "1234",
-                    "payload_display_name": "API Profile",
-                    "payload_identifier": "com.meraki.sm.1",
-                    "payload_description": "API docs test",
-                    "scope": "some",
-                    "tags": [
-                      "tag1",
-                      "tag2"
-                    ],
-                    "wifis": [
-
-                    ],
-                    "payload_types": [
-                      "Privacy",
-                      "Document"
-                    ]
-                  }
-                ]
-              }
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "WiFi/VPN Profile",
+                  "description": "This contains WiFi and VPN settings for authorized users.",
+                  "scope": "with",
+                  "tags": [
+                    "tag1",
+                    "tag2",
+                    "tag3"
+                  ],
+                  "targetGroupId": null
+                }
+              ]
             }
           }
         },
-        "summary": "List all the profiles in the network",
+        "summary": "List all profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -16370,10 +17068,10 @@
         ]
       }
     },
-    "/networks/{networkId}/snmpSettings": {
+    "/networks/{networkId}/snmp": {
       "get": {
         "description": "Return the SNMP settings for a network",
-        "operationId": "getNetworkSnmpSettings",
+        "operationId": "getNetworkSnmp",
         "parameters": [
           {
             "name": "networkId",
@@ -16406,12 +17104,12 @@
         "tags": [
           "networks",
           "configure",
-          "snmpSettings"
+          "snmp"
         ]
       },
       "put": {
         "description": "Update the SNMP settings for a network",
-        "operationId": "updateNetworkSnmpSettings",
+        "operationId": "updateNetworkSnmp",
         "parameters": [
           {
             "name": "networkId",
@@ -16420,7 +17118,7 @@
             "required": true
           },
           {
-            "name": "updateNetworkSnmpSettings",
+            "name": "updateNetworkSnmp",
             "in": "body",
             "schema": {
               "type": "object",
@@ -16496,7 +17194,7 @@
         "tags": [
           "networks",
           "configure",
-          "snmpSettings"
+          "snmp"
         ]
       }
     },
@@ -16628,397 +17326,6 @@
           }
         },
         "summary": "Split a combined network into individual networks for each type of device",
-        "tags": [
-          "networks",
-          "configure"
-        ]
-      }
-    },
-    "/networks/{networkId}/staticRoutes": {
-      "get": {
-        "description": "List the static routes for an MX or teleworker network",
-        "operationId": "getNetworkStaticRoutes",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
-                  "networkId": "N_24329156",
-                  "enabled": true,
-                  "name": "My route",
-                  "subnet": "192.168.1.0/24",
-                  "gatewayIp": "1.2.3.5",
-                  "fixedIpAssignments": {
-                    "22:33:44:55:66:77": {
-                      "ip": "1.2.3.4",
-                      "name": "Some client name"
-                    }
-                  },
-                  "reservedIpRanges": [
-                    {
-                      "start": "192.168.1.0",
-                      "end": "192.168.1.1",
-                      "comment": "A reserved IP range"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the static routes for an MX or teleworker network",
-        "tags": [
-          "networks",
-          "configure",
-          "staticRoutes"
-        ]
-      },
-      "post": {
-        "description": "Add a static route for an MX or teleworker network",
-        "operationId": "createNetworkStaticRoute",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkStaticRoute",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name of the new static route"
-                },
-                "subnet": {
-                  "type": "string",
-                  "description": "The subnet of the static route"
-                },
-                "gatewayIp": {
-                  "type": "string",
-                  "description": "The gateway IP (next hop) of the static route"
-                }
-              },
-              "example": {
-                "name": "My route",
-                "subnet": "192.168.1.0/24",
-                "gatewayIp": "1.2.3.5"
-              },
-              "required": [
-                "name",
-                "subnet",
-                "gatewayIp"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
-                "networkId": "N_24329156",
-                "enabled": true,
-                "name": "My route",
-                "subnet": "192.168.1.0/24",
-                "gatewayIp": "1.2.3.5",
-                "fixedIpAssignments": {
-
-                },
-                "reservedIpRanges": [
-
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Add a static route for an MX or teleworker network",
-        "tags": [
-          "networks",
-          "configure",
-          "staticRoutes"
-        ]
-      }
-    },
-    "/networks/{networkId}/staticRoutes/{staticRouteId}": {
-      "get": {
-        "description": "Return a static route for an MX or teleworker network",
-        "operationId": "getNetworkStaticRoute",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticRouteId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
-                "networkId": "N_24329156",
-                "enabled": true,
-                "name": "My route",
-                "subnet": "192.168.1.0/24",
-                "gatewayIp": "1.2.3.5",
-                "fixedIpAssignments": {
-                  "22:33:44:55:66:77": {
-                    "ip": "1.2.3.4",
-                    "name": "Some client name"
-                  }
-                },
-                "reservedIpRanges": [
-                  {
-                    "start": "192.168.1.0",
-                    "end": "192.168.1.1",
-                    "comment": "A reserved IP range"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Return a static route for an MX or teleworker network",
-        "tags": [
-          "networks",
-          "configure",
-          "staticRoutes"
-        ]
-      },
-      "put": {
-        "description": "Update a static route for an MX or teleworker network",
-        "operationId": "updateNetworkStaticRoute",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticRouteId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkStaticRoute",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The name of the static route"
-                },
-                "subnet": {
-                  "type": "string",
-                  "description": "The subnet of the static route"
-                },
-                "gatewayIp": {
-                  "type": "string",
-                  "description": "The gateway IP (next hop) of the static route"
-                },
-                "enabled": {
-                  "type": "boolean",
-                  "description": "The enabled state of the static route"
-                },
-                "fixedIpAssignments": {
-                  "type": "object",
-                  "properties": {
-
-                  },
-                  "description": "The DHCP fixed IP assignments on the static route. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
-                },
-                "reservedIpRanges": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "start": {
-                        "type": "string",
-                        "description": "The first IP in the reserved range"
-                      },
-                      "end": {
-                        "type": "string",
-                        "description": "The last IP in the reserved range"
-                      },
-                      "comment": {
-                        "type": "string",
-                        "description": "A text comment for the reserved range"
-                      }
-                    },
-                    "required": [
-                      "start",
-                      "end",
-                      "comment"
-                    ]
-                  },
-                  "description": "The DHCP reserved IP ranges on the static route"
-                }
-              },
-              "example": {
-                "name": "My route",
-                "subnet": "192.168.1.0/24",
-                "fixedIpAssignments": {
-                  "22:33:44:55:66:77": {
-                    "ip": "1.2.3.4",
-                    "name": "Some client name"
-                  }
-                },
-                "reservedIpRanges": [
-                  {
-                    "start": "192.168.1.0",
-                    "end": "192.168.1.1",
-                    "comment": "A reserved IP range"
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "id": "d7fa4948-7921-4dfa-af6b-ae8b16c20c39",
-                "networkId": "N_24329156",
-                "enabled": true,
-                "name": "My route",
-                "subnet": "192.168.1.0/24",
-                "gatewayIp": "1.2.3.5",
-                "fixedIpAssignments": {
-                  "22:33:44:55:66:77": {
-                    "ip": "1.2.3.4",
-                    "name": "Some client name"
-                  }
-                },
-                "reservedIpRanges": [
-                  {
-                    "start": "192.168.1.0",
-                    "end": "192.168.1.1",
-                    "comment": "A reserved IP range"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update a static route for an MX or teleworker network",
-        "tags": [
-          "networks",
-          "configure",
-          "staticRoutes"
-        ]
-      },
-      "delete": {
-        "description": "Delete a static route from an MX or teleworker network",
-        "operationId": "deleteNetworkStaticRoute",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticRouteId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete a static route from an MX or teleworker network",
-        "tags": [
-          "networks",
-          "configure",
-          "staticRoutes"
-        ]
-      }
-    },
-    "/networks/{networkId}/swapWarmSpare": {
-      "post": {
-        "description": "Swap MX primary and warm spare appliances",
-        "operationId": "swapNetworkWarmspare",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "enabled": true,
-                "primarySerial": "Q234-ABCD-5678",
-                "spareSerial": "Q234-ABCD-5678",
-                "uplinkMode": "virtual",
-                "wan1": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.1.0/24"
-                },
-                "wan2": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.128.0/24"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Swap MX primary and warm spare appliances",
         "tags": [
           "networks",
           "configure"
@@ -20296,10 +20603,10 @@
         ]
       }
     },
-    "/networks/{networkId}/trafficAnalysisSettings": {
+    "/networks/{networkId}/trafficAnalysis": {
       "get": {
         "description": "Return the traffic analysis settings for a network",
-        "operationId": "getNetworkTrafficAnalysisSettings",
+        "operationId": "getNetworkTrafficAnalysis",
         "parameters": [
           {
             "name": "networkId",
@@ -20353,12 +20660,12 @@
         "tags": [
           "networks",
           "configure",
-          "trafficAnalysisSettings"
+          "trafficAnalysis"
         ]
       },
       "put": {
         "description": "Update the traffic analysis settings for a network",
-        "operationId": "updateNetworkTrafficAnalysisSettings",
+        "operationId": "updateNetworkTrafficAnalysis",
         "parameters": [
           {
             "name": "networkId",
@@ -20367,7 +20674,7 @@
             "required": true
           },
           {
-            "name": "updateNetworkTrafficAnalysisSettings",
+            "name": "updateNetworkTrafficAnalysis",
             "in": "body",
             "schema": {
               "type": "object",
@@ -20491,7 +20798,7 @@
         "tags": [
           "networks",
           "configure",
-          "trafficAnalysisSettings"
+          "trafficAnalysis"
         ]
       }
     },
@@ -20639,134 +20946,6 @@
         "tags": [
           "networks",
           "configure"
-        ]
-      }
-    },
-    "/networks/{networkId}/warmSpareSettings": {
-      "get": {
-        "description": "Return MX warm spare settings",
-        "operationId": "getNetworkWarmSpareSettings",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "enabled": true,
-                "primarySerial": "Q234-ABCD-5678",
-                "spareSerial": "Q234-ABCD-5678",
-                "uplinkMode": "virtual",
-                "wan1": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.1.0/24"
-                },
-                "wan2": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.128.0/24"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Return MX warm spare settings",
-        "tags": [
-          "networks",
-          "configure",
-          "warmSpareSettings"
-        ]
-      },
-      "put": {
-        "description": "Update MX warm spare settings",
-        "operationId": "updateNetworkWarmSpareSettings",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkWarmSpareSettings",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "enabled": {
-                  "type": "boolean",
-                  "description": "Enable warm spare"
-                },
-                "spareSerial": {
-                  "type": "string",
-                  "description": "Serial number of the warm spare appliance"
-                },
-                "uplinkMode": {
-                  "type": "string",
-                  "description": "Uplink mode, either virtual or public"
-                },
-                "virtualIp1": {
-                  "type": "string",
-                  "description": "The WAN 1 shared IP"
-                },
-                "virtualIp2": {
-                  "type": "string",
-                  "description": "The WAN 2 shared IP"
-                }
-              },
-              "example": {
-                "enabled": true,
-                "spareSerial": "Q234-ABCD-5678",
-                "uplinkMode": "virtual",
-                "virtualIp1": "1.2.3.4",
-                "virtualIp2": "1.2.3.4"
-              },
-              "required": [
-                "enabled"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "enabled": true,
-                "primarySerial": "Q234-ABCD-5678",
-                "spareSerial": "Q234-ABCD-5678",
-                "uplinkMode": "virtual",
-                "wan1": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.1.0/24"
-                },
-                "wan2": {
-                  "ip": "1.2.3.4",
-                  "subnet": "192.168.128.0/24"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Update MX warm spare settings",
-        "tags": [
-          "networks",
-          "configure",
-          "warmSpareSettings"
         ]
       }
     },
@@ -22073,6 +22252,74 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/meshStatuses": {
+      "get": {
+        "description": "List wireless mesh statuses for repeaters",
+        "operationId": "getNetworkWirelessMeshStatuses",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 500. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serial": "Q234-ABCD-5678",
+                "meshRoute": [
+                  "Q234-ABCD-5678",
+                  "QWEY-SKTD-ST01",
+                  "QWEY-SKTD-ST02"
+                ],
+                "latestMeshPerformance": {
+                  "mbps": 43,
+                  "metric": 12345,
+                  "usagePercentage": "100%"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List wireless mesh statuses for repeaters",
+        "tags": [
+          "wireless",
+          "monitor",
+          "meshStatuses"
+        ]
+      }
+    },
     "/networks/{networkId}/wireless/rfProfiles": {
       "get": {
         "description": "List the non-basic RF profiles for this network",
@@ -23084,6 +23331,10 @@
                     ]
                   },
                   "description": "The RADIUS 802.1X servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius'"
+                },
+                "radiusProxyEnabled": {
+                  "type": "boolean",
+                  "description": "If true, Meraki devices will proxy RADIUS messages through the Meraki cloud to the configured RADIUS auth and accounting servers."
                 },
                 "radiusCoaEnabled": {
                   "type": "boolean",
@@ -25192,6 +25443,143 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/security/events": {
+      "get": {
+        "description": "List the security events for an organization",
+        "operationId": "getOrganizationApplianceSecurityEvents",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sorted order of security events based on event detection time. Order options are 'ascending' or 'descending'. Default is ascending order."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2020-03-20T16:00:10.144989Z",
+                  "eventType": "File Scanned",
+                  "clientName": "COMPUTER-M-V78J",
+                  "clientMac": "10:dd:b1:eb:88:f8",
+                  "clientIp": "192.168.128.2",
+                  "srcIp": "192.168.128.2",
+                  "destIp": "119.192.233.48",
+                  "protocol": "http",
+                  "uri": "http://www.favorite-icons.com/program/FavoriteIconsUninstall.exe",
+                  "canonicalName": "PUA.Win.Dropper.Kraddare::1201",
+                  "destinationPort": 80,
+                  "fileHash": "3ec1b9a95fe62aa25fc959643a0f227b76d253094681934daaf628d3574b3463",
+                  "fileType": "MS_EXE",
+                  "fileSizeBytes": 193688,
+                  "disposition": "Malicious",
+                  "action": "Blocked"
+                },
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
+                  "deviceMac": "00:18:0a:01:02:03",
+                  "clientMac": "A1:B2:C3:D4:E5:F6",
+                  "srcIp": "1.2.3.4:34195",
+                  "destIp": "10.20.30.40:80",
+                  "protocol": "tcp/ip",
+                  "priority": "2",
+                  "classification": "4",
+                  "blocked": true,
+                  "message": "SERVER-WEBAPP JBoss JMX console access attempt",
+                  "signature": "1:21516:9",
+                  "sigSource": "",
+                  "ruleId": "meraki:intrusion/snort/GID/1/SID/26267"
+                },
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "eventType": "IDS Alert",
+                  "deviceMac": "00:18:0a:01:02:03",
+                  "clientMac": "A1:B2:C3:D4:E5:F6",
+                  "srcIp": "1.2.3.4:56023",
+                  "destIp": "10.20.30.40:80",
+                  "protocol": "tcp/ip",
+                  "priority": "1",
+                  "classification": "33",
+                  "blocked": true,
+                  "message": "POLICY-OTHER Adobe ColdFusion admin interface access attempt",
+                  "signature": "1:25975:2",
+                  "sigSource": "",
+                  "ruleId": "meraki:intrusion/snort/GID/1/SID/26267"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the security events for an organization",
+        "tags": [
+          "appliance",
+          "monitor",
+          "security",
+          "events"
+        ]
+      }
+    },
     "/organizations/{organizationId}/appliance/security/intrusion": {
       "get": {
         "description": "Returns all supported intrusion settings for an organization",
@@ -25320,6 +25708,514 @@
           "configure",
           "security",
           "intrusion"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/appliance/thirdPartyVPNPeers": {
+      "get": {
+        "description": "Return the third party VPN peers for an organization",
+        "operationId": "getOrganizationApplianceThirdPartyVPNPeers",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "peers": [
+                  {
+                    "name": "My peer 1",
+                    "publicIp": "123.123.123.1",
+                    "privateSubnets": [
+                      "192.168.1.0/24",
+                      "192.168.128.0/24"
+                    ],
+                    "secret": "asdf1234",
+                    "ipsecPolicies": {
+                      "ikeCipherAlgo": [
+                        "tripledes"
+                      ],
+                      "ikeAuthAlgo": [
+                        "sha1"
+                      ],
+                      "ikeDiffieHellmanGroup": [
+                        "group2"
+                      ],
+                      "ikeLifetime": 28800,
+                      "childCipherAlgo": [
+                        "aes128"
+                      ],
+                      "childAuthAlgo": [
+                        "sha1"
+                      ],
+                      "childPfsGroup": [
+                        "disabled"
+                      ],
+                      "childLifetime": 28800
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
+                  },
+                  {
+                    "name": "My peer 2",
+                    "publicIp": "123.123.123.2",
+                    "remoteId": "miles@meraki.com",
+                    "privateSubnets": [
+                      "192.168.2.0/24",
+                      "192.168.129.0/24"
+                    ],
+                    "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
+                    "ipsecPoliciesPreset": "default"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the third party VPN peers for an organization",
+        "tags": [
+          "appliance",
+          "configure",
+          "thirdPartyVPNPeers"
+        ]
+      },
+      "put": {
+        "description": "Update the third party VPN peers for an organization",
+        "operationId": "updateOrganizationApplianceThirdPartyVPNPeers",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationApplianceThirdPartyVPNPeers",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "peers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPN peer"
+                      },
+                      "publicIp": {
+                        "type": "string",
+                        "description": "The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
+                      "privateSubnets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The list of the private subnets of the VPN peer"
+                      },
+                      "ipsecPolicies": {
+                        "type": "object",
+                        "properties": {
+                          "ikeCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
+                          },
+                          "ikeAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
+                          },
+                          "ikeDiffieHellmanGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group5', 'group2', 'group1'"
+                          },
+                          "ikeLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 1 SA in seconds."
+                          },
+                          "childCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
+                          },
+                          "childAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
+                          },
+                          "childPfsGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled', 'group5', 'group2', 'group1'"
+                          },
+                          "childLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 2 SA in seconds."
+                          }
+                        },
+                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
+                      },
+                      "ipsecPoliciesPreset": {
+                        "type": "string",
+                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
+                      },
+                      "secret": {
+                        "type": "string",
+                        "description": "The shared secret with the VPN peer"
+                      },
+                      "networkTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "publicIp",
+                      "privateSubnets",
+                      "secret"
+                    ]
+                  },
+                  "description": "The list of VPN peers"
+                }
+              },
+              "example": {
+                "peers": [
+                  {
+                    "name": "My peer 1",
+                    "publicIp": "123.123.123.1",
+                    "privateSubnets": [
+                      "192.168.1.0/24",
+                      "192.168.128.0/24"
+                    ],
+                    "secret": "asdf1234",
+                    "ipsecPolicies": {
+                      "ikeCipherAlgo": [
+                        "tripledes"
+                      ],
+                      "ikeAuthAlgo": [
+                        "sha1"
+                      ],
+                      "ikeDiffieHellmanGroup": [
+                        "group2"
+                      ],
+                      "ikeLifetime": 28800,
+                      "childCipherAlgo": [
+                        "aes128"
+                      ],
+                      "childAuthAlgo": [
+                        "sha1"
+                      ],
+                      "childPfsGroup": [
+                        "disabled"
+                      ],
+                      "childLifetime": 28800
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
+                  },
+                  {
+                    "name": "My peer 2",
+                    "publicIp": "123.123.123.2",
+                    "remoteId": "miles@meraki.com",
+                    "privateSubnets": [
+                      "192.168.2.0/24",
+                      "192.168.129.0/24"
+                    ],
+                    "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
+                    "ipsecPoliciesPreset": "default"
+                  }
+                ]
+              },
+              "required": [
+                "peers"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "peers": [
+                  {
+                    "name": "My peer 1",
+                    "publicIp": "123.123.123.1",
+                    "privateSubnets": [
+                      "192.168.1.0/24",
+                      "192.168.128.0/24"
+                    ],
+                    "secret": "asdf1234",
+                    "ipsecPolicies": {
+                      "ikeCipherAlgo": [
+                        "tripledes"
+                      ],
+                      "ikeAuthAlgo": [
+                        "sha1"
+                      ],
+                      "ikeDiffieHellmanGroup": [
+                        "group2"
+                      ],
+                      "ikeLifetime": 28800,
+                      "childCipherAlgo": [
+                        "aes128"
+                      ],
+                      "childAuthAlgo": [
+                        "sha1"
+                      ],
+                      "childPfsGroup": [
+                        "disabled"
+                      ],
+                      "childLifetime": 28800
+                    },
+                    "networkTags": [
+                      "all"
+                    ]
+                  },
+                  {
+                    "name": "My peer 2",
+                    "publicIp": "123.123.123.2",
+                    "remoteId": "miles@meraki.com",
+                    "privateSubnets": [
+                      "192.168.2.0/24",
+                      "192.168.129.0/24"
+                    ],
+                    "secret": "asdf56785678567856785678",
+                    "networkTags": [
+                      "none"
+                    ],
+                    "ipsecPoliciesPreset": "default"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the third party VPN peers for an organization",
+        "tags": [
+          "appliance",
+          "configure",
+          "thirdPartyVPNPeers"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/appliance/vpn/vpnFirewallRules": {
+      "get": {
+        "description": "Return the firewall rules for an organization's site-to-site VPN",
+        "operationId": "getOrganizationApplianceVpnVpnFirewallRules",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the firewall rules for an organization's site-to-site VPN",
+        "tags": [
+          "appliance",
+          "configure",
+          "vpn",
+          "vpnFirewallRules"
+        ]
+      },
+      "put": {
+        "description": "Update the firewall rules of an organization's site-to-site VPN",
+        "operationId": "updateOrganizationApplianceVpnVpnFirewallRules",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationApplianceVpnVpnFirewallRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (FQDN not supported)"
+                      },
+                      "destPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "destCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation) or 'any' (FQDN not supported)"
+                      },
+                      "syslogEnabled": {
+                        "type": "boolean",
+                        "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol",
+                      "srcCidr",
+                      "destCidr"
+                    ]
+                  },
+                  "description": "An ordered array of the firewall rules (not including the default rule)"
+                },
+                "syslogDefaultRule": {
+                  "type": "boolean",
+                  "description": "Log the special default rule (boolean value - enable only if you've configured a syslog server) (optional)"
+                }
+              },
+              "example": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": 443,
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the firewall rules of an organization's site-to-site VPN",
+        "tags": [
+          "appliance",
+          "configure",
+          "vpn",
+          "vpnFirewallRules"
         ]
       }
     },
@@ -26273,7 +27169,8 @@
                     "appliance",
                     "switch",
                     "wireless"
-                  ]
+                  ],
+                  "timeZone": "America/Los_Angeles"
                 }
               ]
             }
@@ -26285,9 +27182,143 @@
           "configure",
           "configTemplates"
         ]
+      },
+      "post": {
+        "description": "Create a new configuration template",
+        "operationId": "createOrganizationConfigTemplate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationConfigTemplate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                },
+                "copyFromNetworkId": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                }
+              },
+              "example": {
+                "name": "My config template",
+                "timeZone": "America/Los_Angeles"
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "N_24329156",
+                "name": "My config template",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
+                "timeZone": "America/Los_Angeles"
+              }
+            }
+          }
+        },
+        "summary": "Create a new configuration template",
+        "tags": [
+          "organizations",
+          "configure",
+          "configTemplates"
+        ]
       }
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}": {
+      "put": {
+        "description": "Update a configuration template",
+        "operationId": "updateOrganizationConfigTemplate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "configTemplateId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationConfigTemplate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article.</a>"
+                }
+              },
+              "example": {
+                "name": "My config template",
+                "timeZone": "America/Los_Angeles"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "N_24329156",
+                "name": "My config template",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
+                "timeZone": "America/Los_Angeles"
+              }
+            }
+          }
+        },
+        "summary": "Update a configuration template",
+        "tags": [
+          "organizations",
+          "configure",
+          "configTemplates"
+        ]
+      },
       "delete": {
         "description": "Remove a configuration template",
         "operationId": "deleteOrganizationConfigTemplate",
@@ -26311,6 +27342,51 @@
           }
         },
         "summary": "Remove a configuration template",
+        "tags": [
+          "organizations",
+          "configure",
+          "configTemplates"
+        ]
+      },
+      "get": {
+        "description": "Return a single configuration template",
+        "operationId": "getOrganizationConfigTemplate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "configTemplateId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "id": "N_24329156",
+                "name": "My config template",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
+                "timeZone": "America/Los_Angeles"
+              }
+            }
+          }
+        },
+        "summary": "Return a single configuration template",
         "tags": [
           "organizations",
           "configure",
@@ -28550,112 +29626,6 @@
         ]
       }
     },
-    "/organizations/{organizationId}/securityEvents": {
-      "get": {
-        "description": "List the security events for an organization",
-        "operationId": "getOrganizationSecurityEvents",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "t0",
-            "in": "query",
-            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
-          },
-          {
-            "type": "string",
-            "name": "t1",
-            "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
-          },
-          {
-            "type": "number",
-            "format": "float",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
-          },
-          {
-            "type": "integer",
-            "name": "perPage",
-            "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
-          },
-          {
-            "type": "string",
-            "name": "startingAfter",
-            "in": "query",
-            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          },
-          {
-            "type": "string",
-            "name": "endingBefore",
-            "in": "query",
-            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "headers": {
-              "Link": {
-                "type": "string",
-                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "ts": "2018-02-11T00:00:00.090210Z",
-                  "deviceMac": "00:18:0a:01:02:03",
-                  "clientMac": "A1:B2:C3:D4:E5:F6",
-                  "srcIp": "1.2.3.4:34195",
-                  "destIp": "10.20.30.40:80",
-                  "protocol": "tcp/ip",
-                  "priority": "2",
-                  "classification": "4",
-                  "blocked": true,
-                  "message": "SERVER-WEBAPP JBoss JMX console access attempt",
-                  "signature": "1:21516:9",
-                  "sigSource": "",
-                  "ruleId": "meraki:intrusion/snort/GID/1/SID/26267"
-                },
-                {
-                  "ts": "2018-02-11T00:00:00.090210Z",
-                  "deviceMac": "00:18:0a:01:02:03",
-                  "clientMac": "A1:B2:C3:D4:E5:F6",
-                  "srcIp": "1.2.3.4:56023",
-                  "destIp": "10.20.30.40:80",
-                  "protocol": "tcp/ip",
-                  "priority": "1",
-                  "classification": "33",
-                  "blocked": true,
-                  "message": "POLICY-OTHER Adobe ColdFusion admin interface access attempt",
-                  "signature": "1:25975:2",
-                  "sigSource": "",
-                  "ruleId": "meraki:intrusion/snort/GID/1/SID/26267"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the security events for an organization",
-        "tags": [
-          "organizations",
-          "monitor",
-          "securityEvents"
-        ]
-      }
-    },
     "/organizations/{organizationId}/sm/apnsCert": {
       "get": {
         "description": "Get the organization's APNS certificate",
@@ -28895,512 +29865,6 @@
           "organizations",
           "configure",
           "snmp"
-        ]
-      }
-    },
-    "/organizations/{organizationId}/thirdPartyVPNPeers": {
-      "get": {
-        "description": "Return the third party VPN peers for an organization",
-        "operationId": "getOrganizationThirdPartyVPNPeers",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "peers": [
-                  {
-                    "name": "My peer 1",
-                    "publicIp": "123.123.123.1",
-                    "privateSubnets": [
-                      "192.168.1.0/24",
-                      "192.168.128.0/24"
-                    ],
-                    "secret": "asdf1234",
-                    "ipsecPolicies": {
-                      "ikeCipherAlgo": [
-                        "tripledes"
-                      ],
-                      "ikeAuthAlgo": [
-                        "sha1"
-                      ],
-                      "ikeDiffieHellmanGroup": [
-                        "group2"
-                      ],
-                      "ikeLifetime": 28800,
-                      "childCipherAlgo": [
-                        "aes128"
-                      ],
-                      "childAuthAlgo": [
-                        "sha1"
-                      ],
-                      "childPfsGroup": [
-                        "disabled"
-                      ],
-                      "childLifetime": 28800
-                    },
-                    "networkTags": [
-                      "all"
-                    ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ipsecPoliciesPreset": "default"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Return the third party VPN peers for an organization",
-        "tags": [
-          "organizations",
-          "configure",
-          "thirdPartyVPNPeers"
-        ]
-      },
-      "put": {
-        "description": "Update the third party VPN peers for an organization",
-        "operationId": "updateOrganizationThirdPartyVPNPeers",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateOrganizationThirdPartyVPNPeers",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "peers": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string",
-                        "description": "The name of the VPN peer"
-                      },
-                      "publicIp": {
-                        "type": "string",
-                        "description": "The public IP of the VPN peer"
-                      },
-                      "remoteId": {
-                        "type": "string",
-                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
-                      },
-                      "privateSubnets": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "The list of the private subnets of the VPN peer"
-                      },
-                      "ipsecPolicies": {
-                        "type": "object",
-                        "properties": {
-                          "ikeCipherAlgo": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
-                          },
-                          "ikeAuthAlgo": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
-                          },
-                          "ikeDiffieHellmanGroup": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group5', 'group2', 'group1'"
-                          },
-                          "ikeLifetime": {
-                            "type": "integer",
-                            "description": "The lifetime of the Phase 1 SA in seconds."
-                          },
-                          "childCipherAlgo": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
-                          },
-                          "childAuthAlgo": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
-                          },
-                          "childPfsGroup": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            },
-                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled', 'group5', 'group2', 'group1'"
-                          },
-                          "childLifetime": {
-                            "type": "integer",
-                            "description": "The lifetime of the Phase 2 SA in seconds."
-                          }
-                        },
-                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
-                      },
-                      "ipsecPoliciesPreset": {
-                        "type": "string",
-                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
-                      },
-                      "secret": {
-                        "type": "string",
-                        "description": "The shared secret with the VPN peer"
-                      },
-                      "networkTags": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
-                      }
-                    },
-                    "required": [
-                      "name",
-                      "publicIp",
-                      "privateSubnets",
-                      "secret"
-                    ]
-                  },
-                  "description": "The list of VPN peers"
-                }
-              },
-              "example": {
-                "peers": [
-                  {
-                    "name": "My peer 1",
-                    "publicIp": "123.123.123.1",
-                    "privateSubnets": [
-                      "192.168.1.0/24",
-                      "192.168.128.0/24"
-                    ],
-                    "secret": "asdf1234",
-                    "ipsecPolicies": {
-                      "ikeCipherAlgo": [
-                        "tripledes"
-                      ],
-                      "ikeAuthAlgo": [
-                        "sha1"
-                      ],
-                      "ikeDiffieHellmanGroup": [
-                        "group2"
-                      ],
-                      "ikeLifetime": 28800,
-                      "childCipherAlgo": [
-                        "aes128"
-                      ],
-                      "childAuthAlgo": [
-                        "sha1"
-                      ],
-                      "childPfsGroup": [
-                        "disabled"
-                      ],
-                      "childLifetime": 28800
-                    },
-                    "networkTags": [
-                      "all"
-                    ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ipsecPoliciesPreset": "default"
-                  }
-                ]
-              },
-              "required": [
-                "peers"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "peers": [
-                  {
-                    "name": "My peer 1",
-                    "publicIp": "123.123.123.1",
-                    "privateSubnets": [
-                      "192.168.1.0/24",
-                      "192.168.128.0/24"
-                    ],
-                    "secret": "asdf1234",
-                    "ipsecPolicies": {
-                      "ikeCipherAlgo": [
-                        "tripledes"
-                      ],
-                      "ikeAuthAlgo": [
-                        "sha1"
-                      ],
-                      "ikeDiffieHellmanGroup": [
-                        "group2"
-                      ],
-                      "ikeLifetime": 28800,
-                      "childCipherAlgo": [
-                        "aes128"
-                      ],
-                      "childAuthAlgo": [
-                        "sha1"
-                      ],
-                      "childPfsGroup": [
-                        "disabled"
-                      ],
-                      "childLifetime": 28800
-                    },
-                    "networkTags": [
-                      "all"
-                    ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ipsecPoliciesPreset": "default"
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the third party VPN peers for an organization",
-        "tags": [
-          "organizations",
-          "configure",
-          "thirdPartyVPNPeers"
-        ]
-      }
-    },
-    "/organizations/{organizationId}/vpnFirewallRules": {
-      "get": {
-        "description": "Return the firewall rules for an organization's site-to-site VPN",
-        "operationId": "getOrganizationVpnFirewallRules",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "rules": [
-                  {
-                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
-                    "policy": "allow",
-                    "protocol": "tcp",
-                    "destPort": 443,
-                    "destCidr": "192.168.1.0/24",
-                    "srcPort": "Any",
-                    "srcCidr": "Any",
-                    "syslogEnabled": false
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Return the firewall rules for an organization's site-to-site VPN",
-        "tags": [
-          "organizations",
-          "configure",
-          "vpnFirewallRules"
-        ]
-      },
-      "put": {
-        "description": "Update the firewall rules of an organization's site-to-site VPN",
-        "operationId": "updateOrganizationVpnFirewallRules",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateOrganizationVpnFirewallRules",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "rules": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "comment": {
-                        "type": "string",
-                        "description": "Description of the rule (optional)"
-                      },
-                      "policy": {
-                        "type": "string",
-                        "enum": [
-                          "allow",
-                          "deny"
-                        ],
-                        "description": "'allow' or 'deny' traffic specified by this rule"
-                      },
-                      "protocol": {
-                        "type": "string",
-                        "enum": [
-                          "tcp",
-                          "udp",
-                          "icmp",
-                          "any"
-                        ],
-                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')"
-                      },
-                      "srcPort": {
-                        "type": "string",
-                        "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
-                      },
-                      "srcCidr": {
-                        "type": "string",
-                        "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (FQDN not supported)"
-                      },
-                      "destPort": {
-                        "type": "string",
-                        "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
-                      },
-                      "destCidr": {
-                        "type": "string",
-                        "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation) or 'any' (FQDN not supported)"
-                      },
-                      "syslogEnabled": {
-                        "type": "boolean",
-                        "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
-                      }
-                    },
-                    "required": [
-                      "policy",
-                      "protocol",
-                      "srcCidr",
-                      "destCidr"
-                    ]
-                  },
-                  "description": "An ordered array of the firewall rules (not including the default rule)"
-                },
-                "syslogDefaultRule": {
-                  "type": "boolean",
-                  "description": "Log the special default rule (boolean value - enable only if you've configured a syslog server) (optional)"
-                }
-              },
-              "example": {
-                "rules": [
-                  {
-                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
-                    "policy": "allow",
-                    "protocol": "tcp",
-                    "destPort": 443,
-                    "destCidr": "192.168.1.0/24",
-                    "srcPort": "Any",
-                    "srcCidr": "Any",
-                    "syslogEnabled": false
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "rules": [
-                  {
-                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
-                    "policy": "allow",
-                    "protocol": "tcp",
-                    "destPort": 443,
-                    "destCidr": "192.168.1.0/24",
-                    "srcPort": "Any",
-                    "srcCidr": "Any",
-                    "syslogEnabled": false
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update the firewall rules of an organization's site-to-site VPN",
-        "tags": [
-          "organizations",
-          "configure",
-          "vpnFirewallRules"
         ]
       }
     },
@@ -29709,6 +30173,9 @@
       "name": "merakiAuthUsers"
     },
     {
+      "name": "meshStatuses"
+    },
+    {
       "name": "monitor"
     },
     {
@@ -29721,7 +30188,7 @@
       "name": "multicast"
     },
     {
-      "name": "netflowSettings"
+      "name": "netflow"
     },
     {
       "name": "networkAdapters"
@@ -29814,10 +30281,10 @@
       "name": "securityCenters"
     },
     {
-      "name": "securityEvents"
+      "name": "settings"
     },
     {
-      "name": "settings"
+      "name": "singleLan"
     },
     {
       "name": "siteToSiteVpn"
@@ -29830,9 +30297,6 @@
     },
     {
       "name": "snmp"
-    },
-    {
-      "name": "snmpSettings"
     },
     {
       "name": "softwares"
@@ -29868,6 +30332,9 @@
       "name": "subnetPool"
     },
     {
+      "name": "subnets"
+    },
+    {
       "name": "switchStacks"
     },
     {
@@ -29883,7 +30350,7 @@
       "name": "traffic"
     },
     {
-      "name": "trafficAnalysisSettings"
+      "name": "trafficAnalysis"
     },
     {
       "name": "trafficHistory"
@@ -29925,7 +30392,7 @@
       "name": "vppAccounts"
     },
     {
-      "name": "warmSpareSettings"
+      "name": "warmSpare"
     },
     {
       "name": "webhookLogs"
@@ -29980,13 +30447,25 @@
     {
       "group": "Cellular gateway subnet pool",
       "summary": "Update the subnet pool and mask configuration for MGs in the network.",
-      "resource": "/networks/{networkId}/cellularGateway/settings/subnetPool",
+      "resource": "/networks/{networkId}/cellularGateway/subnetPool",
       "operation": "update"
     },
     {
       "group": "Cellular gateway uplink setting",
       "summary": "Updates the uplink settings for your MG network.",
       "resource": "/networks/{networkId}/cellularGateway/settings/uplink",
+      "operation": "update"
+    },
+    {
+      "group": "Config template",
+      "summary": "Create a new configuration template",
+      "resource": "/organizations/{organizationId}/configTemplates",
+      "operation": "create"
+    },
+    {
+      "group": "Config template",
+      "summary": "Update a configuration template",
+      "resource": "/organizations/{organizationId}/configTemplates/{configTemplateId}",
       "operation": "update"
     },
     {
@@ -30248,6 +30727,12 @@
       "operation": "update"
     },
     {
+      "group": "Single lan",
+      "summary": "Update single LAN configuration",
+      "resource": "/networks/{networkId}/appliance/singleLan",
+      "operation": "update"
+    },
+    {
       "group": "Site to site vpn",
       "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
       "resource": "/networks/{networkId}/appliance/vpn/siteToSiteVpn",
@@ -30322,13 +30807,13 @@
     {
       "group": "Warm spare",
       "summary": "Swap MX primary and warm spare appliances",
-      "resource": "/networks/{networkId}/swapWarmSpare",
+      "resource": "/networks/{networkId}/appliance/warmSpare",
       "operation": "swap"
     },
     {
       "group": "Warm spare",
       "summary": "Update MX warm spare settings",
-      "resource": "/networks/{networkId}/warmSpareSettings",
+      "resource": "/networks/{networkId}/appliance/warmSpare",
       "operation": "update"
     },
     {
