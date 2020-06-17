@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.8",
+    "version": "1.0.0-beta.9",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 10 June, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 June, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -1412,12 +1412,6 @@
             "in": "path",
             "type": "string",
             "required": true
-          },
-          {
-            "type": "integer",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which LLDP and CDP information will be fetched. Must be in seconds and less than or equal to a month (2592000 seconds). LLDP and CDP information is sent to the Meraki dashboard every 10 minutes. In instances where this LLDP and CDP information matches an existing entry in the Meraki dashboard, the data is updated once every two hours. Meraki recommends querying LLDP and CDP information at an interval slightly greater than two hours, to ensure that unchanged CDP / LLDP information can be queried consistently."
           }
         ],
         "responses": {
@@ -2395,6 +2389,368 @@
           "switch",
           "configure",
           "ports"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/routing/interfaces": {
+      "get": {
+        "description": "List layer 3 interfaces for a switch",
+        "operationId": "getDeviceSwitchRoutingInterfaces",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "interfaceId": "1234",
+                  "name": "L3 interface",
+                  "subnet": "192.168.1.0/24",
+                  "interfaceIp": "192.168.1.2",
+                  "multicastRouting": "disabled",
+                  "vlanId": 100,
+                  "defaultGateway": "192.168.1.1",
+                  "ospfSettings": {
+                    "area": "0",
+                    "cost": 1,
+                    "isPassiveEnabled": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List layer 3 interfaces for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "post": {
+        "description": "Create a layer 3 interface for a switch",
+        "operationId": "createDeviceSwitchRoutingInterface",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceSwitchRoutingInterface",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A friendly name or description for the interface or VLAN."
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The network that this routed interface is on, in CIDR notation (ex. 10.1.1.0/24)."
+                },
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address this switch will use for layer 3 routing on this VLAN or subnet. This cannot be the same as the switch's management IP."
+                },
+                "multicastRouting": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "enabled",
+                    "IGMP snooping querier"
+                  ],
+                  "description": "Enable multicast support if, multicast routing between VLANs is required. Options are, 'disabled', 'enabled' or 'IGMP snooping querier'. Default is 'disabled'."
+                },
+                "vlanId": {
+                  "type": "integer",
+                  "description": "The VLAN this routed interface is on. VLAN must be between 1 and 4094."
+                },
+                "defaultGateway": {
+                  "type": "string",
+                  "description": "The next hop for any traffic that isn't going to a directly connected subnet or over a static route. This IP address must exist in a subnet with a routed interface."
+                },
+                "ospfSettings": {
+                  "type": "object",
+                  "properties": {
+                    "area": {
+                      "type": "string",
+                      "description": "The OSPF area to which this interface should belong. Can be either 'disabled' or the identifier of an existing OSPF area. Defaults to 'disabled'."
+                    },
+                    "cost": {
+                      "type": "integer",
+                      "description": "The path cost for this interface. Defaults to 1, but can be increased up to 65535 to give lower priority."
+                    },
+                    "isPassiveEnabled": {
+                      "type": "boolean",
+                      "description": "When enabled, OSPF will not run on the interface, but the subnet will still be advertised."
+                    }
+                  },
+                  "description": "The OSPF routing settings of the interface."
+                }
+              },
+              "example": {
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              },
+              "required": [
+                "name",
+                "interfaceIp",
+                "vlanId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a layer 3 interface for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/routing/interfaces/{interfaceId}": {
+      "get": {
+        "description": "Return a layer 3 interface for a switch",
+        "operationId": "getDeviceSwitchRoutingInterface",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 interface for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 interface for a switch",
+        "operationId": "updateDeviceSwitchRoutingInterface",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceSwitchRoutingInterface",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A friendly name or description for the interface or VLAN."
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The network that this routed interface is on, in CIDR notation (ex. 10.1.1.0/24)."
+                },
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address this switch will use for layer 3 routing on this VLAN or subnet. This cannot be the same as the switch's management IP."
+                },
+                "multicastRouting": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "enabled",
+                    "IGMP snooping querier"
+                  ],
+                  "description": "Enable multicast support if, multicast routing between VLANs is required. Options are, 'disabled', 'enabled' or 'IGMP snooping querier'."
+                },
+                "vlanId": {
+                  "type": "integer",
+                  "description": "The VLAN this routed interface is on. VLAN must be between 1 and 4094."
+                },
+                "ospfSettings": {
+                  "type": "object",
+                  "properties": {
+                    "area": {
+                      "type": "string",
+                      "description": "The OSPF area to which this interface should belong. Can be either 'disabled' or the identifier of an existing OSPF area."
+                    },
+                    "cost": {
+                      "type": "integer",
+                      "description": "The path cost for this interface. Defaults to 1, but can be increased up to 65535 to give lower priority."
+                    },
+                    "isPassiveEnabled": {
+                      "type": "boolean",
+                      "description": "When enabled, OSPF will not run on the interface, but the subnet will still be advertised."
+                    }
+                  },
+                  "description": "The OSPF routing settings of the interface."
+                }
+              },
+              "example": {
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 interface for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "delete": {
+        "description": "Delete a layer 3 interface from the switch",
+        "operationId": "deleteDeviceSwitchRoutingInterface",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a layer 3 interface from the switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces"
         ]
       }
     },
@@ -10209,44 +10565,6 @@
         ]
       }
     },
-    "/networks/{networkId}/cellularGateway/settings/uplink": {
-      "get": {
-        "description": "Returns the uplink settings for your MG network.",
-        "operationId": "getNetworkCellularGatewaySettingsUplink",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "bandwidthLimits": {
-                  "limitUp": 51200,
-                  "limitDown": 51200
-                }
-              }
-            }
-          }
-        },
-        "summary": "Returns the uplink settings for your MG network.",
-        "tags": [
-          "cellularGateway",
-          "configure",
-          "settings",
-          "uplink"
-        ]
-      }
-    },
     "/networks/{networkId}/cellularGateway/subnetPool": {
       "get": {
         "description": "Return the subnet pool and mask configured for MGs in the network.",
@@ -10365,6 +10683,41 @@
       }
     },
     "/networks/{networkId}/cellularGateway/uplink": {
+      "get": {
+        "description": "Returns the uplink settings for your MG network.",
+        "operationId": "getNetworkCellularGatewayUplink",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "bandwidthLimits": {
+                  "limitUp": 51200,
+                  "limitDown": 51200
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the uplink settings for your MG network.",
+        "tags": [
+          "cellularGateway",
+          "configure",
+          "uplink"
+        ]
+      },
       "put": {
         "description": "Updates the uplink settings for your MG network.",
         "operationId": "updateNetworkCellularGatewayUplink",
@@ -21453,6 +21806,404 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces": {
+      "get": {
+        "description": "List layer 3 interfaces for a switch stack",
+        "operationId": "getNetworkSwitchSwitchStackRoutingInterfaces",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "interfaceId": "1234",
+                  "name": "L3 interface",
+                  "subnet": "192.168.1.0/24",
+                  "interfaceIp": "192.168.1.2",
+                  "multicastRouting": "disabled",
+                  "vlanId": 100,
+                  "defaultGateway": "192.168.1.1",
+                  "ospfSettings": {
+                    "area": "0",
+                    "cost": 1,
+                    "isPassiveEnabled": true
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List layer 3 interfaces for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "post": {
+        "description": "Create a layer 3 interface for a switch stack",
+        "operationId": "createNetworkSwitchSwitchStackRoutingInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchSwitchStackRoutingInterface",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A friendly name or description for the interface or VLAN."
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The network that this routed interface is on, in CIDR notation (ex. 10.1.1.0/24)."
+                },
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address this switch stack will use for layer 3 routing on this VLAN or subnet. This cannot be the same as the switch's management IP."
+                },
+                "multicastRouting": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "enabled",
+                    "IGMP snooping querier"
+                  ],
+                  "description": "Enable multicast support if, multicast routing between VLANs is required. Options are, 'disabled', 'enabled' or 'IGMP snooping querier'. Default is 'disabled'."
+                },
+                "vlanId": {
+                  "type": "integer",
+                  "description": "The VLAN this routed interface is on. VLAN must be between 1 and 4094."
+                },
+                "defaultGateway": {
+                  "type": "string",
+                  "description": "The next hop for any traffic that isn't going to a directly connected subnet or over a static route. This IP address must exist in a subnet with a routed interface."
+                },
+                "ospfSettings": {
+                  "type": "object",
+                  "properties": {
+                    "area": {
+                      "type": "string",
+                      "description": "The OSPF area to which this interface should belong. Can be either 'disabled' or the identifier of an existing OSPF area. Defaults to 'disabled'."
+                    },
+                    "cost": {
+                      "type": "integer",
+                      "description": "The path cost for this interface. Defaults to 1, but can be increased up to 65535 to give lower priority."
+                    },
+                    "isPassiveEnabled": {
+                      "type": "boolean",
+                      "description": "When enabled, OSPF will not run on the interface, but the subnet will still be advertised."
+                    }
+                  },
+                  "description": "The OSPF routing settings of the interface."
+                }
+              },
+              "example": {
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              },
+              "required": [
+                "name",
+                "subnet",
+                "interfaceIp",
+                "vlanId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a layer 3 interface for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}": {
+      "get": {
+        "description": "Return a layer 3 interface from a switch stack",
+        "operationId": "getNetworkSwitchSwitchStackRoutingInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "defaultGateway": "192.168.1.1",
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 interface from a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 interface for a switch stack",
+        "operationId": "updateNetworkSwitchSwitchStackRoutingInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSwitchStackRoutingInterface",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A friendly name or description for the interface or VLAN."
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The network that this routed interface is on, in CIDR notation (ex. 10.1.1.0/24)."
+                },
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address this switch stack will use for layer 3 routing on this VLAN or subnet. This cannot be the same as the switch's management IP."
+                },
+                "multicastRouting": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "enabled",
+                    "IGMP snooping querier"
+                  ],
+                  "description": "Enable multicast support if, multicast routing between VLANs is required. Options are, 'disabled', 'enabled' or 'IGMP snooping querier'."
+                },
+                "vlanId": {
+                  "type": "integer",
+                  "description": "The VLAN this routed interface is on. VLAN must be between 1 and 4094."
+                },
+                "ospfSettings": {
+                  "type": "object",
+                  "properties": {
+                    "area": {
+                      "type": "string",
+                      "description": "The OSPF area to which this interface should belong. Can be either 'disabled' or the identifier of an existing OSPF area."
+                    },
+                    "cost": {
+                      "type": "integer",
+                      "description": "The path cost for this interface. Defaults to 1, but can be increased up to 65535 to give lower priority."
+                    },
+                    "isPassiveEnabled": {
+                      "type": "boolean",
+                      "description": "When enabled, OSPF will not run on the interface, but the subnet will still be advertised."
+                    }
+                  },
+                  "description": "The OSPF routing settings of the interface."
+                }
+              },
+              "example": {
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "interfaceId": "1234",
+                "name": "L3 interface",
+                "subnet": "192.168.1.0/24",
+                "interfaceIp": "192.168.1.2",
+                "multicastRouting": "disabled",
+                "vlanId": 100,
+                "ospfSettings": {
+                  "area": "0",
+                  "cost": 1,
+                  "isPassiveEnabled": true
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 interface for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces"
+        ]
+      },
+      "delete": {
+        "description": "Delete a layer 3 interface from a switch stack",
+        "operationId": "deleteNetworkSwitchSwitchStackRoutingInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a layer 3 interface from a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces"
+        ]
+      }
+    },
     "/networks/{networkId}/syslogServers": {
       "get": {
         "description": "List the syslog servers for a network",
@@ -31423,6 +32174,25 @@
             "description": "An optional parameter that is the ID of a config template. Will return all networks bound to that template."
           },
           {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "query",
+            "description": "An optional parameter to filter networks by tags. The filtering is case-sensitive. If tags are included, 'tagsFilterType' should also be included (see below)."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "withAnyTags",
+              "withAllTags"
+            ],
+            "name": "tagsFilterType",
+            "in": "query",
+            "description": "An optional parameter of value 'withAnyTags' or 'withAllTags' to indicate whether to return networks which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected."
+          },
+          {
             "type": "integer",
             "name": "perPage",
             "in": "query",
@@ -32597,6 +33367,9 @@
       "name": "inboundFirewallRules"
     },
     {
+      "name": "interfaces"
+    },
+    {
       "name": "intrusion"
     },
     {
@@ -32989,6 +33762,12 @@
       "operation": "claim"
     },
     {
+      "group": "Device",
+      "summary": "Remove a single device",
+      "resource": "/networks/{networkId}/devices",
+      "operation": "remove"
+    },
+    {
       "group": "Dhcp server policy",
       "summary": "Update the DHCP server policy",
       "resource": "/networks/{networkId}/switch/dhcpServerPolicy",
@@ -33028,6 +33807,24 @@
       "group": "Group policy",
       "summary": "Update a group policy",
       "resource": "/networks/{networkId}/groupPolicies/{groupPolicyId}",
+      "operation": "update"
+    },
+    {
+      "group": "L3 interface",
+      "summary": "Create a layer 3 interface for a switch",
+      "resource": "/devices/{serial}/switch/routing/interfaces",
+      "operation": "create"
+    },
+    {
+      "group": "L3 interface",
+      "summary": "Delete a layer 3 interface from the switch",
+      "resource": "/devices/{serial}/switch/routing/interfaces/{interfaceId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "L3 interface",
+      "summary": "Update a layer 3 interface for a switch",
+      "resource": "/devices/{serial}/switch/routing/interfaces/{interfaceId}",
       "operation": "update"
     },
     {
@@ -33149,6 +33946,12 @@
       "summary": "Delete a network",
       "resource": "/networks/{networkId}",
       "operation": "destroy"
+    },
+    {
+      "group": "Network",
+      "summary": "Update a network",
+      "resource": "/networks/{networkId}",
+      "operation": "update"
     },
     {
       "group": "Network",
@@ -33286,6 +34089,24 @@
       "group": "Switch profile port",
       "summary": "Update a switch profile port",
       "resource": "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}",
+      "operation": "update"
+    },
+    {
+      "group": "Switch stacks l3 interface",
+      "summary": "Create a layer 3 interface for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces",
+      "operation": "create"
+    },
+    {
+      "group": "Switch stacks l3 interface",
+      "summary": "Delete a layer 3 interface from a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Switch stacks l3 interface",
+      "summary": "Update a layer 3 interface for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}",
       "operation": "update"
     },
     {
