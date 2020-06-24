@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.9",
+    "version": "1.0.0-beta.10",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 June, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 24 June, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "x-codegen-settings": {
       "appendContentHeaders": true,
       "brandLabel": "meraki",
@@ -36,15 +36,15 @@
     "application/json"
   ],
   "securityDefinitions": {
-    "bearer": {
+    "meraki_api_key": {
       "type": "apiKey",
-      "name": "Authorization",
+      "name": "X-Cisco-Meraki-API-Key",
       "in": "header"
     }
   },
   "security": [
     {
-      "bearer": [
+      "meraki_api_key": [
 
       ]
     }
@@ -2754,6 +2754,603 @@
         ]
       }
     },
+    "/devices/{serial}/switch/routing/interfaces/{interfaceId}/dhcp": {
+      "get": {
+        "description": "Return a layer 3 interface DHCP configuration for a switch",
+        "operationId": "getDeviceSwitchRoutingInterfaceDhcp",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 interface DHCP configuration for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces",
+          "dhcp"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 interface DHCP configuration for a switch",
+        "operationId": "updateDeviceSwitchRoutingInterfaceDhcp",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceSwitchRoutingInterfaceDhcp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dhcpMode": {
+                  "type": "string",
+                  "enum": [
+                    "dhcpDisabled",
+                    "dhcpRelay",
+                    "dhcpServer"
+                  ],
+                  "description": "The DHCP mode options for the switch interface ('dhcpDisabled', 'dhcpRelay' or 'dhcpServer')"
+                },
+                "dhcpRelayServerIps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The DHCP relay server IPs to which DHCP packets would get relayed for the switch interface"
+                },
+                "dhcpLeaseTime": {
+                  "type": "string",
+                  "enum": [
+                    "30 minutes",
+                    "1 hour",
+                    "4 hours",
+                    "12 hours",
+                    "1 day",
+                    "1 week"
+                  ],
+                  "description": "The DHCP lease time config for the dhcp server running on switch interface ('30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week')"
+                },
+                "dnsNameserversOption": {
+                  "type": "string",
+                  "enum": [
+                    "googlePublicDns",
+                    "openDns",
+                    "custom"
+                  ],
+                  "description": "The DHCP name server option for the dhcp server running on the switch interface ('googlePublicDns', 'openDns' or 'custom')"
+                },
+                "dnsCustomNameservers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The DHCP name server IPs when DHCP name server option is 'custom'"
+                },
+                "bootOptionsEnabled": {
+                  "type": "boolean",
+                  "description": "Enable DHCP boot options to provide PXE boot options configs for the dhcp server running on the switch interface"
+                },
+                "bootNextServer": {
+                  "type": "string",
+                  "description": "The PXE boot server IP for the DHCP server running on the switch interface"
+                },
+                "bootFileName": {
+                  "type": "string",
+                  "description": "The PXE boot server filename for the DHCP server running on the switch interface"
+                },
+                "dhcpOptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "description": "The code for DHCP option which should be from 2 to 254"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "text",
+                          "ip",
+                          "integer",
+                          "hex"
+                        ],
+                        "description": "The type of the DHCP option which should be one of ('text', 'ip', 'integer' or 'hex')"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "The value of the DHCP option"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "type",
+                      "value"
+                    ]
+                  },
+                  "description": "Array of DHCP options consisting of code, type and value for the DHCP server running on the switch interface"
+                },
+                "reservedIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "The starting IP address of the reserved IP range"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "The ending IP address of the reserved IP range"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "The comment for the reserved IP range"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ]
+                  },
+                  "description": "Array of DHCP reserved IP assignments for the DHCP server running on the switch interface"
+                },
+                "fixedIpAssignments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the client which has fixed IP address"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the client which has fixed IP address"
+                      },
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address of the client which has fixed IP address assigned to it"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "mac",
+                      "ip"
+                    ]
+                  },
+                  "description": "Array of DHCP fixed IP assignments for the DHCP server running on the switch interface"
+                }
+              },
+              "example": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 interface DHCP configuration for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "interfaces",
+          "dhcp"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/routing/staticRoutes": {
+      "get": {
+        "description": "List layer 3 static routes for a switch",
+        "operationId": "getDeviceSwitchRoutingStaticRoutes",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "staticRouteId": "1234",
+                  "name": "My route",
+                  "subnet": "192.168.1.0/24",
+                  "nextHopIp": "1.2.3.4",
+                  "advertiseViaOspfEnabled": false,
+                  "preferOverOspfRoutesEnabled": false
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List layer 3 static routes for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "post": {
+        "description": "Create a layer 3 static route for a switch",
+        "operationId": "createDeviceSwitchRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceSwitchRoutingStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name or description for layer 3 static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet which is routed via this static route and should be specified in CIDR notation (ex. 1.2.3.0/24)"
+                },
+                "nextHopIp": {
+                  "type": "string",
+                  "description": "IP address of the next hop device to which the device sends its traffic for the subnet"
+                },
+                "advertiseViaOspfEnabled": {
+                  "type": "boolean",
+                  "description": "Option to advertise static route via OSPF"
+                },
+                "preferOverOspfRoutesEnabled": {
+                  "type": "boolean",
+                  "description": "Option to prefer static route over OSPF routes"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              },
+              "required": [
+                "subnet",
+                "nextHopIp"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Create a layer 3 static route for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "staticRoutes"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/routing/staticRoutes/{staticRouteId}": {
+      "get": {
+        "description": "Return a layer 3 static route for a switch",
+        "operationId": "getDeviceSwitchRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 static route for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 static route for a switch",
+        "operationId": "updateDeviceSwitchRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceSwitchRoutingStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name or description for layer 3 static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet which is routed via this static route and should be specified in CIDR notation (ex. 1.2.3.0/24)"
+                },
+                "nextHopIp": {
+                  "type": "string",
+                  "description": "IP address of the next hop device to which the device sends its traffic for the subnet"
+                },
+                "advertiseViaOspfEnabled": {
+                  "type": "boolean",
+                  "description": "Option to advertise static route via OSPF"
+                },
+                "preferOverOspfRoutesEnabled": {
+                  "type": "boolean",
+                  "description": "Option to prefer static route over OSPF routes"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 static route for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "delete": {
+        "description": "Delete a layer 3 static route for a switch",
+        "operationId": "deleteDeviceSwitchRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a layer 3 static route for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "staticRoutes"
+        ]
+      }
+    },
     "/devices/{serial}/uplink": {
       "get": {
         "description": "Return the uplink information for a device.",
@@ -4338,6 +4935,84 @@
           }
         },
         "summary": "Return the accessibility settings of the given service ('ICMP', 'web', or 'SNMP')",
+        "tags": [
+          "appliance",
+          "configure",
+          "firewall",
+          "firewalledServices"
+        ]
+      },
+      "put": {
+        "description": "Updates the accessibility settings for the given service ('ICMP', 'web', or 'SNMP')",
+        "operationId": "updateNetworkApplianceFirewallFirewalledService",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "service",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceFirewallFirewalledService",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access": {
+                  "type": "string",
+                  "enum": [
+                    "blocked",
+                    "restricted",
+                    "unrestricted"
+                  ],
+                  "description": "A string indicating the rule for which IPs are allowed to use the specified service. Acceptable values are \"blocked\" (no remote IPs can access the service), \"restricted\" (only whitelisted IPs can access the service), and \"unrestriced\" (any remote IP can access the service). This field is required"
+                },
+                "allowedIps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "An array of whitelisted IPs that can access the service. This field is required if \"access\" is set to \"restricted\". Otherwise this field is ignored"
+                }
+              },
+              "example": {
+                "access": "restricted",
+                "allowedIps": [
+                  "123.123.123.1"
+                ]
+              },
+              "required": [
+                "access"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "service": "web",
+                "access": "restricted",
+                "allowedIps": [
+                  "123.123.123.1"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates the accessibility settings for the given service ('ICMP', 'web', or 'SNMP')",
         "tags": [
           "appliance",
           "configure",
@@ -12283,85 +12958,6 @@
           "monitor",
           "events",
           "eventTypes"
-        ]
-      }
-    },
-    "/networks/{networkId}/firewalledServices/{service}": {
-      "put": {
-        "description": "Updates the accessibility settings for the given service ('ICMP', 'web', or 'SNMP')",
-        "operationId": "updateNetworkFirewalledService",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "service",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkFirewalledService",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "access": {
-                  "type": "string",
-                  "enum": [
-                    "blocked",
-                    "restricted",
-                    "unrestricted"
-                  ],
-                  "description": "A string indicating the rule for which IPs are allowed to use the specified service. Acceptable values are \"blocked\" (no remote IPs can access the service), \"restricted\" (only whitelisted IPs can access the service), and \"unrestriced\" (any remote IP can access the service). This field is required"
-                },
-                "allowedIps": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "description": "An array of whitelisted IPs that can access the service. This field is required if \"access\" is set to \"restricted\". Otherwise this field is ignored"
-                }
-              },
-              "example": {
-                "access": "restricted",
-                "allowedIps": [
-                  "123.123.123.1"
-                ]
-              },
-              "required": [
-                "access"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "x-is-dynamic": true
-            },
-            "examples": {
-              "application/json": {
-                "service": "web",
-                "access": "restricted",
-                "allowedIps": [
-                  "123.123.123.1"
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Updates the accessibility settings for the given service ('ICMP', 'web', or 'SNMP')",
-        "tags": [
-          "networks",
-          "configure",
-          "firewalledServices"
         ]
       }
     },
@@ -22204,6 +22800,652 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}/dhcp": {
+      "get": {
+        "description": "Return a layer 3 interface DHCP configuration for a switch stack",
+        "operationId": "getNetworkSwitchSwitchStackRoutingInterfaceDhcp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 interface DHCP configuration for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces",
+          "dhcp"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 interface DHCP configuration for a switch stack",
+        "operationId": "updateNetworkSwitchSwitchStackRoutingInterfaceDhcp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "interfaceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSwitchStackRoutingInterfaceDhcp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "dhcpMode": {
+                  "type": "string",
+                  "enum": [
+                    "dhcpDisabled",
+                    "dhcpRelay",
+                    "dhcpServer"
+                  ],
+                  "description": "The DHCP mode options for the switch stack interface ('dhcpDisabled', 'dhcpRelay' or 'dhcpServer')"
+                },
+                "dhcpRelayServerIps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The DHCP relay server IPs to which DHCP packets would get relayed for the switch stack interface"
+                },
+                "dhcpLeaseTime": {
+                  "type": "string",
+                  "enum": [
+                    "30 minutes",
+                    "1 hour",
+                    "4 hours",
+                    "12 hours",
+                    "1 day",
+                    "1 week"
+                  ],
+                  "description": "The DHCP lease time config for the dhcp server running on switch stack interface ('30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week')"
+                },
+                "dnsNameserversOption": {
+                  "type": "string",
+                  "enum": [
+                    "googlePublicDns",
+                    "openDns",
+                    "custom"
+                  ],
+                  "description": "The DHCP name server option for the dhcp server running on the switch stack interface ('googlePublicDns', 'openDns' or 'custom')"
+                },
+                "dnsCustomNameservers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The DHCP name server IPs when DHCP name server option is 'custom'"
+                },
+                "bootOptionsEnabled": {
+                  "type": "boolean",
+                  "description": "Enable DHCP boot options to provide PXE boot options configs for the dhcp server running on the switch stack interface"
+                },
+                "bootNextServer": {
+                  "type": "string",
+                  "description": "The PXE boot server IP for the DHCP server running on the switch stack interface"
+                },
+                "bootFileName": {
+                  "type": "string",
+                  "description": "The PXE boot server file name for the DHCP server running on the switch stack interface"
+                },
+                "dhcpOptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "description": "The code for DHCP option which should be from 2 to 254"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "text",
+                          "ip",
+                          "integer",
+                          "hex"
+                        ],
+                        "description": "The type of the DHCP option which should be one of ('text', 'ip', 'integer' or 'hex')"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "The value of the DHCP option"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "type",
+                      "value"
+                    ]
+                  },
+                  "description": "Array of DHCP options consisting of code, type and value for the DHCP server running on the switch stack interface"
+                },
+                "reservedIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "string",
+                        "description": "The starting IP address of the reserved IP range"
+                      },
+                      "end": {
+                        "type": "string",
+                        "description": "The ending IP address of the reserved IP range"
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "The comment for the reserved IP range"
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ]
+                  },
+                  "description": "Array of DHCP reserved IP assignments for the DHCP server running on the switch stack interface"
+                },
+                "fixedIpAssignments": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the client which has fixed IP address"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the client which has fixed IP address"
+                      },
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address of the client which has fixed IP address assigned to it"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "mac",
+                      "ip"
+                    ]
+                  },
+                  "description": "Array of DHCP fixed IP assignments for the DHCP server running on the switch stack interface"
+                }
+              },
+              "example": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "dhcpMode": "dhcpServer",
+                "dhcpLeaseTime": "1 day",
+                "dnsNameserversOption": "custom",
+                "dnsCustomNameservers": [
+                  "8.8.8.8, 8.8.4.4"
+                ],
+                "bootOptionsEnabled": true,
+                "bootNextServer": "1.2.3.4",
+                "bootFileName": "home_boot_file",
+                "dhcpOptions": [
+                  {
+                    "code": "5",
+                    "type": "text",
+                    "value": "five"
+                  }
+                ],
+                "reservedIpRanges": [
+                  {
+                    "start": "192.168.1.1",
+                    "end": "192.168.1.10",
+                    "comment": "A reserved IP range"
+                  }
+                ],
+                "fixedIpAssignments": [
+                  {
+                    "mac": "22:33:44:55:66:77",
+                    "name": "Cisco Meraki valued client",
+                    "ip": "192.168.1.12"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 interface DHCP configuration for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "interfaces",
+          "dhcp"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes": {
+      "get": {
+        "description": "List layer 3 static routes for a switch stack",
+        "operationId": "getNetworkSwitchSwitchStackRoutingStaticRoutes",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "staticRouteId": "1234",
+                  "name": "My route",
+                  "subnet": "192.168.1.0/24",
+                  "nextHopIp": "1.2.3.4",
+                  "advertiseViaOspfEnabled": false,
+                  "preferOverOspfRoutesEnabled": false
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List layer 3 static routes for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "post": {
+        "description": "Create a layer 3 static route for a switch stack",
+        "operationId": "createNetworkSwitchSwitchStackRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchSwitchStackRoutingStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name or description for layer 3 static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet which is routed via this static route and should be specified in CIDR notation (ex. 1.2.3.0/24)"
+                },
+                "nextHopIp": {
+                  "type": "string",
+                  "description": "IP address of the next hop device to which the device sends its traffic for the subnet"
+                },
+                "advertiseViaOspfEnabled": {
+                  "type": "boolean",
+                  "description": "Option to advertise static route via OSPF"
+                },
+                "preferOverOspfRoutesEnabled": {
+                  "type": "boolean",
+                  "description": "Option to prefer static route over OSPF routes"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              },
+              "required": [
+                "subnet",
+                "nextHopIp"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Create a layer 3 static route for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "staticRoutes"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes/{staticRouteId}": {
+      "get": {
+        "description": "Return a layer 3 static route for a switch stack",
+        "operationId": "getNetworkSwitchSwitchStackRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Return a layer 3 static route for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "put": {
+        "description": "Update a layer 3 static route for a switch stack",
+        "operationId": "updateNetworkSwitchSwitchStackRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchSwitchStackRoutingStaticRoute",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name or description for layer 3 static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The subnet which is routed via this static route and should be specified in CIDR notation (ex. 1.2.3.0/24)"
+                },
+                "nextHopIp": {
+                  "type": "string",
+                  "description": "IP address of the next hop device to which the device sends its traffic for the subnet"
+                },
+                "advertiseViaOspfEnabled": {
+                  "type": "boolean",
+                  "description": "Option to advertise static route via OSPF"
+                },
+                "preferOverOspfRoutesEnabled": {
+                  "type": "boolean",
+                  "description": "Option to prefer static route over OSPF routes"
+                }
+              },
+              "example": {
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "x-is-dynamic": true
+            },
+            "examples": {
+              "application/json": {
+                "staticRouteId": "1234",
+                "name": "My route",
+                "subnet": "192.168.1.0/24",
+                "nextHopIp": "1.2.3.4",
+                "advertiseViaOspfEnabled": false,
+                "preferOverOspfRoutesEnabled": false
+              }
+            }
+          }
+        },
+        "summary": "Update a layer 3 static route for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "staticRoutes"
+        ]
+      },
+      "delete": {
+        "description": "Delete a layer 3 static route for a switch stack",
+        "operationId": "deleteNetworkSwitchSwitchStackRoutingStaticRoute",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "switchStackId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticRouteId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a layer 3 static route for a switch stack",
+        "tags": [
+          "switch",
+          "configure",
+          "switchStacks",
+          "routing",
+          "staticRoutes"
+        ]
+      }
+    },
     "/networks/{networkId}/syslogServers": {
       "get": {
         "description": "List the syslog servers for a network",
@@ -26191,6 +27433,14 @@
                   "type": "boolean",
                   "description": "If true, the RADIUS response can override VLAN tag. This is not valid when ipAssignmentMode is 'NAT mode'."
                 },
+                "radiusGuestVlanEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not RADIUS Guest VLAN is enabled. This param is only valid if the authMode is 'open-with-radius' and addressing mode is not set to 'isolated' or 'nat' mode"
+                },
+                "radiusGuestVlanId": {
+                  "type": "integer",
+                  "description": "VLAN ID of the RADIUS Guest VLAN. This param is only valid if the authMode is 'open-with-radius' and addressing mode is not set to 'isolated' or 'nat' mode"
+                },
                 "minBitrate": {
                   "type": "number",
                   "format": "float",
@@ -27840,6 +29090,17 @@
             "in": "path",
             "type": "string",
             "required": true
+          },
+          {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed",
+              "failed"
+            ],
+            "name": "status",
+            "in": "query",
+            "description": "Filter batches by status. Valid types are pending, completed, and failed."
           }
         ],
         "responses": {
@@ -28853,10 +30114,10 @@
         ]
       }
     },
-    "/organizations/{organizationId}/appliance/thirdPartyVPNPeers": {
+    "/organizations/{organizationId}/appliance/vpn/thirdPartyVPNPeers": {
       "get": {
         "description": "Return the third party VPN peers for an organization",
-        "operationId": "getOrganizationApplianceThirdPartyVPNPeers",
+        "operationId": "getOrganizationApplianceVpnThirdPartyVPNPeers",
         "parameters": [
           {
             "name": "organizationId",
@@ -28883,12 +30144,16 @@
                       "192.168.128.0/24"
                     ],
                     "secret": "asdf1234",
+                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
                       ],
                       "ikeAuthAlgo": [
                         "sha1"
+                      ],
+                      "ikePrfAlgo": [
+                        "prfsha1"
                       ],
                       "ikeDiffieHellmanGroup": [
                         "group2"
@@ -28921,6 +30186,7 @@
                     "networkTags": [
                       "none"
                     ],
+                    "ikeVersion": "1",
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -28932,12 +30198,13 @@
         "tags": [
           "appliance",
           "configure",
+          "vpn",
           "thirdPartyVPNPeers"
         ]
       },
       "put": {
         "description": "Update the third party VPN peers for an organization",
-        "operationId": "updateOrganizationApplianceThirdPartyVPNPeers",
+        "operationId": "updateOrganizationApplianceVpnThirdPartyVPNPeers",
         "parameters": [
           {
             "name": "organizationId",
@@ -28946,7 +30213,7 @@
             "required": true
           },
           {
-            "name": "updateOrganizationApplianceThirdPartyVPNPeers",
+            "name": "updateOrganizationApplianceVpnThirdPartyVPNPeers",
             "in": "body",
             "schema": {
               "type": "object",
@@ -28990,14 +30257,27 @@
                             "items": {
                               "type": "string"
                             },
-                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "ikePrfAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "prfsha256",
+                                "prfsha1",
+                                "prfmd5",
+                                "default"
+                              ]
+                            },
+                            "description": "[optional] This is the pseudo-random function to be used in IKE_SA. The value should be an array with one of the following algorithms: 'prfsha256', 'prfsha1', 'prfmd5', 'default'. The 'default' option can be used to default to the Authentication algorithm."
                           },
                           "ikeDiffieHellmanGroup": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group5', 'group2', 'group1'"
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group14', 'group5', 'group2', 'group1'"
                           },
                           "ikeLifetime": {
                             "type": "integer",
@@ -29015,14 +30295,14 @@
                             "items": {
                               "type": "string"
                             },
-                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha1', 'md5'"
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
                           },
                           "childPfsGroup": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled', 'group5', 'group2', 'group1'"
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled','group14', 'group5', 'group2', 'group1'"
                           },
                           "childLifetime": {
                             "type": "integer",
@@ -29038,6 +30318,15 @@
                       "secret": {
                         "type": "string",
                         "description": "The shared secret with the VPN peer"
+                      },
+                      "ikeVersion": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "2"
+                        ],
+                        "description": "[optional] The IKE version to be used for the IPsec VPN peer configuration. Defaults to '1' when omitted.",
+                        "default": "1"
                       },
                       "networkTags": {
                         "type": "array",
@@ -29067,12 +30356,16 @@
                       "192.168.128.0/24"
                     ],
                     "secret": "asdf1234",
+                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
                       ],
                       "ikeAuthAlgo": [
                         "sha1"
+                      ],
+                      "ikePrfAlgo": [
+                        "prfsha1"
                       ],
                       "ikeDiffieHellmanGroup": [
                         "group2"
@@ -29105,6 +30398,7 @@
                     "networkTags": [
                       "none"
                     ],
+                    "ikeVersion": "1",
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -29134,12 +30428,16 @@
                       "192.168.128.0/24"
                     ],
                     "secret": "asdf1234",
+                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
                       ],
                       "ikeAuthAlgo": [
                         "sha1"
+                      ],
+                      "ikePrfAlgo": [
+                        "prfsha1"
                       ],
                       "ikeDiffieHellmanGroup": [
                         "group2"
@@ -29172,6 +30470,7 @@
                     "networkTags": [
                       "none"
                     ],
+                    "ikeVersion": "1",
                     "ipsecPoliciesPreset": "default"
                   }
                 ]
@@ -29183,6 +30482,7 @@
         "tags": [
           "appliance",
           "configure",
+          "vpn",
           "thirdPartyVPNPeers"
         ]
       }
@@ -33828,6 +35128,30 @@
       "operation": "update"
     },
     {
+      "group": "L3 interface dhcp",
+      "summary": "Update a layer 3 interface DHCP configuration for a switch",
+      "resource": "/devices/{serial}/switch/routing/interfaces/{interfaceId}/dhcp",
+      "operation": "update"
+    },
+    {
+      "group": "L3 static route",
+      "summary": "Create a layer 3 static route for a switch",
+      "resource": "/devices/{serial}/switch/routing/staticRoutes",
+      "operation": "create"
+    },
+    {
+      "group": "L3 static route",
+      "summary": "Delete a layer 3 static route for a switch",
+      "resource": "/devices/{serial}/switch/routing/staticRoutes/{staticRouteId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "L3 static route",
+      "summary": "Update a layer 3 static route for a switch",
+      "resource": "/devices/{serial}/switch/routing/staticRoutes/{staticRouteId}",
+      "operation": "update"
+    },
+    {
       "group": "License",
       "summary": "Assign SM seats to a network. This will increase the managed SM device limit of the network",
       "resource": "/organizations/{organizationId}/licenses",
@@ -33949,9 +35273,21 @@
     },
     {
       "group": "Network",
+      "summary": "Split a combined network into individual networks for each type of device",
+      "resource": "/networks/{networkId}",
+      "operation": "split"
+    },
+    {
+      "group": "Network",
       "summary": "Update a network",
       "resource": "/networks/{networkId}",
       "operation": "update"
+    },
+    {
+      "group": "Network",
+      "summary": "Combine multiple networks into a single network",
+      "resource": "/organizations/{organizationId}/networks",
+      "operation": "combine"
     },
     {
       "group": "Network",
@@ -34107,6 +35443,30 @@
       "group": "Switch stacks l3 interface",
       "summary": "Update a layer 3 interface for a switch stack",
       "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}",
+      "operation": "update"
+    },
+    {
+      "group": "Switch stacks l3 interface dhcp",
+      "summary": "Update a layer 3 interface DHCP configuration for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/interfaces/{interfaceId}/dhcp",
+      "operation": "update"
+    },
+    {
+      "group": "Switch stacks l3 static route",
+      "summary": "Create a layer 3 static route for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes",
+      "operation": "create"
+    },
+    {
+      "group": "Switch stacks l3 static route",
+      "summary": "Delete a layer 3 static route for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes/{staticRouteId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Switch stacks l3 static route",
+      "summary": "Update a layer 3 static route for a switch stack",
+      "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes/{staticRouteId}",
       "operation": "update"
     },
     {
