@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.11",
+    "version": "1.0.0-beta.12",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 July, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 July, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -3420,6 +3420,99 @@
           "configure",
           "routing",
           "staticRoutes"
+        ]
+      }
+    },
+    "/devices/{serial}/switch/warmSpare": {
+      "get": {
+        "description": "Return warm spare configuration for a switch",
+        "operationId": "getDeviceSwitchWarmSpare",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "primarySerial": "Q234-ABCD-0001",
+                "spareSerial": "Q234-ABCD-0002"
+              }
+            }
+          }
+        },
+        "summary": "Return warm spare configuration for a switch",
+        "tags": [
+          "switch",
+          "configure",
+          "warmSpare"
+        ]
+      },
+      "put": {
+        "description": "Update warm spare configuration for a switch. The spare will use the same L3 configuration as the primary. Note that this will irreversibly destroy any existing L3 configuration on the spare.",
+        "operationId": "updateDeviceSwitchWarmSpare",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceSwitchWarmSpare",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable or disable warm spare for a switch"
+                },
+                "spareSerial": {
+                  "type": "string",
+                  "description": "Serial number of the warm spare switch"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "spareSerial": "Q234-ABCD-0002"
+              },
+              "required": [
+                "enabled"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "primarySerial": "Q234-ABCD-0001",
+                "spareSerial": "Q234-ABCD-0002"
+              }
+            }
+          }
+        },
+        "summary": "Update warm spare configuration for a switch. The spare will use the same L3 configuration as the primary. Note that this will irreversibly destroy any existing L3 configuration on the spare.",
+        "tags": [
+          "switch",
+          "configure",
+          "warmSpare"
         ]
       }
     },
@@ -12978,6 +13071,147 @@
         ]
       }
     },
+    "/networks/{networkId}/firmwareUpgrades": {
+      "get": {
+        "description": "Get current maintenance window for a network",
+        "operationId": "getNetworkFirmwareUpgrades",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "upgradeWindow": {
+                  "hourOfDay": "4:00",
+                  "dayOfWeek": "Sun"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get current maintenance window for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "firmwareUpgrades"
+        ]
+      },
+      "put": {
+        "description": "Update current maintenance window for a network",
+        "operationId": "updateNetworkFirmwareUpgrades",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkFirmwareUpgrades",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "upgradeWindow": {
+                  "type": "object",
+                  "properties": {
+                    "dayOfWeek": {
+                      "type": "string",
+                      "enum": [
+                        "sun",
+                        "mon",
+                        "tue",
+                        "wed",
+                        "thu",
+                        "fri",
+                        "sat",
+                        "sunday",
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday",
+                        "saturday"
+                      ],
+                      "description": "Day of the week"
+                    },
+                    "hourOfDay": {
+                      "type": "string",
+                      "enum": [
+                        "0:00",
+                        "1:00",
+                        "2:00",
+                        "3:00",
+                        "4:00",
+                        "5:00",
+                        "6:00",
+                        "7:00",
+                        "8:00",
+                        "9:00",
+                        "10:00",
+                        "11:00",
+                        "12:00",
+                        "13:00",
+                        "14:00",
+                        "15:00",
+                        "16:00",
+                        "17:00",
+                        "18:00",
+                        "19:00",
+                        "20:00",
+                        "21:00",
+                        "22:00",
+                        "23:00"
+                      ],
+                      "description": "Hour of the day"
+                    }
+                  },
+                  "description": "Upgrade window for devices in network"
+                }
+              },
+              "example": {
+                "upgradeWindow": {
+                  "hourOfDay": "4:00",
+                  "dayOfWeek": "Sun"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "upgradeWindow": {
+                  "hourOfDay": "4:00",
+                  "dayOfWeek": "Sun"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update current maintenance window for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "firmwareUpgrades"
+        ]
+      }
+    },
     "/networks/{networkId}/floorPlans": {
       "get": {
         "description": "List the floor plans that belong to your network",
@@ -21822,6 +22056,400 @@
           "configure",
           "routing",
           "multicast"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/routing/multicast/rendezvousPoints": {
+      "get": {
+        "description": "List multicast rendezvous points",
+        "operationId": "getNetworkSwitchRoutingMulticastRendezvousPoints",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                [
+                  {
+                    "rendezvousPointId": "1234",
+                    "serial": "Q234-ABCD-5678",
+                    "interfaceName": "l3_interface_0",
+                    "interfaceIp": "192.168.1.2",
+                    "multicastGroup": "Any"
+                  },
+                  {
+                    "rendezvousPointId": "1234",
+                    "switchStackId": "789102",
+                    "interfaceName": "l3_interface_1",
+                    "interfaceIp": "192.0.0.10",
+                    "multicastGroup": "239.0.0.0/24"
+                  },
+                  {
+                    "rendezvousPointId": "1234",
+                    "interfaceIp": "192.168.1.2",
+                    "multicastGroup": "192.168.128.0/24"
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "summary": "List multicast rendezvous points",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "multicast",
+          "rendezvousPoints"
+        ]
+      },
+      "post": {
+        "description": "Create a multicast rendezvous point",
+        "operationId": "createNetworkSwitchRoutingMulticastRendezvousPoint",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchRoutingMulticastRendezvousPoint",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address of the interface where the RP needs to be created."
+                },
+                "multicastGroup": {
+                  "type": "string",
+                  "description": "'Any', or the IP address of a multicast group"
+                }
+              },
+              "example": {
+                "interfaceIp": "192.168.1.2",
+                "multicastGroup": "192.168.128.0/24"
+              },
+              "required": [
+                "interfaceIp",
+                "multicastGroup"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "rendezvousPointId": "1234",
+                "interfaceIp": "192.168.1.2",
+                "multicastGroup": "192.168.128.0/24"
+              }
+            }
+          }
+        },
+        "summary": "Create a multicast rendezvous point",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "multicast",
+          "rendezvousPoints"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/routing/multicast/rendezvousPoints/{rendezvousPointId}": {
+      "get": {
+        "description": "Return a multicast rendezvous point",
+        "operationId": "getNetworkSwitchRoutingMulticastRendezvousPoint",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rendezvousPointId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "rendezvousPointId": "1234",
+                "serial": "Q234-ABCD-5678",
+                "interfaceName": "l3_interface_0",
+                "interfaceIp": "192.168.1.2",
+                "multicastGroup": "Any"
+              }
+            }
+          }
+        },
+        "summary": "Return a multicast rendezvous point",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "multicast",
+          "rendezvousPoints"
+        ]
+      },
+      "delete": {
+        "description": "Delete a multicast rendezvous point",
+        "operationId": "deleteNetworkSwitchRoutingMulticastRendezvousPoint",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rendezvousPointId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a multicast rendezvous point",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "multicast",
+          "rendezvousPoints"
+        ]
+      },
+      "put": {
+        "description": "Update a multicast rendezvous point",
+        "operationId": "updateNetworkSwitchRoutingMulticastRendezvousPoint",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rendezvousPointId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchRoutingMulticastRendezvousPoint",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "interfaceIp": {
+                  "type": "string",
+                  "description": "The IP address of the interface to use"
+                },
+                "multicastGroup": {
+                  "type": "string",
+                  "description": "'Any', or the IP address of a multicast group"
+                }
+              },
+              "example": {
+                "interfaceIp": "192.168.1.2",
+                "multicastGroup": "192.168.128.0/24"
+              },
+              "required": [
+                "interfaceIp",
+                "multicastGroup"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "rendezvousPointId": "1234",
+                "interfaceIp": "192.168.1.2",
+                "multicastGroup": "192.168.128.0/24"
+              }
+            }
+          }
+        },
+        "summary": "Update a multicast rendezvous point",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "multicast",
+          "rendezvousPoints"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/routing/ospf": {
+      "put": {
+        "description": "Update layer 3 OSPF routing configuration",
+        "operationId": "updateNetworkSwitchRoutingOspf",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchRoutingOspf",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean value to enable or disable OSPF routing. OSPF routing is disabled by default."
+                },
+                "helloTimerInSeconds": {
+                  "type": "integer",
+                  "description": "Time interval in seconds at which hello packet will be sent to OSPF neighbors to maintain connectivity. Value must be between 1 and 255. Default is 10 seconds"
+                },
+                "deadTimerInSeconds": {
+                  "type": "integer",
+                  "description": "Time interval to determine when the peer will be declare inactive/dead. Value must be between 1 and 65535"
+                },
+                "areas": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "areaId": {
+                        "type": "integer",
+                        "description": "OSPF area ID"
+                      },
+                      "areaName": {
+                        "type": "string",
+                        "description": "Name of the OSPF area"
+                      },
+                      "areaType": {
+                        "type": "string",
+                        "enum": [
+                          "normal",
+                          "stub",
+                          "nssa"
+                        ],
+                        "description": "Area types in OSPF. Must be one of: [\"normal\", \"stub\", \"nssa\"]"
+                      }
+                    },
+                    "required": [
+                      "areaId",
+                      "areaName",
+                      "areaType"
+                    ]
+                  },
+                  "description": "OSPF areas"
+                },
+                "md5AuthenticationEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean value to enable or disable MD5 authentication. MD5 authentication is disabled by default."
+                },
+                "md5AuthenticationKey": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "MD5 authentication key index. Key index must be between 1 to 255"
+                    },
+                    "passphrase": {
+                      "type": "string",
+                      "description": "MD5 authentication passphrase"
+                    }
+                  },
+                  "description": "MD5 authentication credentials. This param is only relevant if md5AuthenticationEnabled is true"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "helloTimerInSeconds": 10,
+                "deadTimerInSeconds": 40,
+                "areas": [
+                  {
+                    "areaId": "1284392014819",
+                    "areaName": "Backbone",
+                    "areaType": "normal"
+                  }
+                ],
+                "md5AuthenticationEnabled": true,
+                "md5AuthenticationKey": {
+                  "id": "1234",
+                  "passphrase": "abc1234"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "helloTimerInSeconds": 10,
+                "deadTimerInSeconds": 40,
+                "areas": [
+                  {
+                    "areaId": "1284392014819",
+                    "areaName": "Backbone",
+                    "areaType": "normal"
+                  }
+                ],
+                "md5AuthenticationEnabled": true,
+                "md5AuthenticationKey": {
+                  "id": "1234",
+                  "passphrase": "abc1234"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update layer 3 OSPF routing configuration",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "ospf"
         ]
       }
     },
@@ -33117,6 +33745,16 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "used",
+              "unused"
+            ],
+            "name": "usedState",
+            "in": "query",
+            "description": "Filter results by used or unused inventory. Accepted values are \"used\" or \"unused\"."
           }
         ],
         "responses": {
@@ -35155,6 +35793,9 @@
       "name": "firewalledServices"
     },
     {
+      "name": "firmwareUpgrades"
+    },
+    {
       "name": "floorPlans"
     },
     {
@@ -35269,6 +35910,9 @@
       "name": "order"
     },
     {
+      "name": "ospf"
+    },
+    {
       "name": "overview"
     },
     {
@@ -35321,6 +35965,9 @@
     },
     {
       "name": "recent"
+    },
+    {
+      "name": "rendezvousPoints"
     },
     {
       "name": "requests"
@@ -35862,6 +36509,12 @@
       "operation": "update"
     },
     {
+      "group": "Ospf routing",
+      "summary": "Update layer 3 OSPF routing configuration",
+      "resource": "/networks/{networkId}/switch/routing/ospf",
+      "operation": "update"
+    },
+    {
       "group": "Psk group",
       "summary": "Create an Identity PSK",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/identityPsks",
@@ -35931,6 +36584,24 @@
       "group": "Radio settings",
       "summary": "Update the radio settings of a device",
       "resource": "/devices/{serial}/wireless/radio/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Rendezvous point",
+      "summary": "Create a multicast rendezvous point",
+      "resource": "/networks/{networkId}/switch/routing/multicast/rendezvousPoints",
+      "operation": "create"
+    },
+    {
+      "group": "Rendezvous point",
+      "summary": "Delete a multicast rendezvous point",
+      "resource": "/networks/{networkId}/switch/routing/multicast/rendezvousPoints/{rendezvousPointId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Rendezvous point",
+      "summary": "Update a multicast rendezvous point",
+      "resource": "/networks/{networkId}/switch/routing/multicast/rendezvousPoints/{rendezvousPointId}",
       "operation": "update"
     },
     {
@@ -36033,6 +36704,12 @@
       "group": "Switch stacks l3 static route",
       "summary": "Update a layer 3 static route for a switch stack",
       "resource": "/networks/{networkId}/switch/switchStacks/{switchStackId}/routing/staticRoutes/{staticRouteId}",
+      "operation": "update"
+    },
+    {
+      "group": "Switch warm spare settings",
+      "summary": "Update warm spare configuration for a switch. The spare will use the same L3 configuration as the primary. Note that this will irreversibly destroy any existing L3 configuration on the spare.",
+      "resource": "/devices/{serial}/switch/warmSpare",
       "operation": "update"
     },
     {
