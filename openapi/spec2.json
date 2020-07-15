@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.12",
+    "version": "1.0.0-beta.13",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 July, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 15 July, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -16300,6 +16300,11 @@
                 "url": {
                   "type": "string",
                   "description": "The URL where the test webhook will be sent"
+                },
+                "sharedSecret": {
+                  "type": "string",
+                  "description": "The shared secret the test webhook will send. Optional. Defaults to an empty string.",
+                  "default": ""
                 }
               },
               "example": {
@@ -22319,6 +22324,52 @@
       }
     },
     "/networks/{networkId}/switch/routing/ospf": {
+      "get": {
+        "description": "Return layer 3 OSPF routing configuration",
+        "operationId": "getNetworkSwitchRoutingOspf",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "helloTimerInSeconds": 10,
+                "deadTimerInSeconds": 40,
+                "areas": [
+                  {
+                    "areaId": "1284392014819",
+                    "areaName": "Backbone",
+                    "areaType": "normal"
+                  }
+                ],
+                "md5AuthenticationEnabled": true,
+                "md5AuthenticationKey": {
+                  "id": "1234",
+                  "passphrase": "abc1234"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return layer 3 OSPF routing configuration",
+        "tags": [
+          "switch",
+          "configure",
+          "routing",
+          "ospf"
+        ]
+      },
       "put": {
         "description": "Update layer 3 OSPF routing configuration",
         "operationId": "updateNetworkSwitchRoutingOspf",
@@ -27848,7 +27899,9 @@
                   "availableOnAllAps": false,
                   "availabilityTags": [
                     "test-tag"
-                  ]
+                  ],
+                  "perSsidBandwidthLimitUp": 0,
+                  "perSsidBandwidthLimitDown": 0
                 }
               ]
             }
@@ -27923,7 +27976,9 @@
                 "availableOnAllAps": false,
                 "availabilityTags": [
                   "test-tag"
-                ]
+                ],
+                "perSsidBandwidthLimitUp": 0,
+                "perSsidBandwidthLimitDown": 0
               }
             }
           }
@@ -28192,6 +28247,14 @@
                   "type": "integer",
                   "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
                 },
+                "perSsidBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The total upload bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "perSsidBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The total download bandwidth limit in Kbps. (0 represents no limit.)"
+                },
                 "lanIsolationEnabled": {
                   "type": "boolean",
                   "description": "Boolean indicating whether Layer 2 LAN isolation should be enabled or disabled. Only configurable when ipAssignmentMode is 'Bridge mode'."
@@ -28262,7 +28325,9 @@
                 "availableOnAllAps": false,
                 "availabilityTags": [
                   "test-tag"
-                ]
+                ],
+                "perSsidBandwidthLimitUp": 0,
+                "perSsidBandwidthLimitDown": 0
               }
             }
           }
@@ -36453,6 +36518,12 @@
       "summary": "Update multicast settings for a network",
       "resource": "/networks/{networkId}/switch/routing/multicast",
       "operation": "update"
+    },
+    {
+      "group": "Network",
+      "summary": "Bind a network to a template.",
+      "resource": "/networks/{networkId}",
+      "operation": "bind"
     },
     {
       "group": "Network",
