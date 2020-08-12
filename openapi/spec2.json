@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0-beta.16",
+    "version": "1.0.0-beta.17",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 August, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 August, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -2400,6 +2400,10 @@
                 "stormControlEnabled": {
                   "type": "boolean",
                   "description": "The storm control status of the switch port"
+                },
+                "flexibleStackingEnabled": {
+                  "type": "boolean",
+                  "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
                 }
               },
               "example": {
@@ -3829,7 +3833,16 @@
             "examples": {
               "application/json": {
                 "serial": "Q234-ABCD-5678",
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -3861,10 +3874,101 @@
                 "rfProfileId": {
                   "type": "integer",
                   "description": "    The ID of an RF profile to assign to the device. If the value of this parameter is null, the appropriate basic RF profile\n    (indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides\n    on the device (channel width, channel, power).\n"
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14
+                      ],
+                      "description": "Sets a manual channel for 2.4 GHz. Can be '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13' or '14' or null for using auto channel."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 2.4 GHz. Can be between '5' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 2.4 GHz."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        36,
+                        40,
+                        44,
+                        48,
+                        52,
+                        56,
+                        60,
+                        64,
+                        100,
+                        104,
+                        108,
+                        112,
+                        116,
+                        120,
+                        124,
+                        128,
+                        132,
+                        136,
+                        140,
+                        144,
+                        149,
+                        153,
+                        157,
+                        161,
+                        165
+                      ],
+                      "description": "Sets a manual channel for 5 GHz. Can be '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161' or '165' or null for using auto channel."
+                    },
+                    "channelWidth": {
+                      "type": "integer",
+                      "enum": [
+                        0,
+                        20,
+                        40,
+                        80,
+                        160
+                      ],
+                      "description": "Sets a manual channel for 5 GHz. Can be '0', '20', '40', '80' or '160' or null for using auto channel width."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 5 GHz. Can be between '8' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 5 GHz."
                 }
               },
               "example": {
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -3878,7 +3982,16 @@
             "examples": {
               "application/json": {
                 "serial": "Q234-ABCD-5678",
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -7776,7 +7889,7 @@
     },
     "/networks/{networkId}/appliance/trafficShaping/rules": {
       "put": {
-        "description": "Update the traffic shaping settings for an MX network",
+        "description": "Update the traffic shaping settings rules for an MX network",
         "operationId": "updateNetworkApplianceTrafficShapingRules",
         "parameters": [
           {
@@ -7994,7 +8107,7 @@
             }
           }
         },
-        "summary": "Update the traffic shaping settings for an MX network",
+        "summary": "Update the traffic shaping settings rules for an MX network",
         "tags": [
           "appliance",
           "configure",
@@ -8003,7 +8116,7 @@
         ]
       },
       "get": {
-        "description": "Display the traffic shaping settings for an MX network",
+        "description": "Display the traffic shaping settings rules for an MX network",
         "operationId": "getNetworkApplianceTrafficShapingRules",
         "parameters": [
           {
@@ -8079,7 +8192,7 @@
             }
           }
         },
-        "summary": "Display the traffic shaping settings for an MX network",
+        "summary": "Display the traffic shaping settings rules for an MX network",
         "tags": [
           "appliance",
           "configure",
@@ -28479,6 +28592,10 @@
                     "type": "string"
                   },
                   "description": "Accepts a list of tags for this SSID. If availableOnAllAps is false, then the SSID will only be broadcast by APs with tags matching any of the tags in this list."
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "If true, Mandatory DHCP will enforce that clients connecting to this SSID must use the IP address assigned by the DHCP server. Clients who use a static IP address won’t be able to associate."
                 }
               },
               "example": {
@@ -34344,6 +34461,52 @@
         ]
       }
     },
+    "/organizations/{organizationId}/inventoryDevices/{serial}": {
+      "get": {
+        "description": "Return a single device from the inventory of an organization",
+        "operationId": "getOrganizationInventoryDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "mac": "00:11:22:33:44:55",
+                "serial": "Q234-ABCD-5678",
+                "name": "My AP",
+                "model": "MR34",
+                "networkId": "N_24329156",
+                "orderNumber": "4C1234567",
+                "claimedAt": "2018-02-11T00:00:00.090210Z",
+                "licenseExpirationDate": "2020-05-02T10:52:44.012345Z"
+              }
+            }
+          }
+        },
+        "summary": "Return a single device from the inventory of an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventoryDevices"
+        ]
+      }
+    },
     "/organizations/{organizationId}/licenses": {
       "get": {
         "description": "List the licenses for an organization",
@@ -37450,7 +37613,7 @@
     },
     {
       "group": "Traffic shaping settings",
-      "summary": "Update the traffic shaping settings for an MX network",
+      "summary": "Update the traffic shaping settings rules for an MX network",
       "resource": "/networks/{networkId}/appliance/trafficShaping/rules",
       "operation": "update"
     },
