@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 August, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 September, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -2400,6 +2400,10 @@
                 "stormControlEnabled": {
                   "type": "boolean",
                   "description": "The storm control status of the switch port"
+                },
+                "flexibleStackingEnabled": {
+                  "type": "boolean",
+                  "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
                 }
               },
               "example": {
@@ -3829,7 +3833,16 @@
             "examples": {
               "application/json": {
                 "serial": "Q234-ABCD-5678",
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -3861,10 +3874,101 @@
                 "rfProfileId": {
                   "type": "integer",
                   "description": "    The ID of an RF profile to assign to the device. If the value of this parameter is null, the appropriate basic RF profile\n    (indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides\n    on the device (channel width, channel, power).\n"
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14
+                      ],
+                      "description": "Sets a manual channel for 2.4 GHz. Can be '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13' or '14' or null for using auto channel."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 2.4 GHz. Can be between '5' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 2.4 GHz."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        36,
+                        40,
+                        44,
+                        48,
+                        52,
+                        56,
+                        60,
+                        64,
+                        100,
+                        104,
+                        108,
+                        112,
+                        116,
+                        120,
+                        124,
+                        128,
+                        132,
+                        136,
+                        140,
+                        144,
+                        149,
+                        153,
+                        157,
+                        161,
+                        165
+                      ],
+                      "description": "Sets a manual channel for 5 GHz. Can be '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161' or '165' or null for using auto channel."
+                    },
+                    "channelWidth": {
+                      "type": "integer",
+                      "enum": [
+                        0,
+                        20,
+                        40,
+                        80,
+                        160
+                      ],
+                      "description": "Sets a manual channel for 5 GHz. Can be '0', '20', '40', '80' or '160' or null for using auto channel width."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 5 GHz. Can be between '8' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 5 GHz."
                 }
               },
               "example": {
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -3878,7 +3982,16 @@
             "examples": {
               "application/json": {
                 "serial": "Q234-ABCD-5678",
-                "rfProfileId": "1234"
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
               }
             }
           }
@@ -7516,6 +7629,105 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/trafficShaping": {
+      "get": {
+        "description": "Display the traffic shaping settings for an MX network",
+        "operationId": "getNetworkApplianceTrafficShaping",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "globalBandwidthLimits": {
+                  "limitUp": 2048,
+                  "limitDown": 5120
+                }
+              }
+            }
+          }
+        },
+        "summary": "Display the traffic shaping settings for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping"
+        ]
+      },
+      "put": {
+        "description": "Update the traffic shaping settings for an MX network",
+        "operationId": "updateNetworkApplianceTrafficShaping",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceTrafficShaping",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "globalBandwidthLimits": {
+                  "type": "object",
+                  "properties": {
+                    "limitUp": {
+                      "type": "integer",
+                      "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                    },
+                    "limitDown": {
+                      "type": "integer",
+                      "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                    }
+                  },
+                  "description": "Global per-client bandwidth limit"
+                }
+              },
+              "example": {
+                "globalBandwidthLimits": {
+                  "limitUp": 2048,
+                  "limitDown": 5120
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "globalBandwidthLimits": {
+                  "limitUp": 2048,
+                  "limitDown": 5120
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update the traffic shaping settings for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/trafficShaping/customPerformanceClasses": {
       "get": {
         "description": "List all custom performance classes for an MX network",
@@ -7776,7 +7988,7 @@
     },
     "/networks/{networkId}/appliance/trafficShaping/rules": {
       "put": {
-        "description": "Update the traffic shaping settings for an MX network",
+        "description": "Update the traffic shaping settings rules for an MX network",
         "operationId": "updateNetworkApplianceTrafficShapingRules",
         "parameters": [
           {
@@ -7994,7 +8206,7 @@
             }
           }
         },
-        "summary": "Update the traffic shaping settings for an MX network",
+        "summary": "Update the traffic shaping settings rules for an MX network",
         "tags": [
           "appliance",
           "configure",
@@ -8003,7 +8215,7 @@
         ]
       },
       "get": {
-        "description": "Display the traffic shaping settings for an MX network",
+        "description": "Display the traffic shaping settings rules for an MX network",
         "operationId": "getNetworkApplianceTrafficShapingRules",
         "parameters": [
           {
@@ -8079,7 +8291,7 @@
             }
           }
         },
-        "summary": "Display the traffic shaping settings for an MX network",
+        "summary": "Display the traffic shaping settings rules for an MX network",
         "tags": [
           "appliance",
           "configure",
@@ -16149,7 +16361,7 @@
         ]
       },
       "post": {
-        "description": "Create a user configured with Meraki Authentication for a network (currently only 802.1X RADIUS users can be created, and currently, organizations have a 50,000 user cap)",
+        "description": "Create a user configured with Meraki Authentication for a network (currently supports 802.1X and Splash Guest users, and currently, organizations have a 50,000 user cap)",
         "operationId": "createNetworkMerakiAuthUser",
         "parameters": [
           {
@@ -16178,7 +16390,11 @@
                 },
                 "accountType": {
                   "type": "string",
-                  "description": "Authorization type for user (currently we only support 802.1X account types, which is the default)",
+                  "enum": [
+                    "Guest",
+                    "802.1X"
+                  ],
+                  "description": "Authorization type for user. Can be either 'Guest' or '802.1X'. Defaults to '802.1X'.",
                   "default": "802.1X"
                 },
                 "emailPasswordToUser": {
@@ -16192,11 +16408,11 @@
                     "properties": {
                       "ssidNumber": {
                         "type": "integer",
-                        "description": "SSID for which the user is being authorized"
+                        "description": "SSID for which the user is being authorized. Must be configured for the user's given accountType. While users may ultimately be authorized for different types of SSIDs, currently, POST /merakiAuthUsers only supports authorizing a user for one type of SSID. Use PUT /merakiAuthUsers/{merakiAuthUserId} to add authorizations for other types of SSIDs."
                       },
                       "expiresAt": {
                         "type": "string",
-                        "description": "Date for authorization to expire. Set to 'Never' for  the authorization to not expire, which is the default.",
+                        "description": "Date for authorization to expire. Set to 'Never' for the authorization to not expire, which is the default.",
                         "default": "Never"
                       }
                     },
@@ -16245,7 +16461,7 @@
             }
           }
         },
-        "summary": "Create a user configured with Meraki Authentication for a network (currently only 802.1X RADIUS users can be created, and currently, organizations have a 50,000 user cap)",
+        "summary": "Create a user configured with Meraki Authentication for a network (currently supports 802.1X and Splash Guest users, and currently, organizations have a 50,000 user cap)",
         "tags": [
           "networks",
           "configure",
@@ -27822,9 +28038,10 @@
                     "Systems Manager Sentry",
                     "Facebook Wi-Fi",
                     "Google OAuth",
-                    "Sponsored guest"
+                    "Sponsored guest",
+                    "Cisco ISE"
                   ],
-                  "description": "The type of splash page for the SSID ('None', 'Click-through splash page', 'Billing', 'Password-protected with Meraki RADIUS', 'Password-protected with custom RADIUS', 'Password-protected with Active Directory', 'Password-protected with LDAP', 'SMS authentication', 'Systems Manager Sentry', 'Facebook Wi-Fi', 'Google OAuth' or 'Sponsored guest'). This attribute is not supported for template children."
+                  "description": "The type of splash page for the SSID ('None', 'Click-through splash page', 'Billing', 'Password-protected with Meraki RADIUS', 'Password-protected with custom RADIUS', 'Password-protected with Active Directory', 'Password-protected with LDAP', 'SMS authentication', 'Systems Manager Sentry', 'Facebook Wi-Fi', 'Google OAuth', 'Sponsored guest' or 'Cisco ISE'). This attribute is not supported for template children."
                 },
                 "radiusServers": {
                   "type": "array",
@@ -28020,6 +28237,10 @@
                     "type": "string"
                   },
                   "description": "Accepts a list of tags for this SSID. If availableOnAllAps is false, then the SSID will only be broadcast by APs with tags matching any of the tags in this list."
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "If true, Mandatory DHCP will enforce that clients connecting to this SSID must use the IP address assigned by the DHCP server. Clients who use a static IP address won’t be able to associate."
                 }
               },
               "example": {
@@ -28833,7 +29054,7 @@
                 },
                 "useSplashUrl": {
                   "type": "boolean",
-                  "description": "[optional] Boolean indicating whether the user will be redirected to the custom splash url. A custom splash URL must be set if this is true. Note that depending on your SSID's access control settings, it may not be possible to use the custom splash URL."
+                  "description": "[optional] Boolean indicating whether the users will be redirected to the custom splash url. A custom splash URL must be set if this is true. Note that depending on your SSID's access control settings, it may not be possible to use the custom splash URL."
                 }
               },
               "example": {
@@ -33175,6 +33396,10 @@
                 "stormControlEnabled": {
                   "type": "boolean",
                   "description": "The storm control status of the switch profile port"
+                },
+                "flexibleStackingEnabled": {
+                  "type": "boolean",
+                  "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
                 }
               },
               "example": {
@@ -33847,6 +34072,12 @@
             "name": "usedState",
             "in": "query",
             "description": "Filter results by used or unused inventory. Accepted values are \"used\" or \"unused\"."
+          },
+          {
+            "type": "string",
+            "name": "search",
+            "in": "query",
+            "description": "Search for devices in inventory based on serial number, mac address, or model."
           }
         ],
         "responses": {
@@ -33878,6 +34109,52 @@
           }
         },
         "summary": "Return the device inventory for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventoryDevices"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventoryDevices/{serial}": {
+      "get": {
+        "description": "Return a single device from the inventory of an organization",
+        "operationId": "getOrganizationInventoryDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "mac": "00:11:22:33:44:55",
+                "serial": "Q234-ABCD-5678",
+                "name": "My AP",
+                "model": "MR34",
+                "networkId": "N_24329156",
+                "orderNumber": "4C1234567",
+                "claimedAt": "2018-02-11T00:00:00.090210Z",
+                "licenseExpirationDate": "2020-05-02T10:52:44.012345Z"
+              }
+            }
+          }
+        },
+        "summary": "Return a single device from the inventory of an organization",
         "tags": [
           "organizations",
           "configure",
@@ -36667,7 +36944,7 @@
     },
     {
       "group": "Meraki auth user",
-      "summary": "Create a user configured with Meraki Authentication for a network (currently only 802.1X RADIUS users can be created, and currently, organizations have a 50,000 user cap)",
+      "summary": "Create a user configured with Meraki Authentication for a network (currently supports 802.1X and Splash Guest users, and currently, organizations have a 50,000 user cap)",
       "resource": "/networks/{networkId}/merakiAuthUsers",
       "operation": "create"
     },
@@ -36991,7 +37268,7 @@
     },
     {
       "group": "Traffic shaping settings",
-      "summary": "Update the traffic shaping settings for an MX network",
+      "summary": "Update the traffic shaping settings rules for an MX network",
       "resource": "/networks/{networkId}/appliance/trafficShaping/rules",
       "operation": "update"
     },
