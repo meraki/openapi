@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.2.0",
+    "version": "1.3.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 October, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 November, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -3936,9 +3936,12 @@
                         153,
                         157,
                         161,
-                        165
+                        165,
+                        169,
+                        173,
+                        177
                       ],
-                      "description": "Sets a manual channel for 5 GHz. Can be '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161' or '165' or null for using auto channel."
+                      "description": "Sets a manual channel for 5 GHz. Can be '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161', '165', '169', '173' or '177' or null for using auto channel."
                     },
                     "channelWidth": {
                       "type": "integer",
@@ -10011,6 +10014,175 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/vpn/bgp": {
+      "get": {
+        "description": "Return a Hub BGP Configuration",
+        "operationId": "getNetworkApplianceVpnBgp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "asNumber": 64515,
+                "ibgpHoldTimer": 120,
+                "neighbors": [
+                  {
+                    "ip": "10.10.10.22",
+                    "remoteAsNumber": 64343,
+                    "receiveLimit": 120,
+                    "allowTransit": true,
+                    "ebgpHoldTimer": 180,
+                    "ebgpMultihop": 2
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a Hub BGP Configuration",
+        "tags": [
+          "appliance",
+          "configure",
+          "vpn",
+          "bgp"
+        ]
+      },
+      "put": {
+        "description": "Update a Hub BGP Configuration",
+        "operationId": "updateNetworkApplianceVpnBgp",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceVpnBgp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean value to enable or disable the BGP configuration."
+                },
+                "asNumber": {
+                  "type": "integer",
+                  "description": "An Autonomous System Number (ASN) is required if you are to run BGP and peer with another BGP Speaker outside of the Auto VPN domain. This ASN will be applied to the entire Auto VPN domain. The entire 4-byte ASN range is supported. So, the ASN must be an integer between 1 and 4294967295. When absent, this field is not updated. If no value exists then it defaults to 64512."
+                },
+                "ibgpHoldTimer": {
+                  "type": "integer",
+                  "description": "The IBGP holdtimer in seconds. The IBGP holdtimer must be an integer between 12 and 240. When absent, this field is not updated. If no value exists then it defaults to 240."
+                },
+                "neighbors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "IP address of the neighbor."
+                      },
+                      "remoteAsNumber": {
+                        "type": "integer",
+                        "description": "Remote ASN of the neighbor. The remote ASN must be an integer between 1 and 4294967295."
+                      },
+                      "receiveLimit": {
+                        "type": "integer",
+                        "description": "The receive limit is the maximum number of routes that can be received from any BGP peer. The receive limit must be an integer between 0 and 4294967295. When absent, it defaults to 0."
+                      },
+                      "allowTransit": {
+                        "type": "boolean",
+                        "description": "When this feature is on, the Meraki device will advertise routes learned from other Autonomous Systems, thereby allowing traffic between Autonomous Systems to transit this AS. When absent, it defaults to false."
+                      },
+                      "ebgpHoldTimer": {
+                        "type": "integer",
+                        "description": "The EBGP hold timer in seconds for each neighbor. The EBGP hold timer must be an integer between 12 and 240."
+                      },
+                      "ebgpMultihop": {
+                        "type": "integer",
+                        "description": "Configure this if the neighbor is not adjacent. The EBGP multi-hop must be an integer between 1 and 255."
+                      }
+                    },
+                    "required": [
+                      "ip",
+                      "remoteAsNumber",
+                      "ebgpHoldTimer",
+                      "ebgpMultihop"
+                    ]
+                  },
+                  "description": "List of BGP neighbors. This list replaces the existing set of neighbors. When absent, this field is not updated."
+                }
+              },
+              "example": {
+                "enabled": true,
+                "asNumber": 64515,
+                "ibgpHoldTimer": 120,
+                "neighbors": [
+                  {
+                    "ip": "10.10.10.22",
+                    "remoteAsNumber": 64343,
+                    "receiveLimit": 120,
+                    "allowTransit": true,
+                    "ebgpHoldTimer": 180,
+                    "ebgpMultihop": 2
+                  }
+                ]
+              },
+              "required": [
+                "enabled"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "asNumber": 64515,
+                "ibgpHoldTimer": 120,
+                "neighbors": [
+                  {
+                    "ip": "10.10.10.22",
+                    "remoteAsNumber": 64343,
+                    "receiveLimit": 120,
+                    "allowTransit": true,
+                    "ebgpHoldTimer": 180,
+                    "ebgpMultihop": 2
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a Hub BGP Configuration",
+        "tags": [
+          "appliance",
+          "configure",
+          "vpn",
+          "bgp"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/vpn/siteToSiteVpn": {
       "get": {
         "description": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
@@ -10770,9 +10942,10 @@
                           "type": "string",
                           "enum": [
                             "Standard",
-                            "Enhanced"
+                            "Enhanced",
+                            "High"
                           ],
-                          "description": "Quality of the camera. Can be one of 'Standard' or 'Enhanced'."
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
                         },
                         "resolution": {
                           "type": "string",
@@ -11088,9 +11261,10 @@
                           "type": "string",
                           "enum": [
                             "Standard",
-                            "Enhanced"
+                            "Enhanced",
+                            "High"
                           ],
-                          "description": "Quality of the camera. Can be one of 'Standard' or 'Enhanced'."
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
                         },
                         "resolution": {
                           "type": "string",
@@ -16510,7 +16684,7 @@
             "examples": {
               "application/json": [
                 {
-                  "merakiAuthUserId": "aGlAaGkuY29t",
+                  "id": "aGlAaGkuY29t",
                   "email": "miles@meraki.com",
                   "name": "Miles Meraki",
                   "createdAt": "2018-02-11T00:00:00.090210Z",
@@ -16618,7 +16792,7 @@
             },
             "examples": {
               "application/json": {
-                "merakiAuthUserId": "aGlAaGkuY29t",
+                "id": "aGlAaGkuY29t",
                 "email": "miles@meraki.com",
                 "name": "Miles Meraki",
                 "createdAt": "2018-02-11T00:00:00.090210Z",
@@ -16670,7 +16844,7 @@
             },
             "examples": {
               "application/json": {
-                "merakiAuthUserId": "aGlAaGkuY29t",
+                "id": "aGlAaGkuY29t",
                 "email": "miles@meraki.com",
                 "name": "Miles Meraki",
                 "createdAt": "2018-02-11T00:00:00.090210Z",
@@ -16794,7 +16968,7 @@
             },
             "examples": {
               "application/json": {
-                "merakiAuthUserId": "aGlAaGkuY29t",
+                "id": "aGlAaGkuY29t",
                 "email": "miles@meraki.com",
                 "name": "Miles Meraki",
                 "createdAt": "2018-02-11T00:00:00.090210Z",
@@ -25657,7 +25831,8 @@
                   "networkId": "N_123",
                   "name": "My HTTP server",
                   "url": "https://www.example.com/webhooks",
-                  "sharedSecret": "foobar"
+                  "sharedSecret": "foobar",
+                  "payloadTemplate": "Meraki"
                 }
               ]
             }
@@ -25725,7 +25900,8 @@
                 "networkId": "N_123",
                 "name": "My HTTP server",
                 "url": "https://www.example.com/webhooks",
-                "sharedSecret": "foobar"
+                "sharedSecret": "foobar",
+                "payloadTemplate": "Meraki"
               }
             }
           }
@@ -25769,7 +25945,8 @@
                 "networkId": "N_123",
                 "name": "My HTTP server",
                 "url": "https://www.example.com/webhooks",
-                "sharedSecret": "foobar"
+                "sharedSecret": "foobar",
+                "payloadTemplate": "Meraki"
               }
             }
           }
@@ -25837,7 +26014,8 @@
                 "networkId": "N_123",
                 "name": "My HTTP server",
                 "url": "https://www.example.com/webhooks",
-                "sharedSecret": "foobar"
+                "sharedSecret": "foobar",
+                "payloadTemplate": "Meraki"
               }
             }
           }
@@ -27007,12 +27185,13 @@
                 "dns",
                 "dhcp",
                 "roam",
-                "connection"
+                "connection",
+                "sticky"
               ]
             },
             "name": "types",
             "in": "query",
-            "description": "A list of event types to include. If not specified, events of all types will be returned. Valid types are 'assoc', 'disassoc', 'auth', 'deauth', 'dns', 'dhcp', 'roam' and/or 'connection'."
+            "description": "A list of event types to include. If not specified, events of all types will be returned. Valid types are 'assoc', 'disassoc', 'auth', 'deauth', 'dns', 'dhcp', 'roam', 'connection' and/or 'sticky'."
           },
           {
             "type": "array",
@@ -29352,8 +29531,7 @@
                       }
                     },
                     "required": [
-                      "host",
-                      "secret"
+                      "host"
                     ]
                   },
                   "description": "The RADIUS 802.1X servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius'"
@@ -29405,8 +29583,7 @@
                       }
                     },
                     "required": [
-                      "host",
-                      "secret"
+                      "host"
                     ]
                   },
                   "description": "The RADIUS accounting 802.1X servers to be used for authentication. This param is only valid if the authMode is 'open-with-radius', '8021x-radius' or 'ipsk-with-radius' and radiusAccountingEnabled is 'true'"
@@ -37843,6 +38020,9 @@
       "name": "applicationCategories"
     },
     {
+      "name": "bgp"
+    },
+    {
       "name": "bluetooth"
     },
     {
@@ -38300,6 +38480,12 @@
     }
   ],
   "x-batchable-actions": [
+    {
+      "group": "Bgp setting",
+      "summary": "Update a Hub BGP Configuration",
+      "resource": "/networks/{networkId}/appliance/vpn/bgp",
+      "operation": "update"
+    },
     {
       "group": "Bluetooth device setting",
       "summary": "Update the bluetooth settings for a wireless device",
