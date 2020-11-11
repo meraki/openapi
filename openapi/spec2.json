@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.3.0-beta.0",
+    "version": "1.3.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 November, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 11 November, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -4064,6 +4064,242 @@
           "wireless",
           "monitor",
           "status"
+        ]
+      }
+    },
+    "/networks/{networkID}/clients/applicationUsage": {
+      "get": {
+        "description": "Return the application usage data for clients. Usage data is in kilobytes. Clients can be identified by client keys or either the MACs or IPs depending on whether the network uses Track-by-IP.",
+        "operationId": "getNetworkClientsApplicationUsage",
+        "parameters": [
+          {
+            "name": "networkID",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "clients",
+            "in": "query",
+            "required": true,
+            "description": "A list of client keys, MACs or IPs separated by comma."
+          },
+          {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14
+            ],
+            "name": "ssidNumber",
+            "in": "query",
+            "description": "An SSID number to include. If not specified, eveusage histories application usagents for all SSIDs will be returned."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "clientId": "k74272e",
+                  "clientIp": "1.2.3.4",
+                  "clientMac": "00:11:22:33:44:55",
+                  "applicationUsage": [
+                    {
+                      "application": "Google",
+                      "recv": 383,
+                      "sent": 56
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the application usage data for clients",
+        "tags": [
+          "networks",
+          "monitor",
+          "clients",
+          "applicationUsage"
+        ]
+      }
+    },
+    "/networks/{networkID}/clients/usageHistories": {
+      "get": {
+        "description": "Return the usage histories for clients. Usage data is in kilobytes. Clients can be identified by client keys or either the MACs or IPs depending on whether the network uses Track-by-IP.",
+        "operationId": "getNetworkClientsUsageHistories",
+        "parameters": [
+          {
+            "name": "networkID",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "clients",
+            "in": "query",
+            "required": true,
+            "description": "A list of client keys, MACs or IPs separated by comma."
+          },
+          {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14
+            ],
+            "name": "ssidNumber",
+            "in": "query",
+            "description": "An SSID number to include. If not specified, events for all SSIDs will be returned."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "clientId": "k74272e",
+                  "clientIp": "1.2.3.4",
+                  "clientMac": "00:11:22:33:44:55",
+                  "usageHistory": [
+                    {
+                      "ts": "2018-02-11T00:00:00.090210Z",
+                      "recv": 383,
+                      "sent": 56
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the usage histories for clients",
+        "tags": [
+          "networks",
+          "monitor",
+          "clients",
+          "usageHistories"
         ]
       }
     },
@@ -29331,9 +29567,32 @@
                   "availabilityTags": [
                     "test-tag"
                   ],
+                  "ldapServers": [
+                    {
+                      "host": "0.0.0.0",
+                      "port": 3000
+                    }
+                  ],
+                  "ldapCredentials": {
+                    "distinguishedName": "foo@bar.com",
+                    "password": "mypassword"
+                  },
+                  "activeDirectoryServers": [
+                    {
+                      "host": "0.0.0.0",
+                      "port": 3000
+                    }
+                  ],
+                  "activeDirectoryCredentials": {
+                    "logonName": "foo@bar.com",
+                    "password": "mypassword"
+                  },
                   "perSsidBandwidthLimitUp": 0,
                   "perSsidBandwidthLimitDown": 0,
-                  "mandatoryDhcpEnabled": false
+                  "mandatoryDhcpEnabled": false,
+                  "splashGuestSponsorDomains": [
+
+                  ]
                 }
               ]
             }
@@ -29409,9 +29668,32 @@
                 "availabilityTags": [
                   "test-tag"
                 ],
+                "ldapServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000
+                  }
+                ],
+                "ldapCredentials": {
+                  "distinguishedName": "foo@bar.com",
+                  "password": "mypassword"
+                },
+                "activeDirectoryServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000
+                  }
+                ],
+                "activeDirectoryCredentials": {
+                  "logonName": "foo@bar.com",
+                  "password": "mypassword"
+                },
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false
+                "mandatoryDhcpEnabled": false,
+                "splashGuestSponsorDomains": [
+
+                ]
               }
             }
           }
@@ -29543,6 +29825,10 @@
                 "radiusProxyEnabled": {
                   "type": "boolean",
                   "description": "If true, Meraki devices will proxy RADIUS messages through the Meraki cloud to the configured RADIUS auth and accounting servers."
+                },
+                "radiusTestingEnabled": {
+                  "type": "boolean",
+                  "description": "If true, Meraki devices will periodically send Access-Request messages to configured RADIUS servers using identity 'meraki_8021x_test' to ensure that the RADIUS servers are reachable."
                 },
                 "radiusCoaEnabled": {
                   "type": "boolean",
@@ -29765,9 +30051,32 @@
                 "availabilityTags": [
                   "test-tag"
                 ],
+                "ldapServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000
+                  }
+                ],
+                "ldapCredentials": {
+                  "distinguishedName": "foo@bar.com",
+                  "password": "mypassword"
+                },
+                "activeDirectoryServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000
+                  }
+                ],
+                "activeDirectoryCredentials": {
+                  "logonName": "foo@bar.com",
+                  "password": "mypassword"
+                },
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false
+                "mandatoryDhcpEnabled": false,
+                "splashGuestSponsorDomains": [
+
+                ]
               }
             }
           }
@@ -30496,6 +30805,10 @@
                 },
                 "splashPrepaidFront": {
                   "md5": null
+                },
+                "guestSponsorship": {
+                  "duratonInMinutes": 30,
+                  "guestCanRequestTimeframe": false
                 }
               }
             }
@@ -34273,7 +34586,7 @@
                           "addDevices",
                           "renew"
                         ],
-                        "description": "Either 'renew' or 'addDevices'. 'addDevices' will increase the license limit, while 'renew' will extend the amount of time until expiration. This parameter is legacy and only applies to coterm licensing; it should not be specified when claiming per-device licenses. Please see <a target='_blank' href='https://documentation.meraki.com/zGeneral_Administration/Licensing/Adding_an_Enterprise_license_to_an_existing_Dashboard_account'>this article</a> for more information."
+                        "description": "Either 'renew' or 'addDevices'. 'addDevices' will increase the license limit, while 'renew' will extend the amount of time until expiration. Defaults to 'addDevices'. All licenses must be claimed with the same mode, and at most one renewal can be claimed at a time. This parameter is legacy and does not apply to organizations with per-device licensing enabled."
                       }
                     },
                     "required": [
@@ -37927,7 +38240,7 @@
         "summary": "Return a list of alert types to be used with managing webhook alerts",
         "tags": [
           "organizations",
-          "configure",
+          "monitor",
           "webhooks",
           "alertTypes"
         ]
@@ -38092,6 +38405,9 @@
     },
     {
       "name": "applicationCategories"
+    },
+    {
+      "name": "applicationUsage"
     },
     {
       "name": "bgp"
@@ -38512,6 +38828,9 @@
     },
     {
       "name": "uplinksLossAndLatency"
+    },
+    {
+      "name": "usageHistories"
     },
     {
       "name": "usageHistory"
