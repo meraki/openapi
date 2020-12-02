@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.3.0-beta.3",
+    "version": "1.4.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 25 November, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 December, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -16900,6 +16900,268 @@
           "networks",
           "configure",
           "groupPolicies"
+        ]
+      }
+    },
+    "/networks/{networkId}/locationScanning": {
+      "get": {
+        "description": "Return scanning API settings",
+        "operationId": "getNetworkLocationScanning",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "analyticsEnabled": true,
+                "scanningApiEnabled": true,
+                "validator": "xxyzzy"
+              }
+            }
+          }
+        },
+        "summary": "Return scanning API settings",
+        "tags": [
+          "networks",
+          "configure",
+          "locationScanning"
+        ]
+      },
+      "put": {
+        "description": "Change scanning API settings",
+        "operationId": "updateNetworkLocationScanning",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkLocationScanning",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "analyticsEnabled": {
+                  "type": "boolean",
+                  "description": "Collect location and scanning analytics"
+                },
+                "scanningApiEnabled": {
+                  "type": "boolean",
+                  "description": "Enable push API for scanning events, analytics must be enabled"
+                }
+              },
+              "example": {
+                "analyticsEnabled": true,
+                "scanningApiEnabled": true,
+                "validator": "xxyzzy"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "analyticsEnabled": true,
+                "scanningApiEnabled": true,
+                "validator": "xxyzzy"
+              }
+            }
+          }
+        },
+        "summary": "Change scanning API settings",
+        "tags": [
+          "networks",
+          "configure",
+          "locationScanning"
+        ]
+      }
+    },
+    "/networks/{networkId}/locationScanning/httpServers": {
+      "get": {
+        "description": "Return list of scanning API receivers",
+        "operationId": "getNetworkLocationScanningHttpServers",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "endpoints": [
+                    {
+                      "httpServer": {
+                        "id": "1284392014819",
+                        "name": "What's in a name, anyway?",
+                        "url": "https://example.com/path",
+                        "sharedSecret": "secret",
+                        "validator": "xxx",
+                        "validatedAt": "2018-02-11T00:00:00Z",
+                        "payloadTemplate": "Meraki"
+                      },
+                      "successAt": "2018-05-12T00:00:00Z",
+                      "errorAt": "2018-02-11T00:00:00Z",
+                      "postErrors": "[{\"code\":200,\"delay\":{\"inMillis\":612},\"timestamp\":{\"millisFromEpoch\":1597255325467}}]"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return list of scanning API receivers",
+        "tags": [
+          "networks",
+          "configure",
+          "locationScanning",
+          "httpServers"
+        ]
+      },
+      "put": {
+        "description": "Set the list of scanning API receivers. Old receivers will be removed",
+        "operationId": "updateNetworkLocationScanningHttpServers",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkLocationScanningHttpServers",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "endpoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "scanningApiVersion": {
+                        "type": "integer",
+                        "enum": [
+                          1,
+                          2,
+                          3
+                        ],
+                        "description": "API version that the receiver expects to get; '1', '2' or '3'"
+                      },
+                      "radioType": {
+                        "type": "string",
+                        "enum": [
+                          "WiFi",
+                          "BLE"
+                        ],
+                        "description": "Radio type to use for scanning; 'WiFi' or 'BLE'"
+                      },
+                      "httpServer": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "description": "The URL of the HTTP server"
+                          },
+                          "sharedSecret": {
+                            "type": "string",
+                            "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
+                          }
+                        },
+                        "required": [
+                          "url",
+                          "sharedSecret"
+                        ],
+                        "description": "An http server object"
+                      }
+                    },
+                    "required": [
+                      "scanningApiVersion",
+                      "radioType",
+                      "httpServer"
+                    ]
+                  },
+                  "description": "A set of http server configurations"
+                }
+              },
+              "example": {
+                "endpoints": [
+                  {
+                    "httpServer": {
+                      "url": "https://example.com",
+                      "sharedSecret": "shhh"
+                    },
+                    "scanningApiVersion": 3,
+                    "radioType": "WiFi"
+                  }
+                ]
+              },
+              "required": [
+                "endpoints"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "endpoints": [
+                  {
+                    "httpServer": {
+                      "id": "1284392014819",
+                      "name": "What's in a name, anyway?",
+                      "url": "https://example.com/path",
+                      "sharedSecret": "secret",
+                      "validator": "xxx",
+                      "validatedAt": "2018-02-11T00:00:00Z",
+                      "payloadTemplate": "Meraki"
+                    },
+                    "successAt": "2018-05-12T00:00:00Z",
+                    "errorAt": "2018-02-11T00:00:00Z",
+                    "postErrors": "[{\"code\":200,\"delay\":{\"inMillis\":612},\"timestamp\":{\"millisFromEpoch\":1597255325467}}]"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Set the list of scanning API receivers",
+        "tags": [
+          "networks",
+          "configure",
+          "locationScanning",
+          "httpServers"
         ]
       }
     },
@@ -38612,6 +38874,9 @@
       "name": "lldpCdp"
     },
     {
+      "name": "locationScanning"
+    },
+    {
       "name": "loginSecurity"
     },
     {
@@ -39139,6 +39404,18 @@
       "group": "Link aggregation",
       "summary": "Update a link aggregation group",
       "resource": "/networks/{networkId}/switch/linkAggregations/{linkAggregationId}",
+      "operation": "update"
+    },
+    {
+      "group": "Location scanning",
+      "summary": "Change scanning API settings",
+      "resource": "/networks/{networkId}/locationScanning",
+      "operation": "update"
+    },
+    {
+      "group": "Location scanning http servers",
+      "summary": "Set the list of scanning API receivers. Old receivers will be removed",
+      "resource": "/networks/{networkId}/locationScanning/httpServers",
       "operation": "update"
     },
     {
