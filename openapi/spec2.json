@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.4.0-beta.0",
+    "version": "1.4.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 December, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 09 December, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -9786,9 +9786,7 @@
               },
               "required": [
                 "id",
-                "name",
-                "subnet",
-                "applianceIp"
+                "name"
               ]
             },
             "required": true
@@ -20264,6 +20262,113 @@
         ]
       }
     },
+    "/networks/{networkId}/sm/userAccessDevices": {
+      "get": {
+        "description": "List User Access Devices and its Trusted Access Connections",
+        "operationId": "getNetworkSmUserAccessDevices",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "My Personal Phone",
+                  "systemType": "ios",
+                  "mac": "00:11:22:33:44:55",
+                  "username": "milesmeraki",
+                  "email": "miles@meraki.com",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "trustedAccessConnections": [
+                    {
+                      "trustedAccessConfigId": "1234",
+                      "downloadedAt": "2018-02-11T00:00:00Z",
+                      "scepCompletedAt": "2018-05-12T00:00:00Z",
+                      "lastConnectedAt": "2018-05-12T00:00:00Z"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List User Access Devices and its Trusted Access Connections",
+        "tags": [
+          "sm",
+          "configure",
+          "userAccessDevices"
+        ]
+      }
+    },
+    "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}": {
+      "delete": {
+        "description": "Delete a User Access Device",
+        "operationId": "deleteNetworkSmUserAccessDevice",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "userAccessDeviceId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a User Access Device",
+        "tags": [
+          "sm",
+          "configure",
+          "userAccessDevices"
+        ]
+      }
+    },
     "/networks/{networkId}/sm/users": {
       "get": {
         "description": "List the owners in an SM network with various specified fields and filters",
@@ -29829,32 +29934,9 @@
                   "availabilityTags": [
                     "test-tag"
                   ],
-                  "ldapServers": [
-                    {
-                      "host": "0.0.0.0",
-                      "port": 3000
-                    }
-                  ],
-                  "ldapCredentials": {
-                    "distinguishedName": "foo@bar.com",
-                    "password": "mypassword"
-                  },
-                  "activeDirectoryServers": [
-                    {
-                      "host": "0.0.0.0",
-                      "port": 3000
-                    }
-                  ],
-                  "activeDirectoryCredentials": {
-                    "logonName": "foo@bar.com",
-                    "password": "mypassword"
-                  },
                   "perSsidBandwidthLimitUp": 0,
                   "perSsidBandwidthLimitDown": 0,
-                  "mandatoryDhcpEnabled": false,
-                  "splashGuestSponsorDomains": [
-
-                  ]
+                  "mandatoryDhcpEnabled": false
                 }
               ]
             }
@@ -29930,32 +30012,9 @@
                 "availabilityTags": [
                   "test-tag"
                 ],
-                "ldapServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000
-                  }
-                ],
-                "ldapCredentials": {
-                  "distinguishedName": "foo@bar.com",
-                  "password": "mypassword"
-                },
-                "activeDirectoryServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000
-                  }
-                ],
-                "activeDirectoryCredentials": {
-                  "logonName": "foo@bar.com",
-                  "password": "mypassword"
-                },
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "splashGuestSponsorDomains": [
-
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -30341,32 +30400,9 @@
                 "availabilityTags": [
                   "test-tag"
                 ],
-                "ldapServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000
-                  }
-                ],
-                "ldapCredentials": {
-                  "distinguishedName": "foo@bar.com",
-                  "password": "mypassword"
-                },
-                "activeDirectoryServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000
-                  }
-                ],
-                "activeDirectoryCredentials": {
-                  "logonName": "foo@bar.com",
-                  "password": "mypassword"
-                },
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "splashGuestSponsorDomains": [
-
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -31099,6 +31135,17 @@
                 "guestSponsorship": {
                   "duratonInMinutes": 30,
                   "guestCanRequestTimeframe": false
+                },
+                "billing": {
+                  "freeAccess": {
+                    "enabled": true,
+                    "durationInMinutes": 120
+                  },
+                  "prepaidAccessFastLoginEnabled": true,
+                  "paymentMethods": [
+                    "credit"
+                  ],
+                  "replyToEmailAddress": "user@email.com"
                 }
               }
             }
@@ -33105,6 +33152,7 @@
                 {
                   "networkId": "N_24329156",
                   "serial": "Q234-ABCD-5678",
+                  "model": "MX68C",
                   "lastReportedAt": "2018-02-11T00:00:00Z",
                   "uplinks": [
                     {
@@ -33129,7 +33177,8 @@
                         "rsrq": "-13"
                       },
                       "connectionType": "4g",
-                      "apn": "internet"
+                      "apn": "internet",
+                      "iccid": "123456789"
                     }
                   ]
                 }
@@ -39129,6 +39178,9 @@
       "name": "usageHistory"
     },
     {
+      "name": "userAccessDevices"
+    },
+    {
       "name": "users"
     },
     {
@@ -39284,6 +39336,12 @@
       "group": "Dscp cos mapping",
       "summary": "Update the DSCP to CoS mappings",
       "resource": "/networks/{networkId}/switch/dscpToCosMappings",
+      "operation": "update"
+    },
+    {
+      "group": "Firmware upgrades update",
+      "summary": "Update current maintenance window for a network",
+      "resource": "/networks/{networkId}/firmwareUpgrades",
       "operation": "update"
     },
     {
@@ -39837,6 +39895,12 @@
       "summary": "Update uplink selection settings for an MX network",
       "resource": "/networks/{networkId}/appliance/trafficShaping/uplinkSelection",
       "operation": "update"
+    },
+    {
+      "group": "User access device",
+      "summary": "Delete a User Access Device",
+      "resource": "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}",
+      "operation": "destroy"
     },
     {
       "group": "VLAN",
