@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.4.0-beta.2",
+    "version": "1.4.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 16 December, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 23 December, 2020\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -14062,118 +14062,18 @@
                 }
               },
               "example": {
-                "upgradeWindow": {
-                  "hourOfDay": "4:00",
-                  "dayOfWeek": "Sun"
-                },
-                "timezone": "America/Los_Angeles",
-                "participateInNextBetaRelease": false,
-                "products": {
-                  "camera": {
-                    "lastUpgrade": {
-                      "time": "timestamp",
-                      "fromVersion": {
-                        "id": 1234,
-                        "firmware": "camera-10-8-1",
-                        "shortName": "MV 10.8.1",
-                        "releaseType": "stable"
-                      },
-                      "toVersion": {
-                        "id": 4321,
-                        "firmware": "camera-11-2-1",
-                        "shortName": "MV 11.2.1",
-                        "releaseType": "stable"
-                      }
-                    },
-                    "nextUpgrade": {
-                      "time": "timestamp",
-                      "toVersion": {
-                        "id": 2134,
-                        "firmware": "camera-15-5-2",
-                        "shortName": "MV 25.5.2",
-                        "releaseType": "stable"
-                      }
-                    },
-                    "availableVersions": [
-                      {
-                        "id": 3421,
-                        "firmware": "camera-16-x-y",
-                        "shortName": "MV 16.x.y",
-                        "releaseType": "beta"
-                      },
-                      {
-                        "id": 2345,
-                        "firmware": "camera-15-x-x",
-                        "shortName": "MV 15.x.x",
-                        "releaseType": "stable"
-                      },
-                      {
-                        "id": 5435,
-                        "firmware": "camera-15-x-y",
-                        "shortName": "MV 15.x.y",
-                        "releaseType": "stable"
-                      },
-                      {
-                        "id": 4534,
-                        "firmware": "camera-18-z-z",
-                        "shortName": "MV 18.z.z",
-                        "releaseType": "other?"
-                      }
-                    ]
+                "product": "wireless",
+                "scheduledFor": "2020-10-21T02:00:00Z",
+                "reasons": [
+                  {
+                    "category": "performance",
+                    "comment": "Network was slower with the upgrade"
                   },
-                  "switch": {
-                    "lastUpgrade": {
-                      "time": "timestamp",
-                      "fromVersion": {
-                        "id": 7647,
-                        "firmware": "switch-10-8-1",
-                        "shortName": "MS 10.8.1",
-                        "releaseType": "stable"
-                      },
-                      "toVersion": {
-                        "id": 5678,
-                        "firmware": "switch-11-2-1",
-                        "shortName": "MS 11.2.1",
-                        "releaseType": "stable"
-                      }
-                    },
-                    "nextUpgrade": {
-                      "time": "timestamp",
-                      "toVersion": {
-                        "id": 7857,
-                        "firmware": "switch-15-5-2",
-                        "shortName": "MS 25.5.2",
-                        "releaseType": "stable"
-                      }
-                    },
-                    "availableVersions": [
-                      {
-                        "id": 7768,
-                        "firmware": "switch-16-x-y",
-                        "shortName": "MS 16.x.y",
-                        "releaseType": "beta"
-                      },
-                      {
-                        "id": 9768,
-                        "firmware": "switch-15-x-x",
-                        "shortName": "MS 15.x.x",
-                        "releaseType": "stable"
-                      },
-                      {
-                        "id": 8896,
-                        "firmware": "switch-15-x-y",
-                        "shortName": "MS 15.x.y",
-                        "releaseType": "stable"
-                      },
-                      {
-                        "id": 8766,
-                        "firmware": "switch-18-z-z",
-                        "shortName": "MS 18.z.z",
-                        "releaseType": "other?"
-                      }
-                    ]
+                  {
+                    "category": "stability",
+                    "comment": "We saw some errors in the logs we didn't expect"
                   }
-                }
+                ]
               },
               "required": [
                 "reasons"
@@ -14184,7 +14084,28 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "product": "wireless",
+                "status": "pending",
+                "upgradeBatchId": 23456,
+                "scheduledFor": "2020-10-21T02:00:00Z",
+                "reasons": [
+                  {
+                    "category": "performance",
+                    "comment": "Network was slower with the upgrade"
+                  },
+                  {
+                    "category": "stability",
+                    "comment": "We saw some errors in the logs we didn't expect"
+                  }
+                ]
+              }
+            }
           }
         },
         "summary": "Rollback a Firmware Upgrade For A Network",
@@ -27282,6 +27203,166 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/billing": {
+      "get": {
+        "description": "Return the billing settings of this network",
+        "operationId": "getNetworkWirelessBilling",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "currency": "USD",
+                "plans": [
+                  {
+                    "id": "1",
+                    "price": "5",
+                    "bandwidthLimits": {
+                      "limitUp": 1000,
+                      "limitDown": 1000
+                    },
+                    "timeLimit": "1 hour"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the billing settings of this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "billing"
+        ]
+      },
+      "put": {
+        "description": "Update the billing settings",
+        "operationId": "updateNetworkWirelessBilling",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessBilling",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "description": "The currency code of this node group's billing plans"
+                },
+                "plans": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The id of the pricing plan to update."
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The price of the billing plan."
+                      },
+                      "bandwidthLimits": {
+                        "type": "object",
+                        "properties": {
+                          "limitUp": {
+                            "type": "integer",
+                            "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
+                          },
+                          "limitDown": {
+                            "type": "integer",
+                            "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
+                          }
+                        },
+                        "description": "The uplink bandwidth settings for the pricing plan."
+                      },
+                      "timeLimit": {
+                        "type": "string",
+                        "enum": [
+                          "1 hour",
+                          "1 day",
+                          "1 week",
+                          "30 days"
+                        ],
+                        "description": "The time limit of the pricing plan in minutes. Can be '1 hour', '1 day', '1 week', or '30 days'."
+                      }
+                    },
+                    "required": [
+                      "price",
+                      "bandwidthLimits",
+                      "timeLimit"
+                    ]
+                  },
+                  "description": "Array of billing plans in the node group. (Can configure a maximum of 5)"
+                }
+              },
+              "example": {
+                "currency": "USD",
+                "plans": [
+                  {
+                    "id": "1",
+                    "price": "5",
+                    "bandwidthLimits": {
+                      "limitUp": 1000,
+                      "limitDown": 1000
+                    },
+                    "timeLimit": "1 hour"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "currency": "USD",
+                "plans": [
+                  {
+                    "id": "1",
+                    "price": "5",
+                    "bandwidthLimits": {
+                      "limitUp": 1000,
+                      "limitDown": 1000
+                    },
+                    "timeLimit": "1 hour"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the billing settings",
+        "tags": [
+          "wireless",
+          "configure",
+          "billing"
+        ]
+      }
+    },
     "/networks/{networkId}/wireless/bluetooth/settings": {
       "get": {
         "description": "Return the Bluetooth settings for a network. <a href=\"https://documentation.meraki.com/MR/Bluetooth/Bluetooth_Low_Energy_(BLE)\">Bluetooth settings</a> must be enabled on the network.",
@@ -27883,6 +27964,113 @@
           "monitor",
           "clients",
           "latencyStats"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/clients/onboardingHistory": {
+      "get": {
+        "description": "Return counts of distinct wireless clients connecting to a network over time",
+        "operationId": "getNetworkWirelessClientsOnboardingHistory",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 300. The default is 300."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "2.4",
+              "5"
+            ],
+            "name": "band",
+            "in": "query",
+            "description": "Filter results by band (either '2.4' or '5'); this cannot be combined with the SSID filter."
+          },
+          {
+            "type": "integer",
+            "name": "ssid",
+            "in": "query",
+            "description": "Filter results by SSID number; this cannot be combined with the band filter."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2020-01-01T00:00:00Z",
+                  "endTs": "2020-01-01T00:05:00Z",
+                  "clientCounts": {
+                    "summary": {
+                      "prospective": 100,
+                      "successful": 75,
+                      "failed": 25
+                    },
+                    "connectionSteps": {
+                      "association": {
+                        "prospective": 100,
+                        "successful": 97,
+                        "failed": 3
+                      },
+                      "authentication": {
+                        "prospective": 97,
+                        "successful": 81,
+                        "failed": 16
+                      },
+                      "dhcp": {
+                        "prospective": 81,
+                        "successful": 75,
+                        "failed": 6
+                      },
+                      "dns": {
+                        "prospective": 75,
+                        "successful": 75,
+                        "failed": 0
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return counts of distinct wireless clients connecting to a network over time",
+        "tags": [
+          "wireless",
+          "monitor",
+          "clients",
+          "onboardingHistory"
         ]
       }
     },
@@ -30401,6 +30589,94 @@
                   ],
                   "description": "The type of splash page for the SSID ('None', 'Click-through splash page', 'Billing', 'Password-protected with Meraki RADIUS', 'Password-protected with custom RADIUS', 'Password-protected with Active Directory', 'Password-protected with LDAP', 'SMS authentication', 'Systems Manager Sentry', 'Facebook Wi-Fi', 'Google OAuth', 'Sponsored guest' or 'Cisco ISE'). This attribute is not supported for template children."
                 },
+                "splashGuestSponsorDomains": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of valid sponsor email domains for sponsored guest splash type."
+                },
+                "ldap": {
+                  "type": "object",
+                  "properties": {
+                    "servers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "host": {
+                            "type": "string",
+                            "description": "IP address of your LDAP server."
+                          },
+                          "port": {
+                            "type": "integer",
+                            "description": "UDP port the LDAP server listens on."
+                          }
+                        },
+                        "required": [
+                          "host",
+                          "port"
+                        ]
+                      },
+                      "description": "The LDAP servers to be used for authentication."
+                    },
+                    "credentials": {
+                      "type": "object",
+                      "properties": {
+                        "distinguishedName": {
+                          "type": "string",
+                          "description": "The distinguished name of the LDAP user account (example: cn=user,dc=meraki,dc=com)."
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The password of the LDAP user account."
+                        }
+                      },
+                      "description": "(Optional) The credentials of the user account to be used by the AP to bind to your LDAP server. The LDAP account should have permissions on all your LDAP servers."
+                    }
+                  },
+                  "description": "The current setting for LDAP. Only valid if splashPage is 'Password-protected with LDAP'."
+                },
+                "activeDirectory": {
+                  "type": "object",
+                  "properties": {
+                    "servers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "host": {
+                            "type": "string",
+                            "description": "IP address of your Active Directory server."
+                          },
+                          "port": {
+                            "type": "integer",
+                            "description": "(Optional) UDP port the Active Directory server listens on. By default, uses port 3268."
+                          }
+                        },
+                        "required": [
+                          "host"
+                        ]
+                      },
+                      "description": "The Active Directory servers to be used for authentication."
+                    },
+                    "credentials": {
+                      "type": "object",
+                      "properties": {
+                        "logonName": {
+                          "type": "string",
+                          "description": "The logon name of the Active Directory account."
+                        },
+                        "password": {
+                          "type": "string",
+                          "description": "The password to the Active Directory user account."
+                        }
+                      },
+                      "description": "(Optional) The credentials of the user account to be used by the AP to bind to your Active Directory server. The Active Directory account should have permissions on all your Active Directory servers. Only valid if the splashPage is 'Password-protected with Active Directory'."
+                    }
+                  },
+                  "description": "The current setting for Active Directory. Only valid if splashPage is 'Password-protected with Active Directory'"
+                },
                 "radiusServers": {
                   "type": "array",
                   "items": {
@@ -31504,6 +31780,48 @@
                     }
                   },
                   "description": "The prepaid front image used in the splash page."
+                },
+                "guestSponsorship": {
+                  "type": "object",
+                  "properties": {
+                    "durationInMinutes": {
+                      "type": "integer",
+                      "description": "Duration in minutes of sponsored guest authorization. Must be between 1 and 60480 (6 weeks)"
+                    },
+                    "guestCanRequestTimeframe": {
+                      "type": "boolean",
+                      "description": "Whether or not guests can specify how much time they are requesting."
+                    }
+                  },
+                  "description": "Details associated with guest sponsored splash."
+                },
+                "billing": {
+                  "type": "object",
+                  "properties": {
+                    "freeAccess": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether or not free access is enabled."
+                        },
+                        "durationInMinutes": {
+                          "type": "integer",
+                          "description": "How long a device can use a network for free."
+                        }
+                      },
+                      "description": "Details associated with a free access plan with limits."
+                    },
+                    "prepaidAccessFastLoginEnabled": {
+                      "type": "boolean",
+                      "description": "Whether or not billing uses the fast login prepaid access option."
+                    },
+                    "replyToEmailAddress": {
+                      "type": "string",
+                      "description": "The email address that receives replies from clients."
+                    }
+                  },
+                  "description": "Details associated with billing splash."
                 }
               },
               "example": {
@@ -39281,6 +39599,9 @@
       "name": "bgp"
     },
     {
+      "name": "billing"
+    },
+    {
       "name": "bluetooth"
     },
     {
@@ -39498,6 +39819,9 @@
     },
     {
       "name": "objectDetectionModels"
+    },
+    {
+      "name": "onboardingHistory"
     },
     {
       "name": "oneToManyNatRules"
@@ -39754,6 +40078,12 @@
       "group": "Bgp setting",
       "summary": "Update a Hub BGP Configuration",
       "resource": "/networks/{networkId}/appliance/vpn/bgp",
+      "operation": "update"
+    },
+    {
+      "group": "Billing",
+      "summary": "Update the billing settings",
+      "resource": "/networks/{networkId}/wireless/billing",
       "operation": "update"
     },
     {
