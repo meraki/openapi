@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.6.0-beta.3",
+    "version": "1.7.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 24 February, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 March, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -13784,10 +13784,6 @@
                   "type": "string",
                   "description": "The timezone for the network"
                 },
-                "participateInNextBetaRelease": {
-                  "type": "boolean",
-                  "description": "Whether or not the network wants beta firmware"
-                },
                 "products": {
                   "type": "object",
                   "properties": {
@@ -13839,6 +13835,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -21833,6 +21833,159 @@
           "switch",
           "configure",
           "accessPolicies"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/alternateManagementInterface": {
+      "get": {
+        "description": "Return the switch alternate management interface for the network",
+        "operationId": "getNetworkSwitchAlternateManagementInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "vlanId": 100,
+                "protocols": [
+                  "radius",
+                  "snmp",
+                  "syslog"
+                ],
+                "switches": [
+                  {
+                    "serial": "Q234-ABCD-5678",
+                    "alternateManagementIp": "1.2.3.4"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the switch alternate management interface for the network",
+        "tags": [
+          "switch",
+          "configure",
+          "alternateManagementInterface"
+        ]
+      },
+      "put": {
+        "description": "Update the switch alternate management interface for the network",
+        "operationId": "updateNetworkSwitchAlternateManagementInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchAlternateManagementInterface",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean value to enable or disable AMI configuration. If enabled, VLAN and protocols must be set"
+                },
+                "vlanId": {
+                  "type": "integer",
+                  "description": "Alternate management VLAN, must be between 1 and 4094"
+                },
+                "protocols": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "radius",
+                      "snmp",
+                      "syslog"
+                    ]
+                  },
+                  "description": "Can be one or more of the following values: 'radius', 'snmp' or 'syslog'"
+                },
+                "switches": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Switch serial number"
+                      },
+                      "alternateManagementIp": {
+                        "type": "string",
+                        "description": "Switch alternative management IP. To remove a prior IP setting, provide an empty string"
+                      }
+                    },
+                    "required": [
+                      "serial",
+                      "alternateManagementIp"
+                    ]
+                  },
+                  "description": "Array of switch serial number and IP assignment. If parameter is present, it cannot have empty body. Note: switches parameter is not applicable for template networks, in other words, do not put 'switches' in the body when updating template networks. Also, an empty 'switches' array will remove all previous assignments"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "vlanId": 100,
+                "protocols": [
+                  "radius",
+                  "snmp",
+                  "syslog"
+                ],
+                "switches": [
+                  {
+                    "serial": "Q234-ABCD-5678",
+                    "alternateManagementIp": "1.2.3.4"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "vlanId": 100,
+                "protocols": [
+                  "radius",
+                  "snmp",
+                  "syslog"
+                ],
+                "switches": [
+                  {
+                    "serial": "Q234-ABCD-5678",
+                    "alternateManagementIp": "1.2.3.4"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the switch alternate management interface for the network",
+        "tags": [
+          "switch",
+          "configure",
+          "alternateManagementInterface"
         ]
       }
     },
@@ -30953,7 +31106,7 @@
                 },
                 "mandatoryDhcpEnabled": {
                   "type": "boolean",
-                  "description": "If true, Mandatory DHCP will enforce that clients connecting to this SSID must use the IP address assigned by the DHCP server. Clients who use a static IP address won’t be able to associate."
+                  "description": "If true, Mandatory DHCP will enforce that clients connecting to this SSID must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate."
                 }
               },
               "example": {
@@ -40515,6 +40668,12 @@
     }
   ],
   "x-batchable-actions": [
+    {
+      "group": "Alternate management interface",
+      "summary": "Update the switch alternate management interface for the network",
+      "resource": "/networks/{networkId}/switch/alternateManagementInterface",
+      "operation": "update"
+    },
     {
       "group": "Bgp setting",
       "summary": "Update a Hub BGP Configuration",
