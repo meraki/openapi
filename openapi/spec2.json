@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.7.0-beta.2",
+    "version": "1.7.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 March, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 24 March, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -191,6 +191,48 @@
         ]
       }
     },
+    "/devices/{serial}/appliance/delegatedPrefixes": {
+      "get": {
+        "description": "Return current delegated IPv6 prefixes on an appliance.",
+        "operationId": "getDeviceApplianceDelegatedPrefixes",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "origin": "wan1",
+                  "prefix": "2001:db8:3c4d:15::/64",
+                  "usedCount": 2,
+                  "freeCount": 253,
+                  "method": "auto",
+                  "description": "My ISP provider",
+                  "preferred": true,
+                  "expiresAt": "2018-05-12T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return current delegated IPv6 prefixes on an appliance.",
+        "tags": [
+          "appliance",
+          "monitor",
+          "delegatedPrefixes"
+        ]
+      }
+    },
     "/devices/{serial}/appliance/dhcp/subnets": {
       "get": {
         "description": "Return the DHCP subnet information for an appliance",
@@ -260,6 +302,45 @@
           "appliance",
           "monitor",
           "performance"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/vlanPrefixAssignments": {
+      "get": {
+        "description": "Return prefixes assigned to all IPv6 enabled VLANs on an appliance.",
+        "operationId": "getDeviceApplianceVlanPrefixAssignments",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "vlanId": 100,
+                  "vlanName": "My VLAN",
+                  "origin": "wan1",
+                  "originPrefix": "2001:db8:3c4d:15::/64",
+                  "subnetPrefix": "2001:db8:3c4d:15::/64"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return prefixes assigned to all IPv6 enabled VLANs on an appliance.",
+        "tags": [
+          "appliance",
+          "monitor",
+          "vlanPrefixAssignments"
         ]
       }
     },
@@ -1505,6 +1586,360 @@
           "devices",
           "monitor",
           "clients"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/ping": {
+      "post": {
+        "description": "Enqueue a job to ping a target host from the device",
+        "operationId": "createDeviceLiveToolsPing",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsPing",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "FQDN, IPv4 or IPv6 address"
+                },
+                "count": {
+                  "type": "integer",
+                  "description": "Count parameter to pass to ping. [1..5], default 5"
+                }
+              },
+              "example": {
+                "target": "75.75.75.75",
+                "count": 2
+              },
+              "required": [
+                "target"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "lossPercentage": 0,
+                  "latenciesInMs": {
+                    "minimum": 15.8,
+                    "mean": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.7,
+                      "mean": 15.8,
+                      "lossPercentage": 0
+                    },
+                    {
+                      "sequenceId": 0,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.9,
+                      "mean": 15.9,
+                      "lossPercentage": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to ping a target host from the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "liveTools",
+          "ping"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/ping/{id}": {
+      "get": {
+        "description": "Return a ping job",
+        "operationId": "getDeviceLiveToolsPing",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "lossPercentage": 0,
+                  "latenciesInMs": {
+                    "minimum": 15.8,
+                    "mean": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.7,
+                      "mean": 15.8,
+                      "lossPercentage": 0
+                    },
+                    {
+                      "sequenceId": 0,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.9,
+                      "mean": 15.9,
+                      "lossPercentage": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a ping job",
+        "tags": [
+          "devices",
+          "liveTools",
+          "liveTools",
+          "ping"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/pingDevice": {
+      "post": {
+        "description": "Enqueue a job to check connectivity status to the device",
+        "operationId": "createDeviceLiveToolsPingDevice",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsPingDevice",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "description": "Count parameter to pass to ping. [1..5], default 5"
+                }
+              },
+              "example": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "lossPercentage": 0,
+                  "latenciesInMs": {
+                    "minimum": 15.8,
+                    "mean": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.7,
+                      "mean": 15.8,
+                      "lossPercentage": 0
+                    },
+                    {
+                      "sequenceId": 0,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.9,
+                      "mean": 15.9,
+                      "lossPercentage": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "lossPercentage": 0,
+                  "latenciesInMs": {
+                    "minimum": 15.8,
+                    "mean": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.7,
+                      "mean": 15.8,
+                      "lossPercentage": 0
+                    },
+                    {
+                      "sequenceId": 0,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.9,
+                      "mean": 15.9,
+                      "lossPercentage": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to check connectivity status to the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "liveTools",
+          "pingDevice"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/pingDevice/{id}": {
+      "get": {
+        "description": "Return a ping job",
+        "operationId": "getDeviceLiveToolsPingDevice",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "lossPercentage": 0,
+                  "latenciesInMs": {
+                    "minimum": 15.8,
+                    "mean": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.7,
+                      "mean": 15.8,
+                      "lossPercentage": 0
+                    },
+                    {
+                      "sequenceId": 0,
+                      "bytes": 84,
+                      "responseTimeInMs": 15.9,
+                      "mean": 15.9,
+                      "lossPercentage": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a ping job",
+        "tags": [
+          "devices",
+          "liveTools",
+          "liveTools",
+          "pingDevice"
         ]
       }
     },
@@ -3713,6 +4148,47 @@
           "wireless",
           "monitor",
           "connectionStats"
+        ]
+      }
+    },
+    "/devices/{serial}/wireless/healthScores": {
+      "get": {
+        "description": "Fetch the health scores for a given AP on this network",
+        "operationId": "getDeviceWirelessHealthScores",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "device": {
+                  "serial": "Q234-ABCD-0001"
+                },
+                "performance": {
+                  "latest": 80
+                },
+                "onboarding": {
+                  "latest": 20
+                }
+              }
+            }
+          }
+        },
+        "summary": "Fetch the health scores for a given AP on this network",
+        "tags": [
+          "wireless",
+          "monitor",
+          "healthScores"
         ]
       }
     },
@@ -7342,6 +7818,320 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/staticDelegatedPrefixes": {
+      "get": {
+        "description": "List static delegated prefixes for a network",
+        "operationId": "getNetworkApplianceStaticDelegatedPrefixes",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "staticDelegatedPrefixId": "1284392014819",
+                  "prefix": "2001:db8:3c4d:15::/64",
+                  "origin": {
+                    "type": "internet",
+                    "interfaces": [
+                      "wan1"
+                    ]
+                  },
+                  "description": "Prefix on WAN 1 of Long Island Office network",
+                  "createdAt": "2018-05-12T00:00:00Z",
+                  "updatedAt": "2018-05-12T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List static delegated prefixes for a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticDelegatedPrefixes"
+        ]
+      },
+      "post": {
+        "description": "Add a static delegated prefix from a network",
+        "operationId": "createNetworkApplianceStaticDelegatedPrefix",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkApplianceStaticDelegatedPrefix",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "A static IPv6 prefix"
+                },
+                "origin": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "internet",
+                        "independent"
+                      ],
+                      "description": "Type of the origin"
+                    },
+                    "interfaces": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Interfaces associated with the prefix"
+                    }
+                  },
+                  "description": "The origin of the prefix"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A name or description for the prefix"
+                }
+              },
+              "example": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network"
+              },
+              "required": [
+                "prefix",
+                "origin"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Add a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticDelegatedPrefixes"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}": {
+      "get": {
+        "description": "Return a static delegated prefix from a network",
+        "operationId": "getNetworkApplianceStaticDelegatedPrefix",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Return a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticDelegatedPrefixes"
+        ]
+      },
+      "put": {
+        "description": "Update a static delegated prefix from a network",
+        "operationId": "updateNetworkApplianceStaticDelegatedPrefix",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceStaticDelegatedPrefix",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "A static IPv6 prefix"
+                },
+                "origin": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "internet",
+                        "independent"
+                      ],
+                      "description": "Type of the origin"
+                    },
+                    "interfaces": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Interfaces associated with the prefix"
+                    }
+                  },
+                  "description": "The origin of the prefix"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A name or description for the prefix"
+                }
+              },
+              "example": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Update a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticDelegatedPrefixes"
+        ]
+      },
+      "delete": {
+        "description": "Delete a static delegated prefix from a network",
+        "operationId": "deleteNetworkApplianceStaticDelegatedPrefix",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "staticDelegatedPrefixes"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/staticRoutes": {
       "get": {
         "description": "List the static routes for an MX or teleworker network",
@@ -9554,6 +10344,61 @@
                 "groupPolicyId": {
                   "type": "string",
                   "description": "The id of the desired group policy to apply to the VLAN"
+                },
+                "ip6": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable IPv6 on VLAN."
+                    },
+                    "prefixAssignments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "autonomous": {
+                            "type": "boolean",
+                            "description": "Auto assign a /64 prefix from the origin to the VLAN"
+                          },
+                          "staticPrefix": {
+                            "type": "string",
+                            "description": "Manual configuration of a /64 prefix on the VLAN"
+                          },
+                          "staticApplianceIp6": {
+                            "type": "string",
+                            "description": "Manual configuration of the IPv6 Appliance IP"
+                          },
+                          "origin": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "internet",
+                                  "independent"
+                                ],
+                                "description": "Type of the origin"
+                              },
+                              "interfaces": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Interfaces associated with the prefix"
+                              }
+                            },
+                            "required": [
+                              "type"
+                            ],
+                            "description": "The origin of the prefix"
+                          }
+                        }
+                      },
+                      "description": "Prefix assignments on the VLAN"
+                    }
+                  },
+                  "description": "IPv6 configuration on the VLAN"
                 }
               },
               "example": {
@@ -9913,6 +10758,61 @@
                     ]
                   },
                   "description": "The list of DHCP options that will be included in DHCP responses. Each object in the list should have \"code\", \"type\", and \"value\" properties."
+                },
+                "ip6": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable IPv6 on VLAN."
+                    },
+                    "prefixAssignments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "autonomous": {
+                            "type": "boolean",
+                            "description": "Auto assign a /64 prefix from the origin to the VLAN"
+                          },
+                          "staticPrefix": {
+                            "type": "string",
+                            "description": "Manual configuration of a /64 prefix on the VLAN"
+                          },
+                          "staticApplianceIp6": {
+                            "type": "string",
+                            "description": "Manual configuration of the IPv6 Appliance IP"
+                          },
+                          "origin": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "internet",
+                                  "independent"
+                                ],
+                                "description": "Type of the origin"
+                              },
+                              "interfaces": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Interfaces associated with the prefix"
+                              }
+                            },
+                            "required": [
+                              "type"
+                            ],
+                            "description": "The origin of the prefix"
+                          }
+                        }
+                      },
+                      "description": "Prefix assignments on the VLAN"
+                    }
+                  },
+                  "description": "IPv6 configuration on the VLAN"
                 }
               },
               "example": {
@@ -17220,8 +18120,7 @@
                         "url": "https://example.com/path",
                         "sharedSecret": "secret",
                         "validator": "xxx",
-                        "validatedAt": "2018-02-11T00:00:00Z",
-                        "payloadTemplateId": "wpt_00001"
+                        "validatedAt": "2018-02-11T00:00:00Z"
                       },
                       "successAt": "2018-05-12T00:00:00Z",
                       "errorAt": "2018-02-11T00:00:00Z",
@@ -17342,8 +18241,7 @@
                       "url": "https://example.com/path",
                       "sharedSecret": "secret",
                       "validator": "xxx",
-                      "validatedAt": "2018-02-11T00:00:00Z",
-                      "payloadTemplateId": "wpt_00001"
+                      "validatedAt": "2018-02-11T00:00:00Z"
                     },
                     "successAt": "2018-05-12T00:00:00Z",
                     "errorAt": "2018-02-11T00:00:00Z",
@@ -28015,6 +28913,59 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/clients/healthScores": {
+      "get": {
+        "description": "Fetch the health scores for all clients on this network",
+        "operationId": "getNetworkWirelessClientsHealthScores",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "mac": "2",
+                  "performance": {
+                    "latest": 80,
+                    "currentConnection": 100
+                  },
+                  "onboarding": {
+                    "latest": 100
+                  }
+                },
+                {
+                  "mac": "7",
+                  "performance": {
+                    "latest": 30,
+                    "currentConnection": 50
+                  },
+                  "onboarding": {
+                    "latest": 70
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Fetch the health scores for all clients on this network",
+        "tags": [
+          "wireless",
+          "monitor",
+          "clients",
+          "healthScores"
+        ]
+      }
+    },
     "/networks/{networkId}/wireless/clients/latencyStats": {
       "get": {
         "description": "Aggregated latency info for this network, grouped by clients",
@@ -28548,6 +29499,53 @@
           "monitor",
           "clients",
           "connectivityEvents"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/clients/{clientId}/healthScores": {
+      "get": {
+        "description": "Fetch the health scores for a given client on this network. Clients are identified by their MAC",
+        "operationId": "getNetworkWirelessClientHealthScores",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "clientId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "mac": "2",
+                "performance": {
+                  "latest": 80,
+                  "currentConnection": 100
+                },
+                "onboarding": {
+                  "latest": 100
+                }
+              }
+            }
+          }
+        },
+        "summary": "Fetch the health scores for a given client on this network",
+        "tags": [
+          "wireless",
+          "monitor",
+          "clients",
+          "healthScores"
         ]
       }
     },
@@ -29089,6 +30087,61 @@
           "monitor",
           "devices",
           "connectionStats"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/devices/healthScores": {
+      "get": {
+        "description": "Fetch the health scores of all APs on this network",
+        "operationId": "getNetworkWirelessDevicesHealthScores",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "device": {
+                    "serial": "Q234-ABCD-0001"
+                  },
+                  "performance": {
+                    "latest": 80
+                  },
+                  "onboarding": {
+                    "latest": 20
+                  }
+                },
+                {
+                  "device": {
+                    "serial": "Q234-ABCD-0003"
+                  },
+                  "performance": {
+                    "latest": 30
+                  },
+                  "onboarding": {
+                    "latest": 90
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Fetch the health scores of all APs on this network",
+        "tags": [
+          "wireless",
+          "monitor",
+          "devices",
+          "healthScores"
         ]
       }
     },
@@ -30799,9 +31852,10 @@
                     "Facebook Wi-Fi",
                     "Google OAuth",
                     "Sponsored guest",
-                    "Cisco ISE"
+                    "Cisco ISE",
+                    "Google Apps domain"
                   ],
-                  "description": "The type of splash page for the SSID ('None', 'Click-through splash page', 'Billing', 'Password-protected with Meraki RADIUS', 'Password-protected with custom RADIUS', 'Password-protected with Active Directory', 'Password-protected with LDAP', 'SMS authentication', 'Systems Manager Sentry', 'Facebook Wi-Fi', 'Google OAuth', 'Sponsored guest' or 'Cisco ISE'). This attribute is not supported for template children."
+                  "description": "The type of splash page for the SSID ('None', 'Click-through splash page', 'Billing', 'Password-protected with Meraki RADIUS', 'Password-protected with custom RADIUS', 'Password-protected with Active Directory', 'Password-protected with LDAP', 'SMS authentication', 'Systems Manager Sentry', 'Facebook Wi-Fi', 'Google OAuth', 'Sponsored guest', 'Cisco ISE' or 'Google Apps domain'). This attribute is not supported for template children."
                 },
                 "splashGuestSponsorDomains": {
                   "type": "array",
@@ -31188,6 +32242,168 @@
           "wireless",
           "configure",
           "ssids"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ssids/{number}/bonjourForwarding": {
+      "get": {
+        "description": "List the Bonjour forwarding setting and rules for the SSID",
+        "operationId": "getNetworkWirelessSsidBonjourForwarding",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "rules": [
+                  {
+                    "description": "A simple bonjour rule",
+                    "vlanId": "1",
+                    "services": [
+                      "All Services"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "List the Bonjour forwarding setting and rules for the SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "bonjourForwarding"
+        ]
+      },
+      "put": {
+        "description": "Update the bonjour forwarding setting and rules for the SSID",
+        "operationId": "updateNetworkWirelessSsidBonjourForwarding",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSsidBonjourForwarding",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "If true, Bonjour forwarding is enabled on this SSID."
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "description": {
+                        "type": "string",
+                        "description": "A description for your Bonjour forwarding rule. Optional."
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "The ID of the service VLAN. Required."
+                      },
+                      "services": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "All Services",
+                            "AirPlay",
+                            "AFP",
+                            "BitTorrent",
+                            "FTP",
+                            "iChat",
+                            "iTunes",
+                            "Printers",
+                            "Samba",
+                            "Scanners",
+                            "SSH"
+                          ]
+                        },
+                        "description": "A list of Bonjour services. At least one service must be specified. Available services are 'All Services', 'AirPlay', 'AFP', 'BitTorrent', 'FTP', 'iChat', 'iTunes', 'Printers', 'Samba', 'Scanners' and 'SSH'"
+                      }
+                    },
+                    "required": [
+                      "vlanId",
+                      "services"
+                    ]
+                  },
+                  "description": "List of bonjour forwarding rules."
+                }
+              },
+              "example": {
+                "enabled": true,
+                "rules": [
+                  {
+                    "description": "A simple bonjour rule",
+                    "vlanId": "1",
+                    "services": [
+                      "All Services"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "rules": [
+                  {
+                    "description": "A simple bonjour rule",
+                    "vlanId": "1",
+                    "services": [
+                      "All Services"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the bonjour forwarding setting and rules for the SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "bonjourForwarding"
         ]
       }
     },
@@ -40215,6 +41431,9 @@
       "name": "bluetoothClients"
     },
     {
+      "name": "bonjourForwarding"
+    },
+    {
       "name": "brandingPolicies"
     },
     {
@@ -40275,6 +41494,9 @@
       "name": "dataRateHistory"
     },
     {
+      "name": "delegatedPrefixes"
+    },
+    {
       "name": "desktopLogs"
     },
     {
@@ -40324,6 +41546,9 @@
     },
     {
       "name": "groupPolicies"
+    },
+    {
+      "name": "healthScores"
     },
     {
       "name": "history"
@@ -40467,6 +41692,12 @@
       "name": "piiKeys"
     },
     {
+      "name": "ping"
+    },
+    {
+      "name": "pingDevice"
+    },
+    {
       "name": "policy"
     },
     {
@@ -40578,6 +41809,9 @@
       "name": "stacks"
     },
     {
+      "name": "staticDelegatedPrefixes"
+    },
+    {
       "name": "staticRoutes"
     },
     {
@@ -40654,6 +41888,9 @@
     },
     {
       "name": "videoLink"
+    },
+    {
+      "name": "vlanPrefixAssignments"
     },
     {
       "name": "vlans"
@@ -41255,6 +42492,12 @@
       "operation": "update"
     },
     {
+      "group": "Ssid bonjour forwarding",
+      "summary": "Update the bonjour forwarding setting and rules for the SSID",
+      "resource": "/networks/{networkId}/wireless/ssids/{number}/bonjourForwarding",
+      "operation": "update"
+    },
+    {
       "group": "Ssid device type group policies",
       "summary": "Update the device type group policies for the SSID",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/deviceTypeGroupPolicies",
@@ -41270,6 +42513,24 @@
       "group": "Ssid splash settings",
       "summary": "Modify the splash page settings for the given SSID",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/splash/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Static delegated prefix",
+      "summary": "Add a static delegated prefix from a network",
+      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes",
+      "operation": "create"
+    },
+    {
+      "group": "Static delegated prefix",
+      "summary": "Delete a static delegated prefix from a network",
+      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Static delegated prefix",
+      "summary": "Update a static delegated prefix from a network",
+      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}",
       "operation": "update"
     },
     {
