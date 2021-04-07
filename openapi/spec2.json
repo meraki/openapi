@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.7.0-beta.4",
+    "version": "1.8.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 31 March, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -2179,7 +2179,7 @@
                     },
                     "usingStaticIp": {
                       "type": "boolean",
-                      "description": "Configue the interface to have static IP settings or use DHCP."
+                      "description": "Configure the interface to have static IP settings or use DHCP."
                     },
                     "staticIp": {
                       "type": "string",
@@ -2221,7 +2221,7 @@
                     },
                     "usingStaticIp": {
                       "type": "boolean",
-                      "description": "Configue the interface to have static IP settings or use DHCP."
+                      "description": "Configure the interface to have static IP settings or use DHCP."
                     },
                     "staticIp": {
                       "type": "string",
@@ -40545,6 +40545,650 @@
         ]
       }
     },
+    "/organizations/{organizationId}/policyObjects": {
+      "get": {
+        "description": "Lists Policy Objects belonging to the organization.",
+        "operationId": "getOrganizationPolicyObjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 10 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "name": "Web Servers - Datacenter 10",
+                  "category": "network",
+                  "type": "cidr",
+                  "cidr": "10.0.0.0/24",
+                  "created_at": "2018-05-12T00:00:00Z",
+                  "updated_at": "2018-05-12T00:00:00Z",
+                  "groupIds": [
+
+                  ],
+                  "networkIds": [
+
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Lists Policy Objects belonging to the organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "post": {
+        "description": "Creates a new Policy Object.",
+        "operationId": "createOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationPolicyObject",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of a policy object, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of a policy object (one of: adaptivePolicy, network)"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, cidr, ipAndMask)"
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR Value of a policy object (e.g. 10.11.12.1/24\")"
+                },
+                "fqdn": {
+                  "type": "string",
+                  "description": "Fully qualified domain name of policy object (e.g. \"example.com\")"
+                },
+                "mask": {
+                  "type": "string",
+                  "description": "Mask of a policy object (e.g. \"255.255.0.0\")"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "IP Address of a policy object (e.g. \"1.2.3.4\")"
+                },
+                "groupIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "The IDs of policy object groups the policy object belongs to"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "groupIds": [
+
+                ]
+              },
+              "required": [
+                "name",
+                "category",
+                "type"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates a new Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/groups": {
+      "get": {
+        "description": "Lists Policy Object Groups belonging to the organization.",
+        "operationId": "getOrganizationPolicyObjectsGroups",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 10 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "name": "Web Servers - Datacenter 10",
+                  "category": "NetworkObjectGroup",
+                  "created_at": "2018-05-12T00:00:00Z",
+                  "updated_at": "2018-05-12T00:00:00Z",
+                  "objectIds": [
+
+                  ],
+                  "networkIds": [
+
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Lists Policy Object Groups belonging to the organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "post": {
+        "description": "Creates a new Policy Object Group.",
+        "operationId": "createOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationPolicyObjectsGroup",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the group of network addresses, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of a policy object group (one of: NetworkObjectGroup, GeoLocationGroup, PortObjectGroup, ApplicationGroup)"
+                },
+                "objectIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "A list of Policy Object ID's that this NetworkObjectGroup should be associated to (note: these ID's will replace the existing associated Policy Objects)"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "objectIds": [
+
+                ]
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates a new Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}": {
+      "get": {
+        "description": "Shows details of a Policy Object Group.",
+        "operationId": "getOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Shows details of a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "put": {
+        "description": "Updates a Policy Object Group.",
+        "operationId": "updateOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationPolicyObjectsGroup",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the group of network addresses, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "objectIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "A list of Policy Object ID's that this NetworkObjectGroup should be associated to (note: these ID's will replace the existing associated Policy Objects)"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "objectIds": [
+
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a Policy Object Group.",
+        "operationId": "deleteOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/{policyObjectId}": {
+      "get": {
+        "description": "Shows details of a Policy Object.",
+        "operationId": "getOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Shows details of a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "put": {
+        "description": "Updates a Policy Object.",
+        "operationId": "updateOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationPolicyObject",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of a policy object, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR Value of a policy object (e.g. 10.11.12.1/24\")"
+                },
+                "fqdn": {
+                  "type": "string",
+                  "description": "Fully qualified domain name of policy object (e.g. \"example.com\")"
+                },
+                "mask": {
+                  "type": "string",
+                  "description": "Mask of a policy object (e.g. \"255.255.0.0\")"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "IP Address of a policy object (e.g. \"1.2.3.4\")"
+                },
+                "groupIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "The IDs of policy object groups the policy object belongs to"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "type": "cidr",
+                "groupIds": [
+
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a Policy Object.",
+        "operationId": "deleteOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      }
+    },
     "/organizations/{organizationId}/saml": {
       "get": {
         "description": "Returns the SAML SSO enabled settings for an organization.",
@@ -42087,6 +42731,9 @@
       "name": "groupPolicies"
     },
     {
+      "name": "groups"
+    },
+    {
       "name": "healthScores"
     },
     {
@@ -42238,6 +42885,9 @@
     },
     {
       "name": "policy"
+    },
+    {
+      "name": "policyObjects"
     },
     {
       "name": "portForwardingRules"
@@ -42908,6 +43558,42 @@
       "group": "Ospf routing",
       "summary": "Update layer 3 OSPF routing configuration",
       "resource": "/networks/{networkId}/switch/routing/ospf",
+      "operation": "update"
+    },
+    {
+      "group": "Policy object",
+      "summary": "Creates a new Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects",
+      "operation": "create"
+    },
+    {
+      "group": "Policy object",
+      "summary": "Deletes a Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects/{policyObjectId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Policy object",
+      "summary": "Updates a Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects/{policyObjectId}",
+      "operation": "update"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Creates a new Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups",
+      "operation": "create"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Deletes a Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Updates a Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}",
       "operation": "update"
     },
     {
