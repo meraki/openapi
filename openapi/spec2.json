@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.8.0-beta.1",
+    "version": "1.8.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 14 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -941,6 +941,16 @@
                 "mqttBrokerId": {
                   "type": "string",
                   "description": "The ID of the MQTT broker to be enabled on the camera. A value of null will disable MQTT on the camera"
+                },
+                "audioDetection": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Boolean indicating if audio detection is enabled(true) or disabled(false) on the camera"
+                    }
+                  },
+                  "description": "The details of the audio detection config."
                 },
                 "detectionModelId": {
                   "type": "string",
@@ -13069,6 +13079,74 @@
           "monitor",
           "clients",
           "applicationUsage"
+        ]
+      }
+    },
+    "/networks/{networkId}/clients/overview": {
+      "get": {
+        "description": "Return overview statistics for network clients",
+        "operationId": "getNetworkClientsOverview",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 7200, 86400, 604800, 2592000. The default is 604800."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "counts": {
+                    "total": 100,
+                    "withHeavyUsage": 2
+                  },
+                  "usages": {
+                    "average": 2048,
+                    "withHeavyUsageAverage": 5345
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return overview statistics for network clients",
+        "tags": [
+          "networks",
+          "monitor",
+          "clients",
+          "overview"
         ]
       }
     },
@@ -40652,7 +40730,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, ipAndMask, adaptivePolicyIpv4Cidr, fqdn)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, cidr, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
