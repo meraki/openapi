@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.8.0-beta.2",
+    "version": "1.8.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 28 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -1584,6 +1584,7 @@
                   "user": "milesmeraki",
                   "vlan": 255,
                   "switchport": null,
+                  "adaptivePolicyGroup": null,
                   "mdnsName": "Miles's phone",
                   "dhcpHostname": "MilesPhone"
                 }
@@ -12937,6 +12938,7 @@
                   "user": "milesmeraki",
                   "vlan": 255,
                   "switchport": null,
+                  "adaptivePolicyGroup": null,
                   "ip6": "",
                   "firstSeen": 1518365681,
                   "lastSeen": 1526087474,
@@ -12945,6 +12947,7 @@
                   "recentDeviceSerial": "Q234-ABCD-5678",
                   "recentDeviceName": "My AP",
                   "recentDeviceMac": "00:11:22:33:44:55",
+                  "recentDeviceConnection": "Wired",
                   "ssid": "My SSID",
                   "status": "Online",
                   "notes": "My client note",
@@ -40730,7 +40733,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, cidr, ipAndMask)"
+                  "description": "Type of a policy object (one of: fqdn, cidr, ipAndMask, adaptivePolicyIpv4Cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -42618,6 +42621,57 @@
           "logs"
         ]
       }
+    },
+    "/organizations/{organization_id}/insight/applications": {
+      "get": {
+        "description": "List all Insight tracked applications",
+        "operationId": "getOrganizationInsightApplications",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "applicationId": "19.12",
+                  "name": "Meraki HTTPS",
+                  "thresholds": {
+                    "type": "smart",
+                    "byNetwork": [
+                      {
+                        "networkId": "N_12345678",
+                        "goodput": 50000,
+                        "responseDuration": 1000
+                      },
+                      {
+                        "networkId": "L_23456789",
+                        "goodput": 3000,
+                        "responseDuration": 4000
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all Insight tracked applications",
+        "tags": [
+          "insight",
+          "configure",
+          "applications"
+        ]
+      }
     }
   },
   "tags": [
@@ -42689,6 +42743,9 @@
     },
     {
       "name": "applicationUsage"
+    },
+    {
+      "name": "applications"
     },
     {
       "name": "bgp"
