@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.8.0",
+    "version": "1.9.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 April, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 May, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -861,6 +861,16 @@
                   "type": "string",
                   "description": "The ID of the MQTT broker to be enabled on the camera. A value of null will disable MQTT on the camera"
                 },
+                "audioDetection": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Boolean indicating if audio detection is enabled(true) or disabled(false) on the camera"
+                    }
+                  },
+                  "description": "The details of the audio detection config."
+                },
                 "detectionModelId": {
                   "type": "string",
                   "description": "The ID of the object detection model"
@@ -1493,6 +1503,7 @@
                   "user": "milesmeraki",
                   "vlan": 255,
                   "switchport": null,
+                  "adaptivePolicyGroup": null,
                   "mdnsName": "Miles's phone",
                   "dhcpHostname": "MilesPhone"
                 }
@@ -2072,6 +2083,7 @@
                     "Very high proportion of CRC errors"
                   ],
                   "warnings": [
+                    "SecureConnect authentication in progress",
                     "PoE port was denied power",
                     "High proportion of CRC errors"
                   ],
@@ -2111,6 +2123,17 @@
                     "total": 2.2,
                     "sent": 1.2,
                     "recv": 1.0
+                  },
+                  "secureConnect": {
+                    "enabled": true,
+                    "active": true,
+                    "authenticationStatus": "Authentication in progress",
+                    "configOverrides": {
+                      "type": "trunk",
+                      "allowedVlans": "all",
+                      "vlan": 12,
+                      "voiceVlan": null
+                    }
                   }
                 }
               ]
@@ -8356,171 +8379,6 @@
         ]
       }
     },
-    "/networks/{networkId}/appliance/trafficShaping/uplinkBandwidth": {
-      "get": {
-        "description": "Returns the uplink bandwidth settings for your MX network.",
-        "operationId": "getNetworkApplianceTrafficShapingUplinkBandwidth",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "bandwidthLimits": {
-                  "wan1": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "wan2": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "cellular": {
-                    "limitUp": 51200,
-                    "limitDown": 51200
-                  }
-                }
-              }
-            }
-          }
-        },
-        "summary": "Returns the uplink bandwidth settings for your MX network.",
-        "tags": [
-          "appliance",
-          "configure",
-          "trafficShaping",
-          "uplinkBandwidth"
-        ]
-      },
-      "put": {
-        "description": "Updates the uplink bandwidth settings for your MX network.",
-        "operationId": "updateNetworkApplianceTrafficShapingUplinkBandwidth",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkApplianceTrafficShapingUplinkBandwidth",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "bandwidthLimits": {
-                  "type": "object",
-                  "properties": {
-                    "wan1": {
-                      "type": "object",
-                      "properties": {
-                        "limitUp": {
-                          "type": "integer",
-                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
-                        },
-                        "limitDown": {
-                          "type": "integer",
-                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
-                        }
-                      },
-                      "description": "The bandwidth settings for the 'wan1' uplink"
-                    },
-                    "wan2": {
-                      "type": "object",
-                      "properties": {
-                        "limitUp": {
-                          "type": "integer",
-                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
-                        },
-                        "limitDown": {
-                          "type": "integer",
-                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
-                        }
-                      },
-                      "description": "The bandwidth settings for the 'wan2' uplink"
-                    },
-                    "cellular": {
-                      "type": "object",
-                      "properties": {
-                        "limitUp": {
-                          "type": "integer",
-                          "description": "The maximum upload limit (integer, in Kbps). null indicates no limit"
-                        },
-                        "limitDown": {
-                          "type": "integer",
-                          "description": "The maximum download limit (integer, in Kbps). null indicates no limit"
-                        }
-                      },
-                      "description": "The bandwidth settings for the 'cellular' uplink"
-                    }
-                  },
-                  "description": "A mapping of uplinks to their bandwidth settings (be sure to check which uplinks are supported for your network)"
-                }
-              },
-              "example": {
-                "bandwidthLimits": {
-                  "wan1": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "wan2": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "cellular": {
-                    "limitUp": 51200,
-                    "limitDown": 51200
-                  }
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "bandwidthLimits": {
-                  "wan1": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "wan2": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
-                  },
-                  "cellular": {
-                    "limitUp": 51200,
-                    "limitDown": 51200
-                  }
-                }
-              }
-            }
-          }
-        },
-        "summary": "Updates the uplink bandwidth settings for your MX network.",
-        "tags": [
-          "appliance",
-          "configure",
-          "trafficShaping",
-          "uplinkBandwidth"
-        ]
-      }
-    },
     "/networks/{networkId}/appliance/trafficShaping/uplinkSelection": {
       "get": {
         "description": "Show uplink selection settings for an MX network",
@@ -10895,7 +10753,7 @@
                 },
                 "maxRetentionDays": {
                   "type": "integer",
-                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days"
+                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days."
                 },
                 "videoSettings": {
                   "type": "object",
@@ -11214,7 +11072,7 @@
                 },
                 "maxRetentionDays": {
                   "type": "integer",
-                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days"
+                  "description": "The maximum number of days for which the data will be stored, or 'null' to keep data until storage space runs out. If the former, it can be one of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30, 60, 90] days."
                 },
                 "videoSettings": {
                   "type": "object",
@@ -12015,6 +11873,7 @@
                   "user": "milesmeraki",
                   "vlan": 255,
                   "switchport": null,
+                  "adaptivePolicyGroup": null,
                   "ip6": "",
                   "firstSeen": 1518365681,
                   "lastSeen": 1526087474,
@@ -12023,6 +11882,7 @@
                   "recentDeviceSerial": "Q234-ABCD-5678",
                   "recentDeviceName": "My AP",
                   "recentDeviceMac": "00:11:22:33:44:55",
+                  "recentDeviceConnection": "Wired",
                   "ssid": "My SSID",
                   "status": "Online",
                   "notes": "My client note",
@@ -12157,6 +12017,74 @@
           "monitor",
           "clients",
           "applicationUsage"
+        ]
+      }
+    },
+    "/networks/{networkId}/clients/overview": {
+      "get": {
+        "description": "Return overview statistics for network clients",
+        "operationId": "getNetworkClientsOverview",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 7200, 86400, 604800, 2592000. The default is 604800."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "counts": {
+                    "total": 100,
+                    "withHeavyUsage": 2
+                  },
+                  "usages": {
+                    "average": 2048,
+                    "withHeavyUsageAverage": 5345
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return overview statistics for network clients",
+        "tags": [
+          "networks",
+          "monitor",
+          "clients",
+          "overview"
         ]
       }
     },
@@ -31972,7 +31900,7 @@
                 },
                 "passphrase": {
                   "type": "string",
-                  "description": "The passphrase for client authentication"
+                  "description": "The passphrase for client authentication. If left blank, one will be auto-generated."
                 },
                 "groupPolicyId": {
                   "type": "string",
@@ -31986,7 +31914,6 @@
               },
               "required": [
                 "name",
-                "passphrase",
                 "groupPolicyId"
               ]
             },
@@ -32173,6 +32100,194 @@
           "configure",
           "ssids",
           "identityPsks"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ssids/{number}/schedules": {
+      "get": {
+        "description": "List the outage schedule for the SSID",
+        "operationId": "getNetworkWirelessSsidSchedules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "ranges": [
+                  {
+                    "startDay": "Tuesday",
+                    "startTime": "01:00",
+                    "endDay": "Tuesday",
+                    "endTime": "05:00"
+                  },
+                  {
+                    "startDay": "Fri",
+                    "startTime": "19:00",
+                    "endDay": "monday",
+                    "endTime": "05:00"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "List the outage schedule for the SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "schedules"
+        ]
+      },
+      "put": {
+        "description": "Update the outage schedule for the SSID",
+        "operationId": "updateNetworkWirelessSsidSchedules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSsidSchedules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "If true, the SSID outage schedule is enabled."
+                },
+                "ranges": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "startDay": {
+                        "type": "string",
+                        "description": "Day of when the outage starts. Can be either full day name, or three letter abbreviation."
+                      },
+                      "startTime": {
+                        "type": "string",
+                        "description": "24 hour time when the outage starts."
+                      },
+                      "endDay": {
+                        "type": "string",
+                        "description": "Day of when the outage ends. Can be either full day name, or three letter abbreviation"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "description": "24 hour time when the outage ends."
+                      }
+                    },
+                    "required": [
+                      "startDay",
+                      "startTime",
+                      "endDay",
+                      "endTime"
+                    ]
+                  },
+                  "description": "List of outage ranges. Has a start date and time, and end date and time. If this parameter is passed in along with rangesInSeconds parameter, this will take precedence."
+                },
+                "rangesInSeconds": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "start": {
+                        "type": "integer",
+                        "description": "Seconds since Sunday at midnight when the outage range starts."
+                      },
+                      "end": {
+                        "type": "integer",
+                        "description": "Seconds since Sunday at midnight when that outage range ends."
+                      }
+                    },
+                    "required": [
+                      "start",
+                      "end"
+                    ]
+                  },
+                  "description": "List of outage ranges in seconds since Sunday at Midnight. Has a start and end. If this parameter is passed in along with the ranges parameter, ranges will take precedence."
+                }
+              },
+              "example": {
+                "enabled": true,
+                "ranges": [
+                  {
+                    "startDay": "Tuesday",
+                    "startTime": "01:00",
+                    "endDay": "Tuesday",
+                    "endTime": "05:00"
+                  },
+                  {
+                    "startDay": "Fri",
+                    "startTime": "19:00",
+                    "endDay": "monday",
+                    "endTime": "05:00"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "ranges": [
+                  {
+                    "startDay": "Tuesday",
+                    "startTime": "01:00",
+                    "endDay": "Tuesday",
+                    "endTime": "05:00"
+                  },
+                  {
+                    "startDay": "Fri",
+                    "startTime": "19:00",
+                    "endDay": "monday",
+                    "endTime": "05:00"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the outage schedule for the SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "schedules"
         ]
       }
     },
@@ -40272,6 +40387,57 @@
           "logs"
         ]
       }
+    },
+    "/organizations/{organization_id}/insight/applications": {
+      "get": {
+        "description": "List all Insight tracked applications",
+        "operationId": "getOrganizationInsightApplications",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "applicationId": "19.12",
+                  "name": "Meraki HTTPS",
+                  "thresholds": {
+                    "type": "smart",
+                    "byNetwork": [
+                      {
+                        "networkId": "N_12345678",
+                        "goodput": 50000,
+                        "responseDuration": 1000
+                      },
+                      {
+                        "networkId": "L_23456789",
+                        "goodput": 3000,
+                        "responseDuration": 4000
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all Insight tracked applications",
+        "tags": [
+          "insight",
+          "configure",
+          "applications"
+        ]
+      }
     }
   },
   "tags": [
@@ -40343,6 +40509,9 @@
     },
     {
       "name": "applicationUsage"
+    },
+    {
+      "name": "applications"
     },
     {
       "name": "bgp"
@@ -40765,9 +40934,6 @@
       "name": "uplink"
     },
     {
-      "name": "uplinkBandwidth"
-    },
-    {
       "name": "uplinkSelection"
     },
     {
@@ -41118,12 +41284,6 @@
       "operation": "update"
     },
     {
-      "group": "MX uplink setting",
-      "summary": "Updates the uplink bandwidth settings for your MX network.",
-      "resource": "/networks/{networkId}/appliance/trafficShaping/uplinkBandwidth",
-      "operation": "update"
-    },
-    {
       "group": "Management interface settings",
       "summary": "Update the management interface settings for a device",
       "resource": "/devices/{serial}/managementInterface",
@@ -41391,6 +41551,12 @@
       "group": "Ssid device type group policies",
       "summary": "Update the device type group policies for the SSID",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/deviceTypeGroupPolicies",
+      "operation": "update"
+    },
+    {
+      "group": "Ssid outage schedule",
+      "summary": "Update the outage schedule for the SSID",
+      "resource": "/networks/{networkId}/wireless/ssids/{number}/schedules",
       "operation": "update"
     },
     {
