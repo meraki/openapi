@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.9.0-beta.3",
+    "version": "1.10.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 26 May, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -1154,6 +1154,116 @@
           "camera",
           "configure",
           "videoLink"
+        ]
+      }
+    },
+    "/devices/{serial}/camera/wirelessProfiles": {
+      "get": {
+        "description": "Returns wireless profile assigned to the given camera",
+        "operationId": "getDeviceCameraWirelessProfiles",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "ids": {
+                  "primary": "3",
+                  "secondary": "2",
+                  "backup": "1"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns wireless profile assigned to the given camera",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
+        ]
+      },
+      "put": {
+        "description": "Assign wireless profiles to the given camera. Incremental updates are not supported, all profile assignment need to be supplied at once.",
+        "operationId": "updateDeviceCameraWirelessProfiles",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCameraWirelessProfiles",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "object",
+                  "properties": {
+                    "primary": {
+                      "type": "string",
+                      "description": "The id of the primary wireless profile"
+                    },
+                    "secondary": {
+                      "type": "string",
+                      "description": "The id of the secondary wireless profile"
+                    },
+                    "backup": {
+                      "type": "string",
+                      "description": "The id of the backup wireless profile"
+                    }
+                  },
+                  "description": "The ids of the wireless profile to assign to the given camera"
+                }
+              },
+              "example": {
+                "ids": {
+                  "primary": "3",
+                  "secondary": "2",
+                  "backup": "1"
+                }
+              },
+              "required": [
+                "ids"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "ids": {
+                  "primary": "3",
+                  "secondary": "2",
+                  "backup": "1"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Assign wireless profiles to the given camera",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
         ]
       }
     },
@@ -12401,6 +12511,338 @@
           "camera",
           "configure",
           "schedules"
+        ]
+      }
+    },
+    "/networks/{networkId}/camera/wirelessProfiles": {
+      "post": {
+        "description": "Creates a new camera wireless profile for this network.",
+        "operationId": "createNetworkCameraWirelessProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkCameraWirelessProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the camera wireless profile. This parameter is required."
+                },
+                "ssid": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the SSID."
+                    },
+                    "authMode": {
+                      "type": "string",
+                      "enum": [
+                        "psk",
+                        "8021x-radius"
+                      ],
+                      "description": "The auth mode of the SSID. It can be set to ('psk', '8021x-radius')."
+                    },
+                    "encryptionMode": {
+                      "type": "string",
+                      "description": "The encryption mode of the SSID. It can be set to ('wpa', 'wpa-eap'). With 'wpa' mode, the authMode should be 'psk' and with 'wpa-eap' the authMode should be '8021x-radius'"
+                    },
+                    "psk": {
+                      "type": "string",
+                      "description": "The pre-shared key of the SSID."
+                    }
+                  },
+                  "description": "The details of the SSID config."
+                },
+                "identity": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "The username of the identity."
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The password of the identity."
+                    }
+                  },
+                  "description": "The identity of the wireless profile. Required for creating wireless profiles in 8021x-radius auth mode."
+                }
+              },
+              "example": {
+
+              },
+              "required": [
+                "name",
+                "ssid"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "152",
+                "name": "wireless profile A",
+                "appliedDeviceCount": 0,
+                "ssid": {
+                  "name": "ssid test",
+                  "authMode": "8021x-radius",
+                  "encryptionMode": "wpa-eap"
+                },
+                "identity": {
+                  "username": "identityname",
+                  "password": "password123"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Creates a new camera wireless profile for this network.",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
+        ]
+      },
+      "get": {
+        "description": "List the camera wireless profiles for this network.",
+        "operationId": "getNetworkCameraWirelessProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "152",
+                  "name": "wireless profile A",
+                  "appliedDeviceCount": 0,
+                  "ssid": {
+                    "name": "ssid test",
+                    "authMode": "8021x-radius",
+                    "encryptionMode": "wpa-eap"
+                  },
+                  "identity": {
+                    "username": "identityname",
+                    "password": "password123"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the camera wireless profiles for this network.",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/camera/wirelessProfiles/{wirelessProfileId}": {
+      "get": {
+        "description": "Retrieve a single camera wireless profile.",
+        "operationId": "getNetworkCameraWirelessProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "wirelessProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "152",
+                "name": "wireless profile A",
+                "appliedDeviceCount": 0,
+                "ssid": {
+                  "name": "ssid test",
+                  "authMode": "8021x-radius",
+                  "encryptionMode": "wpa-eap"
+                },
+                "identity": {
+                  "username": "identityname",
+                  "password": "password123"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single camera wireless profile.",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
+        ]
+      },
+      "put": {
+        "description": "Update an existing camera wireless profile in this network.",
+        "operationId": "updateNetworkCameraWirelessProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "wirelessProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkCameraWirelessProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the camera wireless profile."
+                },
+                "ssid": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the SSID."
+                    },
+                    "authMode": {
+                      "type": "string",
+                      "enum": [
+                        "psk",
+                        "8021x-radius"
+                      ],
+                      "description": "The auth mode of the SSID. It can be set to ('psk', '8021x-radius')."
+                    },
+                    "encryptionMode": {
+                      "type": "string",
+                      "description": "The encryption mode of the SSID. It can be set to ('wpa', 'wpa-eap'). With 'wpa' mode, the authMode should be 'psk' and with 'wpa-eap' the authMode should be '8021x-radius'"
+                    },
+                    "psk": {
+                      "type": "string",
+                      "description": "The pre-shared key of the SSID."
+                    }
+                  },
+                  "description": "The details of the SSID config."
+                },
+                "identity": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "The username of the identity."
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "The password of the identity."
+                    }
+                  },
+                  "description": "The identity of the wireless profile. Required for creating wireless profiles in 8021x-radius auth mode."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "152",
+                "name": "wireless profile A",
+                "appliedDeviceCount": 0,
+                "ssid": {
+                  "name": "ssid test",
+                  "authMode": "8021x-radius",
+                  "encryptionMode": "wpa-eap"
+                },
+                "identity": {
+                  "username": "identityname",
+                  "password": "password123"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing camera wireless profile in this network.",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete an existing camera wireless profile for this network.",
+        "operationId": "deleteNetworkCameraWirelessProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "wirelessProfileId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an existing camera wireless profile for this network.",
+        "tags": [
+          "camera",
+          "configure",
+          "wirelessProfiles"
         ]
       }
     },
@@ -34782,6 +35224,84 @@
         ]
       }
     },
+    "/networks/{network_id}/insight/applications/{application_id}/healthByTime": {
+      "get": {
+        "description": "Get application health by time",
+        "operationId": "getNetworkInsightApplicationHealthByTime",
+        "parameters": [
+          {
+            "name": "network_id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "application_id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 7 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 60, 300, 3600, 86400. The default is 300."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2018-02-11T00:00:00Z",
+                  "endTs": "2018-05-12T00:00:00Z",
+                  "wanGoodput": 20000000.0,
+                  "lanGoodput": 100000000.0,
+                  "wanLatencyMs": 10.1,
+                  "lanLatencyMs": 3.2,
+                  "wanLossPercent": 0.2,
+                  "lanLossPercent": 0.0,
+                  "responseDuration": 210,
+                  "sent": 1000,
+                  "recv": 5000,
+                  "numClients": 2
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get application health by time",
+        "tags": [
+          "insight",
+          "monitor",
+          "applications",
+          "healthByTime"
+        ]
+      }
+    },
     "/organizations": {
       "get": {
         "description": "List the organizations that the user has privileges on",
@@ -35022,10 +35542,17 @@
                 "synchronous": false,
                 "actions": [
                   {
-                    "resource": "/devices/QXXX-XXXX-XXXX/switchPorts/3",
+                    "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update",
                     "body": {
                       "enabled": false
+                    }
+                  },
+                  {
+                    "resource": "/networks/L_XXXXX/groupPolicies",
+                    "operation": "create",
+                    "body": {
+                      "name": "Group 1"
                     }
                   }
                 ]
@@ -35050,18 +35577,31 @@
                 "confirmed": true,
                 "synchronous": false,
                 "status": {
-                  "completed": false,
+                  "completed": true,
                   "failed": false,
                   "errors": [
 
+                  ],
+                  "createdResources": [
+                    {
+                      "id": 100,
+                      "uri": "/networks/L_XXXXX/groupPolicies/100"
+                    }
                   ]
                 },
                 "actions": [
                   {
-                    "resource": "/devices/QXXX-XXXX-XXXX/switchPorts/3",
+                    "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update",
                     "body": {
                       "enabled": false
+                    }
+                  },
+                  {
+                    "resource": "/networks/L_XXXXX/groupPolicies",
+                    "operation": "create",
+                    "body": {
+                      "name": "Group 1"
                     }
                   }
                 ]
@@ -35112,18 +35652,31 @@
                   "confirmed": true,
                   "synchronous": false,
                   "status": {
-                    "completed": false,
+                    "completed": true,
                     "failed": false,
                     "errors": [
 
+                    ],
+                    "createdResources": [
+                      {
+                        "id": 100,
+                        "uri": "/networks/L_XXXXX/groupPolicies/100"
+                      }
                     ]
                   },
                   "actions": [
                     {
-                      "resource": "/devices/QXXX-XXXX-XXXX/switchPorts/3",
+                      "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                       "operation": "update",
                       "body": {
                         "enabled": false
+                      }
+                    },
+                    {
+                      "resource": "/networks/L_XXXXX/groupPolicies",
+                      "operation": "create",
+                      "body": {
+                        "name": "Group 1"
                       }
                     }
                   ]
@@ -35171,18 +35724,31 @@
                 "confirmed": true,
                 "synchronous": false,
                 "status": {
-                  "completed": false,
+                  "completed": true,
                   "failed": false,
                   "errors": [
 
+                  ],
+                  "createdResources": [
+                    {
+                      "id": 100,
+                      "uri": "/networks/L_XXXXX/groupPolicies/100"
+                    }
                   ]
                 },
                 "actions": [
                   {
-                    "resource": "/devices/QXXX-XXXX-XXXX/switchPorts/3",
+                    "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update",
                     "body": {
                       "enabled": false
+                    }
+                  },
+                  {
+                    "resource": "/networks/L_XXXXX/groupPolicies",
+                    "operation": "create",
+                    "body": {
+                      "name": "Group 1"
                     }
                   }
                 ]
@@ -35281,14 +35847,24 @@
                   "failed": false,
                   "errors": [
 
+                  ],
+                  "createdResources": [
+
                   ]
                 },
                 "actions": [
                   {
-                    "resource": "/devices/QXXX-XXXX-XXXX/switchPorts/3",
+                    "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update",
                     "body": {
                       "enabled": false
+                    }
+                  },
+                  {
+                    "resource": "/networks/L_XXXXX/groupPolicies",
+                    "operation": "create",
+                    "body": {
+                      "name": "Group 1"
                     }
                   }
                 ]
@@ -37933,6 +38509,115 @@
         ]
       }
     },
+    "/organizations/{organizationId}/camera/onboarding/statuses": {
+      "get": {
+        "description": "Fetch onboarding status of cameras",
+        "operationId": "getOrganizationCameraOnboardingStatuses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "A list of serial numbers. The returned cameras will be filtered to only include these serials."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "A list of network IDs. The returned cameras will be filtered to only include these networks."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_12345",
+                  "serial": "Q2AB-CDEF-GHIJ",
+                  "status": "pending onboarding",
+                  "updatedAt": "2021/03/24 15:23:47.101068 -0700"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Fetch onboarding status of cameras",
+        "tags": [
+          "camera",
+          "configure",
+          "onboarding",
+          "statuses"
+        ]
+      },
+      "put": {
+        "description": "Notify that credential handoff to camera has completed",
+        "operationId": "updateOrganizationCameraOnboardingStatuses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationCameraOnboardingStatuses",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serial": {
+                  "type": "string",
+                  "description": "Serial of camera"
+                },
+                "wirelessCredentialsSent": {
+                  "type": "boolean",
+                  "description": "Note whether credentials were sent successfully"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "success": true
+              }
+            }
+          }
+        },
+        "summary": "Notify that credential handoff to camera has completed",
+        "tags": [
+          "camera",
+          "configure",
+          "onboarding",
+          "statuses"
+        ]
+      }
+    },
     "/organizations/{organizationId}/cellularGateway/uplink/statuses": {
       "get": {
         "description": "List the uplink status of every Meraki MG cellular gateway in the organization",
@@ -40375,6 +41060,29 @@
                     "type": "string"
                   },
                   "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                        }
+                      },
+                      "description": "Details for API-only IP restrictions."
+                    }
+                  },
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
                 }
               },
               "example": {
@@ -40868,7 +41576,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
                 },
                 "cidr": {
                   "type": "string",
@@ -43015,6 +43723,9 @@
       "name": "groups"
     },
     {
+      "name": "healthByTime"
+    },
+    {
       "name": "healthScores"
     },
     {
@@ -43121,6 +43832,9 @@
     },
     {
       "name": "objectDetectionModels"
+    },
+    {
+      "name": "onboarding"
     },
     {
       "name": "onboardingHistory"
@@ -43384,6 +44098,9 @@
       "name": "webhooks"
     },
     {
+      "name": "wirelessProfiles"
+    },
+    {
       "name": "wlanLists"
     },
     {
@@ -43419,6 +44136,12 @@
       "group": "Camera video settings",
       "summary": "Update video settings for the given camera",
       "resource": "/devices/{serial}/camera/video/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Camera wireless profile settings",
+      "summary": "Assign wireless profiles to the given camera. Incremental updates are not supported, all profile assignment need to be supplied at once.",
+      "resource": "/devices/{serial}/camera/wirelessProfiles",
       "operation": "update"
     },
     {
