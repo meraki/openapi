@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.10.0-beta.0",
+    "version": "1.10.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 09 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -18908,7 +18908,6 @@
                         "id": "1284392014819",
                         "name": "What's in a name, anyway?",
                         "url": "https://example.com/path",
-                        "sharedSecret": "secret",
                         "validator": "xxx",
                         "validatedAt": "2018-02-11T00:00:00Z"
                       },
@@ -19029,7 +19028,6 @@
                       "id": "1284392014819",
                       "name": "What's in a name, anyway?",
                       "url": "https://example.com/path",
-                      "sharedSecret": "secret",
                       "validator": "xxx",
                       "validatedAt": "2018-02-11T00:00:00Z"
                     },
@@ -32833,6 +32831,10 @@
                       "secret": {
                         "type": "string",
                         "description": "RADIUS client shared secret"
+                      },
+                      "radsecEnabled": {
+                        "type": "boolean",
+                        "description": "Use RADSEC (TLS over TCP) to connect to this RADIUS server. Requires radiusProxyEnabled."
                       }
                     },
                     "required": [
@@ -32909,6 +32911,10 @@
                       "secret": {
                         "type": "string",
                         "description": "Shared key used to authenticate messages between the APs and RADIUS server"
+                      },
+                      "radsecEnabled": {
+                        "type": "boolean",
+                        "description": "Use RADSEC (TLS over TCP) to connect to this RADIUS accounting server. Requires radiusProxyEnabled."
                       }
                     },
                     "required": [
@@ -33462,6 +33468,166 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/ssids/{number}/eapOverride": {
+      "get": {
+        "description": "Return the EAP overridden parameters for an SSID",
+        "operationId": "getNetworkWirelessSsidEapOverride",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "eap_timeout_override": false,
+                "eap_initial_timeout": 5,
+                "eap_max_retries_override": false,
+                "eap_max_retries": 5,
+                "eap_identity_timeout_override": false,
+                "eap_identity_timeout": 5,
+                "eap_identity_retries_override": false,
+                "eap_identity_retries": 5,
+                "eapol_key_timeout_override": false,
+                "eapol_key_timeout": 500,
+                "eapol_key_retries_override": false,
+                "eapol_key_retries": 4
+              }
+            }
+          }
+        },
+        "summary": "Return the EAP overridden parameters for an SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "eapOverride"
+        ]
+      },
+      "put": {
+        "description": "Update the EAP overridden parameters for an SSID.",
+        "operationId": "updateNetworkWirelessSsidEapOverride",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSsidEapOverride",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "eapIdentityRetries": {
+                  "type": "integer",
+                  "description": "Maximum number of EAP retries for identity requests."
+                },
+                "eapIdentityRetriesOverride": {
+                  "type": "boolean",
+                  "description": "Override the maximum number of EAP retries for identity requests."
+                },
+                "eapIdentityTimeout": {
+                  "type": "integer",
+                  "description": "Identity request EAP timeout in seconds."
+                },
+                "eapIdentityTimeoutOverride": {
+                  "type": "boolean",
+                  "description": "Override the EAP timeout for identitiy request."
+                },
+                "eapInitialTimeout": {
+                  "type": "integer",
+                  "description": "General EAP timeout in seconds."
+                },
+                "eapMaxRetries": {
+                  "type": "integer",
+                  "description": "Maximum number of general EAP retries."
+                },
+                "eapMaxRetriesOverride": {
+                  "type": "boolean",
+                  "description": "Override the maximum number of general EAP retries."
+                },
+                "eapTimeoutOverride": {
+                  "type": "boolean",
+                  "description": "Override the general EAP timeout."
+                },
+                "eapolKeyRetries": {
+                  "type": "integer",
+                  "description": "Maximum number of EAPOL Key retries."
+                },
+                "eapolKeyRetriesOverride": {
+                  "type": "boolean",
+                  "description": "Override the maximum number of EAPOL Key retries."
+                },
+                "eapolKeyTimeout": {
+                  "type": "integer",
+                  "description": "EAPOL Key timeout in milliseconds."
+                },
+                "eapolKeyTimeoutOverride": {
+                  "type": "boolean",
+                  "description": "Override the EAPOL Key timeout."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "eap_timeout_override": false,
+                "eap_initial_timeout": 5,
+                "eap_max_retries_override": false,
+                "eap_max_retries": 5,
+                "eap_identity_timeout_override": false,
+                "eap_identity_timeout": 5,
+                "eap_identity_retries_override": false,
+                "eap_identity_retries": 5,
+                "eapol_key_timeout_override": false,
+                "eapol_key_timeout": 500,
+                "eapol_key_retries_override": false,
+                "eapol_key_retries": 4
+              }
+            }
+          }
+        },
+        "summary": "Update the EAP overridden parameters for an SSID.",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "eapOverride"
+        ]
+      }
+    },
     "/networks/{networkId}/wireless/ssids/{number}/firewall/l3FirewallRules": {
       "get": {
         "description": "Return the L3 firewall rules for an SSID on an MR network",
@@ -33857,6 +34023,377 @@
           "ssids",
           "firewall",
           "l7FirewallRules"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ssids/{number}/hotspot20": {
+      "get": {
+        "description": "Return the Hotspot 2.0 settings for an SSID",
+        "operationId": "getNetworkWirelessSsidHotspot20",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "operatorName": "Meraki Product Management",
+                "venueName": "SF Branch",
+                "venueType": "Unspecified Assembly",
+                "networkType": "Private network",
+                "domainList": [
+                  "meraki.local",
+                  "domain2.com"
+                ],
+                "roamConsortOis": [
+                  "ABC123",
+                  "456EFG"
+                ],
+                "mccMncs": [
+                  {
+                    "mcc": "123",
+                    "mnc": "456"
+                  },
+                  {
+                    "mcc": "563",
+                    "mnc": "232"
+                  }
+                ],
+                "naiRealms": [
+                  {
+                    "format": 1,
+                    "name": "Realm 1",
+                    "methods": [
+                      {
+                        "id": "1",
+                        "params": [
+                          "Non-EAP Inner Authentication: MSCHAP",
+                          "EAP Inner Authentication: EAP-TTLS with MSCHAPv2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the Hotspot 2.0 settings for an SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "hotspot20"
+        ]
+      },
+      "put": {
+        "description": "Update the Hotspot 2.0 settings of an SSID",
+        "operationId": "updateNetworkWirelessSsidHotspot20",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessSsidHotspot20",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether or not Hotspot 2.0 for this SSID is enabled"
+                },
+                "operatorName": {
+                  "type": "string",
+                  "description": "The operator name for this SSID"
+                },
+                "venueName": {
+                  "type": "string",
+                  "description": "The venue name for this SSID"
+                },
+                "venueType": {
+                  "type": "string",
+                  "enum": [
+                    "Unspecified",
+                    "Unspecified Assembly",
+                    "Arena",
+                    "Stadium",
+                    "Passenger Terminal",
+                    "Amphitheater",
+                    "Amusement Park",
+                    "Place of Worship",
+                    "Convention Center",
+                    "Library",
+                    "Museum",
+                    "Restaurant",
+                    "Theater",
+                    "Bar",
+                    "Coffee Shop",
+                    "Zoo or Aquarium",
+                    "Emergency Coordination Center",
+                    "Unspecified Business",
+                    "Doctor or Dentist office",
+                    "Bank",
+                    "Fire Station",
+                    "Police Station",
+                    "Post Office",
+                    "Professional Office",
+                    "Research and Development Facility",
+                    "Attorney Office",
+                    "Unspecified Educational",
+                    "School, Primary",
+                    "School, Secondary",
+                    "University or College",
+                    "Unspecified Factory and Industrial",
+                    "Factory",
+                    "Unspecified Institutional",
+                    "Hospital",
+                    "Long-Term Care Facility",
+                    "Alcohol and Drug Rehabilitation Center",
+                    "Group Home",
+                    "Prison or Jail",
+                    "Unspecified Mercantile",
+                    "Retail Store",
+                    "Grocery Market",
+                    "Automotive Service Station",
+                    "Shopping Mall",
+                    "Gas Station",
+                    "Unspecified Residential",
+                    "Private Residence",
+                    "Hotel or Motel",
+                    "Dormitory",
+                    "Boarding House",
+                    "Unspecified Storage",
+                    "Unspecified Utility and Miscellaneous",
+                    "Unspecified Vehicular",
+                    "Automobile or Truck",
+                    "Airplane",
+                    "Bus",
+                    "Ferry",
+                    "Ship or Boat",
+                    "Train",
+                    "Motor Bike",
+                    "Unspecified Outdoor",
+                    "Muni-mesh Network",
+                    "City Park",
+                    "Rest Area",
+                    "Traffic Control",
+                    "Bus Stop",
+                    "Kiosk"
+                  ],
+                  "description": "The venue type of this SSID ('Unspecified', 'Unspecified Assembly', 'Arena', 'Stadium', 'Passenger Terminal', 'Amphitheater', 'Amusement Park', 'Place of Worship', 'Convention Center', 'Library', 'Museum', 'Restaurant', 'Theater', 'Bar', 'Coffee Shop', 'Zoo or Aquarium', 'Emergency Coordination Center', 'Unspecified Business', 'Doctor or Dentist office', 'Bank', 'Fire Station', 'Police Station', 'Post Office', 'Professional Office', 'Research and Development Facility', 'Attorney Office', 'Unspecified Educational', 'School, Primary', 'School, Secondary', 'University or College', 'Unspecified Factory and Industrial', 'Factory', 'Unspecified Institutional', 'Hospital', 'Long-Term Care Facility', 'Alcohol and Drug Rehabilitation Center', 'Group Home', 'Prison or Jail', 'Unspecified Mercantile', 'Retail Store', 'Grocery Market', 'Automotive Service Station', 'Shopping Mall', 'Gas Station', 'Unspecified Residential', 'Private Residence', 'Hotel or Motel', 'Dormitory', 'Boarding House', 'Unspecified Storage', 'Unspecified Utility and Miscellaneous', 'Unspecified Vehicular', 'Automobile or Truck', 'Airplane', 'Bus', 'Ferry', 'Ship or Boat', 'Train', 'Motor Bike', 'Unspecified Outdoor', 'Muni-mesh Network', 'City Park', 'Rest Area', 'Traffic Control', 'Bus Stop', 'Kiosk')"
+                },
+                "networkType": {
+                  "type": "string",
+                  "enum": [
+                    "Private network",
+                    "Private network with guest access",
+                    "Chargeable public network",
+                    "Free public network",
+                    "Personal device network",
+                    "Emergency services only network",
+                    "Test or experimental",
+                    "Wildcard"
+                  ],
+                  "description": "The network type of this SSID ('Private network', 'Private network with guest access', 'Chargeable public network', 'Free public network', 'Personal device network', 'Emergency services only network', 'Test or experimental', 'Wildcard')"
+                },
+                "domainList": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "An array of domain names"
+                },
+                "roamConsortOis": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "An array of roaming consortium OIs"
+                },
+                "mccMncs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "mcc": {
+                        "type": "string",
+                        "description": "MCC value"
+                      },
+                      "mnc": {
+                        "type": "string",
+                        "description": "MNC value"
+                      }
+                    }
+                  },
+                  "description": "An array of MCC/MNC pairs"
+                },
+                "naiRealms": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "0"
+                        ],
+                        "description": "The format for the realm ('1' or '0')"
+                      },
+                      "realm": {
+                        "type": "string",
+                        "description": "The name of the realm"
+                      },
+                      "methods": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "ID of method"
+                            },
+                            "params": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "An array of authentication types for the method. These types must formatted with the EAP method category followed by a ':' and then the type. (Non-EAP Inner Authentication: Reserved, PAP, CHAP, MSCHAP, MSCHAPV2; EAP Inner Authentication: EAP-TLS, EAP-SIM, EAP-AKA, EAP-TTLS with MSCHAPv2; Credentials: SIM, USIM, NFC Secure Element, Hardware Token, Softoken, Certificate, username/password, none, Reserved, Vendor Specific; Tunneled EAP Method Credentials: SIM, USIM, NFC Secure Element, Hardware Token, Softoken, Certificate, username/password, Reserved, Anonymous, Vendor Specific)"
+                            }
+                          }
+                        },
+                        "description": "An array of EAP methods for the realm."
+                      }
+                    }
+                  },
+                  "description": "An array of NAI realms"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "operatorName": "Meraki Product Management",
+                "venueName": "SF Branch",
+                "venueType": "Unspecified Assembly",
+                "networkType": "Private network",
+                "domainList": [
+                  "meraki.local",
+                  "domain2.com"
+                ],
+                "roamConsortOis": [
+                  "ABC123",
+                  "456EFG"
+                ],
+                "mccMncs": [
+                  {
+                    "mcc": "123",
+                    "mnc": "456"
+                  },
+                  {
+                    "mcc": "563",
+                    "mnc": "232"
+                  }
+                ],
+                "naiRealms": [
+                  {
+                    "format": 1,
+                    "name": "Realm 1",
+                    "methods": [
+                      {
+                        "id": "1",
+                        "params": [
+                          "Non-EAP Inner Authentication: MSCHAP",
+                          "EAP Inner Authentication: EAP-TTLS with MSCHAPv2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "operatorName": "Meraki Product Management",
+                "venueName": "SF Branch",
+                "venueType": "Unspecified Assembly",
+                "networkType": "Private network",
+                "domainList": [
+                  "meraki.local",
+                  "domain2.com"
+                ],
+                "roamConsortOis": [
+                  "ABC123",
+                  "456EFG"
+                ],
+                "mccMncs": [
+                  {
+                    "mcc": "123",
+                    "mnc": "456"
+                  },
+                  {
+                    "mcc": "563",
+                    "mnc": "232"
+                  }
+                ],
+                "naiRealms": [
+                  {
+                    "format": 1,
+                    "name": "Realm 1",
+                    "methods": [
+                      {
+                        "id": "1",
+                        "params": [
+                          "Non-EAP Inner Authentication: MSCHAP",
+                          "EAP Inner Authentication: EAP-TTLS with MSCHAPv2"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the Hotspot 2.0 settings of an SSID",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "hotspot20"
         ]
       }
     },
@@ -35877,6 +36414,433 @@
           "organizations",
           "configure",
           "actionBatches"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/adaptivePolicy/acls": {
+      "get": {
+        "description": "List adaptive policy ACLs in a organization",
+        "operationId": "getOrganizationAdaptivePolicyAcls",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "aclId": 12345678,
+                  "name": "Block sensitive web traffic",
+                  "description": "Blocks sensitive web traffic",
+                  "ipVersion": "ipv6",
+                  "rules": [
+                    {
+                      "policy": "deny",
+                      "protocol": "tcp",
+                      "srcPort": "1,33",
+                      "dstPort": "22-30"
+                    },
+                    {
+                      "policy": "allow",
+                      "protocol": "any",
+                      "srcPort": "any",
+                      "dstPort": "any"
+                    }
+                  ],
+                  "createdAt": "2021-05-19T17:08:25Z",
+                  "updatedAt": "2021-05-19T17:11:54Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List adaptive policy ACLs in a organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "acls"
+        ]
+      },
+      "post": {
+        "description": "Creates new adaptive policy ACL",
+        "operationId": "createOrganizationAdaptivePolicyAcl",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationAdaptivePolicyAcl",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the adaptive policy ACL"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the adaptive policy ACL",
+                  "default": ""
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule."
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')."
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Source port. Must be in the format of single port: '1', port list: '1,2' or port range: '1-10', and in the range of 1-65535, or 'any'. Default is 'any'."
+                      },
+                      "dstPort": {
+                        "type": "string",
+                        "description": "Destination port. Must be in the format of single port: '1', port list: '1,2' or port range: '1-10', and in the range of 1-65535, or 'any'. Default is 'any'."
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol"
+                    ]
+                  },
+                  "description": "An ordered array of the adaptive policy ACL rules."
+                },
+                "ipVersion": {
+                  "type": "string",
+                  "enum": [
+                    "any",
+                    "ipv4",
+                    "ipv6"
+                  ],
+                  "description": "IP version of adpative policy ACL. One of: 'any', 'ipv4' or 'ipv6'"
+                }
+              },
+              "example": {
+                "name": "Block sensitive web traffic",
+                "description": "Blocks sensitive web traffic",
+                "ipVersion": "ipv6",
+                "rules": [
+                  {
+                    "policy": "deny",
+                    "protocol": "tcp",
+                    "srcPort": "1,33",
+                    "dstPort": "22-30"
+                  },
+                  {
+                    "policy": "allow",
+                    "protocol": "any",
+                    "srcPort": "any",
+                    "dstPort": "any"
+                  }
+                ]
+              },
+              "required": [
+                "name",
+                "rules",
+                "ipVersion"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Block sensitive web traffic",
+                "description": "Blocks sensitive web traffic",
+                "ipVersion": "ipv6",
+                "rules": [
+                  {
+                    "policy": "deny",
+                    "protocol": "tcp",
+                    "srcPort": "1,33",
+                    "dstPort": "22-30"
+                  },
+                  {
+                    "policy": "allow",
+                    "protocol": "any",
+                    "srcPort": "any",
+                    "dstPort": "any"
+                  }
+                ],
+                "id": 123,
+                "createdAt": "2021-05-19T17:08:25Z",
+                "updatedAt": "2021-05-19T17:11:54Z"
+              }
+            }
+          }
+        },
+        "summary": "Creates new adaptive policy ACL",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "acls"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/adaptivePolicy/acls/{id}": {
+      "get": {
+        "description": "Returns the adaptive policy ACL information",
+        "operationId": "getOrganizationAdaptivePolicyAcl",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "aclId": 12345678,
+                "name": "Block sensitive web traffic",
+                "description": "Blocks sensitive web traffic",
+                "ipVersion": "ipv6",
+                "rules": [
+                  {
+                    "policy": "deny",
+                    "protocol": "tcp",
+                    "srcPort": "1,33",
+                    "dstPort": "22-30"
+                  },
+                  {
+                    "policy": "allow",
+                    "protocol": "any",
+                    "srcPort": "any",
+                    "dstPort": "any"
+                  }
+                ],
+                "createdAt": "2021-05-19T17:08:25Z",
+                "updatedAt": "2021-05-19T17:11:54Z"
+              }
+            }
+          }
+        },
+        "summary": "Returns the adaptive policy ACL information",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "acls"
+        ]
+      },
+      "put": {
+        "description": "Updates an adaptive policy ACL",
+        "operationId": "updateOrganizationAdaptivePolicyAcl",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationAdaptivePolicyAcl",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the adaptive policy ACL"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the adaptive policy ACL"
+                },
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule."
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp' or 'any')."
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Source port. Must be in the format of single port: '1', port list: '1,2' or port range: '1-10', and in the range of 1-65535, or 'any'. Default is 'any'."
+                      },
+                      "dstPort": {
+                        "type": "string",
+                        "description": "Destination port. Must be in the format of single port: '1', port list: '1,2' or port range: '1-10', and in the range of 1-65535, or 'any'. Default is 'any'."
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol"
+                    ]
+                  },
+                  "description": "An ordered array of the adaptive policy ACL rules. An empty array will clear the rules."
+                },
+                "ipVersion": {
+                  "type": "string",
+                  "enum": [
+                    "any",
+                    "ipv4",
+                    "ipv6"
+                  ],
+                  "description": "IP version of adpative policy ACL. One of: 'any', 'ipv4' or 'ipv6'"
+                }
+              },
+              "example": {
+                "name": "Block sensitive web traffic",
+                "description": "Blocks sensitive web traffic",
+                "ipVersion": "ipv6",
+                "rules": [
+                  {
+                    "policy": "deny",
+                    "protocol": "tcp",
+                    "srcPort": "1,33",
+                    "dstPort": "22-30"
+                  },
+                  {
+                    "policy": "allow",
+                    "protocol": "any",
+                    "srcPort": "any",
+                    "dstPort": "any"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Block sensitive web traffic",
+                "description": "Blocks sensitive web traffic",
+                "ipVersion": "ipv6",
+                "rules": [
+                  {
+                    "policy": "deny",
+                    "protocol": "tcp",
+                    "srcPort": "1,33",
+                    "dstPort": "22-30"
+                  },
+                  {
+                    "policy": "allow",
+                    "protocol": "any",
+                    "srcPort": "any",
+                    "dstPort": "any"
+                  }
+                ],
+                "id": 123,
+                "createdAt": "2021-05-19T17:08:25Z",
+                "updatedAt": "2021-05-19T17:11:54Z"
+              }
+            }
+          }
+        },
+        "summary": "Updates an adaptive policy ACL",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "acls"
+        ]
+      },
+      "delete": {
+        "description": "Deletes the specified adaptive policy ACL. Note this adaptive policy ACL will also be removed from policies using it.",
+        "operationId": "deleteOrganizationAdaptivePolicyAcl",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes the specified adaptive policy ACL",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "acls"
         ]
       }
     },
@@ -41576,7 +42540,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -43555,7 +44519,13 @@
       "name": "accessPolicies"
     },
     {
+      "name": "acls"
+    },
+    {
       "name": "actionBatches"
+    },
+    {
+      "name": "adaptivePolicy"
     },
     {
       "name": "admins"
@@ -43693,6 +44663,9 @@
       "name": "dscpToCosMappings"
     },
     {
+      "name": "eapOverride"
+    },
+    {
       "name": "eventTypes"
     },
     {
@@ -43730,6 +44703,9 @@
     },
     {
       "name": "history"
+    },
+    {
+      "name": "hotspot20"
     },
     {
       "name": "httpServers"
@@ -44244,6 +45220,12 @@
       "group": "Dscp cos mapping",
       "summary": "Update the DSCP to CoS mappings",
       "resource": "/networks/{networkId}/switch/dscpToCosMappings",
+      "operation": "update"
+    },
+    {
+      "group": "Eap override",
+      "summary": "Update the EAP overridden parameters for an SSID.",
+      "resource": "/networks/{networkId}/wireless/ssids/{number}/eapOverride",
       "operation": "update"
     },
     {
@@ -44899,6 +45881,24 @@
       "summary": "Delete a User Access Device",
       "resource": "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}",
       "operation": "destroy"
+    },
+    {
+      "group": "V1/adaptive policy acl",
+      "summary": "Creates new adaptive policy ACL",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls",
+      "operation": "create"
+    },
+    {
+      "group": "V1/adaptive policy acl",
+      "summary": "Deletes the specified adaptive policy ACL. Note this adaptive policy ACL will also be removed from policies using it.",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
+      "operation": "destroy"
+    },
+    {
+      "group": "V1/adaptive policy acl",
+      "summary": "Updates an adaptive policy ACL",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
+      "operation": "update"
     },
     {
       "group": "VLAN",
