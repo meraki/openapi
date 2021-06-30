@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.10.0-beta.3",
+    "version": "1.10.0-beta.4",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 23 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 30 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -20405,6 +20405,9 @@
                 "remoteStatusPageEnabled": true,
                 "secureConnect": {
                   "enabled": false
+                },
+                "fips": {
+                  "enabled": true
                 }
               }
             }
@@ -20457,6 +20460,9 @@
                 "remoteStatusPageEnabled": true,
                 "secureConnect": {
                   "enabled": false
+                },
+                "fips": {
+                  "enabled": true
                 }
               }
             }
@@ -20474,6 +20480,9 @@
                 "remoteStatusPageEnabled": true,
                 "secureConnect": {
                   "enabled": false
+                },
+                "fips": {
+                  "enabled": true
                 }
               }
             }
@@ -32482,7 +32491,8 @@
                   "radiusServers": [
                     {
                       "host": "0.0.0.0",
-                      "port": 3000
+                      "port": 3000,
+                      "openRoamingCertificateId": 2
                     }
                   ],
                   "radiusAccountingEnabled": false,
@@ -32560,7 +32570,8 @@
                 "radiusServers": [
                   {
                     "host": "0.0.0.0",
-                    "port": 3000
+                    "port": 3000,
+                    "openRoamingCertificateId": 2
                   }
                 ],
                 "radiusAccountingEnabled": false,
@@ -33171,7 +33182,8 @@
                 "radiusServers": [
                   {
                     "host": "0.0.0.0",
-                    "port": 3000
+                    "port": 3000,
+                    "openRoamingCertificateId": 2
                   }
                 ],
                 "radiusAccountingEnabled": false,
@@ -36958,6 +36970,106 @@
           "configure",
           "adaptivePolicy",
           "acls"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/adaptivePolicy/settings": {
+      "get": {
+        "description": "Returns global adaptive policy settings in an organization",
+        "operationId": "getOrganizationAdaptivePolicySettings",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabledNetworks": [
+                  "L_11111111",
+                  "L_22222222",
+                  "N_33333333",
+                  "L_44444444"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Returns global adaptive policy settings in an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "settings"
+        ]
+      },
+      "put": {
+        "description": "Update global adaptive policy settings",
+        "operationId": "updateOrganizationAdaptivePolicySettings",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationAdaptivePolicySettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabledNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of network IDs with adaptive policy enabled"
+                }
+              },
+              "example": {
+                "enabledNetworks": [
+                  "L_11111111",
+                  "L_22222222",
+                  "N_33333333",
+                  "L_44444444"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabledNetworks": [
+                  "L_11111111",
+                  "L_22222222",
+                  "N_33333333",
+                  "L_44444444"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update global adaptive policy settings",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "settings"
         ]
       }
     },
@@ -42657,7 +42769,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
@@ -46021,6 +46133,12 @@
       "group": "V1/adaptive policy acl",
       "summary": "Updates an adaptive policy ACL",
       "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
+      "operation": "update"
+    },
+    {
+      "group": "V1/adaptive policy settings",
+      "summary": "Update global adaptive policy settings",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
       "operation": "update"
     },
     {
