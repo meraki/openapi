@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.10.0-beta.4",
+    "version": "1.11.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 30 June, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 July, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -1797,7 +1797,6 @@
         "tags": [
           "devices",
           "liveTools",
-          "liveTools",
           "ping"
         ]
       }
@@ -1869,7 +1868,6 @@
         "summary": "Return a ping job",
         "tags": [
           "devices",
-          "liveTools",
           "liveTools",
           "ping"
         ]
@@ -1986,7 +1984,6 @@
         "tags": [
           "devices",
           "liveTools",
-          "liveTools",
           "pingDevice"
         ]
       }
@@ -2058,7 +2055,6 @@
         "summary": "Return a ping job",
         "tags": [
           "devices",
-          "liveTools",
           "liveTools",
           "pingDevice"
         ]
@@ -18867,6 +18863,84 @@
           "networks",
           "configure",
           "groupPolicies"
+        ]
+      }
+    },
+    "/networks/{networkId}/insight/applications/{applicationId}/healthByTime": {
+      "get": {
+        "description": "Get application health by time",
+        "operationId": "getNetworkInsightApplicationHealthByTime",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "applicationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 7 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 60, 300, 3600, 86400. The default is 300."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2018-02-11T00:00:00Z",
+                  "endTs": "2018-05-12T00:00:00Z",
+                  "wanGoodput": 20000000.0,
+                  "lanGoodput": 100000000.0,
+                  "wanLatencyMs": 10.1,
+                  "lanLatencyMs": 3.2,
+                  "wanLossPercent": 0.2,
+                  "lanLossPercent": 0.0,
+                  "responseDuration": 210,
+                  "sent": 1000,
+                  "recv": 5000,
+                  "numClients": 2
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get application health by time",
+        "tags": [
+          "insight",
+          "monitor",
+          "applications",
+          "healthByTime"
         ]
       }
     },
@@ -35890,84 +35964,6 @@
         ]
       }
     },
-    "/networks/{network_id}/insight/applications/{application_id}/healthByTime": {
-      "get": {
-        "description": "Get application health by time",
-        "operationId": "getNetworkInsightApplicationHealthByTime",
-        "parameters": [
-          {
-            "name": "network_id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "application_id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "t0",
-            "in": "query",
-            "description": "The beginning of the timespan for the data. The maximum lookback period is 7 days from today."
-          },
-          {
-            "type": "string",
-            "name": "t1",
-            "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
-          },
-          {
-            "type": "number",
-            "format": "float",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
-          },
-          {
-            "type": "integer",
-            "name": "resolution",
-            "in": "query",
-            "description": "The time resolution in seconds for returned data. The valid resolutions are: 60, 300, 3600, 86400. The default is 300."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "startTs": "2018-02-11T00:00:00Z",
-                  "endTs": "2018-05-12T00:00:00Z",
-                  "wanGoodput": 20000000.0,
-                  "lanGoodput": 100000000.0,
-                  "wanLatencyMs": 10.1,
-                  "lanLatencyMs": 3.2,
-                  "wanLossPercent": 0.2,
-                  "lanLossPercent": 0.0,
-                  "responseDuration": 210,
-                  "sent": 1000,
-                  "recv": 5000,
-                  "numClients": 2
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Get application health by time",
-        "tags": [
-          "insight",
-          "monitor",
-          "applications",
-          "healthByTime"
-        ]
-      }
-    },
     "/organizations": {
       "get": {
         "description": "List the organizations that the user has privileges on",
@@ -41197,6 +41193,57 @@
         ]
       }
     },
+    "/organizations/{organizationId}/insight/applications": {
+      "get": {
+        "description": "List all Insight tracked applications",
+        "operationId": "getOrganizationInsightApplications",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "applicationId": "19.12",
+                  "name": "Meraki HTTPS",
+                  "thresholds": {
+                    "type": "smart",
+                    "byNetwork": [
+                      {
+                        "networkId": "N_12345678",
+                        "goodput": 50000,
+                        "responseDuration": 1000
+                      },
+                      {
+                        "networkId": "L_23456789",
+                        "goodput": 3000,
+                        "responseDuration": 4000
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all Insight tracked applications",
+        "tags": [
+          "insight",
+          "configure",
+          "applications"
+        ]
+      }
+    },
     "/organizations/{organizationId}/insight/monitoredMediaServers": {
       "get": {
         "description": "List the monitored media servers for this organization. Only valid for organizations with Meraki Insight.",
@@ -42769,7 +42816,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -44655,57 +44702,6 @@
           "monitor",
           "webhooks",
           "logs"
-        ]
-      }
-    },
-    "/organizations/{organization_id}/insight/applications": {
-      "get": {
-        "description": "List all Insight tracked applications",
-        "operationId": "getOrganizationInsightApplications",
-        "parameters": [
-          {
-            "name": "organization_id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "applicationId": "19.12",
-                  "name": "Meraki HTTPS",
-                  "thresholds": {
-                    "type": "smart",
-                    "byNetwork": [
-                      {
-                        "networkId": "N_12345678",
-                        "goodput": 50000,
-                        "responseDuration": 1000
-                      },
-                      {
-                        "networkId": "L_23456789",
-                        "goodput": 3000,
-                        "responseDuration": 4000
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List all Insight tracked applications",
-        "tags": [
-          "insight",
-          "configure",
-          "applications"
         ]
       }
     }
