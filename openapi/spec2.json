@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.11.0-beta.1",
+    "version": "1.11.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 14 July, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 July, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -809,7 +809,7 @@
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Boolean indicating if restricted bandwidth is enabled(true) or disabled(false) on the camera"
+                  "description": "Boolean indicating if restricted bandwidth is enabled(true) or disabled(false) on the camera. This setting does not apply to MV2 cameras."
                 },
                 "quality": {
                   "type": "string",
@@ -11918,11 +11918,11 @@
                 },
                 "motionBasedRetentionEnabled": {
                   "type": "boolean",
-                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "audioRecordingEnabled": {
                   "type": "boolean",
@@ -12237,11 +12237,11 @@
                 },
                 "motionBasedRetentionEnabled": {
                   "type": "boolean",
-                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "audioRecordingEnabled": {
                   "type": "boolean",
@@ -15007,9 +15007,17 @@
           },
           {
             "type": "string",
+            "enum": [
+              "wireless",
+              "appliance",
+              "switch",
+              "systemsManager",
+              "camera",
+              "cellularGateway"
+            ],
             "name": "productType",
             "in": "query",
-            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and environmental"
+            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, camera, and cellularGateway"
           },
           {
             "type": "array",
@@ -15555,6 +15563,32 @@
                       "description": "The network device to be updated"
                     },
                     "environmental": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "time": {
+                              "type": "string",
+                              "description": "The time of the last successful upgrade"
+                            },
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "The version ID"
+                                }
+                              },
+                              "description": "The version to be updated to"
+                            }
+                          },
+                          "description": "The pending firmware upgrade if it exists"
+                        }
+                      },
+                      "description": "The network device to be updated"
+                    },
+                    "sensor": {
                       "type": "object",
                       "properties": {
                         "nextUpgrade": {
@@ -19802,7 +19836,9 @@
               "application/json": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -19841,12 +19877,22 @@
                 "collectorPort": {
                   "type": "integer",
                   "description": "The port that the NetFlow collector will be listening on."
+                },
+                "etaEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether Encrypted Traffic Analysis is enabled (true) or disabled (false)."
+                },
+                "etaDstPort": {
+                  "type": "integer",
+                  "description": "The port that the Encrypted Traffic Analysis collector will be listening on."
                 }
               },
               "example": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -19861,7 +19907,9 @@
               "application/json": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -36090,6 +36138,16 @@
                 "name": {
                   "type": "string",
                   "description": "The name of the organization"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, enable the access to the Cisco Meraki Dashboard API"
+                    }
+                  },
+                  "description": "API-specific settings"
                 }
               },
               "example": {
@@ -40996,6 +41054,104 @@
             "name": "configurationUpdatedAfter",
             "in": "query",
             "description": "Filter results by whether or not the device's configuration has been updated after the given timestamp"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter devices by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wireless",
+                "appliance",
+                "switch",
+                "systemsManager",
+                "camera",
+                "cellularGateway",
+                "sensor"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "Optional parameter to filter devices by product type. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "query",
+            "description": "Optional parameter to filter devices by tags."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "withAnyTags",
+              "withAllTags"
+            ],
+            "name": "tagsFilterType",
+            "in": "query",
+            "description": "Optional parameter of value 'withAnyTags' or 'withAllTags' to indicate whether to return networks which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected."
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "query",
+            "description": "Optional parameter to filter devices by name. All returned devices will have a name that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "mac",
+            "in": "query",
+            "description": "Optional parameter to filter devices by MAC address. All returned devices will have a MAC address that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "serial",
+            "in": "query",
+            "description": "Optional parameter to filter devices by serial number. All returned devices will have a serial number that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "model",
+            "in": "query",
+            "description": "Optional parameter to filter devices by model. All returned devices will have a model that contains the search term or is an exact match."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "metrics": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "waterDetection",
+                    "temperature",
+                    "humidity",
+                    "door"
+                  ]
+                },
+                "description": "Optional parameter to filter devices by the metrics that they provide. Only applies to sensor devices."
+              },
+              "alertProfileIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Optional parameter to filter devices by the alert profiles that are bound to them. Only applies to sensor devices."
+              }
+            },
+            "name": "sensor",
+            "in": "query",
+            "description": "Optional parameter to filter devices by properties that only apply to sensors."
           }
         ],
         "responses": {
@@ -41108,6 +41264,73 @@
           "monitor",
           "devices",
           "statuses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/devices/statuses/overview": {
+      "get": {
+        "description": "Return an overview of current device statuses",
+        "operationId": "getOrganizationDevicesStatusesOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wireless",
+                "appliance",
+                "switch",
+                "systemsManager",
+                "camera",
+                "cellularGateway",
+                "sensor"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "An optional parameter to filter device statuses by product type. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "An optional parameter to filter device statuses by network."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "counts": {
+                  "offline": 0,
+                  "alerting": 2,
+                  "online": 5,
+                  "dormant": 2
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return an overview of current device statuses",
+        "tags": [
+          "organizations",
+          "monitor",
+          "devices",
+          "statuses",
+          "overview"
         ]
       }
     },
@@ -41528,6 +41751,33 @@
             "name": "search",
             "in": "query",
             "description": "Search for devices in inventory based on serial number, mac address, or model."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "macs",
+            "in": "query",
+            "description": "Search for devices in inventory based on mac addresses."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Search for devices in inventory based on network ids."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Search for devices in inventory based on serials."
           }
         ],
         "responses": {
@@ -42494,10 +42744,11 @@
                       "systemsManager",
                       "camera",
                       "cellularGateway",
+                      "sensor",
                       "environmental"
                     ]
                   },
-                  "description": "The product type(s) of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, environmental. If more than one type is included, the network will be a combined network."
+                  "description": "The product type(s) of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, sensor, environmental. If more than one type is included, the network will be a combined network."
                 },
                 "tags": {
                   "type": "array",
@@ -42816,7 +43067,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: fqdn, ipAndMask, cidr, adaptivePolicyIpv4Cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -44562,22 +44813,6 @@
             "in": "path",
             "type": "string",
             "required": true
-          },
-          {
-            "type": "string",
-            "enum": [
-              "appliance",
-              "camera",
-              "cellular gateway",
-              "cloud",
-              "sensor",
-              "systems manager",
-              "switch",
-              "wireless"
-            ],
-            "name": "productType",
-            "in": "query",
-            "description": "Filter sample alerts to a specific product type"
           }
         ],
         "responses": {
