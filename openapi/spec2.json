@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.11.0",
+    "version": "1.12.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 July, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 August, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -728,7 +728,7 @@
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Boolean indicating if restricted bandwidth is enabled(true) or disabled(false) on the camera"
+                  "description": "Boolean indicating if restricted bandwidth is enabled(true) or disabled(false) on the camera. This setting does not apply to MV2 cameras."
                 },
                 "quality": {
                   "type": "string",
@@ -9605,6 +9605,96 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/uplinks/usageHistory": {
+      "get": {
+        "description": "Get the sent and received bytes for each uplink of a network.",
+        "operationId": "getNetworkApplianceUplinksUsageHistory",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 14 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 10 minutes."
+          },
+          {
+            "type": "integer",
+            "name": "resolution",
+            "in": "query",
+            "description": "The time resolution in seconds for returned data. The valid resolutions are: 60, 300, 600, 1800, 3600, 86400. The default is 60."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTime": "2021-07-22T02:00:00Z",
+                  "endTime": "2021-07-22T03:00:00Z",
+                  "byInterface": [
+                    {
+                      "interface": "wan1",
+                      "sent": 1562063,
+                      "received": 9528787
+                    },
+                    {
+                      "interface": "wan2",
+                      "sent": 396646,
+                      "received": 2747782
+                    }
+                  ]
+                },
+                {
+                  "startTime": "2021-07-22T03:00:00Z",
+                  "endTime": "2021-07-22T04:00:00Z",
+                  "byInterface": [
+                    {
+                      "interface": "wan1",
+                      "sent": 6326222,
+                      "received": 12253346
+                    },
+                    {
+                      "interface": "wan2",
+                      "sent": 402850,
+                      "received": 2981021
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get the sent and received bytes for each uplink of a network.",
+        "tags": [
+          "appliance",
+          "monitor",
+          "uplinks",
+          "usageHistory"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/vlans": {
       "get": {
         "description": "List the VLANs for an MX network",
@@ -11022,11 +11112,11 @@
                 },
                 "motionBasedRetentionEnabled": {
                   "type": "boolean",
-                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "audioRecordingEnabled": {
                   "type": "boolean",
@@ -11341,11 +11431,11 @@
                 },
                 "motionBasedRetentionEnabled": {
                   "type": "boolean",
-                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false."
+                  "description": "Deletes footage older than 3 days in which no motion was detected. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "restrictedBandwidthModeEnabled": {
                   "type": "boolean",
-                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false."
+                  "description": "Disable features that require additional bandwidth such as Motion Recap. Can be either true or false. Defaults to false. This setting does not apply to MV2 cameras."
                 },
                 "audioRecordingEnabled": {
                   "type": "boolean",
@@ -14111,9 +14201,17 @@
           },
           {
             "type": "string",
+            "enum": [
+              "wireless",
+              "appliance",
+              "switch",
+              "systemsManager",
+              "camera",
+              "cellularGateway"
+            ],
             "name": "productType",
             "in": "query",
-            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and environmental"
+            "description": "The product type to fetch events for. This parameter is required for networks with multiple device types. Valid types are wireless, appliance, switch, systemsManager, camera, and cellularGateway"
           },
           {
             "type": "array",
@@ -14659,6 +14757,32 @@
                       "description": "The network device to be updated"
                     },
                     "environmental": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "time": {
+                              "type": "string",
+                              "description": "The time of the last successful upgrade"
+                            },
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "The version ID"
+                                }
+                              },
+                              "description": "The version to be updated to"
+                            }
+                          },
+                          "description": "The pending firmware upgrade if it exists"
+                        }
+                      },
+                      "description": "The network device to be updated"
+                    },
+                    "sensor": {
                       "type": "object",
                       "properties": {
                         "nextUpgrade": {
@@ -18643,7 +18767,9 @@
               "application/json": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -18682,12 +18808,22 @@
                 "collectorPort": {
                   "type": "integer",
                   "description": "The port that the NetFlow collector will be listening on."
+                },
+                "etaEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether Encrypted Traffic Analysis is enabled (true) or disabled (false)."
+                },
+                "etaDstPort": {
+                  "type": "integer",
+                  "description": "The port that the Encrypted Traffic Analysis collector will be listening on."
                 }
               },
               "example": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -18702,7 +18838,9 @@
               "application/json": {
                 "reportingEnabled": true,
                 "collectorIp": "1.2.3.4",
-                "collectorPort": 443
+                "collectorPort": 443,
+                "etaEnabled": true,
+                "etaDstPort": 443
               }
             }
           }
@@ -21999,6 +22137,16 @@
                     }
                   ],
                   "radiusGroupAttribute": "11",
+                  "radius": {
+                    "criticalAuth": {
+                      "dataVlanId": 100,
+                      "voiceVlanId": 100,
+                      "suspendPortBounce": true
+                    },
+                    "failedAuthVlanId": 100,
+                    "reAuthenticationInterval": 120,
+                    "suspendReAuthentication": true
+                  },
                   "hostMode": "Single-Host",
                   "accessPolicyType": "Hybrid authentication",
                   "increaseAccessSpeed": false,
@@ -22063,6 +22211,30 @@
                     ]
                   },
                   "description": "List of RADIUS servers to require connecting devices to authenticate against before granting network access"
+                },
+                "radius": {
+                  "type": "object",
+                  "properties": {
+                    "criticalAuth": {
+                      "type": "object",
+                      "properties": {
+                        "dataVlanId": {
+                          "type": "integer",
+                          "description": "VLAN that clients who use data will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                        },
+                        "voiceVlanId": {
+                          "type": "integer",
+                          "description": "VLAN that clients who use voice will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                        },
+                        "suspendPortBounce": {
+                          "type": "boolean",
+                          "description": "Enable to suspend port bounce when RADIUS servers are unreachable"
+                        }
+                      },
+                      "description": "Critical auth settings for when authentication is rejected by the RADIUS server"
+                    }
+                  },
+                  "description": "Object for RADIUS Settings"
                 },
                 "radiusTestingEnabled": {
                   "type": "boolean",
@@ -22169,6 +22341,16 @@
                   }
                 ],
                 "radiusGroupAttribute": "11",
+                "radius": {
+                  "criticalAuth": {
+                    "dataVlanId": 100,
+                    "voiceVlanId": 100,
+                    "suspendPortBounce": true
+                  },
+                  "failedAuthVlanId": 100,
+                  "reAuthenticationInterval": 120,
+                  "suspendReAuthentication": true
+                },
                 "hostMode": "Single-Host",
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
@@ -22218,6 +22400,16 @@
                   }
                 ],
                 "radiusGroupAttribute": "11",
+                "radius": {
+                  "criticalAuth": {
+                    "dataVlanId": 100,
+                    "voiceVlanId": 100,
+                    "suspendPortBounce": true
+                  },
+                  "failedAuthVlanId": 100,
+                  "reAuthenticationInterval": 120,
+                  "suspendReAuthentication": true
+                },
                 "hostMode": "Single-Host",
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
@@ -22283,6 +22475,16 @@
                   }
                 ],
                 "radiusGroupAttribute": "11",
+                "radius": {
+                  "criticalAuth": {
+                    "dataVlanId": 100,
+                    "voiceVlanId": 100,
+                    "suspendPortBounce": true
+                  },
+                  "failedAuthVlanId": 100,
+                  "reAuthenticationInterval": 120,
+                  "suspendReAuthentication": true
+                },
                 "hostMode": "Single-Host",
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
@@ -22352,6 +22554,30 @@
                     ]
                   },
                   "description": "List of RADIUS servers to require connecting devices to authenticate against before granting network access"
+                },
+                "radius": {
+                  "type": "object",
+                  "properties": {
+                    "criticalAuth": {
+                      "type": "object",
+                      "properties": {
+                        "dataVlanId": {
+                          "type": "integer",
+                          "description": "VLAN that clients who use data will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                        },
+                        "voiceVlanId": {
+                          "type": "integer",
+                          "description": "VLAN that clients who use voice will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                        },
+                        "suspendPortBounce": {
+                          "type": "boolean",
+                          "description": "Enable to suspend port bounce when RADIUS servers are unreachable"
+                        }
+                      },
+                      "description": "Critical auth settings for when authentication is rejected by the RADIUS server"
+                    }
+                  },
+                  "description": "Object for RADIUS Settings"
                 },
                 "radiusTestingEnabled": {
                   "type": "boolean",
@@ -22458,6 +22684,16 @@
                   }
                 ],
                 "radiusGroupAttribute": "11",
+                "radius": {
+                  "criticalAuth": {
+                    "dataVlanId": 100,
+                    "voiceVlanId": 100,
+                    "suspendPortBounce": true
+                  },
+                  "failedAuthVlanId": 100,
+                  "reAuthenticationInterval": 120,
+                  "suspendReAuthentication": true
+                },
                 "hostMode": "Single-Host",
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
@@ -22497,6 +22733,16 @@
                   }
                 ],
                 "radiusGroupAttribute": "11",
+                "radius": {
+                  "criticalAuth": {
+                    "dataVlanId": 100,
+                    "voiceVlanId": 100,
+                    "suspendPortBounce": true
+                  },
+                  "failedAuthVlanId": 100,
+                  "reAuthenticationInterval": 120,
+                  "suspendReAuthentication": true
+                },
                 "hostMode": "Single-Host",
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
@@ -33843,6 +34089,41 @@
                     }
                   },
                   "description": "Details associated with billing splash."
+                },
+                "sentryEnrollment": {
+                  "type": "object",
+                  "properties": {
+                    "systemsManagerNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The network ID of the Systems Manager network."
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "description": "Systems Manager network targeted for sentry enrollment."
+                    },
+                    "strength": {
+                      "type": "string",
+                      "enum": [
+                        "focused",
+                        "click-through",
+                        "strict"
+                      ],
+                      "description": "The strength of the enforcement of selected system types. Must be one of: 'focused', 'click-through', and 'strict'."
+                    },
+                    "enforcedSystems": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The system types that the Sentry enforces. Must be included in: 'iOS, 'Android', 'macOS', and 'Windows'."
+                    }
+                  },
+                  "description": "Systems Manager sentry enrollment splash settings."
                 }
               },
               "example": {
@@ -34555,7 +34836,10 @@
                 {
                   "id": "2930418",
                   "name": "My organization",
-                  "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+                  "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview",
+                  "api": {
+                    "enabled": true
+                  }
                 }
               ]
             }
@@ -34602,7 +34886,10 @@
               "application/json": {
                 "id": "2930418",
                 "name": "My organization",
-                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview",
+                "api": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -34636,7 +34923,10 @@
               "application/json": {
                 "id": "2930418",
                 "name": "My organization",
-                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview",
+                "api": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -34666,6 +34956,16 @@
                 "name": {
                   "type": "string",
                   "description": "The name of the organization"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, enable the access to the Cisco Meraki Dashboard API"
+                    }
+                  },
+                  "description": "API-specific settings"
                 }
               },
               "example": {
@@ -34684,7 +34984,10 @@
               "application/json": {
                 "id": "2930418",
                 "name": "My organization",
-                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview",
+                "api": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -38636,7 +38939,10 @@
               "application/json": {
                 "id": "2930418",
                 "name": "My organization",
-                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview"
+                "url": "https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview",
+                "api": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -39511,6 +39817,15 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "object",
+            "properties": {
+
+            },
+            "name": "components",
+            "in": "query",
+            "description": "components"
           }
         ],
         "responses": {
@@ -39539,7 +39854,13 @@
                   "gateway": "1.2.3.5",
                   "ipType": "dhcp",
                   "primaryDns": "8.8.8.8",
-                  "secondaryDns": "8.8.4.4"
+                  "secondaryDns": "8.8.4.4",
+                  "productType": null,
+                  "components": {
+                    "powerSupplies": [
+
+                    ]
+                  }
                 }
               ]
             }
@@ -40914,10 +41235,11 @@
                       "systemsManager",
                       "camera",
                       "cellularGateway",
+                      "sensor",
                       "environmental"
                     ]
                   },
-                  "description": "The product type(s) of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, environmental. If more than one type is included, the network will be a combined network."
+                  "description": "The product type(s) of the new network. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, sensor, environmental. If more than one type is included, the network will be a combined network."
                 },
                 "tags": {
                   "type": "array",
