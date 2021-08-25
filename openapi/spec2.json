@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.12.0-beta.2",
+    "version": "1.12.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 August, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 25 August, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -329,6 +329,7 @@
                   "vlanId": 100,
                   "vlanName": "My VLAN",
                   "origin": "wan1",
+                  "originLabel": "WAN 1",
                   "originPrefix": "2001:db8:3c4d:15::/64",
                   "subnetPrefix": "2001:db8:3c4d:15::/64"
                 }
@@ -3057,7 +3058,7 @@
     },
     "/devices/{serial}/switch/routing/interfaces": {
       "get": {
-        "description": "List layer 3 interfaces for a switch",
+        "description": "List layer 3 interfaces for a switch. Those for a stack may be found under switch stack routing.",
         "operationId": "getDeviceSwitchRoutingInterfaces",
         "parameters": [
           {
@@ -15600,7 +15601,8 @@
                         "shortName": "MV 18.z.z",
                         "releaseType": "other?"
                       }
-                    ]
+                    ],
+                    "participateInNextBetaRelease": false
                   },
                   "switch": {
                     "currentVersion": {
@@ -15774,6 +15776,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15830,6 +15836,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15856,6 +15866,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15882,6 +15896,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15908,6 +15926,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15934,6 +15956,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -15960,6 +15986,10 @@
                             }
                           },
                           "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
                         }
                       },
                       "description": "The network device to be updated"
@@ -16052,7 +16082,8 @@
                         "shortName": "MV 18.z.z",
                         "releaseType": "other?"
                       }
-                    ]
+                    ],
+                    "participateInNextBetaRelease": false
                   },
                   "switch": {
                     "currentVersion": {
@@ -19221,6 +19252,67 @@
           "networks",
           "configure",
           "groupPolicies"
+        ]
+      }
+    },
+    "/networks/{networkId}/health/alerts": {
+      "get": {
+        "description": "Return all global alerts on this network",
+        "operationId": "getNetworkHealthAlerts",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "category": "Connectivity issues",
+                "type": "Poor connectivity to the Meraki cloud",
+                "severity": "warning",
+                "scope": {
+                  "devices": [
+                    {
+                      "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                      "name": "My AP",
+                      "productType": "switch",
+                      "serial": "Q234-ABCD-5678",
+                      "mac": "00:11:22:33:44:55",
+                      "lldp": {
+                        "portId": "1"
+                      },
+                      "clients": [
+                        {
+                          "mac": "22:33:44:55:66:77"
+                        }
+                      ]
+                    }
+                  ],
+                  "applications": [
+                    {
+                      "url": "https://n1.meraki.com//n//manage/nodes/list",
+                      "name": "Application on application server"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return all global alerts on this network",
+        "tags": [
+          "networks",
+          "configure",
+          "health",
+          "alerts"
         ]
       }
     },
@@ -43831,7 +43923,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
@@ -45356,6 +45448,204 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/top/appliances/byUtilization": {
+      "get": {
+        "description": "Return the top 10 appliances sorted by utilization over given time range.",
+        "operationId": "getOrganizationSummaryTopAppliancesByUtilization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "name": "My appliance",
+                  "mac": "00:11:22:33:44:55",
+                  "serial": "Q234-ABCD-5678",
+                  "model": "MX",
+                  "utilization": {
+                    "average": {
+                      "percentage": 7.3
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the top 10 appliances sorted by utilization over given time range.",
+        "tags": [
+          "organizations",
+          "configure",
+          "summary",
+          "top",
+          "appliances",
+          "byUtilization"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/devices/byModelByUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 device models sorted by data usage over given time range. Default unit is megabytes.",
+        "operationId": "getOrganizationSummaryTopDevicesByModelByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "model": "MR34",
+                  "count": 2,
+                  "usage": {
+                    "total": 2000,
+                    "average": 1000
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 device models sorted by data usage over given time range",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "devices",
+          "byModelByUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/switches/byEnergyUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 switches by energy usage (in joules) over given time range.",
+        "operationId": "getOrganizationSummaryTopSwitchesByEnergyUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "name": "My switch",
+                  "mac": "00:11:22:33:44:55",
+                  "model": "MS",
+                  "usage": {
+                    "total": 800.021,
+                    "unit": "joules"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 switches by energy usage (in joules) over given time range.",
+        "tags": [
+          "organizations",
+          "configure",
+          "summary",
+          "top",
+          "switches",
+          "byEnergyUsage"
+        ]
+      }
+    },
     "/organizations/{organizationId}/switch/devices/clone": {
       "post": {
         "description": "Clone port-level and some switch-level configuration settings from a source switch to one or more target switches. Cloned settings include: Aggregation Groups, Power Settings, Multicast Settings, MTU Configuration, STP Bridge priority, Port Mirroring",
@@ -45792,6 +46082,9 @@
       "name": "apnsCert"
     },
     {
+      "name": "appliances"
+    },
+    {
       "name": "applicationCategories"
     },
     {
@@ -45817,6 +46110,15 @@
     },
     {
       "name": "brandingPolicies"
+    },
+    {
+      "name": "byEnergyUsage"
+    },
+    {
+      "name": "byModelByUsage"
+    },
+    {
+      "name": "byUtilization"
     },
     {
       "name": "bypassActivationLockAttempts"
@@ -45934,6 +46236,9 @@
     },
     {
       "name": "groups"
+    },
+    {
+      "name": "health"
     },
     {
       "name": "healthByTime"
@@ -46236,6 +46541,12 @@
       "name": "subnets"
     },
     {
+      "name": "summary"
+    },
+    {
+      "name": "switches"
+    },
+    {
       "name": "syslogServers"
     },
     {
@@ -46243,6 +46554,9 @@
     },
     {
       "name": "thirdPartyVPNPeers"
+    },
+    {
+      "name": "top"
     },
     {
       "name": "traffic"
