@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.13.0-beta.0",
+    "version": "1.13.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 September, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 September, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -19307,7 +19307,7 @@
             },
             "examples": {
               "application/json": {
-                "category": "Connectivity issues",
+                "category": "Connectivity",
                 "type": "Poor connectivity to the Meraki cloud",
                 "severity": "warning",
                 "scope": {
@@ -33529,7 +33529,7 @@
                   "walledGardenEnabled": true,
                   "walledGardenRanges": [
                     "example.com",
-                    "1.1.1.1\u001A"
+                    "1.1.1.1/32"
                   ],
                   "minBitrate": 11,
                   "bandSelection": "5 GHz band only",
@@ -33608,7 +33608,7 @@
                 "walledGardenEnabled": true,
                 "walledGardenRanges": [
                   "example.com",
-                  "1.1.1.1\u001A"
+                  "1.1.1.1/32"
                 ],
                 "minBitrate": 11,
                 "bandSelection": "5 GHz band only",
@@ -34220,7 +34220,7 @@
                 "walledGardenEnabled": true,
                 "walledGardenRanges": [
                   "example.com",
-                  "1.1.1.1\u001A"
+                  "1.1.1.1/32"
                 ],
                 "minBitrate": 11,
                 "bandSelection": "5 GHz band only",
@@ -39948,6 +39948,63 @@
         ]
       }
     },
+    "/organizations/{organizationId}/bandwidthUsageHistory": {
+      "get": {
+        "description": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
+        "operationId": "getOrganizationBandwidthUsageHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-06-20T01:00:00.000Z",
+                  "total": 345,
+                  "upstream": 60,
+                  "downstream": 285
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "bandwidthUsageHistory"
+        ]
+      }
+    },
     "/organizations/{organizationId}/brandingPolicies": {
       "get": {
         "description": "List the branding policies of an organization",
@@ -41021,6 +41078,69 @@
         "tags": [
           "organizations",
           "configure"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/clients/overview": {
+      "get": {
+        "description": "Return summary information around client data usage (in mb) across the given organization.",
+        "operationId": "getOrganizationClientsOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "usage": {
+                  "overall": {
+                    "total": 18000,
+                    "downstream": 10000,
+                    "upstream": 8000
+                  },
+                  "average": 1.37
+                },
+                "counts": {
+                  "total": 20
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return summary information around client data usage (in mb) across the given organization.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "clients",
+          "overview"
         ]
       }
     },
@@ -42100,13 +42220,7 @@
               "metrics": {
                 "type": "array",
                 "items": {
-                  "type": "string",
-                  "enum": [
-                    "waterDetection",
-                    "temperature",
-                    "humidity",
-                    "door"
-                  ]
+                  "type": "string"
                 },
                 "description": "Optional parameter to filter devices by the metrics that they provide. Only applies to sensor devices."
               },
@@ -42226,15 +42340,15 @@
             "items": {
               "type": "string",
               "enum": [
-                "offline",
                 "online",
                 "alerting",
+                "offline",
                 "dormant"
               ]
             },
             "name": "statuses",
             "in": "query",
-            "description": "Optional parameter to filter devices by statuses. Valid statuses are [\"offline\", \"online\", \"alerting\", \"dormant\"]."
+            "description": "Optional parameter to filter devices by statuses. Valid statuses are [\"online\", \"alerting\", \"offline\", \"dormant\"]."
           },
           {
             "type": "object",
@@ -44176,7 +44290,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -45770,6 +45884,75 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/top/clients/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
+        "operationId": "getOrganizationSummaryTopClientsByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Office Switch",
+                  "mac": "22:33:44:55:66:77",
+                  "id": "k74272e",
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "usage": {
+                    "total": 18000.0,
+                    "upstream": 8000.0,
+                    "downstream": 10000.0,
+                    "percentage": 80.2
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "clients",
+          "byUsage"
+        ]
+      }
+    },
     "/organizations/{organizationId}/summary/top/devices/byUsage": {
       "get": {
         "description": "Return metrics for organization's top 10 devices sorted by data usage over given time range. Default unit is megabytes.",
@@ -46487,6 +46670,9 @@
     },
     {
       "name": "applications"
+    },
+    {
+      "name": "bandwidthUsageHistory"
     },
     {
       "name": "bgp"
