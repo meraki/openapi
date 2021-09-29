@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.13.0-beta.3",
+    "version": "1.13.0-beta.4",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 September, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 29 September, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -15293,6 +15293,85 @@
           "networks",
           "configure",
           "devices"
+        ]
+      }
+    },
+    "/networks/{networkId}/devices/claim/vmx": {
+      "post": {
+        "description": "Claim a vMX into a network",
+        "operationId": "vmxNetworkDevicesClaim",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "vmxNetworkDevicesClaim",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "string",
+                  "enum": [
+                    "small",
+                    "medium",
+                    "large",
+                    "100"
+                  ],
+                  "description": "The size of the vMX you claim. It can be one of: small, medium, large, 100"
+                }
+              },
+              "example": {
+                "size": "small"
+              },
+              "required": [
+                "size"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "My AP",
+                "lat": 37.4180951010362,
+                "lng": -122.098531723022,
+                "serial": "Q234-ABCD-5678",
+                "mac": "00:11:22:33:44:55",
+                "model": "VMX-S",
+                "address": "1600 Pennsylvania Ave",
+                "notes": "My AP's note",
+                "lanIp": "1.2.3.4",
+                "tags": [
+                  "recently-added"
+                ],
+                "networkId": "N_24329156",
+                "beaconIdParams": {
+                  "uuid": "00000000-0000-0000-0000-000000000000",
+                  "major": 5,
+                  "minor": 3
+                },
+                "firmware": "wireless-25-14",
+                "floorPlanId": "g_1234567"
+              }
+            }
+          }
+        },
+        "summary": "Claim a vMX into a network",
+        "tags": [
+          "networks",
+          "configure",
+          "devices",
+          "claim"
         ]
       }
     },
@@ -41165,10 +41244,10 @@
         ]
       }
     },
-    "/organizations/{organizationId}/clients/{clientMac}": {
+    "/organizations/{organizationId}/clients/search": {
       "get": {
         "description": "Return the client details in an organization",
-        "operationId": "getOrganizationClient",
+        "operationId": "getOrganizationClientsSearch",
         "parameters": [
           {
             "name": "organizationId",
@@ -41177,10 +41256,11 @@
             "required": true
           },
           {
-            "name": "clientMac",
-            "in": "path",
             "type": "string",
-            "required": true
+            "name": "mac",
+            "in": "query",
+            "required": true,
+            "description": "The MAC address of the client. Required."
           },
           {
             "type": "integer",
@@ -41294,7 +41374,8 @@
         "tags": [
           "organizations",
           "configure",
-          "clients"
+          "clients",
+          "search"
         ]
       }
     },
@@ -46808,6 +46889,9 @@
       "name": "channelUtilizationHistory"
     },
     {
+      "name": "claim"
+    },
+    {
       "name": "clientCountHistory"
     },
     {
@@ -47139,6 +47223,9 @@
     },
     {
       "name": "schedules"
+    },
+    {
+      "name": "search"
     },
     {
       "name": "security"
@@ -48167,6 +48254,12 @@
       "summary": "Update a VLAN",
       "resource": "/networks/{networkId}/appliance/vlans/{vlanId}",
       "operation": "update"
+    },
+    {
+      "group": "Vmx",
+      "summary": "Claim a vMX into a network",
+      "resource": "/networks/{networkId}/devices/claim",
+      "operation": "claim"
     },
     {
       "group": "Warm spare",
