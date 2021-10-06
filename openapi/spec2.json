@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.13.0-beta.4",
+    "version": "1.14.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 29 September, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 October, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -21168,7 +21168,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -21226,7 +21229,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -21249,7 +21255,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -21398,7 +21407,7 @@
             },
             "name": "fields",
             "in": "query",
-            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, and androidSecurityPatchVersion."
+            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, and url."
           },
           {
             "type": "array",
@@ -29101,7 +29110,11 @@
                             },
                             "switch": {
                               "ports": {
-                                "active": 11
+                                "counts": {
+                                  "byStatus": {
+                                    "active": 11
+                                  }
+                                }
                               }
                             },
                             "uplinks": [
@@ -29142,7 +29155,11 @@
                             },
                             "switch": {
                               "ports": {
-                                "active": 11
+                                "counts": {
+                                  "byStatus": {
+                                    "active": 11
+                                  }
+                                }
                               }
                             },
                             "uplinks": [
@@ -29908,6 +29925,286 @@
           "configure",
           "webhooks",
           "httpServers"
+        ]
+      }
+    },
+    "/networks/{networkId}/webhooks/payloadTemplates": {
+      "get": {
+        "description": "List the webhook payload templates for a network",
+        "operationId": "getNetworkWebhooksPayloadTemplates",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "payloadTemplateId": "wpt_343",
+                  "type": "custom",
+                  "name": "Weeb Hooks",
+                  "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                  "headers": {
+                    "Content-Type": "application/json",
+                    "Accept": "application/some.url",
+                    "Authorization": "Bearer {{sharedSecret}}"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the webhook payload templates for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "webhooks",
+          "payloadTemplates"
+        ]
+      },
+      "post": {
+        "description": "Create a webhook payload template for a network",
+        "operationId": "createNetworkWebhooksPayloadTemplate",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkWebhooksPayloadTemplate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new template"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The liquid template used for the body of the webhook message. Either `body` or `bodyFile` must be specified."
+                },
+                "headers": {
+                  "type": "string",
+                  "description": "The liquid template used with the webhook headers."
+                },
+                "bodyFile": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "A file containing liquid template used for the body of the webhook message. Either `body` or `bodyFile` must be specified."
+                },
+                "headersFile": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "A file containing the liquid template used with the webhook headers."
+                }
+              },
+              "example": {
+
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "payloadTemplateId": "wpt_343",
+                "type": "custom",
+                "name": "Weeb Hooks",
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "Accept": "application/some.url",
+                  "Authorization": "Bearer {{sharedSecret}}"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a webhook payload template for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "webhooks",
+          "payloadTemplates"
+        ]
+      }
+    },
+    "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}": {
+      "get": {
+        "description": "Get the webhook payload template for a network",
+        "operationId": "getNetworkWebhooksPayloadTemplate",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "payloadTemplateId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "payloadTemplateId": "wpt_343",
+                "type": "custom",
+                "name": "Weeb Hooks",
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "Accept": "application/some.url",
+                  "Authorization": "Bearer {{sharedSecret}}"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get the webhook payload template for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "webhooks",
+          "payloadTemplates"
+        ]
+      },
+      "delete": {
+        "description": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002' or 'wpt_00003')",
+        "operationId": "deleteNetworkWebhooksPayloadTemplate",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "payloadTemplateId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Destroy a webhook payload template for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "webhooks",
+          "payloadTemplates"
+        ]
+      },
+      "put": {
+        "description": "Update a webhook payload template for a network",
+        "operationId": "updateNetworkWebhooksPayloadTemplate",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "payloadTemplateId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWebhooksPayloadTemplate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the template"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The liquid template used for the body of the webhook message."
+                },
+                "headers": {
+                  "type": "string",
+                  "description": "The liquid template used with the webhook headers."
+                },
+                "bodyFile": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "A file containing liquid template used for the body of the webhook message."
+                },
+                "headersFile": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "A file containing the liquid template used with the webhook headers."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "payloadTemplateId": "wpt_343",
+                "type": "custom",
+                "name": "Weeb Hooks",
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "Accept": "application/some.url",
+                  "Authorization": "Bearer {{sharedSecret}}"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a webhook payload template for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "webhooks",
+          "payloadTemplates"
         ]
       }
     },
@@ -40048,63 +40345,6 @@
         ]
       }
     },
-    "/organizations/{organizationId}/bandwidthUsageHistory": {
-      "get": {
-        "description": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
-        "operationId": "getOrganizationBandwidthUsageHistory",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "t0",
-            "in": "query",
-            "description": "The beginning of the timespan for the data."
-          },
-          {
-            "type": "string",
-            "name": "t1",
-            "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
-          },
-          {
-            "type": "number",
-            "format": "float",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array"
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "ts": "2021-06-20T01:00:00.000Z",
-                  "total": 345,
-                  "upstream": 60,
-                  "downstream": 285
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
-        "tags": [
-          "organizations",
-          "monitor",
-          "bandwidthUsageHistory"
-        ]
-      }
-    },
     "/organizations/{organizationId}/brandingPolicies": {
       "get": {
         "description": "List the branding policies of an organization",
@@ -41178,6 +41418,64 @@
         "tags": [
           "organizations",
           "configure"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/clients/bandwidthUsageHistory": {
+      "get": {
+        "description": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
+        "operationId": "getOrganizationClientsBandwidthUsageHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-06-20T01:00:00.000Z",
+                  "total": 345,
+                  "upstream": 60,
+                  "downstream": 285
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return data usage (in megabits per second) over time for all clients in the given organization within a given time range.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "clients",
+          "bandwidthUsageHistory"
         ]
       }
     },
@@ -42372,7 +42670,8 @@
                   "model": "MR34",
                   "mac": "00:11:22:33:44:55",
                   "lanIp": "1.2.3.4",
-                  "firmware": "wireless-25-14"
+                  "firmware": "wireless-25-14",
+                  "productType": "wireless"
                 }
               ]
             }
@@ -44388,7 +44687,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
@@ -47141,6 +47440,9 @@
       "name": "packets"
     },
     {
+      "name": "payloadTemplates"
+    },
+    {
       "name": "performance"
     },
     {
@@ -48271,6 +48573,24 @@
       "group": "Warm spare",
       "summary": "Update MX warm spare settings",
       "resource": "/networks/{networkId}/appliance/warmSpare",
+      "operation": "update"
+    },
+    {
+      "group": "Webhook template",
+      "summary": "Create a webhook payload template for a network",
+      "resource": "/networks/{networkId}/webhooks/payloadTemplates",
+      "operation": "create"
+    },
+    {
+      "group": "Webhook template",
+      "summary": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002' or 'wpt_00003')",
+      "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Webhook template",
+      "summary": "Update a webhook payload template for a network",
+      "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
       "operation": "update"
     },
     {
