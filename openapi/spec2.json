@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.13.0",
+    "version": "1.14.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 September, 2021\n>\n> [What's New](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 October, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n"
   },
   "host": "api.meraki.com",
   "basePath": "/api/v1",
@@ -207,7 +207,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -407,7 +407,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -457,7 +457,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -497,7 +497,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -582,7 +582,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -683,10 +683,10 @@
                 "motionBasedRetentionEnabled": false,
                 "audioRecordingEnabled": false,
                 "restrictedBandwidthModeEnabled": false,
-                "profileId": null,
+                "profileId": "1234",
                 "quality": "Standard",
                 "motionDetectorVersion": 2,
-                "resolution": 720
+                "resolution": "1280x720"
               }
             }
           }
@@ -762,10 +762,10 @@
                 "motionBasedRetentionEnabled": false,
                 "audioRecordingEnabled": false,
                 "restrictedBandwidthModeEnabled": false,
-                "profileId": null,
+                "profileId": "1234",
                 "quality": "Standard",
                 "motionDetectorVersion": 2,
-                "resolution": 720
+                "resolution": "1280x720"
               }
             }
           }
@@ -781,10 +781,10 @@
                 "motionBasedRetentionEnabled": false,
                 "audioRecordingEnabled": false,
                 "restrictedBandwidthModeEnabled": false,
-                "profileId": null,
+                "profileId": "1234",
                 "quality": "Standard",
                 "motionDetectorVersion": 2,
-                "resolution": 720
+                "resolution": "1280x720"
               }
             }
           }
@@ -931,7 +931,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -1597,7 +1597,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -1626,6 +1626,346 @@
           "devices",
           "monitor",
           "clients"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/ping": {
+      "post": {
+        "description": "Enqueue a job to ping a target host from the device",
+        "operationId": "createDeviceLiveToolsPing",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsPing",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string",
+                  "description": "FQDN, IPv4 or IPv6 address"
+                },
+                "count": {
+                  "type": "integer",
+                  "description": "Count parameter to pass to ping. [1..5], default 5"
+                }
+              },
+              "example": {
+                "target": "75.75.75.75",
+                "count": 2
+              },
+              "required": [
+                "target"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "loss": {
+                    "percentage": 0
+                  },
+                  "latencies": {
+                    "minimum": 15.8,
+                    "average": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "size": 84,
+                      "latency": 15.7
+                    },
+                    {
+                      "sequenceId": 0,
+                      "size": 84,
+                      "latency": 15.9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to ping a target host from the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "ping"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/ping/{id}": {
+      "get": {
+        "description": "Return a ping job. Latency unit in response is in milliseconds. Size is in bytes.",
+        "operationId": "getDeviceLiveToolsPing",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "loss": {
+                    "percentage": 0
+                  },
+                  "latencies": {
+                    "minimum": 15.8,
+                    "average": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "size": 84,
+                      "latency": 15.7
+                    },
+                    {
+                      "sequenceId": 0,
+                      "size": 84,
+                      "latency": 15.9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a ping job",
+        "tags": [
+          "devices",
+          "liveTools",
+          "ping"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/pingDevice": {
+      "post": {
+        "description": "Enqueue a job to check connectivity status to the device",
+        "operationId": "createDeviceLiveToolsPingDevice",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsPingDevice",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer",
+                  "description": "Count parameter to pass to ping. [1..5], default 5"
+                }
+              },
+              "example": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "loss": {
+                    "percentage": 0
+                  },
+                  "latencies": {
+                    "minimum": 15.8,
+                    "average": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "size": 84,
+                      "latency": 15.7
+                    },
+                    {
+                      "sequenceId": 0,
+                      "size": 84,
+                      "latency": 15.9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "loss": {
+                    "percentage": 0
+                  },
+                  "latencies": {
+                    "minimum": 15.8,
+                    "average": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "size": 84,
+                      "latency": 15.7
+                    },
+                    {
+                      "sequenceId": 0,
+                      "size": 84,
+                      "latency": 15.9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to check connectivity status to the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "pingDevice"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/pingDevice/{id}": {
+      "get": {
+        "description": "Return a ping job. Latency unit in response is in milliseconds. Size is in bytes.",
+        "operationId": "getDeviceLiveToolsPingDevice",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "pingId": "1",
+                "url": "/devices/SERIAL/liveTools/ping/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "target": "75.75.75.75",
+                  "count": 2
+                },
+                "status": "complete",
+                "results": {
+                  "sent": 5,
+                  "received": 5,
+                  "loss": {
+                    "percentage": 0
+                  },
+                  "latencies": {
+                    "minimum": 15.8,
+                    "average": 15.8,
+                    "maximum": 15.9
+                  },
+                  "replies": [
+                    {
+                      "sequenceId": 1,
+                      "size": 84,
+                      "latency": 15.7
+                    },
+                    {
+                      "sequenceId": 0,
+                      "size": 84,
+                      "latency": 15.9
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a ping job",
+        "tags": [
+          "devices",
+          "liveTools",
+          "pingDevice"
         ]
       }
     },
@@ -1745,7 +2085,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -2043,7 +2383,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -2180,7 +2520,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -2288,7 +2628,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -2640,7 +2980,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -3316,7 +3656,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -4679,7 +5019,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -5125,7 +5465,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5224,7 +5564,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5248,7 +5588,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5284,7 +5624,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -5454,7 +5794,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5558,7 +5898,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5582,7 +5922,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5628,7 +5968,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5731,7 +6071,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -5755,7 +6095,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -6746,7 +7086,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -6959,7 +7299,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -7541,7 +7881,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -7987,7 +8327,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -9682,7 +10022,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -9747,7 +10087,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -9775,8 +10115,8 @@
                   "dhcpHandling": "Run a DHCP server",
                   "dhcpLeaseTime": "1 day",
                   "dhcpBootOptionsEnabled": false,
-                  "dhcpBootNextServer": null,
-                  "dhcpBootFilename": null,
+                  "dhcpBootNextServer": "1.2.3.4",
+                  "dhcpBootFilename": "sample.file",
                   "dhcpOptions": [
                     {
                       "code": 5,
@@ -9872,8 +10212,8 @@
                 "dhcpHandling": "Run a DHCP server",
                 "dhcpLeaseTime": "1 day",
                 "dhcpBootOptionsEnabled": false,
-                "dhcpBootNextServer": null,
-                "dhcpBootFilename": null,
+                "dhcpBootNextServer": "1.2.3.4",
+                "dhcpBootFilename": "sample.file",
                 "dhcpOptions": [
 
                 ]
@@ -10020,8 +10360,8 @@
                 "dhcpHandling": "Run a DHCP server",
                 "dhcpLeaseTime": "1 day",
                 "dhcpBootOptionsEnabled": false,
-                "dhcpBootNextServer": null,
-                "dhcpBootFilename": null,
+                "dhcpBootNextServer": "1.2.3.4",
+                "dhcpBootFilename": "sample.file",
                 "dhcpOptions": [
                   {
                     "code": 5,
@@ -10214,8 +10554,8 @@
                 "dhcpHandling": "Run a DHCP server",
                 "dhcpLeaseTime": "1 day",
                 "dhcpBootOptionsEnabled": false,
-                "dhcpBootNextServer": null,
-                "dhcpBootFilename": null,
+                "dhcpBootNextServer": "1.2.3.4",
+                "dhcpBootFilename": "sample.file",
                 "dhcpOptions": [
                   {
                     "code": 5,
@@ -10258,8 +10598,8 @@
                 "dhcpHandling": "Run a DHCP server",
                 "dhcpLeaseTime": "1 day",
                 "dhcpBootOptionsEnabled": false,
-                "dhcpBootNextServer": null,
-                "dhcpBootFilename": null,
+                "dhcpBootNextServer": "1.2.3.4",
+                "dhcpBootFilename": "sample.file",
                 "dhcpOptions": [
                   {
                     "code": 5,
@@ -10963,7 +11303,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -11081,7 +11421,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -11734,7 +12074,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -11877,7 +12217,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -12664,7 +13004,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -12799,7 +13139,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -13450,7 +13790,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -13997,7 +14337,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -14053,7 +14393,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -14091,7 +14431,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -14176,6 +14516,85 @@
           "networks",
           "configure",
           "devices"
+        ]
+      }
+    },
+    "/networks/{networkId}/devices/claim/vmx": {
+      "post": {
+        "description": "Claim a vMX into a network",
+        "operationId": "vmxNetworkDevicesClaim",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "vmxNetworkDevicesClaim",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "string",
+                  "enum": [
+                    "small",
+                    "medium",
+                    "large",
+                    "100"
+                  ],
+                  "description": "The size of the vMX you claim. It can be one of: small, medium, large, 100"
+                }
+              },
+              "example": {
+                "size": "small"
+              },
+              "required": [
+                "size"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "My AP",
+                "lat": 37.4180951010362,
+                "lng": -122.098531723022,
+                "serial": "Q234-ABCD-5678",
+                "mac": "00:11:22:33:44:55",
+                "model": "VMX-S",
+                "address": "1600 Pennsylvania Ave",
+                "notes": "My AP's note",
+                "lanIp": "1.2.3.4",
+                "tags": [
+                  "recently-added"
+                ],
+                "networkId": "N_24329156",
+                "beaconIdParams": {
+                  "uuid": "00000000-0000-0000-0000-000000000000",
+                  "major": 5,
+                  "minor": 3
+                },
+                "firmware": "wireless-25-14",
+                "floorPlanId": "g_1234567"
+              }
+            }
+          }
+        },
+        "summary": "Claim a vMX into a network",
+        "tags": [
+          "networks",
+          "configure",
+          "devices",
+          "claim"
         ]
       }
     },
@@ -14402,7 +14821,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -14908,7 +15327,7 @@
                   "switch": {
                     "nextUpgrade": {
                       "toVersion": {
-                        "id": 7857
+                        "id": "7857"
                       }
                     }
                   }
@@ -15150,7 +15569,7 @@
                   }
                 ],
                 "toVersion": {
-                  "id": 7857
+                  "id": "7857"
                 }
               },
               "required": [
@@ -15217,7 +15636,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -15799,7 +16218,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -15911,7 +16330,7 @@
                         "comment": "Allow TCP traffic to subnet with HTTP servers.",
                         "policy": "allow",
                         "protocol": "tcp",
-                        "destPort": 443,
+                        "destPort": "443",
                         "destCidr": "192.168.1.0/24"
                       }
                     ],
@@ -16625,7 +17044,7 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": 443,
+                      "destPort": "443",
                       "destCidr": "192.168.1.0/24"
                     }
                   ],
@@ -16845,7 +17264,7 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": 443,
+                      "destPort": "443",
                       "destCidr": "192.168.1.0/24"
                     }
                   ],
@@ -17087,7 +17506,7 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": 443,
+                      "destPort": "443",
                       "destCidr": "192.168.1.0/24"
                     }
                   ],
@@ -17806,7 +18225,7 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": 443,
+                      "destPort": "443",
                       "destCidr": "192.168.1.0/24"
                     }
                   ],
@@ -18022,7 +18441,7 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": 443,
+                      "destPort": "443",
                       "destCidr": "192.168.1.0/24"
                     }
                   ],
@@ -18180,7 +18599,7 @@
             },
             "examples": {
               "application/json": {
-                "category": "Connectivity issues",
+                "category": "Connectivity",
                 "type": "Poor connectivity to the Meraki cloud",
                 "severity": "warning",
                 "scope": {
@@ -18268,7 +18687,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -18315,7 +18734,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -18646,7 +19065,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -19161,7 +19580,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -19340,7 +19759,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -19709,7 +20128,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -19767,7 +20189,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -19790,7 +20215,10 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true
+                  "enabled": true,
+                  "objectModule": {
+                    "enabled": true
+                  }
                 },
                 "namedVlans": {
                   "enabled": true
@@ -19939,7 +20367,7 @@
             },
             "name": "fields",
             "in": "query",
-            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, and androidSecurityPatchVersion."
+            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, and url."
           },
           {
             "type": "array",
@@ -20348,7 +20776,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -20539,7 +20967,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -20583,7 +21011,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -20650,7 +21078,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -20717,7 +21145,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -20800,7 +21228,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -20852,7 +21280,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -20903,7 +21331,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -20970,7 +21398,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -21063,7 +21491,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21110,7 +21538,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21161,7 +21589,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21264,7 +21692,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21302,7 +21730,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21352,7 +21780,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21605,7 +22033,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -21730,7 +22158,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21792,7 +22220,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -21843,7 +22271,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -22064,7 +22492,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -22370,7 +22798,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -23439,7 +23867,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -24011,7 +24439,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -24636,7 +25064,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -24645,7 +25073,7 @@
                   "vlan": 100,
                   "protocol": "TCP",
                   "srcPort": 2000,
-                  "srcPortRange": null,
+                  "srcPortRange": "70-80",
                   "dstPort": null,
                   "dstPortRange": "3000-3100",
                   "dscp": 0
@@ -24715,7 +25143,7 @@
                 "vlan": 100,
                 "protocol": "TCP",
                 "srcPort": 2000,
-                "srcPortRange": null,
+                "srcPortRange": "70-80",
                 "dstPort": null,
                 "dstPortRange": "3000-3100",
                 "dscp": 0
@@ -24739,7 +25167,7 @@
                 "vlan": 100,
                 "protocol": "TCP",
                 "srcPort": 2000,
-                "srcPortRange": null,
+                "srcPortRange": "70-80",
                 "dstPort": null,
                 "dstPortRange": "3000-3100",
                 "dscp": 0
@@ -24883,7 +25311,7 @@
                 "vlan": 100,
                 "protocol": "TCP",
                 "srcPort": 2000,
-                "srcPortRange": null,
+                "srcPortRange": "70-80",
                 "dstPort": null,
                 "dstPortRange": "3000-3100",
                 "dscp": 0
@@ -24987,7 +25415,7 @@
                 "vlan": 100,
                 "protocol": "TCP",
                 "srcPort": 2000,
-                "srcPortRange": null,
+                "srcPortRange": "70-80",
                 "dstPort": null,
                 "dstPortRange": "3000-3100",
                 "dscp": 0
@@ -25007,7 +25435,7 @@
                 "vlan": 100,
                 "protocol": "TCP",
                 "srcPort": 2000,
-                "srcPortRange": null,
+                "srcPortRange": "70-80",
                 "dstPort": null,
                 "dstPortRange": "3000-3100",
                 "dscp": 0
@@ -25242,7 +25670,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -25849,7 +26277,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -26163,7 +26591,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -26889,7 +27317,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -27617,7 +28045,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -27910,7 +28338,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -28005,7 +28433,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -28048,7 +28476,7 @@
                 },
                 "url": {
                   "type": "string",
-                  "description": "The URL of the HTTP server"
+                  "description": "The URL of the HTTP server. Once set, cannot be updated."
                 },
                 "sharedSecret": {
                   "type": "string",
@@ -28134,7 +28562,7 @@
         ]
       },
       "put": {
-        "description": "Update an HTTP server",
+        "description": "Update an HTTP server. To change a URL, create a new HTTP server.",
         "operationId": "updateNetworkWebhooksHttpServer",
         "parameters": [
           {
@@ -28158,10 +28586,6 @@
                 "name": {
                   "type": "string",
                   "description": "A name for easy reference to the HTTP server"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "The URL of the HTTP server"
                 },
                 "sharedSecret": {
                   "type": "string",
@@ -28362,7 +28786,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -28945,7 +29369,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -29056,7 +29480,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -29145,7 +29569,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -29261,7 +29685,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -29583,7 +30007,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -29668,7 +30092,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30032,7 +30456,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30125,7 +30549,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30231,7 +30655,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30375,7 +30799,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30538,7 +30962,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -30759,7 +31183,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -31573,7 +31997,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -31617,7 +32041,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -31634,7 +32058,8 @@
                     {
                       "host": "0.0.0.0",
                       "port": 3000,
-                      "openRoamingCertificateId": 2
+                      "openRoamingCertificateId": 2,
+                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
                     }
                   ],
                   "radiusAccountingEnabled": false,
@@ -31648,7 +32073,7 @@
                   "walledGardenEnabled": true,
                   "walledGardenRanges": [
                     "example.com",
-                    "1.1.1.1\u001A"
+                    "1.1.1.1/32"
                   ],
                   "minBitrate": 11,
                   "bandSelection": "5 GHz band only",
@@ -31661,7 +32086,15 @@
                   ],
                   "perSsidBandwidthLimitUp": 0,
                   "perSsidBandwidthLimitDown": 0,
-                  "mandatoryDhcpEnabled": false
+                  "mandatoryDhcpEnabled": false,
+                  "radiusAccountingServers": [
+                    {
+                      "host": "0.0.0.0",
+                      "port": 3000,
+                      "openRoamingCertificateId": 2,
+                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                    }
+                  ]
                 }
               ]
             }
@@ -31713,7 +32146,8 @@
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
-                    "openRoamingCertificateId": 2
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
                   }
                 ],
                 "radiusAccountingEnabled": false,
@@ -31727,7 +32161,7 @@
                 "walledGardenEnabled": true,
                 "walledGardenRanges": [
                   "example.com",
-                  "1.1.1.1\u001A"
+                  "1.1.1.1/32"
                 ],
                 "minBitrate": 11,
                 "bandSelection": "5 GHz band only",
@@ -31740,7 +32174,15 @@
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false
+                "mandatoryDhcpEnabled": false,
+                "radiusAccountingServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ]
               }
             }
           }
@@ -32063,6 +32505,10 @@
                       "radsecEnabled": {
                         "type": "boolean",
                         "description": "Use RADSEC (TLS over TCP) to connect to this RADIUS server. Requires radiusProxyEnabled."
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
                       }
                     },
                     "required": [
@@ -32143,6 +32589,10 @@
                       "radsecEnabled": {
                         "type": "boolean",
                         "description": "Use RADSEC (TLS over TCP) to connect to this RADIUS accounting server. Requires radiusProxyEnabled."
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
                       }
                     },
                     "required": [
@@ -32325,7 +32775,8 @@
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
-                    "openRoamingCertificateId": 2
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
                   }
                 ],
                 "radiusAccountingEnabled": false,
@@ -32339,7 +32790,7 @@
                 "walledGardenEnabled": true,
                 "walledGardenRanges": [
                   "example.com",
-                  "1.1.1.1\u001A"
+                  "1.1.1.1/32"
                 ],
                 "minBitrate": 11,
                 "bandSelection": "5 GHz band only",
@@ -32352,7 +32803,15 @@
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false
+                "mandatoryDhcpEnabled": false,
+                "radiusAccountingServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ]
               }
             }
           }
@@ -32876,7 +33335,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24"
                   }
                 ]
@@ -32970,7 +33429,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24"
                   }
                 ]
@@ -32991,7 +33450,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24"
                   }
                 ]
@@ -33298,7 +33757,7 @@
                 ],
                 "naiRealms": [
                   {
-                    "format": 1,
+                    "format": "1",
                     "name": "Realm 1",
                     "methods": [
                       {
@@ -33568,7 +34027,7 @@
                 ],
                 "naiRealms": [
                   {
-                    "format": 1,
+                    "format": "1",
                     "name": "Realm 1",
                     "methods": [
                       {
@@ -33632,7 +34091,7 @@
                 ],
                 "naiRealms": [
                   {
-                    "format": 1,
+                    "format": "1",
                     "name": "Realm 1",
                     "methods": [
                       {
@@ -33690,7 +34149,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -34171,10 +34630,10 @@
                   "extension": "jpg"
                 },
                 "splashImage": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 },
                 "splashPrepaidFront": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 }
               }
             }
@@ -34384,10 +34843,10 @@
                   "extension": "jpg"
                 },
                 "splashImage": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 },
                 "splashPrepaidFront": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 }
               }
             }
@@ -34413,10 +34872,10 @@
                   "extension": "jpg"
                 },
                 "splashImage": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 },
                 "splashPrepaidFront": {
-                  "md5": null
+                  "md5": "542cccac8d7dedee0f185311d154d194"
                 }
               }
             }
@@ -34797,7 +35256,7 @@
                   "enabled": true,
                   "rules": [
                     {
-                      "protocol": "any",
+                      "protocol": "Any",
                       "destCidr": "1.1.1.1/32",
                       "destPort": "any",
                       "policy": "allow",
@@ -34899,7 +35358,7 @@
                   "enabled": true,
                   "rules": [
                     {
-                      "protocol": "any",
+                      "protocol": "Any",
                       "destCidr": "1.1.1.1/32",
                       "destPort": "any",
                       "policy": "allow",
@@ -34929,7 +35388,7 @@
                   "enabled": true,
                   "rules": [
                     {
-                      "protocol": "any",
+                      "protocol": "Any",
                       "destCidr": "1.1.1.1/32",
                       "destPort": "any",
                       "policy": "allow",
@@ -35037,7 +35496,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -35075,7 +35534,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -35429,7 +35888,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -35683,7 +36142,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -36210,7 +36669,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -36664,7 +37123,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -36820,7 +37279,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -37083,7 +37542,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -37201,7 +37660,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -37423,7 +37882,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -37920,7 +38379,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -38023,7 +38482,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -38047,7 +38506,7 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": 443,
+                    "destPort": "443",
                     "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
@@ -38083,7 +38542,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -38857,7 +39316,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -38993,7 +39452,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -39216,7 +39675,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -39471,7 +39930,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -39925,7 +40384,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -39991,13 +40450,92 @@
             "name": "configurationUpdatedAfter",
             "in": "query",
             "description": "Filter results by whether or not the device's configuration has been updated after the given timestamp"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wireless",
+                "appliance",
+                "switch",
+                "systemsManager",
+                "camera",
+                "cellularGateway",
+                "sensor"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "Optional parameter to filter devices by product type. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "query",
+            "description": "Optional parameter to filter devices by tags."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "withAnyTags",
+              "withAllTags"
+            ],
+            "name": "tagsFilterType",
+            "in": "query",
+            "description": "Optional parameter of value 'withAnyTags' or 'withAllTags' to indicate whether to return networks which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected."
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "query",
+            "description": "Optional parameter to filter devices by name. All returned devices will have a name that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "mac",
+            "in": "query",
+            "description": "Optional parameter to filter devices by MAC address. All returned devices will have a MAC address that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "serial",
+            "in": "query",
+            "description": "Optional parameter to filter devices by serial number. All returned devices will have a serial number that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "model",
+            "in": "query",
+            "description": "Optional parameter to filter devices by model. All returned devices will have a model that contains the search term or is an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "sensorMetrics",
+            "in": "query",
+            "description": "Optional parameter to filter devices by the metrics that they provide. Only applies to sensor devices."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "sensorAlertProfileIds",
+            "in": "query",
+            "description": "Optional parameter to filter devices by the alert profiles that are bound to them. Only applies to sensor devices."
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -40021,7 +40559,8 @@
                   "model": "MR34",
                   "mac": "00:11:22:33:44:55",
                   "lanIp": "1.2.3.4",
-                  "firmware": "wireless-25-14"
+                  "firmware": "wireless-25-14",
+                  "productType": "wireless"
                 }
               ]
             }
@@ -40078,7 +40617,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -40173,7 +40712,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -40219,7 +40758,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -40270,7 +40809,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -40544,7 +41083,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -40682,7 +41221,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -41412,7 +41951,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -41804,7 +42343,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -42040,7 +42579,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -42488,7 +43027,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -42685,6 +43224,483 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/top/appliances/byUtilization": {
+      "get": {
+        "description": "Return the top 10 appliances sorted by utilization over given time range.",
+        "operationId": "getOrganizationSummaryTopAppliancesByUtilization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "name": "My appliance",
+                  "mac": "00:11:22:33:44:55",
+                  "serial": "Q234-ABCD-5678",
+                  "model": "MX",
+                  "utilization": {
+                    "average": {
+                      "percentage": 7.3
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the top 10 appliances sorted by utilization over given time range.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "appliances",
+          "byUtilization"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/clients/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
+        "operationId": "getOrganizationSummaryTopClientsByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Office Switch",
+                  "mac": "22:33:44:55:66:77",
+                  "id": "k74272e",
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "usage": {
+                    "total": 18000.0,
+                    "upstream": 8000.0,
+                    "downstream": 10000.0,
+                    "percentage": 80.2
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "clients",
+          "byUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/clients/manufacturers/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top clients by data usage (in mb) over given time range, grouped by manufacturer.",
+        "operationId": "getOrganizationSummaryTopClientsManufacturersByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Manufacturer Name",
+                  "clients": {
+                    "counts": {
+                      "total": 3
+                    }
+                  },
+                  "usage": {
+                    "total": 9000.0,
+                    "downstream": 8000.0,
+                    "upstream": 1000.0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top clients by data usage (in mb) over given time range, grouped by manufacturer.",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "clients",
+          "manufacturers",
+          "byUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/devices/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 devices sorted by data usage over given time range. Default unit is megabytes.",
+        "operationId": "getOrganizationSummaryTopDevicesByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "My AP",
+                  "model": "MR34",
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:33:44:55",
+                  "productType": "switch",
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "usage": {
+                    "total": 18000,
+                    "percentage": 80.223456789
+                  },
+                  "clients": {
+                    "counts": {
+                      "total": 4
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 devices sorted by data usage over given time range",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "devices",
+          "byUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/devices/models/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 device models sorted by data usage over given time range. Default unit is megabytes.",
+        "operationId": "getOrganizationSummaryTopDevicesModelsByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "model": "MR34",
+                  "count": 2,
+                  "usage": {
+                    "total": 2000,
+                    "average": 1000
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 device models sorted by data usage over given time range",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "devices",
+          "models",
+          "byUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/ssids/byUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 ssids by data usage over given time range. Default unit is megabytes.",
+        "operationId": "getOrganizationSummaryTopSsidsByUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "My SSID",
+                  "usage": {
+                    "total": 18000,
+                    "downstream": 10000,
+                    "upstream": 8000,
+                    "percentage": 80.223456789
+                  },
+                  "clients": {
+                    "counts": {
+                      "total": 4
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 ssids by data usage over given time range",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "ssids",
+          "byUsage"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/summary/top/switches/byEnergyUsage": {
+      "get": {
+        "description": "Return metrics for organization's top 10 switches by energy usage over given time range. Default unit is joules.",
+        "operationId": "getOrganizationSummaryTopSwitchesByEnergyUsage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array"
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "name": "My switch",
+                  "mac": "00:11:22:33:44:55",
+                  "model": "MS",
+                  "usage": {
+                    "total": 800.021
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return metrics for organization's top 10 switches by energy usage over given time range",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "switches",
+          "byEnergyUsage"
+        ]
+      }
+    },
     "/organizations/{organizationId}/switch/devices/clone": {
       "post": {
         "description": "Clone port-level and some switch-level configuration settings from a source switch to one or more target switches. Cloned settings include: Aggregation Groups, Power Settings, Multicast Settings, MTU Configuration, STP Bridge priority, Port Mirroring",
@@ -42817,7 +43833,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -42912,7 +43928,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "examples": {
               "application/json": [
@@ -43016,7 +44032,7 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array"
             },
             "headers": {
               "Link": {
@@ -43121,6 +44137,9 @@
       "name": "apnsCert"
     },
     {
+      "name": "appliances"
+    },
+    {
       "name": "applicationCategories"
     },
     {
@@ -43148,6 +44167,15 @@
       "name": "brandingPolicies"
     },
     {
+      "name": "byEnergyUsage"
+    },
+    {
+      "name": "byUsage"
+    },
+    {
+      "name": "byUtilization"
+    },
+    {
       "name": "bypassActivationLockAttempts"
     },
     {
@@ -43167,6 +44195,9 @@
     },
     {
       "name": "channelUtilizationHistory"
+    },
+    {
+      "name": "claim"
     },
     {
       "name": "clientCountHistory"
@@ -43337,10 +44368,16 @@
       "name": "managementInterface"
     },
     {
+      "name": "manufacturers"
+    },
+    {
       "name": "merakiAuthUsers"
     },
     {
       "name": "meshStatuses"
+    },
+    {
+      "name": "models"
     },
     {
       "name": "monitor"
@@ -43404,6 +44441,12 @@
     },
     {
       "name": "piiKeys"
+    },
+    {
+      "name": "ping"
+    },
+    {
+      "name": "pingDevice"
     },
     {
       "name": "policy"
@@ -43541,6 +44584,12 @@
       "name": "subnets"
     },
     {
+      "name": "summary"
+    },
+    {
+      "name": "switches"
+    },
+    {
       "name": "syslogServers"
     },
     {
@@ -43548,6 +44597,9 @@
     },
     {
       "name": "thirdPartyVPNPeers"
+    },
+    {
+      "name": "top"
     },
     {
       "name": "traffic"
@@ -44405,6 +45457,12 @@
       "summary": "Update a VLAN",
       "resource": "/networks/{networkId}/appliance/vlans/{vlanId}",
       "operation": "update"
+    },
+    {
+      "group": "Vmx",
+      "summary": "Claim a vMX into a network",
+      "resource": "/networks/{networkId}/devices/claim",
+      "operation": "claim"
     },
     {
       "group": "Warm spare",
