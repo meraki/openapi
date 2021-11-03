@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.14.0-beta.3",
+    "version": "1.15.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 27 October, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 November, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2211,21 +2211,24 @@
                   "endTime": "2018-10-09T22:19:27Z",
                   "lossPercent": 5.23,
                   "latencyMs": 324.12,
-                  "goodput": 1493
+                  "goodput": 1493,
+                  "jitter": 11.2
                 },
                 {
                   "startTime": "2018-10-09T22:19:27Z",
                   "endTime": "2018-10-09T22:20:27Z",
                   "lossPercent": 1.0,
                   "latencyMs": 43.0,
-                  "goodput": 2567
+                  "goodput": 2567,
+                  "jitter": 3.4
                 },
                 {
                   "startTime": "2018-10-09T22:20:27Z",
                   "endTime": "2018-10-09T22:21:27Z",
                   "lossPercent": 0.01,
                   "latencyMs": 44.02,
-                  "goodput": 7899
+                  "goodput": 7899,
+                  "jitter": 1.0
                 }
               ]
             }
@@ -2481,6 +2484,125 @@
         "tags": [
           "devices",
           "liveTools"
+        ]
+      }
+    },
+    "/devices/{serial}/sensor/relationships": {
+      "get": {
+        "description": "List the sensor roles for a given device.",
+        "operationId": "getDeviceSensorRelationships",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "livestream": {
+                    "relatedDevices": [
+                      {
+                        "serial": "1234-ABCD-5678",
+                        "productType": "camera"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the sensor roles for a given device.",
+        "tags": [
+          "devices",
+          "configure",
+          "sensor",
+          "relationships"
+        ]
+      },
+      "put": {
+        "description": "Assign one or more sensor roles to a given device.",
+        "operationId": "updateDeviceSensorRelationships",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceSensorRelationships",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "livestream": {
+                  "type": "object",
+                  "properties": {
+                    "relatedDevices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "serial": {
+                            "type": "string",
+                            "description": "The serial of the related device"
+                          }
+                        },
+                        "required": [
+                          "serial"
+                        ]
+                      },
+                      "description": "An array of the related devices for the role"
+                    }
+                  },
+                  "description": "The camera assigned to a given sensor. Also supports the inverse when scoped to a given camera."
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "livestream": {
+                  "relatedDevices": [
+                    {
+                      "serial": "1234-ABCD-5678",
+                      "productType": "camera"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Assign one or more sensor roles to a given device.",
+        "tags": [
+          "devices",
+          "configure",
+          "sensor",
+          "relationships"
         ]
       }
     },
@@ -6317,20 +6439,6 @@
                 "rules": [
                   {
                     "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2"
-                    }
-                  },
-                  {
-                    "policy": "deny",
                     "type": "host",
                     "value": "google.com"
                   },
@@ -6348,21 +6456,6 @@
                     "policy": "deny",
                     "type": "ipRange",
                     "value": "10.11.12.00/24:5555"
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "blockedCountries",
-                    "value": [
-                      "AX",
-                      "CA"
-                    ]
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "allowedCountries",
-                    "value": [
-                      "US"
-                    ]
                   }
                 ]
               }
@@ -6418,7 +6511,7 @@
                       },
                       "value": {
                         "type": "string",
-                        "description": "The 'value' of what you want to block. Format of 'value' varies depending on type of the rule. See sample request. The application categories and application ids can be retrieved from the the 'MX L7 application categories' endpoint. The countries follow the two-letter ISO 3166-1 alpha-2 format."
+                        "description": "The 'value' of what you want to block. Format of 'value' varies depending on type of the rule. The application categories and application ids can be retrieved from the the 'MX L7 application categories' endpoint. The countries follow the two-letter ISO 3166-1 alpha-2 format."
                       }
                     }
                   },
@@ -6427,22 +6520,6 @@
               },
               "example": {
                 "rules": [
-                  {
-                    "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67",
-                      "name": "Xbox LIVE"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2",
-                      "name": "Blogging"
-                    }
-                  },
                   {
                     "policy": "deny",
                     "type": "host",
@@ -6462,21 +6539,6 @@
                     "policy": "deny",
                     "type": "ipRange",
                     "value": "10.11.12.00/24:5555"
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "blockedCountries",
-                    "value": [
-                      "AX",
-                      "CA"
-                    ]
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "allowedCountries",
-                    "value": [
-                      "US"
-                    ]
                   }
                 ]
               }
@@ -6494,20 +6556,6 @@
                 "rules": [
                   {
                     "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2"
-                    }
-                  },
-                  {
-                    "policy": "deny",
                     "type": "host",
                     "value": "google.com"
                   },
@@ -6525,21 +6573,6 @@
                     "policy": "deny",
                     "type": "ipRange",
                     "value": "10.11.12.00/24:5555"
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "blockedCountries",
-                    "value": [
-                      "AX",
-                      "CA"
-                    ]
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "allowedCountries",
-                    "value": [
-                      "US"
-                    ]
                   }
                 ]
               }
@@ -9442,20 +9475,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -9465,7 +9484,7 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
+                    "dscpTagValue": 0,
                     "priority": "normal"
                   }
                 ]
@@ -9508,20 +9527,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -9531,7 +9536,7 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
+                    "dscpTagValue": 0,
                     "priority": "normal"
                   }
                 ]
@@ -9593,20 +9598,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -9616,7 +9607,7 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
+                    "dscpTagValue": 0,
                     "priority": "normal"
                   }
                 ]
@@ -14063,6 +14054,65 @@
         ]
       }
     },
+    "/networks/{networkId}/clients/bandwidthUsageHistory": {
+      "get": {
+        "description": "Returns a timeseries of total traffic consumption rates for all clients on a network within a given timespan, in megabits per second.",
+        "operationId": "getNetworkClientsBandwidthUsageHistory",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 30 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-06-20T01:00:00.000Z",
+                  "total": 345
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns a timeseries of total traffic consumption rates for all clients on a network within a given timespan, in megabits per second.",
+        "tags": [
+          "networks",
+          "monitor",
+          "clients",
+          "bandwidthUsageHistory"
+        ]
+      }
+    },
     "/networks/{networkId}/clients/overview": {
       "get": {
         "description": "Return overview statistics for network clients",
@@ -17209,20 +17259,6 @@
                           {
                             "type": "localNet",
                             "value": "192.168.0.0/16"
-                          },
-                          {
-                            "type": "applicationCategory",
-                            "value": {
-                              "id": "meraki:layer7/category/2",
-                              "name": "Blogging"
-                            }
-                          },
-                          {
-                            "type": "application",
-                            "value": {
-                              "id": "meraki:layer7/application/133",
-                              "name": "Battle.net"
-                            }
                           }
                         ],
                         "perClientBandwidthLimits": {
@@ -17232,8 +17268,8 @@
                             "limitDown": 1000000
                           }
                         },
-                        "dscpTagValue": null,
-                        "pcpTagValue": null
+                        "dscpTagValue": 0,
+                        "pcpTagValue": 0
                       }
                     ],
                     "l3FirewallRules": [
@@ -17246,22 +17282,6 @@
                       }
                     ],
                     "l7FirewallRules": [
-                      {
-                        "policy": "deny",
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/67",
-                          "name": "Xbox LIVE"
-                        }
-                      },
-                      {
-                        "policy": "deny",
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
                       {
                         "policy": "deny",
                         "type": "host",
@@ -17281,21 +17301,6 @@
                         "policy": "deny",
                         "type": "ipRange",
                         "value": "10.11.12.00/24:5555"
-                      },
-                      {
-                        "policy": "deny",
-                        "type": "blockedCountries",
-                        "value": [
-                          "AX",
-                          "CA"
-                        ]
-                      },
-                      {
-                        "policy": "deny",
-                        "type": "allowedCountries",
-                        "value": [
-                          "US"
-                        ]
                       }
                     ]
                   },
@@ -17923,20 +17928,6 @@
                         {
                           "type": "localNet",
                           "value": "192.168.0.0/16"
-                        },
-                        {
-                          "type": "applicationCategory",
-                          "value": {
-                            "id": "meraki:layer7/category/2",
-                            "name": "Blogging"
-                          }
-                        },
-                        {
-                          "type": "application",
-                          "value": {
-                            "id": "meraki:layer7/application/133",
-                            "name": "Battle.net"
-                          }
                         }
                       ],
                       "perClientBandwidthLimits": {
@@ -17946,8 +17937,8 @@
                           "limitDown": 1000000
                         }
                       },
-                      "dscpTagValue": null,
-                      "pcpTagValue": null
+                      "dscpTagValue": 0,
+                      "pcpTagValue": 0
                     }
                   ],
                   "l3FirewallRules": [
@@ -17960,22 +17951,6 @@
                     }
                   ],
                   "l7FirewallRules": [
-                    {
-                      "policy": "deny",
-                      "type": "application",
-                      "value": {
-                        "id": "meraki:layer7/application/67",
-                        "name": "Xbox LIVE"
-                      }
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "applicationCategory",
-                      "value": {
-                        "id": "meraki:layer7/category/2",
-                        "name": "Blogging"
-                      }
-                    },
                     {
                       "policy": "deny",
                       "type": "host",
@@ -17995,21 +17970,6 @@
                       "policy": "deny",
                       "type": "ipRange",
                       "value": "10.11.12.00/24:5555"
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "blockedCountries",
-                      "value": [
-                        "AX",
-                        "CA"
-                      ]
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "allowedCountries",
-                      "value": [
-                        "US"
-                      ]
                     }
                   ]
                 },
@@ -18143,20 +18103,6 @@
                         {
                           "type": "localNet",
                           "value": "192.168.0.0/16"
-                        },
-                        {
-                          "type": "applicationCategory",
-                          "value": {
-                            "id": "meraki:layer7/category/2",
-                            "name": "Blogging"
-                          }
-                        },
-                        {
-                          "type": "application",
-                          "value": {
-                            "id": "meraki:layer7/application/133",
-                            "name": "Battle.net"
-                          }
                         }
                       ],
                       "perClientBandwidthLimits": {
@@ -18166,8 +18112,8 @@
                           "limitDown": 1000000
                         }
                       },
-                      "dscpTagValue": null,
-                      "pcpTagValue": null
+                      "dscpTagValue": 0,
+                      "pcpTagValue": 0
                     }
                   ],
                   "l3FirewallRules": [
@@ -18180,22 +18126,6 @@
                     }
                   ],
                   "l7FirewallRules": [
-                    {
-                      "policy": "deny",
-                      "type": "application",
-                      "value": {
-                        "id": "meraki:layer7/application/67",
-                        "name": "Xbox LIVE"
-                      }
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "applicationCategory",
-                      "value": {
-                        "id": "meraki:layer7/category/2",
-                        "name": "Blogging"
-                      }
-                    },
                     {
                       "policy": "deny",
                       "type": "host",
@@ -18215,21 +18145,6 @@
                       "policy": "deny",
                       "type": "ipRange",
                       "value": "10.11.12.00/24:5555"
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "blockedCountries",
-                      "value": [
-                        "AX",
-                        "CA"
-                      ]
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "allowedCountries",
-                      "value": [
-                        "US"
-                      ]
                     }
                   ]
                 },
@@ -18385,20 +18300,6 @@
                         {
                           "type": "localNet",
                           "value": "192.168.0.0/16"
-                        },
-                        {
-                          "type": "applicationCategory",
-                          "value": {
-                            "id": "meraki:layer7/category/2",
-                            "name": "Blogging"
-                          }
-                        },
-                        {
-                          "type": "application",
-                          "value": {
-                            "id": "meraki:layer7/application/133",
-                            "name": "Battle.net"
-                          }
                         }
                       ],
                       "perClientBandwidthLimits": {
@@ -18408,8 +18309,8 @@
                           "limitDown": 1000000
                         }
                       },
-                      "dscpTagValue": null,
-                      "pcpTagValue": null
+                      "dscpTagValue": 0,
+                      "pcpTagValue": 0
                     }
                   ],
                   "l3FirewallRules": [
@@ -18422,22 +18323,6 @@
                     }
                   ],
                   "l7FirewallRules": [
-                    {
-                      "policy": "deny",
-                      "type": "application",
-                      "value": {
-                        "id": "meraki:layer7/application/67",
-                        "name": "Xbox LIVE"
-                      }
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "applicationCategory",
-                      "value": {
-                        "id": "meraki:layer7/category/2",
-                        "name": "Blogging"
-                      }
-                    },
                     {
                       "policy": "deny",
                       "type": "host",
@@ -18457,21 +18342,6 @@
                       "policy": "deny",
                       "type": "ipRange",
                       "value": "10.11.12.00/24:5555"
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "blockedCountries",
-                      "value": [
-                        "AX",
-                        "CA"
-                      ]
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "allowedCountries",
-                      "value": [
-                        "US"
-                      ]
                     }
                   ]
                 },
@@ -19104,20 +18974,6 @@
                         {
                           "type": "localNet",
                           "value": "192.168.0.0/16"
-                        },
-                        {
-                          "type": "applicationCategory",
-                          "value": {
-                            "id": "meraki:layer7/category/2",
-                            "name": "Blogging"
-                          }
-                        },
-                        {
-                          "type": "application",
-                          "value": {
-                            "id": "meraki:layer7/application/133",
-                            "name": "Battle.net"
-                          }
                         }
                       ],
                       "perClientBandwidthLimits": {
@@ -19127,8 +18983,8 @@
                           "limitDown": 1000000
                         }
                       },
-                      "dscpTagValue": null,
-                      "pcpTagValue": null
+                      "dscpTagValue": 0,
+                      "pcpTagValue": 0
                     }
                   ],
                   "l3FirewallRules": [
@@ -19141,22 +18997,6 @@
                     }
                   ],
                   "l7FirewallRules": [
-                    {
-                      "policy": "deny",
-                      "type": "application",
-                      "value": {
-                        "id": "meraki:layer7/application/67",
-                        "name": "Xbox LIVE"
-                      }
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "applicationCategory",
-                      "value": {
-                        "id": "meraki:layer7/category/2",
-                        "name": "Blogging"
-                      }
-                    },
                     {
                       "policy": "deny",
                       "type": "host",
@@ -19176,21 +19016,6 @@
                       "policy": "deny",
                       "type": "ipRange",
                       "value": "10.11.12.00/24:5555"
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "blockedCountries",
-                      "value": [
-                        "AX",
-                        "CA"
-                      ]
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "allowedCountries",
-                      "value": [
-                        "US"
-                      ]
                     }
                   ]
                 },
@@ -19320,20 +19145,6 @@
                         {
                           "type": "localNet",
                           "value": "192.168.0.0/16"
-                        },
-                        {
-                          "type": "applicationCategory",
-                          "value": {
-                            "id": "meraki:layer7/category/2",
-                            "name": "Blogging"
-                          }
-                        },
-                        {
-                          "type": "application",
-                          "value": {
-                            "id": "meraki:layer7/application/133",
-                            "name": "Battle.net"
-                          }
                         }
                       ],
                       "perClientBandwidthLimits": {
@@ -19343,8 +19154,8 @@
                           "limitDown": 1000000
                         }
                       },
-                      "dscpTagValue": null,
-                      "pcpTagValue": null
+                      "dscpTagValue": 0,
+                      "pcpTagValue": 0
                     }
                   ],
                   "l3FirewallRules": [
@@ -19357,22 +19168,6 @@
                     }
                   ],
                   "l7FirewallRules": [
-                    {
-                      "policy": "deny",
-                      "type": "application",
-                      "value": {
-                        "id": "meraki:layer7/application/67",
-                        "name": "Xbox LIVE"
-                      }
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "applicationCategory",
-                      "value": {
-                        "id": "meraki:layer7/category/2",
-                        "name": "Blogging"
-                      }
-                    },
                     {
                       "policy": "deny",
                       "type": "host",
@@ -19392,21 +19187,6 @@
                       "policy": "deny",
                       "type": "ipRange",
                       "value": "10.11.12.00/24:5555"
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "blockedCountries",
-                      "value": [
-                        "AX",
-                        "CA"
-                      ]
-                    },
-                    {
-                      "policy": "deny",
-                      "type": "allowedCountries",
-                      "value": [
-                        "US"
-                      ]
                     }
                   ]
                 },
@@ -19749,9 +19529,9 @@
                   "endpoints": [
                     {
                       "httpServer": {
-                        "id": "1284392014819",
-                        "name": "What's in a name, anyway?",
-                        "url": "https://example.com/path",
+                        "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                        "name": "Example Webhook Server",
+                        "url": "https://www.example.com/my_custom_webhook",
                         "validator": "xxx",
                         "validatedAt": "2018-02-11T00:00:00Z",
                         "sharedSecret": "******"
@@ -19844,7 +19624,7 @@
                 "endpoints": [
                   {
                     "httpServer": {
-                      "name": "What's in a name, anyway?",
+                      "name": "Example Webhook Server",
                       "url": "https://example.com",
                       "validator": "xxx",
                       "validatedAt": "2018-02-11T00:00:00Z",
@@ -19873,9 +19653,9 @@
                 "endpoints": [
                   {
                     "httpServer": {
-                      "id": "1284392014819",
-                      "name": "What's in a name, anyway?",
-                      "url": "https://example.com/path",
+                      "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                      "name": "Example Webhook Server",
+                      "url": "https://www.example.com/my_custom_webhook",
                       "validator": "xxx",
                       "validatedAt": "2018-02-11T00:00:00Z",
                       "sharedSecret": "******"
@@ -21301,6 +21081,59 @@
           "configure",
           "pii",
           "smOwnersForKey"
+        ]
+      }
+    },
+    "/networks/{networkId}/sensor/relationships": {
+      "get": {
+        "description": "List the sensor roles for devices in a given network",
+        "operationId": "getNetworkSensorRelationships",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "device": {
+                    "name": "My sensor",
+                    "serial": "Q234-ABCD-5678",
+                    "productType": "sensor"
+                  },
+                  "relationships": {
+                    "livestream": {
+                      "relatedDevices": [
+                        {
+                          "serial": "1234-ABCD-5678",
+                          "productType": "camera"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the sensor roles for devices in a given network",
+        "tags": [
+          "networks",
+          "configure",
+          "sensor",
+          "relationships"
         ]
       }
     },
@@ -27232,7 +27065,7 @@
                 "deadTimerInSeconds": 40,
                 "areas": [
                   {
-                    "areaId": 1284392014819,
+                    "areaId": "1284392014819",
                     "areaName": "Backbone",
                     "areaType": "normal"
                   }
@@ -27288,7 +27121,7 @@
                     "type": "object",
                     "properties": {
                       "areaId": {
-                        "type": "integer",
+                        "type": "string",
                         "description": "OSPF area ID"
                       },
                       "areaName": {
@@ -27338,7 +27171,7 @@
                 "deadTimerInSeconds": 40,
                 "areas": [
                   {
-                    "areaId": 1284392014819,
+                    "areaId": "1284392014819",
                     "areaName": "Backbone",
                     "areaType": "normal"
                   }
@@ -27365,7 +27198,7 @@
                 "deadTimerInSeconds": 40,
                 "areas": [
                   {
-                    "areaId": 1284392014819,
+                    "areaId": "1284392014819",
                     "areaName": "Backbone",
                     "areaType": "normal"
                   }
@@ -29945,9 +29778,13 @@
             "examples": {
               "application/json": [
                 {
-                  "id": "1284392014819",
-                  "name": "What's in a name, anyway?",
-                  "url": "https://example.com/path"
+                  "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                  "name": "Example Webhook Server",
+                  "url": "https://www.example.com/my_custom_webhook",
+                  "payloadTemplate": {
+                    "payloadTemplateId": "wpt_00001",
+                    "name": "Meraki"
+                  }
                 }
               ]
             }
@@ -29988,12 +29825,25 @@
                 "sharedSecret": {
                   "type": "string",
                   "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
+                },
+                "payloadTemplate": {
+                  "type": "object",
+                  "properties": {
+                    "payloadTemplateId": {
+                      "type": "string",
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'."
+                    }
+                  },
+                  "description": "The payload template to use when posting data to the HTTP server."
                 }
               },
               "example": {
-                "name": "What's in a name, anyway?",
+                "name": "Example Webhook Server",
                 "url": "https://example.com",
-                "sharedSecret": "shhh"
+                "sharedSecret": "shhh",
+                "payloadTemplate": {
+                  "payloadTemplateId": "wpt_00001"
+                }
               },
               "required": [
                 "name",
@@ -30011,9 +29861,13 @@
             },
             "examples": {
               "application/json": {
-                "id": "1284392014819",
-                "name": "What's in a name, anyway?",
-                "url": "https://example.com/path"
+                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                "name": "Example Webhook Server",
+                "url": "https://www.example.com/my_custom_webhook",
+                "payloadTemplate": {
+                  "payloadTemplateId": "wpt_00001",
+                  "name": "Meraki"
+                }
               }
             }
           }
@@ -30053,9 +29907,13 @@
             },
             "examples": {
               "application/json": {
-                "id": "1284392014819",
-                "name": "What's in a name, anyway?",
-                "url": "https://example.com/path"
+                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                "name": "Example Webhook Server",
+                "url": "https://www.example.com/my_custom_webhook",
+                "payloadTemplate": {
+                  "payloadTemplateId": "wpt_00001",
+                  "name": "Meraki"
+                }
               }
             }
           }
@@ -30097,12 +29955,25 @@
                 "sharedSecret": {
                   "type": "string",
                   "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
+                },
+                "payloadTemplate": {
+                  "type": "object",
+                  "properties": {
+                    "payloadTemplateId": {
+                      "type": "string",
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'."
+                    }
+                  },
+                  "description": "The payload template to use when posting data to the HTTP server."
                 }
               },
               "example": {
-                "name": "What's in a name, anyway?",
+                "name": "Example Webhook Server",
                 "url": "https://example.com",
-                "sharedSecret": "shhh"
+                "sharedSecret": "shhh",
+                "payloadTemplate": {
+                  "payloadTemplateId": "wpt_00001"
+                }
               }
             }
           }
@@ -30115,9 +29986,13 @@
             },
             "examples": {
               "application/json": {
-                "id": "1284392014819",
-                "name": "What's in a name, anyway?",
-                "url": "https://example.com/path"
+                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
+                "name": "Example Webhook Server",
+                "url": "https://www.example.com/my_custom_webhook",
+                "payloadTemplate": {
+                  "payloadTemplateId": "wpt_00001",
+                  "name": "Meraki"
+                }
               }
             }
           }
@@ -30469,10 +30344,22 @@
                   "type": "string",
                   "description": "The shared secret the test webhook will send. Optional. Defaults to an empty string.",
                   "default": ""
+                },
+                "payloadTemplateId": {
+                  "type": "string",
+                  "description": "The ID of the payload template of the test webhook. Defaults to the HTTP server's template ID if one exists for the given URL, or Generic template ID otherwise"
+                },
+                "alertTypeId": {
+                  "type": "string",
+                  "description": "The type of alert which the test webhook will send. Optional. Defaults to power_supply_down.",
+                  "default": "power_supply_down"
                 }
               },
               "example": {
-                "url": "https://www.example.com/path"
+                "url": "https://www.example.com/path",
+                "sharedSecret": "shhh",
+                "payloadTemplateId": "wpt_00001",
+                "alertTypeId": "power_supply_down"
               },
               "required": [
                 "url"
@@ -36707,22 +36594,6 @@
                 "rules": [
                   {
                     "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67",
-                      "name": "Xbox LIVE"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2",
-                      "name": "Blogging"
-                    }
-                  },
-                  {
-                    "policy": "deny",
                     "type": "host",
                     "value": "google.com"
                   },
@@ -36813,22 +36684,6 @@
                 "rules": [
                   {
                     "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67",
-                      "name": "Xbox LIVE"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2",
-                      "name": "Blogging"
-                    }
-                  },
-                  {
-                    "policy": "deny",
                     "type": "host",
                     "value": "google.com"
                   },
@@ -36861,22 +36716,6 @@
             "examples": {
               "application/json": {
                 "rules": [
-                  {
-                    "policy": "deny",
-                    "type": "application",
-                    "value": {
-                      "id": "meraki:layer7/application/67",
-                      "name": "Xbox LIVE"
-                    }
-                  },
-                  {
-                    "policy": "deny",
-                    "type": "applicationCategory",
-                    "value": {
-                      "id": "meraki:layer7/category/2",
-                      "name": "Blogging"
-                    }
-                  },
                   {
                     "policy": "deny",
                     "type": "host",
@@ -38238,20 +38077,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -38261,8 +38086,8 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
+                    "dscpTagValue": 0,
+                    "pcpTagValue": 0
                   }
                 ]
               }
@@ -38305,20 +38130,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -38328,8 +38139,8 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
+                    "dscpTagValue": 0,
+                    "pcpTagValue": 0
                   }
                 ]
               }
@@ -38398,20 +38209,6 @@
                       {
                         "type": "localNet",
                         "value": "192.168.0.0/16"
-                      },
-                      {
-                        "type": "applicationCategory",
-                        "value": {
-                          "id": "meraki:layer7/category/2",
-                          "name": "Blogging"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/133",
-                          "name": "Battle.net"
-                        }
                       }
                     ],
                     "perClientBandwidthLimits": {
@@ -38421,8 +38218,8 @@
                         "limitDown": 1000000
                       }
                     },
-                    "dscpTagValue": null,
-                    "pcpTagValue": null
+                    "dscpTagValue": 0,
+                    "pcpTagValue": 0
                   }
                 ]
               }
@@ -40265,6 +40062,443 @@
           "organizations",
           "configure",
           "admins"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/alerts/profiles": {
+      "get": {
+        "description": "List all organization-wide alert configurations",
+        "operationId": "getOrganizationAlertsProfiles",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "type": "wanUtilization",
+                  "enabled": true,
+                  "alertCondition": {
+                    "duration": 60,
+                    "window": 600,
+                    "bit_rate_bps": 10000,
+                    "interface": "wan1"
+                  },
+                  "recipients": {
+                    "emails": [
+                      "admin@example.org"
+                    ],
+                    "httpServerIds": [
+                      "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vcGF0aA=="
+                    ]
+                  },
+                  "networkTags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "description": "WAN 1 high utilization"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all organization-wide alert configurations",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "post": {
+        "description": "Create an organization-wide alert configuration",
+        "operationId": "createOrganizationAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "voipJitter",
+                    "voipPacketLoss",
+                    "voipMos",
+                    "wanLatency",
+                    "wanPacketLoss",
+                    "wanUtilization",
+                    "wanStatus"
+                  ],
+                  "description": "The alert type"
+                },
+                "alertCondition": {
+                  "type": "object",
+                  "properties": {
+                    "duration": {
+                      "type": "integer",
+                      "description": "The total duration in seconds that the threshold should be crossed before alerting"
+                    },
+                    "window": {
+                      "type": "integer",
+                      "description": "The look back period in seconds for sensing the alert"
+                    },
+                    "bit_rate_bps": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for WAN Utilization alerts."
+                    },
+                    "loss_ratio": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for Packet Loss alerts."
+                    },
+                    "latency_ms": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for WAN Latency alerts."
+                    },
+                    "jitter_ms": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for VoIP Jitter alerts."
+                    },
+                    "mos": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "The threshold the metric must drop below to be valid for alerting. Used only for VoIP MOS alerts."
+                    },
+                    "interface": {
+                      "type": "string",
+                      "enum": [
+                        "wan1",
+                        "wan2",
+                        "cellular"
+                      ],
+                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, cellular"
+                    }
+                  },
+                  "description": "The conditions that determine if the alert triggers"
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert"
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list base64 encoded urls of webhook endpoints that will receive information about the alert"
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "networkTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks with these tags will be monitored for the alert"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "User supplied description of the alert"
+                }
+              },
+              "example": {
+                "type": "wanUtilization",
+                "enabled": true,
+                "alertCondition": {
+                  "duration": 60,
+                  "window": 600,
+                  "bit_rate_bps": 10000,
+                  "interface": "wan1"
+                },
+                "recipients": {
+                  "emails": [
+                    "admin@example.org"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vcGF0aA=="
+                  ]
+                },
+                "networkTags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "description": "WAN 1 high utilization"
+              },
+              "required": [
+                "type",
+                "alertCondition",
+                "recipients",
+                "networkTags"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "type": "wanUtilization",
+                "enabled": true,
+                "alertCondition": {
+                  "duration": 60,
+                  "window": 600,
+                  "bit_rate_bps": 10000,
+                  "interface": "wan1"
+                },
+                "recipients": {
+                  "emails": [
+                    "admin@example.org"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vcGF0aA=="
+                  ]
+                },
+                "networkTags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "description": "WAN 1 high utilization"
+              }
+            }
+          }
+        },
+        "summary": "Create an organization-wide alert configuration",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/alerts/profiles/{alertConfigId}": {
+      "put": {
+        "description": "Update an organization-wide alert config",
+        "operationId": "updateOrganizationAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "alertConfigId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Is the alert config enabled"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "voipJitter",
+                    "voipPacketLoss",
+                    "voipMos",
+                    "wanLatency",
+                    "wanPacketLoss",
+                    "wanUtilization",
+                    "wanStatus"
+                  ],
+                  "description": "The alert type"
+                },
+                "alertCondition": {
+                  "type": "object",
+                  "properties": {
+                    "duration": {
+                      "type": "integer",
+                      "description": "The total duration in seconds that the threshold should be crossed before alerting"
+                    },
+                    "window": {
+                      "type": "integer",
+                      "description": "The look back period in seconds for sensing the alert"
+                    },
+                    "bit_rate_bps": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for WAN Utilization alerts."
+                    },
+                    "loss_ratio": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for Packet Loss alerts."
+                    },
+                    "latency_ms": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for WAN Latency alerts."
+                    },
+                    "jitter_ms": {
+                      "type": "integer",
+                      "description": "The threshold the metric must cross to be valid for alerting. Used only for VoIP Jitter alerts."
+                    },
+                    "mos": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "The threshold the metric must drop below to be valid for alerting. Used only for VoIP MOS alerts."
+                    },
+                    "interface": {
+                      "type": "string",
+                      "enum": [
+                        "wan1",
+                        "wan2",
+                        "cellular"
+                      ],
+                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, cellular"
+                    }
+                  },
+                  "description": "The conditions that determine if the alert triggers"
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert"
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list base64 encoded urls of webhook endpoints that will receive information about the alert"
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "networkTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks with these tags will be monitored for the alert"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "User supplied description of the alert"
+                }
+              },
+              "example": {
+                "enabled": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1284392014819",
+                "type": "wanUtilization",
+                "enabled": true,
+                "alertCondition": {
+                  "duration": 60,
+                  "window": 600,
+                  "bit_rate_bps": 10000,
+                  "interface": "wan1"
+                },
+                "recipients": {
+                  "emails": [
+                    "admin@example.org"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vcGF0aA=="
+                  ]
+                },
+                "networkTags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "description": "WAN 1 high utilization"
+              }
+            }
+          }
+        },
+        "summary": "Update an organization-wide alert config",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "delete": {
+        "description": "Removes an organization-wide alert config",
+        "operationId": "deleteOrganizationAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "alertConfigId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Removes an organization-wide alert config",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
         ]
       }
     },
@@ -44194,6 +44428,24 @@
             "name": "statuses",
             "in": "query",
             "description": "Optional parameter to filter devices by statuses. Valid statuses are [\"online\", \"alerting\", \"offline\", \"dormant\"]."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wireless",
+                "appliance",
+                "switch",
+                "systemsManager",
+                "camera",
+                "cellularGateway",
+                "sensor"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "An optional parameter to filter device statuses by product type. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and sensor."
           },
           {
             "type": "object",
@@ -49026,6 +49278,9 @@
       "name": "recent"
     },
     {
+      "name": "relationships"
+    },
+    {
       "name": "rendezvousPoints"
     },
     {
@@ -49066,6 +49321,9 @@
     },
     {
       "name": "sense"
+    },
+    {
+      "name": "sensor"
     },
     {
       "name": "settings"
@@ -49685,6 +49943,24 @@
       "operation": "update"
     },
     {
+      "group": "Org wide alerts/alert config",
+      "summary": "Create an organization-wide alert configuration",
+      "resource": "/organizations/{organizationId}/alerts/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Org wide alerts/alert config",
+      "summary": "Removes an organization-wide alert config",
+      "resource": "/organizations/{organizationId}/alerts/profiles/{alertConfigId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Org wide alerts/alert config",
+      "summary": "Update an organization-wide alert config",
+      "resource": "/organizations/{organizationId}/alerts/profiles/{alertConfigId}",
+      "operation": "update"
+    },
+    {
       "group": "Organization SAML IdP",
       "summary": "Create a SAML IdP for your organization.",
       "resource": "/organizations/{organizationId}/saml/idps",
@@ -49850,6 +50126,12 @@
       "group": "Sense setting",
       "summary": "Update sense settings for the given camera",
       "resource": "/devices/{serial}/camera/sense",
+      "operation": "update"
+    },
+    {
+      "group": "Sensor gateway role",
+      "summary": "Assign one or more sensor roles to a given device.",
+      "resource": "/devices/{serial}/sensor/relationships",
       "operation": "update"
     },
     {
