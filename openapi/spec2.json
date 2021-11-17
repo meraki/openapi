@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.15.0-beta.1",
+    "version": "1.15.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 10 November, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 November, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -14166,6 +14166,24 @@
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
@@ -14175,6 +14193,12 @@
               "type": "array",
               "items": {
                 "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
             },
             "examples": {
@@ -21220,6 +21244,50 @@
         ]
       }
     },
+    "/networks/{networkId}/sensor/schedules": {
+      "get": {
+        "description": "Returns a list of all sensor schedules.",
+        "operationId": "getNetworkSensorSchedules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "123",
+                  "name": "Weekday schedule"
+                },
+                {
+                  "id": "124",
+                  "name": "Office hours"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns a list of all sensor schedules.",
+        "tags": [
+          "networks",
+          "configure",
+          "sensor",
+          "schedules"
+        ]
+      }
+    },
     "/networks/{networkId}/settings": {
       "get": {
         "description": "Return the settings for a network",
@@ -21246,10 +21314,7 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true,
-                  "objectModule": {
-                    "enabled": true
-                  }
+                  "enabled": true
                 },
                 "namedVlans": {
                   "enabled": true
@@ -21299,6 +21364,16 @@
                   },
                   "description": "A hash of SecureConnect options applied to the Network."
                 },
+                "fips": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables FIPS on the network."
+                    }
+                  },
+                  "description": "A hash of FIPS options applied to the Network"
+                },
                 "localStatusPage": {
                   "type": "object",
                   "properties": {
@@ -21307,11 +21382,11 @@
                       "properties": {
                         "enabled": {
                           "type": "boolean",
-                          "description": "Enables / disables local status page(s)."
+                          "description": "Enables / disables the authentication on Local Status page(s)."
                         },
                         "password": {
                           "type": "string",
-                          "description": "A password used for Local Status Page(s)."
+                          "description": "A password used for Local Status Page(s). Set this null to clear the password."
                         }
                       },
                       "description": "A hash of Local Status page(s)' authentication options applied to the Network."
@@ -21327,10 +21402,7 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true,
-                  "objectModule": {
-                    "enabled": true
-                  }
+                  "enabled": true
                 },
                 "namedVlans": {
                   "enabled": true
@@ -21353,10 +21425,7 @@
                   "enabled": false
                 },
                 "fips": {
-                  "enabled": true,
-                  "objectModule": {
-                    "enabled": true
-                  }
+                  "enabled": true
                 },
                 "namedVlans": {
                   "enabled": true
@@ -27977,7 +28046,6 @@
               },
               "required": [
                 "name",
-                "subnet",
                 "vlanId"
               ]
             },
@@ -30017,7 +30085,7 @@
                   "properties": {
                     "payloadTemplateId": {
                       "type": "string",
-                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'."
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'; for Microsoft Teams, use 'wpt_00004'."
                     }
                   },
                   "description": "The payload template to use when posting data to the HTTP server."
@@ -30147,7 +30215,7 @@
                   "properties": {
                     "payloadTemplateId": {
                       "type": "string",
-                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'."
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Webex, use 'wpt_00002'; for Slack, use 'wpt_00003'; for Microsoft Teams, use 'wpt_00004'."
                     }
                   },
                   "description": "The payload template to use when posting data to the HTTP server."
@@ -30395,7 +30463,7 @@
         ]
       },
       "delete": {
-        "description": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002' or 'wpt_00003')",
+        "description": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003' or 'wpt_00004')",
         "operationId": "deleteNetworkWebhooksPayloadTemplate",
         "parameters": [
           {
@@ -46612,7 +46680,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
+                  "description": "Type of a policy object (one of: fqdn, ipAndMask, cidr, adaptivePolicyIpv4Cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -47897,6 +47965,126 @@
           "organizations",
           "configure",
           "samlRoles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sensor/readings/history": {
+      "get": {
+        "description": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
+        "operationId": "getOrganizationSensorReadingsHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 90 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter readings by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter readings by sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "metrics",
+            "in": "query",
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, and door."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-10-18T23:54:48Z",
+                  "serial": "Q234-ABCD-5678",
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office"
+                  },
+                  "metric": "temperature",
+                  "temperature": {
+                    "fahrenheit": 77.81,
+                    "celsius": 25.45
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
+        "tags": [
+          "organizations",
+          "monitor",
+          "sensor",
+          "readings",
+          "history"
         ]
       }
     },
@@ -49461,6 +49649,9 @@
       "name": "radio"
     },
     {
+      "name": "readings"
+    },
+    {
       "name": "recent"
     },
     {
@@ -50580,7 +50771,7 @@
     },
     {
       "group": "Webhook template",
-      "summary": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002' or 'wpt_00003')",
+      "summary": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003' or 'wpt_00004')",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
       "operation": "destroy"
     },
