@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.16.0-beta.0",
+    "version": "1.16.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 December, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 December, 2021\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -1726,7 +1726,8 @@
                   "mac": "22:33:44:55:66:77",
                   "ip": "1.2.3.4",
                   "user": "milesmeraki",
-                  "vlan": 255,
+                  "vlan": "255",
+                  "namedVlan": "Named Vlan",
                   "switchport": null,
                   "adaptivePolicyGroup": null,
                   "mdnsName": "Miles's phone",
@@ -13943,6 +13944,12 @@
             "description": "Filters clients based on a partial or full match for the description field."
           },
           {
+            "type": "string",
+            "name": "vlan",
+            "in": "query",
+            "description": "Filters clients based on the full match for the VLAN field."
+          },
+          {
             "type": "array",
             "items": {
               "type": "string",
@@ -13983,7 +13990,8 @@
                   "mac": "22:33:44:55:66:77",
                   "ip": "1.2.3.4",
                   "user": "milesmeraki",
-                  "vlan": 255,
+                  "vlan": "255",
+                  "namedVlan": "Named Vlan",
                   "switchport": null,
                   "adaptivePolicyGroup": null,
                   "ip6": "",
@@ -35949,6 +35957,10 @@
                         "type": "boolean",
                         "description": "Use RADSEC (TLS over TCP) to connect to this RADIUS server. Requires radiusProxyEnabled."
                       },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server."
+                      },
                       "caCertificate": {
                         "type": "string",
                         "description": "Certificate used for authorization for the RADSEC Server"
@@ -38895,7 +38907,31 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "organization id"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "organization name"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "organization url"
+                  },
+                  "api": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "enable api access"
+                      }
+                    },
+                    "description": "api related settings"
+                  }
+                }
               }
             },
             "examples": {
@@ -38984,7 +39020,31 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "organization id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "organization name"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "organization url"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "enable api access"
+                    }
+                  },
+                  "description": "api related settings"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -47578,7 +47638,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: fqdn, ipAndMask, cidr, adaptivePolicyIpv4Cidr)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
