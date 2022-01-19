@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.17.0-beta.1",
+    "version": "1.17.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 January, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 19 January, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -195,51 +195,6 @@
         ]
       }
     },
-    "/devices/{serial}/appliance/delegatedPrefixes": {
-      "get": {
-        "description": "Return current delegated IPv6 prefixes on an appliance.",
-        "operationId": "getDeviceApplianceDelegatedPrefixes",
-        "parameters": [
-          {
-            "name": "serial",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "origin": "wan1",
-                  "prefix": "2001:db8:3c4d:15::/64",
-                  "usedCount": 2,
-                  "freeCount": 253,
-                  "method": "auto",
-                  "description": "My ISP provider",
-                  "preferred": true,
-                  "expiresAt": "2018-05-12T00:00:00Z"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Return current delegated IPv6 prefixes on an appliance.",
-        "tags": [
-          "appliance",
-          "monitor",
-          "delegatedPrefixes"
-        ]
-      }
-    },
     "/devices/{serial}/appliance/dhcp/subnets": {
       "get": {
         "description": "Return the DHCP subnet information for an appliance",
@@ -315,10 +270,10 @@
         ]
       }
     },
-    "/devices/{serial}/appliance/vlanPrefixAssignments": {
+    "/devices/{serial}/appliance/prefixes/delegated": {
       "get": {
-        "description": "Return prefixes assigned to all IPv6 enabled VLANs on an appliance.",
-        "operationId": "getDeviceApplianceVlanPrefixAssignments",
+        "description": "Return current delegated IPv6 prefixes on an appliance.",
+        "operationId": "getDeviceAppliancePrefixesDelegated",
         "parameters": [
           {
             "name": "serial",
@@ -339,14 +294,69 @@
             "examples": {
               "application/json": [
                 {
-                  "vlanId": 100,
-                  "vlanName": "My VLAN",
-                  "origin": "wan1",
-                  "originLabel": "WAN 1",
-                  "originPrefix": "2001:db8:3c4d:15::/64",
-                  "subnetPrefix": "2001:db8:3c4d:15::/64",
-                  "mx_ip": "2001:db8:3c4d:15::1",
-                  "prefixStatus": "Active"
+                  "origin": {
+                    "interface": "wan1"
+                  },
+                  "prefix": "2001:db8:3c4d:15::/64",
+                  "counts": {
+                    "assigned": 2,
+                    "available": 253
+                  },
+                  "method": "auto",
+                  "description": "My ISP provider",
+                  "isPreferred": true,
+                  "expiresAt": "2018-05-12T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return current delegated IPv6 prefixes on an appliance.",
+        "tags": [
+          "appliance",
+          "monitor",
+          "prefixes",
+          "delegated"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/prefixes/delegated/vlanAssignments": {
+      "get": {
+        "description": "Return prefixes assigned to all IPv6 enabled VLANs on an appliance.",
+        "operationId": "getDeviceAppliancePrefixesDelegatedVlanAssignments",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "vlan": {
+                    "id": 100,
+                    "name": "My VLAN"
+                  },
+                  "origin": {
+                    "interface": "wan1",
+                    "prefix": "2001:db8:3c4d:15::/64"
+                  },
+                  "status": "Active",
+                  "ipv6": {
+                    "prefix": "2001:db8:3c4d:15::/64",
+                    "address": "2001:db8:3c4d:15::1"
+                  }
                 }
               ]
             }
@@ -356,7 +366,427 @@
         "tags": [
           "appliance",
           "monitor",
-          "vlanPrefixAssignments"
+          "prefixes",
+          "delegated",
+          "vlanAssignments"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/uplinks/settings": {
+      "get": {
+        "description": "Return the uplink settings for an MX appliance",
+        "operationId": "getDeviceApplianceUplinksSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "interfaces": {
+                  "wan1": {
+                    "enabled": true,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "dynamic"
+                      },
+                      "ipv6": {
+                        "assignmentMode": "dynamic"
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": true,
+                      "authentication": {
+                        "enabled": true,
+                        "username": "username"
+                      }
+                    }
+                  },
+                  "wan2": {
+                    "enabled": false,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "static",
+                        "address": "9.10.11.10/16",
+                        "gateway": "13.14.15.16",
+                        "nameservers": {
+                          "addresses": [
+                            "1.2.3.4"
+                          ]
+                        }
+                      },
+                      "ipv6": {
+                        "assignmentMode": "static",
+                        "address": "1:2:3::4",
+                        "gateway": "1:2:3::5",
+                        "nameservers": {
+                          "addresses": [
+                            "1001:4860:4860::8888",
+                            "1001:4860:4860::8844"
+                          ]
+                        }
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the uplink settings for an MX appliance",
+        "tags": [
+          "appliance",
+          "configure",
+          "uplinks",
+          "settings"
+        ]
+      },
+      "put": {
+        "description": "Update the uplink settings for an MX appliance",
+        "operationId": "updateDeviceApplianceUplinksSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceApplianceUplinksSettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "interfaces": {
+                  "type": "object",
+                  "properties": {
+                    "wan1": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enable or disable the interface."
+                        },
+                        "vlanTagging": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether Vlan Tagging is enabled."
+                            },
+                            "vlanId": {
+                              "type": "integer",
+                              "description": "The id of the vlan to use for vlan tagging."
+                            }
+                          },
+                          "description": "VLAN tagging settings."
+                        },
+                        "svis": {
+                          "type": "object",
+                          "properties": {
+                            "ipv4": {
+                              "type": "object",
+                              "properties": {
+                                "assignmentMode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "static",
+                                    "dynamic"
+                                  ],
+                                  "description": "The mode used for assignment of addresses for this SVI. Applies only when PPPoE not enabled."
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "IP address and subnet mask when in static mode."
+                                },
+                                "gateway": {
+                                  "type": "string",
+                                  "description": "Address of gateway when in static mode."
+                                },
+                                "nameservers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "addresses": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority, when using custom nameservers."
+                                    }
+                                  },
+                                  "description": "The nameserver settings for this SVI."
+                                }
+                              },
+                              "description": "IPV4 settings for static and/or dynamic purposes."
+                            }
+                          },
+                          "description": "SVI settings by protocol."
+                        },
+                        "pppoe": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether PPPoE is enabled."
+                            },
+                            "authentication": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Whether PPPoE authentication is enabled."
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "description": "Username for PPPoE authentication. Applies only when PPPoE authentication is enabled."
+                                },
+                                "password": {
+                                  "type": "string",
+                                  "description": "Password for PPPoE authentication. Is not returned. Applies only when PPPoE authentication is enabled."
+                                }
+                              },
+                              "description": "Settings for PPPoE Authentication. Applies only if PPPoE is enabled and authentication has been initially setup."
+                            }
+                          },
+                          "description": "Options for pppoe."
+                        }
+                      },
+                      "description": "WAN 1 settings"
+                    },
+                    "wan2": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enable or disable the interface."
+                        },
+                        "vlanTagging": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether Vlan Tagging is enabled."
+                            },
+                            "vlanId": {
+                              "type": "integer",
+                              "description": "The id of the vlan to use for vlan tagging."
+                            }
+                          },
+                          "description": "VLAN tagging settings."
+                        },
+                        "svis": {
+                          "type": "object",
+                          "properties": {
+                            "ipv4": {
+                              "type": "object",
+                              "properties": {
+                                "assignmentMode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "static",
+                                    "dynamic"
+                                  ],
+                                  "description": "The mode used for assignment of addresses for this SVI. Applies only when PPPoE not enabled."
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "IP address and subnet mask when in static mode."
+                                },
+                                "gateway": {
+                                  "type": "string",
+                                  "description": "Address of gateway when in static mode."
+                                },
+                                "nameservers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "addresses": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority, when using custom nameservers."
+                                    }
+                                  },
+                                  "description": "The nameserver settings for this SVI."
+                                }
+                              },
+                              "description": "IPV4 settings for static and/or dynamic purposes."
+                            }
+                          },
+                          "description": "SVI settings by protocol."
+                        },
+                        "pppoe": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether PPPoE is enabled."
+                            },
+                            "authentication": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Whether PPPoE authentication is enabled."
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "description": "Username for PPPoE authentication. Applies only when PPPoE authentication is enabled."
+                                },
+                                "password": {
+                                  "type": "string",
+                                  "description": "Password for PPPoE authentication. Is not returned. Applies only when PPPoE authentication is enabled."
+                                }
+                              },
+                              "description": "Settings for PPPoE Authentication. Applies only if PPPoE is enabled and authentication has been initially setup."
+                            }
+                          },
+                          "description": "Options for pppoe."
+                        }
+                      },
+                      "description": "WAN 2 settings"
+                    }
+                  },
+                  "description": "Interface settings"
+                }
+              },
+              "example": {
+                "interfaces": {
+                  "wan1": {
+                    "enabled": true,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "dynamic"
+                      },
+                      "ipv6": {
+                        "assignmentMode": "dynamic"
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": true,
+                      "authentication": {
+                        "enabled": true,
+                        "username": "username"
+                      }
+                    }
+                  },
+                  "wan2": {
+                    "enabled": false,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "static",
+                        "address": "9.10.11.10/16",
+                        "gateway": "13.14.15.16",
+                        "nameservers": {
+                          "addresses": [
+                            "1.2.3.4"
+                          ]
+                        }
+                      },
+                      "ipv6": {
+                        "assignmentMode": "static",
+                        "address": "1:2:3::4",
+                        "gateway": "1:2:3::5",
+                        "nameservers": {
+                          "addresses": [
+                            "1001:4860:4860::8888",
+                            "1001:4860:4860::8844"
+                          ]
+                        }
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": false
+                    }
+                  }
+                }
+              },
+              "required": [
+                "interfaces"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "interfaces": {
+                  "wan1": {
+                    "enabled": true,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "dynamic"
+                      },
+                      "ipv6": {
+                        "assignmentMode": "dynamic"
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": true,
+                      "authentication": {
+                        "enabled": true,
+                        "username": "username"
+                      }
+                    }
+                  },
+                  "wan2": {
+                    "enabled": false,
+                    "svis": {
+                      "ipv4": {
+                        "assignmentMode": "static",
+                        "address": "9.10.11.10/16",
+                        "gateway": "13.14.15.16",
+                        "nameservers": {
+                          "addresses": [
+                            "1.2.3.4"
+                          ]
+                        }
+                      },
+                      "ipv6": {
+                        "assignmentMode": "static",
+                        "address": "1:2:3::4",
+                        "gateway": "1:2:3::5",
+                        "nameservers": {
+                          "addresses": [
+                            "1001:4860:4860::8888",
+                            "1001:4860:4860::8844"
+                          ]
+                        }
+                      }
+                    },
+                    "pppoe": {
+                      "enabled": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update the uplink settings for an MX appliance",
+        "tags": [
+          "appliance",
+          "configure",
+          "uplinks",
+          "settings"
         ]
       }
     },
@@ -3256,7 +3686,7 @@
                   },
                   "ipv6": {
                     "assignmentMode": "static",
-                    "address": "1:2:3:4::1/48",
+                    "address": "1:2:3:4::1",
                     "prefix": "1:2:3:4::/48",
                     "gateway": "1:2:3:4::2"
                   }
@@ -3378,7 +3808,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -3418,7 +3848,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -3480,7 +3910,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -3606,7 +4036,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -3640,7 +4070,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -7570,6 +8000,333 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/prefixes/delegated/static": {
+      "get": {
+        "description": "List static delegated prefixes for a network",
+        "operationId": "getNetworkAppliancePrefixesDelegatedStatic",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "staticDelegatedPrefixId": "1284392014819",
+                  "prefix": "2001:db8:3c4d:15::/64",
+                  "origin": {
+                    "type": "internet",
+                    "interfaces": [
+                      "wan1"
+                    ]
+                  },
+                  "description": "Prefix on WAN 1 of Long Island Office network",
+                  "createdAt": "2018-05-12T00:00:00Z",
+                  "updatedAt": "2018-05-12T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List static delegated prefixes for a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "prefixes",
+          "delegated",
+          "static"
+        ]
+      },
+      "post": {
+        "description": "Add a static delegated prefix from a network",
+        "operationId": "createNetworkAppliancePrefixesDelegatedStatic",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkAppliancePrefixesDelegatedStatic",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "A static IPv6 prefix"
+                },
+                "origin": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "internet",
+                        "independent"
+                      ],
+                      "description": "Type of the origin"
+                    },
+                    "interfaces": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Interfaces associated with the prefix"
+                    }
+                  },
+                  "description": "The origin of the prefix"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A name or description for the prefix"
+                }
+              },
+              "example": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network"
+              },
+              "required": [
+                "prefix",
+                "origin"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Add a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "prefixes",
+          "delegated",
+          "static"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}": {
+      "get": {
+        "description": "Return a static delegated prefix from a network",
+        "operationId": "getNetworkAppliancePrefixesDelegatedStatic",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Return a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "prefixes",
+          "delegated",
+          "static"
+        ]
+      },
+      "put": {
+        "description": "Update a static delegated prefix from a network",
+        "operationId": "updateNetworkAppliancePrefixesDelegatedStatic",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkAppliancePrefixesDelegatedStatic",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "A static IPv6 prefix"
+                },
+                "origin": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "internet",
+                        "independent"
+                      ],
+                      "description": "Type of the origin"
+                    },
+                    "interfaces": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Interfaces associated with the prefix"
+                    }
+                  },
+                  "description": "The origin of the prefix"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A name or description for the prefix"
+                }
+              },
+              "example": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "staticDelegatedPrefixId": "1284392014819",
+                "prefix": "2001:db8:3c4d:15::/64",
+                "origin": {
+                  "type": "internet",
+                  "interfaces": [
+                    "wan1"
+                  ]
+                },
+                "description": "Prefix on WAN 1 of Long Island Office network",
+                "createdAt": "2018-05-12T00:00:00Z",
+                "updatedAt": "2018-05-12T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Update a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "prefixes",
+          "delegated",
+          "static"
+        ]
+      },
+      "delete": {
+        "description": "Delete a static delegated prefix from a network",
+        "operationId": "deleteNetworkAppliancePrefixesDelegatedStatic",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "staticDelegatedPrefixId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a static delegated prefix from a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "prefixes",
+          "delegated",
+          "static"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/security/events": {
       "get": {
         "description": "List the security events for a network",
@@ -8432,323 +9189,6 @@
           "appliance",
           "configure",
           "ssids"
-        ]
-      }
-    },
-    "/networks/{networkId}/appliance/staticDelegatedPrefixes": {
-      "get": {
-        "description": "List static delegated prefixes for a network",
-        "operationId": "getNetworkApplianceStaticDelegatedPrefixes",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "staticDelegatedPrefixId": "1284392014819",
-                  "prefix": "2001:db8:3c4d:15::/64",
-                  "origin": {
-                    "type": "internet",
-                    "interfaces": [
-                      "wan1"
-                    ]
-                  },
-                  "description": "Prefix on WAN 1 of Long Island Office network",
-                  "createdAt": "2018-05-12T00:00:00Z",
-                  "updatedAt": "2018-05-12T00:00:00Z"
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List static delegated prefixes for a network",
-        "tags": [
-          "appliance",
-          "configure",
-          "staticDelegatedPrefixes"
-        ]
-      },
-      "post": {
-        "description": "Add a static delegated prefix from a network",
-        "operationId": "createNetworkApplianceStaticDelegatedPrefix",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkApplianceStaticDelegatedPrefix",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "prefix": {
-                  "type": "string",
-                  "description": "A static IPv6 prefix"
-                },
-                "origin": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "internet",
-                        "independent"
-                      ],
-                      "description": "Type of the origin"
-                    },
-                    "interfaces": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Interfaces associated with the prefix"
-                    }
-                  },
-                  "description": "The origin of the prefix"
-                },
-                "description": {
-                  "type": "string",
-                  "description": "A name or description for the prefix"
-                }
-              },
-              "example": {
-                "staticDelegatedPrefixId": "1284392014819",
-                "prefix": "2001:db8:3c4d:15::/64",
-                "origin": {
-                  "type": "internet",
-                  "interfaces": [
-                    "wan1"
-                  ]
-                },
-                "description": "Prefix on WAN 1 of Long Island Office network"
-              },
-              "required": [
-                "prefix",
-                "origin"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "staticDelegatedPrefixId": "1284392014819",
-                "prefix": "2001:db8:3c4d:15::/64",
-                "origin": {
-                  "type": "internet",
-                  "interfaces": [
-                    "wan1"
-                  ]
-                },
-                "description": "Prefix on WAN 1 of Long Island Office network",
-                "createdAt": "2018-05-12T00:00:00Z",
-                "updatedAt": "2018-05-12T00:00:00Z"
-              }
-            }
-          }
-        },
-        "summary": "Add a static delegated prefix from a network",
-        "tags": [
-          "appliance",
-          "configure",
-          "staticDelegatedPrefixes"
-        ]
-      }
-    },
-    "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}": {
-      "get": {
-        "description": "Return a static delegated prefix from a network",
-        "operationId": "getNetworkApplianceStaticDelegatedPrefix",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticDelegatedPrefixId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "staticDelegatedPrefixId": "1284392014819",
-                "prefix": "2001:db8:3c4d:15::/64",
-                "origin": {
-                  "type": "internet",
-                  "interfaces": [
-                    "wan1"
-                  ]
-                },
-                "description": "Prefix on WAN 1 of Long Island Office network",
-                "createdAt": "2018-05-12T00:00:00Z",
-                "updatedAt": "2018-05-12T00:00:00Z"
-              }
-            }
-          }
-        },
-        "summary": "Return a static delegated prefix from a network",
-        "tags": [
-          "appliance",
-          "configure",
-          "staticDelegatedPrefixes"
-        ]
-      },
-      "put": {
-        "description": "Update a static delegated prefix from a network",
-        "operationId": "updateNetworkApplianceStaticDelegatedPrefix",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticDelegatedPrefixId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkApplianceStaticDelegatedPrefix",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "prefix": {
-                  "type": "string",
-                  "description": "A static IPv6 prefix"
-                },
-                "origin": {
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "enum": [
-                        "internet",
-                        "independent"
-                      ],
-                      "description": "Type of the origin"
-                    },
-                    "interfaces": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Interfaces associated with the prefix"
-                    }
-                  },
-                  "description": "The origin of the prefix"
-                },
-                "description": {
-                  "type": "string",
-                  "description": "A name or description for the prefix"
-                }
-              },
-              "example": {
-                "staticDelegatedPrefixId": "1284392014819",
-                "prefix": "2001:db8:3c4d:15::/64",
-                "origin": {
-                  "type": "internet",
-                  "interfaces": [
-                    "wan1"
-                  ]
-                },
-                "description": "Prefix on WAN 1 of Long Island Office network"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "staticDelegatedPrefixId": "1284392014819",
-                "prefix": "2001:db8:3c4d:15::/64",
-                "origin": {
-                  "type": "internet",
-                  "interfaces": [
-                    "wan1"
-                  ]
-                },
-                "description": "Prefix on WAN 1 of Long Island Office network",
-                "createdAt": "2018-05-12T00:00:00Z",
-                "updatedAt": "2018-05-12T00:00:00Z"
-              }
-            }
-          }
-        },
-        "summary": "Update a static delegated prefix from a network",
-        "tags": [
-          "appliance",
-          "configure",
-          "staticDelegatedPrefixes"
-        ]
-      },
-      "delete": {
-        "description": "Delete a static delegated prefix from a network",
-        "operationId": "deleteNetworkApplianceStaticDelegatedPrefix",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "staticDelegatedPrefixId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete a static delegated prefix from a network",
-        "tags": [
-          "appliance",
-          "configure",
-          "staticDelegatedPrefixes"
         ]
       }
     },
@@ -28064,7 +28504,7 @@
                   },
                   "ipv6": {
                     "assignmentMode": "static",
-                    "address": "1:2:3:4::1/48",
+                    "address": "1:2:3:4::1",
                     "prefix": "1:2:3:4::/48",
                     "gateway": "1:2:3:4::2"
                   }
@@ -28193,7 +28633,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -28233,7 +28673,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -28302,7 +28742,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -28435,7 +28875,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -28469,7 +28909,7 @@
                 },
                 "ipv6": {
                   "assignmentMode": "static",
-                  "address": "1:2:3:4::1/48",
+                  "address": "1:2:3:4::1",
                   "prefix": "1:2:3:4::/48",
                   "gateway": "1:2:3:4::2"
                 }
@@ -38734,6 +39174,11 @@
             },
             "examples": {
               "application/json": {
+                "failover": {
+                  "requestIp": "1.1.1.1",
+                  "heartbeatInterval": 10,
+                  "idleTimeout": 30
+                },
                 "splitTunnel": {
                   "enabled": true,
                   "rules": [
@@ -38833,9 +39278,32 @@
                     }
                   },
                   "description": "The VPN split tunnel settings for this SSID."
+                },
+                "failover": {
+                  "type": "object",
+                  "properties": {
+                    "requestIp": {
+                      "type": "string",
+                      "description": "IP addressed reserved on DHCP server where SSID will terminate."
+                    },
+                    "heartbeatInterval": {
+                      "type": "integer",
+                      "description": "Idle timer interval in seconds."
+                    },
+                    "idleTimeout": {
+                      "type": "integer",
+                      "description": "Idle timer timeout in seconds."
+                    }
+                  },
+                  "description": "Secondary VPN concentrator settings. This is only used when two VPN concentrators are configured on the SSID."
                 }
               },
               "example": {
+                "failover": {
+                  "requestIp": "1.1.1.1",
+                  "heartbeatInterval": 10,
+                  "idleTimeout": 30
+                },
                 "splitTunnel": {
                   "enabled": true,
                   "rules": [
@@ -38866,6 +39334,11 @@
             },
             "examples": {
               "application/json": {
+                "failover": {
+                  "requestIp": "1.1.1.1",
+                  "heartbeatInterval": 10,
+                  "idleTimeout": 30
+                },
                 "splitTunnel": {
                   "enabled": true,
                   "rules": [
@@ -47754,7 +48227,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -49619,86 +50092,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "description": "Name of client"
-                  },
-                  "mac": {
-                    "type": "string",
-                    "description": "MAC address of client"
-                  },
-                  "id": {
-                    "type": "string",
-                    "description": "ID of client"
-                  },
-                  "network": {
-                    "type": "object",
-                    "properties": {
-                      "name": {
-                        "type": "string",
-                        "description": "Name of network"
-                      },
-                      "id": {
-                        "type": "string",
-                        "description": "ID of network"
-                      }
-                    },
-                    "description": ""
-                  },
-                  "usage": {
-                    "type": "object",
-                    "properties": {
-                      "total": {
-                        "type": "number",
-                        "format": "float",
-                        "description": "Total data usage by client"
-                      },
-                      "upstream": {
-                        "type": "number",
-                        "format": "float",
-                        "description": "Upstream data usage by client"
-                      },
-                      "downstream": {
-                        "type": "number",
-                        "format": "float",
-                        "description": "Downstream data usage by client"
-                      },
-                      "percentage": {
-                        "type": "number",
-                        "format": "float",
-                        "description": "Percentage of total data usage by client"
-                      }
-                    },
-                    "description": "Data usage information"
-                  }
-                }
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "name": "Office Switch",
-                  "mac": "22:33:44:55:66:77",
-                  "id": "k74272e",
-                  "network": {
-                    "name": "Main Office",
-                    "id": "N_24329156"
-                  },
-                  "usage": {
-                    "total": 18000.0,
-                    "upstream": 8000.0,
-                    "downstream": 10000.0,
-                    "percentage": 80.2
-                  }
-                }
-              ]
-            }
+            "description": "Successful operation"
           }
         },
         "summary": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
@@ -50616,7 +51010,7 @@
       "name": "dataRateHistory"
     },
     {
-      "name": "delegatedPrefixes"
+      "name": "delegated"
     },
     {
       "name": "desktopLogs"
@@ -50871,6 +51265,9 @@
       "name": "ports"
     },
     {
+      "name": "prefixes"
+    },
+    {
       "name": "priorities"
     },
     {
@@ -50979,7 +51376,7 @@
       "name": "stacks"
     },
     {
-      "name": "staticDelegatedPrefixes"
+      "name": "static"
     },
     {
       "name": "staticRoutes"
@@ -51072,7 +51469,7 @@
       "name": "videoLink"
     },
     {
-      "name": "vlanPrefixAssignments"
+      "name": "vlanAssignments"
     },
     {
       "name": "vlans"
@@ -51326,6 +51723,12 @@
       "group": "Hotspot20",
       "summary": "Update the Hotspot 2.0 settings of an SSID",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/hotspot20",
+      "operation": "update"
+    },
+    {
+      "group": "L3 firewall",
+      "summary": "Update the L3 firewall rules of an SSID on an MR network",
+      "resource": "/networks/{networkId}/wireless/ssids/{number}/firewall/l3FirewallRules",
       "operation": "update"
     },
     {
@@ -51823,19 +52226,19 @@
     {
       "group": "Static delegated prefix",
       "summary": "Add a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static",
       "operation": "create"
     },
     {
       "group": "Static delegated prefix",
       "summary": "Delete a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}",
       "operation": "destroy"
     },
     {
       "group": "Static delegated prefix",
       "summary": "Update a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/staticDelegatedPrefixes/{staticDelegatedPrefixId}",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}",
       "operation": "update"
     },
     {
@@ -52052,6 +52455,12 @@
       "group": "Webhook template",
       "summary": "Update a webhook payload template for a network",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/uplinks/settings",
+      "summary": "Update the uplink settings for an MX appliance",
+      "resource": "/devices/{serial}/appliance/uplinks/settings",
       "operation": "update"
     },
     {
