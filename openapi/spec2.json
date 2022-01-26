@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.17.0-beta.2",
+    "version": "1.17.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 19 January, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 26 January, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -530,6 +530,44 @@
                                 }
                               },
                               "description": "IPV4 settings for static and/or dynamic purposes."
+                            },
+                            "ipv6": {
+                              "type": "object",
+                              "properties": {
+                                "assignmentMode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "static",
+                                    "dynamic"
+                                  ],
+                                  "description": "The mode used for assignment of addresses for this SVI."
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "Static address that will override the one(s) received by SLAAC."
+                                },
+                                "gateway": {
+                                  "type": "string",
+                                  "description": "Static gateway that will override the one received by autoconf."
+                                },
+                                "nameservers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "addresses": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority, when using custom nameservers."
+                                    }
+                                  },
+                                  "description": "The nameserver settings for this SVI."
+                                }
+                              },
+                              "required": [
+                                "assignmentMode"
+                              ],
+                              "description": "IPv6 Settings for static and/or dynamic modes."
                             }
                           },
                           "description": "SVI settings by protocol."
@@ -623,6 +661,44 @@
                                 }
                               },
                               "description": "IPV4 settings for static and/or dynamic purposes."
+                            },
+                            "ipv6": {
+                              "type": "object",
+                              "properties": {
+                                "assignmentMode": {
+                                  "type": "string",
+                                  "enum": [
+                                    "static",
+                                    "dynamic"
+                                  ],
+                                  "description": "The mode used for assignment of addresses for this SVI."
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "Static address that will override the one(s) received by SLAAC."
+                                },
+                                "gateway": {
+                                  "type": "string",
+                                  "description": "Static gateway that will override the one received by autoconf."
+                                },
+                                "nameservers": {
+                                  "type": "object",
+                                  "properties": {
+                                    "addresses": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority, when using custom nameservers."
+                                    }
+                                  },
+                                  "description": "The nameserver settings for this SVI."
+                                }
+                              },
+                              "required": [
+                                "assignmentMode"
+                              ],
+                              "description": "IPv6 Settings for static and/or dynamic modes."
                             }
                           },
                           "description": "SVI settings by protocol."
@@ -6617,6 +6693,177 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/firewall/inboundCellularFirewallRules": {
+      "get": {
+        "description": "Return the inbound cellular firewall rules for an MX network",
+        "operationId": "getNetworkApplianceFirewallInboundCellularFirewallRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                  "policy": "allow",
+                  "protocol": "tcp",
+                  "destPort": "443",
+                  "destCidr": "192.168.1.0/24",
+                  "srcPort": "Any",
+                  "srcCidr": "Any",
+                  "syslogEnabled": false
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the inbound cellular firewall rules for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "firewall",
+          "inboundCellularFirewallRules"
+        ]
+      },
+      "put": {
+        "description": "Update the inbound cellular firewall rules of an MX network",
+        "operationId": "updateNetworkApplianceFirewallInboundCellularFirewallRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceFirewallInboundCellularFirewallRules",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "tcp",
+                          "udp",
+                          "icmp",
+                          "icmp6",
+                          "any"
+                        ],
+                        "description": "The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any')"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
+                      },
+                      "destPort": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
+                      },
+                      "destCidr": {
+                        "type": "string",
+                        "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
+                      },
+                      "syslogEnabled": {
+                        "type": "boolean",
+                        "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
+                      }
+                    },
+                    "required": [
+                      "policy",
+                      "protocol",
+                      "srcCidr",
+                      "destCidr"
+                    ]
+                  },
+                  "description": "An ordered array of the firewall rules (not including the default rule)"
+                }
+              },
+              "example": {
+                "rules": [
+                  {
+                    "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                    "policy": "allow",
+                    "protocol": "tcp",
+                    "destPort": "443",
+                    "destCidr": "192.168.1.0/24",
+                    "srcPort": "Any",
+                    "srcCidr": "Any",
+                    "syslogEnabled": false
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "comment": "Allow TCP traffic to subnet with HTTP servers.",
+                  "policy": "allow",
+                  "protocol": "tcp",
+                  "destPort": "443",
+                  "destCidr": "192.168.1.0/24",
+                  "srcPort": "Any",
+                  "srcCidr": "Any",
+                  "syslogEnabled": false
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Update the inbound cellular firewall rules of an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "firewall",
+          "inboundCellularFirewallRules"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/firewall/inboundFirewallRules": {
       "get": {
         "description": "Return the inbound firewall rules for an MX network",
@@ -8000,10 +8247,10 @@
         ]
       }
     },
-    "/networks/{networkId}/appliance/prefixes/delegated/static": {
+    "/networks/{networkId}/appliance/prefixes/delegated/statics": {
       "get": {
         "description": "List static delegated prefixes for a network",
-        "operationId": "getNetworkAppliancePrefixesDelegatedStatic",
+        "operationId": "getNetworkAppliancePrefixesDelegatedStatics",
         "parameters": [
           {
             "name": "networkId",
@@ -8046,7 +8293,7 @@
           "configure",
           "prefixes",
           "delegated",
-          "static"
+          "statics"
         ]
       },
       "post": {
@@ -8143,11 +8390,11 @@
           "configure",
           "prefixes",
           "delegated",
-          "static"
+          "statics"
         ]
       }
     },
-    "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}": {
+    "/networks/{networkId}/appliance/prefixes/delegated/statics/{staticDelegatedPrefixId}": {
       "get": {
         "description": "Return a static delegated prefix from a network",
         "operationId": "getNetworkAppliancePrefixesDelegatedStatic",
@@ -8194,7 +8441,7 @@
           "configure",
           "prefixes",
           "delegated",
-          "static"
+          "statics"
         ]
       },
       "put": {
@@ -8292,7 +8539,7 @@
           "configure",
           "prefixes",
           "delegated",
-          "static"
+          "statics"
         ]
       },
       "delete": {
@@ -8323,7 +8570,7 @@
           "configure",
           "prefixes",
           "delegated",
-          "static"
+          "statics"
         ]
       }
     },
@@ -8913,6 +9160,61 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The appliance IP address of the single LAN"
+                },
+                "ip6": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable IPv6 on VLAN."
+                    },
+                    "prefixAssignments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "autonomous": {
+                            "type": "boolean",
+                            "description": "Auto assign a /64 prefix from the origin to the VLAN"
+                          },
+                          "staticPrefix": {
+                            "type": "string",
+                            "description": "Manual configuration of a /64 prefix on the VLAN"
+                          },
+                          "staticApplianceIp6": {
+                            "type": "string",
+                            "description": "Manual configuration of the IPv6 Appliance IP"
+                          },
+                          "origin": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "internet",
+                                  "independent"
+                                ],
+                                "description": "Type of the origin"
+                              },
+                              "interfaces": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Interfaces associated with the prefix"
+                              }
+                            },
+                            "required": [
+                              "type"
+                            ],
+                            "description": "The origin of the prefix"
+                          }
+                        }
+                      },
+                      "description": "Prefix assignments on the VLAN"
+                    }
+                  },
+                  "description": "IPv6 configuration on the VLAN"
                 }
               },
               "example": {
@@ -30651,7 +30953,7 @@
                   "url": "https://www.example.com/my_custom_webhook",
                   "payloadTemplate": {
                     "payloadTemplateId": "wpt_00001",
-                    "name": "Meraki"
+                    "name": "Meraki (included)"
                   }
                 }
               ]
@@ -30710,7 +31012,8 @@
                 "url": "https://example.com",
                 "sharedSecret": "shhh",
                 "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001"
+                  "payloadTemplateId": "wpt_00001",
+                  "name": "Meraki (included)"
                 }
               },
               "required": [
@@ -30734,7 +31037,7 @@
                 "url": "https://www.example.com/my_custom_webhook",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki"
+                  "name": "Meraki (included)"
                 }
               }
             }
@@ -30780,7 +31083,7 @@
                 "url": "https://www.example.com/my_custom_webhook",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki"
+                  "name": "Meraki (included)"
                 }
               }
             }
@@ -30840,7 +31143,8 @@
                 "url": "https://example.com",
                 "sharedSecret": "shhh",
                 "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001"
+                  "payloadTemplateId": "wpt_00001",
+                  "name": "Meraki (included)"
                 }
               }
             }
@@ -30859,7 +31163,7 @@
                 "url": "https://www.example.com/my_custom_webhook",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki"
+                  "name": "Meraki (included)"
                 }
               }
             }
@@ -51094,6 +51398,9 @@
       "name": "idps"
     },
     {
+      "name": "inboundCellularFirewallRules"
+    },
+    {
       "name": "inboundFirewallRules"
     },
     {
@@ -51376,10 +51683,10 @@
       "name": "stacks"
     },
     {
-      "name": "static"
+      "name": "staticRoutes"
     },
     {
-      "name": "staticRoutes"
+      "name": "statics"
     },
     {
       "name": "stats"
@@ -52226,19 +52533,19 @@
     {
       "group": "Static delegated prefix",
       "summary": "Add a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/statics",
       "operation": "create"
     },
     {
       "group": "Static delegated prefix",
       "summary": "Delete a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/statics/{staticDelegatedPrefixId}",
       "operation": "destroy"
     },
     {
       "group": "Static delegated prefix",
       "summary": "Update a static delegated prefix from a network",
-      "resource": "/networks/{networkId}/appliance/prefixes/delegated/static/{staticDelegatedPrefixId}",
+      "resource": "/networks/{networkId}/appliance/prefixes/delegated/statics/{staticDelegatedPrefixId}",
       "operation": "update"
     },
     {
