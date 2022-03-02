@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.18.0-beta.3",
+    "version": "1.19.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 23 February, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -3154,6 +3154,8 @@
                   "linkNegotiation": "Auto negotiate",
                   "portScheduleId": "1234",
                   "udld": "Alert only",
+                  "adaptivePolicyGroupId": "123",
+                  "peerSgtCapable": false,
                   "accessPolicyType": "Sticky MAC allow list",
                   "stickyMacAllowList": [
                     "34:56:fe:ce:8e:b0",
@@ -3493,6 +3495,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -3642,6 +3646,14 @@
                   "type": "boolean",
                   "description": "The storm control status of the switch port"
                 },
+                "adaptivePolicyGroupId": {
+                  "type": "string",
+                  "description": "The adaptive policy group ID that will be used to tag traffic through this switch port. This ID must pre-exist during the configuration, else needs to be created using adaptivePolicy/groups API. Cannot be applied to a port on a switch bound to profile."
+                },
+                "peerSgtCapable": {
+                  "type": "boolean",
+                  "description": "If true, Peer SGT is enabled for traffic through this switch port. Applicable to trunk port only, not access port.\nCannot be applied to a port on a switch bound to profile.\n"
+                },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
@@ -3664,6 +3676,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -3700,6 +3714,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -42526,7 +42542,8 @@
                     "wanLatency",
                     "wanPacketLoss",
                     "wanUtilization",
-                    "wanStatus"
+                    "wanStatus",
+                    "appOutage"
                   ],
                   "description": "The alert type"
                 },
@@ -42719,7 +42736,8 @@
                     "wanLatency",
                     "wanPacketLoss",
                     "wanUtilization",
-                    "wanStatus"
+                    "wanStatus",
+                    "appOutage"
                   ],
                   "description": "The alert type"
                 },
@@ -46152,6 +46170,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -46228,6 +46248,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -46413,6 +46435,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -46449,6 +46473,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -48348,7 +48374,72 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "enforcePasswordExpiration": {
+                  "type": "boolean",
+                  "description": "Whether password expiration should be enforced"
+                },
+                "passwordExpirationDays": {
+                  "type": "integer",
+                  "description": "How long the password is valid, in days"
+                },
+                "enforceDifferentPasswords": {
+                  "type": "boolean",
+                  "description": "Whether the org is forced to choose a password that is distinct from previous passwords"
+                },
+                "numDifferentPasswords": {
+                  "type": "integer",
+                  "description": "How many recent password that cannot be reused"
+                },
+                "enforceStrongPasswords": {
+                  "type": "boolean",
+                  "description": "Whether the org must choose a strong password"
+                },
+                "accountLockoutAttempts": {
+                  "type": "integer",
+                  "description": "Number of failed login attempts before the admin is locked out of the org"
+                },
+                "enforceIdleTimeout": {
+                  "type": "boolean",
+                  "description": "Whether the org admin should be logged out after idling for the given idle timeout duration"
+                },
+                "idleTimeoutMinutes": {
+                  "type": "integer",
+                  "description": "Length of time, in minutes, an org admin is idle before being logged out"
+                },
+                "enforceTwoFactorAuth": {
+                  "type": "boolean",
+                  "description": "Whether the org uses two factor authentication"
+                },
+                "enforceLoginIpRanges": {
+                  "type": "boolean",
+                  "description": "Whether the org restricts access to Dashboard by IP addresses"
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether API IP restrictions are enabled"
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The list of IP address ranges that are allowed to make API requests for the org"
+                        }
+                      },
+                      "description": "Collection of restrictions by IP address"
+                    }
+                  },
+                  "description": "Collection of properties related to API authentication"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -48366,7 +48457,16 @@
                 "loginIpRanges": [
                   "192.195.83.1",
                   "192.195.83.255"
-                ]
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -48497,7 +48597,16 @@
                 "loginIpRanges": [
                   "192.195.83.1",
                   "192.195.83.255"
-                ]
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
