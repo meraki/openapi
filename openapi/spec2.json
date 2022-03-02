@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.18.0",
+    "version": "1.19.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 February, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2441,6 +2441,8 @@
                   "linkNegotiation": "Auto negotiate",
                   "portScheduleId": "1234",
                   "udld": "Alert only",
+                  "adaptivePolicyGroupId": "123",
+                  "peerSgtCapable": false,
                   "accessPolicyType": "Sticky MAC allow list",
                   "stickyMacAllowList": [
                     "34:56:fe:ce:8e:b0",
@@ -2780,6 +2782,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -2929,6 +2933,14 @@
                   "type": "boolean",
                   "description": "The storm control status of the switch port"
                 },
+                "adaptivePolicyGroupId": {
+                  "type": "string",
+                  "description": "The adaptive policy group ID that will be used to tag traffic through this switch port. This ID must pre-exist during the configuration, else needs to be created using adaptivePolicy/groups API. Cannot be applied to a port on a switch bound to profile."
+                },
+                "peerSgtCapable": {
+                  "type": "boolean",
+                  "description": "If true, Peer SGT is enabled for traffic through this switch port. Applicable to trunk port only, not access port.\nCannot be applied to a port on a switch bound to profile.\n"
+                },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
@@ -2951,6 +2963,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -2987,6 +3001,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -11727,6 +11743,35 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV22X/MV72X camera models."
+                    },
+                    "MV52": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '2688x1512' or '3840x2160'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV52 camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -12046,6 +12091,35 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV22X/MV72X camera models."
+                    },
+                    "MV52": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1280x720",
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '2688x1512' or '3840x2160'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV52 camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -20097,6 +20171,12 @@
               "application/json": {
                 "localStatusPageEnabled": true,
                 "remoteStatusPageEnabled": true,
+                "localStatusPage": {
+                  "authentication": {
+                    "enabled": false,
+                    "username": "admin"
+                  }
+                },
                 "secureConnect": {
                   "enabled": false
                 },
@@ -20175,6 +20255,12 @@
               "example": {
                 "localStatusPageEnabled": true,
                 "remoteStatusPageEnabled": true,
+                "localStatusPage": {
+                  "authentication": {
+                    "enabled": false,
+                    "username": "admin"
+                  }
+                },
                 "secureConnect": {
                   "enabled": false
                 },
@@ -20198,6 +20284,12 @@
               "application/json": {
                 "localStatusPageEnabled": true,
                 "remoteStatusPageEnabled": true,
+                "localStatusPage": {
+                  "authentication": {
+                    "enabled": false,
+                    "username": "admin"
+                  }
+                },
                 "secureConnect": {
                   "enabled": false
                 },
@@ -32362,6 +32454,372 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "0": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 0"
+                    },
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 1"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 2"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 3"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 4"
+                    },
+                    "5": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 5"
+                    },
+                    "6": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 6"
+                    },
+                    "7": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 7"
+                    },
+                    "8": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 8"
+                    },
+                    "9": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 9"
+                    },
+                    "10": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 10"
+                    },
+                    "11": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 11"
+                    },
+                    "12": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 12"
+                    },
+                    "13": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 13"
+                    },
+                    "14": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 14"
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
                 }
               },
               "example": {
@@ -32676,6 +33134,372 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "0": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 0"
+                    },
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 1"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 2"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 3"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 4"
+                    },
+                    "5": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 5"
+                    },
+                    "6": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 6"
+                    },
+                    "7": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 7"
+                    },
+                    "8": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 8"
+                    },
+                    "9": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 9"
+                    },
+                    "10": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 10"
+                    },
+                    "11": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 11"
+                    },
+                    "12": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 12"
+                    },
+                    "13": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 13"
+                    },
+                    "14": {
+                      "type": "object",
+                      "properties": {
+                        "minBitrate": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Sets min bitrate (Mbps) of this SSID. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                        },
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "dual",
+                            "2.4ghz",
+                            "5ghz"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 14"
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
                 }
               },
               "example": {
@@ -33493,6 +34317,7 @@
                   "type": "string",
                   "enum": [
                     "open",
+                    "open-enhanced",
                     "psk",
                     "open-with-radius",
                     "8021x-meraki",
@@ -33502,7 +34327,7 @@
                     "ipsk-with-radius",
                     "ipsk-without-radius"
                   ],
-                  "description": "The association control method for the SSID ('open', 'psk', 'open-with-radius', '8021x-meraki', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -33886,7 +34711,7 @@
                 },
                 "ipAssignmentMode": {
                   "type": "string",
-                  "description": "The client IP assignment mode ('NAT mode', 'Bridge mode', 'Layer 3 roaming', 'Layer 3 roaming with a concentrator' or 'VPN')"
+                  "description": "The client IP assignment mode ('NAT mode', 'Bridge mode', 'Layer 3 roaming', 'Ethernet over GRE', 'Layer 3 roaming with a concentrator' or 'VPN')"
                 },
                 "useVlanTagging": {
                   "type": "boolean",
@@ -33895,6 +34720,14 @@
                 "concentratorNetworkId": {
                   "type": "string",
                   "description": "The concentrator to use when the ipAssignmentMode is 'Layer 3 roaming with a concentrator' or 'VPN'."
+                },
+                "secondaryConcentratorNetworkId": {
+                  "type": "string",
+                  "description": "The secondary concentrator to use when the ipAssignmentMode is 'VPN'. If configured, the APs will switch to using this concentrator if the primary concentrator is unreachable. This param is optional. ('disabled' represents no secondary concentrator.)"
+                },
+                "disassociateClientsOnVpnFailover": {
+                  "type": "boolean",
+                  "description": "Disassociate clients when 'VPN' concentrator failover occurs in order to trigger clients to re-associate and generate new DHCP requests. This param is only valid if ipAssignmentMode is 'VPN'."
                 },
                 "vlanId": {
                   "type": "integer",
@@ -33943,7 +34776,7 @@
                       "properties": {
                         "host": {
                           "type": "string",
-                          "description": "The EoGRE concentrator's IP or FQDN. This param is required when ipAssignmentMode is 'gre'."
+                          "description": "The EoGRE concentrator's IP or FQDN. This param is required when ipAssignmentMode is 'Ethernet over GRE'."
                         }
                       },
                       "required": [
@@ -34038,6 +34871,16 @@
                     }
                   },
                   "description": "DNS servers rewrite settings"
+                },
+                "speedBurst": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Boolean indicating whether or not to allow users to temporarily exceed the bandwidth limit for short periods while still keeping them under the bandwidth limit over time."
+                    }
+                  },
+                  "description": "The SpeedBurst setting for this SSID'"
                 }
               },
               "example": {
@@ -36817,6 +37660,22 @@
                       }
                     },
                     "description": "Licensing related settings"
+                  },
+                  "cloud": {
+                    "type": "object",
+                    "properties": {
+                      "region": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of region"
+                          }
+                        },
+                        "description": "Region info"
+                      }
+                    },
+                    "description": "Data for this organization"
                   }
                 }
               }
@@ -36951,6 +37810,22 @@
                     }
                   },
                   "description": "Licensing related settings"
+                },
+                "cloud": {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of region"
+                        }
+                      },
+                      "description": "Region info"
+                    }
+                  },
+                  "description": "Data for this organization"
                 }
               }
             },
@@ -37929,6 +38804,10 @@
                       "name": "Example Policy Object"
                     }
                   ],
+                  "isDefaultGroup": false,
+                  "requiredIpMappings": [
+
+                  ],
                   "createdAt": "2019-06-27T21:34:25.253480Z",
                   "updatedAt": "2019-06-27T21:34:25.253480Z"
                 }
@@ -37999,6 +38878,10 @@
                     "id": "2345",
                     "name": "Example Policy Object"
                   }
+                ],
+                "isDefaultGroup": false,
+                "requiredIpMappings": [
+
                 ]
               },
               "required": [
@@ -38026,6 +38909,10 @@
                     "id": "2345",
                     "name": "Example Policy Object"
                   }
+                ],
+                "isDefaultGroup": false,
+                "requiredIpMappings": [
+
                 ],
                 "createdAt": "2019-06-27T21:34:25.253480Z",
                 "updatedAt": "2019-06-27T21:34:25.253480Z"
@@ -38077,6 +38964,10 @@
                     "id": "2345",
                     "name": "Example Policy Object"
                   }
+                ],
+                "isDefaultGroup": false,
+                "requiredIpMappings": [
+
                 ],
                 "createdAt": "2019-06-27T21:34:25.253480Z",
                 "updatedAt": "2019-06-27T21:34:25.253480Z"
@@ -38183,6 +39074,10 @@
                     "id": "2345",
                     "name": "Example Policy Object"
                   }
+                ],
+                "isDefaultGroup": false,
+                "requiredIpMappings": [
+
                 ]
               }
             }
@@ -38205,6 +39100,10 @@
                     "id": "2345",
                     "name": "Example Policy Object"
                   }
+                ],
+                "isDefaultGroup": false,
+                "requiredIpMappings": [
+
                 ],
                 "createdAt": "2019-06-27T21:34:25.253480Z",
                 "updatedAt": "2019-06-27T21:34:25.253480Z"
@@ -39275,7 +40174,8 @@
                     "wanLatency",
                     "wanPacketLoss",
                     "wanUtilization",
-                    "wanStatus"
+                    "wanStatus",
+                    "appOutage"
                   ],
                   "description": "The alert type"
                 },
@@ -39468,7 +40368,8 @@
                     "wanLatency",
                     "wanPacketLoss",
                     "wanUtilization",
-                    "wanStatus"
+                    "wanStatus",
+                    "appOutage"
                   ],
                   "description": "The alert type"
                 },
@@ -42252,7 +43153,26 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp for the bandwidth usage snapshot."
+                  },
+                  "total": {
+                    "type": "integer",
+                    "description": "Total bandwidth usage, in mbps."
+                  },
+                  "upstream": {
+                    "type": "integer",
+                    "description": "Uploaded data, in mbps."
+                  },
+                  "downstream": {
+                    "type": "integer",
+                    "description": "Downloaded data, in mbps."
+                  }
+                }
               }
             },
             "examples": {
@@ -42882,6 +43802,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -42958,6 +43880,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -43143,6 +44067,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -43179,6 +44105,8 @@
                 "linkNegotiation": "Auto negotiate",
                 "portScheduleId": "1234",
                 "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
                 "accessPolicyType": "Sticky MAC allow list",
                 "stickyMacAllowList": [
                   "34:56:fe:ce:8e:b0",
@@ -44112,7 +45040,101 @@
         ]
       }
     },
-    "/organizations/{organizationId}/inventoryDevices": {
+    "/organizations/{organizationId}/inventory/claim": {
+      "post": {
+        "description": "Claim a list of devices, licenses, and/or orders into an organization. When claiming by order, all devices and licenses in the order will be claimed; licenses will be added to the organization and devices will be placed in the organization's inventory. Use /organizations/{organizationId}/inventory/release to release devices from an organization.",
+        "operationId": "claimIntoOrganizationInventory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "claimIntoOrganizationInventory",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "orders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The numbers of the orders that should be claimed"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the devices that should be claimed"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "addDevices",
+                          "renew"
+                        ],
+                        "description": "Co-term licensing only: either 'renew' or 'addDevices'. 'addDevices' will increase the license limit, while 'renew' will extend the amount of time until expiration. Defaults to 'addDevices'. All licenses must be claimed with the same mode, and at most one renewal can be claimed at a time. Does not apply to organizations using per-device licensing model."
+                      }
+                    },
+                    "required": [
+                      "key"
+                    ]
+                  },
+                  "description": "The licenses that should be claimed"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "orders": [
+                  "4CXXXXXXX"
+                ],
+                "serials": [
+                  "Q234-ABCD-5678"
+                ],
+                "licenses": [
+                  {
+                    "key": "Z2XXXXXXXXXX",
+                    "mode": "addDevices"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Claim a list of devices, licenses, and/or orders into an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory/devices": {
       "get": {
         "description": "Return the device inventory for an organization",
         "operationId": "getOrganizationInventoryDevices",
@@ -44149,7 +45171,7 @@
             ],
             "name": "usedState",
             "in": "query",
-            "description": "Filter results by used or unused inventory. Accepted values are \"used\" or \"unused\"."
+            "description": "Filter results by used or unused inventory. Accepted values are 'used' or 'unused'."
           },
           {
             "type": "string",
@@ -44271,11 +45293,12 @@
         "tags": [
           "organizations",
           "configure",
-          "inventoryDevices"
+          "inventory",
+          "devices"
         ]
       }
     },
-    "/organizations/{organizationId}/inventoryDevices/{serial}": {
+    "/organizations/{organizationId}/inventory/devices/{serial}": {
       "get": {
         "description": "Return a single device from the inventory of an organization",
         "operationId": "getOrganizationInventoryDevice",
@@ -44322,7 +45345,62 @@
         "tags": [
           "organizations",
           "configure",
-          "inventoryDevices"
+          "inventory",
+          "devices"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory/release": {
+      "post": {
+        "description": "Release a list of claimed devices from an organization.",
+        "operationId": "releaseFromOrganizationInventory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "releaseFromOrganizationInventory",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Serials of the devices that should be released"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "serials": [
+                  "Q234-ABCD-5678"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Release a list of claimed devices from an organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory"
         ]
       }
     },
@@ -44921,7 +45999,72 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "enforcePasswordExpiration": {
+                  "type": "boolean",
+                  "description": "Whether password expiration should be enforced"
+                },
+                "passwordExpirationDays": {
+                  "type": "integer",
+                  "description": "How long the password is valid, in days"
+                },
+                "enforceDifferentPasswords": {
+                  "type": "boolean",
+                  "description": "Whether the org is forced to choose a password that is distinct from previous passwords"
+                },
+                "numDifferentPasswords": {
+                  "type": "integer",
+                  "description": "How many recent password that cannot be reused"
+                },
+                "enforceStrongPasswords": {
+                  "type": "boolean",
+                  "description": "Whether the org must choose a strong password"
+                },
+                "accountLockoutAttempts": {
+                  "type": "integer",
+                  "description": "Number of failed login attempts before the admin is locked out of the org"
+                },
+                "enforceIdleTimeout": {
+                  "type": "boolean",
+                  "description": "Whether the org admin should be logged out after idling for the given idle timeout duration"
+                },
+                "idleTimeoutMinutes": {
+                  "type": "integer",
+                  "description": "Length of time, in minutes, an org admin is idle before being logged out"
+                },
+                "enforceTwoFactorAuth": {
+                  "type": "boolean",
+                  "description": "Whether the org uses two factor authentication"
+                },
+                "enforceLoginIpRanges": {
+                  "type": "boolean",
+                  "description": "Whether the org restricts access to Dashboard by IP addresses"
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether API IP restrictions are enabled"
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "The list of IP address ranges that are allowed to make API requests for the org"
+                        }
+                      },
+                      "description": "Collection of restrictions by IP address"
+                    }
+                  },
+                  "description": "Collection of properties related to API authentication"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -44939,7 +46082,16 @@
                 "loginIpRanges": [
                   "192.195.83.1",
                   "192.195.83.255"
-                ]
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -45017,6 +46169,29 @@
                     "type": "string"
                   },
                   "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                        }
+                      },
+                      "description": "Details for API-only IP restrictions."
+                    }
+                  },
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
                 }
               },
               "example": {
@@ -45047,7 +46222,16 @@
                 "loginIpRanges": [
                   "192.195.83.1",
                   "192.195.83.255"
-                ]
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -46152,6 +47336,229 @@
           "organizations",
           "configure",
           "samlRoles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sensor/readings/history": {
+      "get": {
+        "description": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
+        "operationId": "getOrganizationSensorReadingsHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days and 6 hours from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 7 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter readings by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter readings by sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "metrics",
+            "in": "query",
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, and battery."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-10-18T23:54:48Z",
+                  "serial": "Q234-ABCD-5678",
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office"
+                  },
+                  "metric": "temperature",
+                  "temperature": {
+                    "fahrenheit": 77.81,
+                    "celsius": 25.45
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
+        "tags": [
+          "sensor",
+          "monitor",
+          "readings",
+          "history"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sensor/readings/latest": {
+      "get": {
+        "description": "Return the latest available reading for each metric from each sensor, sorted by sensor serial",
+        "operationId": "getOrganizationSensorReadingsLatest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter readings by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter readings by sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "metrics",
+            "in": "query",
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, and battery."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "serial": "Q234-ABCD-5678",
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office"
+                  },
+                  "readings": [
+                    {
+                      "ts": "2021-10-18T23:54:48Z",
+                      "metric": "temperature",
+                      "temperature": {
+                        "fahrenheit": 77.81,
+                        "celsius": 25.45
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the latest available reading for each metric from each sensor, sorted by sensor serial",
+        "tags": [
+          "sensor",
+          "monitor",
+          "readings",
+          "latest"
         ]
       }
     },
@@ -47298,6 +48705,9 @@
       "name": "sm"
     },
     {
+      "name": "sensor"
+    },
+    {
       "name": "accessControlLists"
     },
     {
@@ -47526,7 +48936,7 @@
       "name": "intrusion"
     },
     {
-      "name": "inventoryDevices"
+      "name": "inventory"
     },
     {
       "name": "l3FirewallRules"
@@ -47542,6 +48952,9 @@
     },
     {
       "name": "latencyStats"
+    },
+    {
+      "name": "latest"
     },
     {
       "name": "licenses"
@@ -47692,6 +49105,9 @@
     },
     {
       "name": "radio"
+    },
+    {
+      "name": "readings"
     },
     {
       "name": "recent"
