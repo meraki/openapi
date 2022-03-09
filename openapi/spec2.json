@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.19.0-beta.0",
+    "version": "1.19.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 09 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -40059,6 +40059,11 @@
                   },
                   "licensing": {
                     "model": "co-term"
+                  },
+                  "cloud": {
+                    "region": {
+                      "name": "North America"
+                    }
                   }
                 }
               ]
@@ -40207,6 +40212,11 @@
                 },
                 "licensing": {
                   "model": "co-term"
+                },
+                "cloud": {
+                  "region": {
+                    "name": "North America"
+                  }
                 }
               }
             }
@@ -48378,43 +48388,54 @@
               "properties": {
                 "enforcePasswordExpiration": {
                   "type": "boolean",
-                  "description": "Whether password expiration should be enforced"
+                  "description": "Boolean indicating whether users are forced to change their password every X number of days."
                 },
                 "passwordExpirationDays": {
                   "type": "integer",
-                  "description": "How long the password is valid, in days"
+                  "description": "Number of days after which users will be forced to change their password."
                 },
                 "enforceDifferentPasswords": {
                   "type": "boolean",
-                  "description": "Whether the org is forced to choose a password that is distinct from previous passwords"
+                  "description": "Boolean indicating whether users, when setting a new password, are forced to choose a new password that is different from any past passwords."
                 },
                 "numDifferentPasswords": {
                   "type": "integer",
-                  "description": "How many recent password that cannot be reused"
+                  "description": "Number of recent passwords that new password must be distinct from."
                 },
                 "enforceStrongPasswords": {
                   "type": "boolean",
-                  "description": "Whether the org must choose a strong password"
+                  "description": "Boolean indicating whether users will be forced to choose strong passwords for their accounts. Strong passwords are at least 8 characters that contain 3 of the following: number, uppercase letter, lowercase letter, and symbol"
+                },
+                "enforceAccountLockout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users' Dashboard accounts will be locked out after a specified number of consecutive failed login attempts."
                 },
                 "accountLockoutAttempts": {
                   "type": "integer",
-                  "description": "Number of failed login attempts before the admin is locked out of the org"
+                  "description": "Number of consecutive failed login attempts after which users' accounts will be locked."
                 },
                 "enforceIdleTimeout": {
                   "type": "boolean",
-                  "description": "Whether the org admin should be logged out after idling for the given idle timeout duration"
+                  "description": "Boolean indicating whether users will be logged out after being idle for the specified number of minutes."
                 },
                 "idleTimeoutMinutes": {
                   "type": "integer",
-                  "description": "Length of time, in minutes, an org admin is idle before being logged out"
+                  "description": "Number of minutes users can remain idle before being logged out of their accounts."
                 },
                 "enforceTwoFactorAuth": {
                   "type": "boolean",
-                  "description": "Whether the org uses two factor authentication"
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
                 },
                 "enforceLoginIpRanges": {
                   "type": "boolean",
-                  "description": "Whether the org restricts access to Dashboard by IP addresses"
+                  "description": "Boolean indicating whether organization will restrict access to Dashboard (including the API) from certain IP addresses."
+                },
+                "loginIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
                 },
                 "apiAuthentication": {
                   "type": "object",
@@ -48424,20 +48445,20 @@
                       "properties": {
                         "enabled": {
                           "type": "boolean",
-                          "description": "Whether API IP restrictions are enabled"
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
                         },
                         "ranges": {
                           "type": "array",
                           "items": {
                             "type": "string"
                           },
-                          "description": "The list of IP address ranges that are allowed to make API requests for the org"
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
                         }
                       },
-                      "description": "Collection of restrictions by IP address"
+                      "description": "Details for API-only IP restrictions."
                     }
                   },
-                  "description": "Collection of properties related to API authentication"
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
                 }
               }
             },
@@ -48570,7 +48591,30 @@
                 }
               },
               "example": {
-
+                "enforcePasswordExpiration": true,
+                "passwordExpirationDays": 90,
+                "enforceDifferentPasswords": true,
+                "numDifferentPasswords": 3,
+                "enforceStrongPasswords": true,
+                "enforceAccountLockout": true,
+                "accountLockoutAttempts": 3,
+                "enforceIdleTimeout": true,
+                "idleTimeoutMinutes": 30,
+                "enforceTwoFactorAuth": true,
+                "enforceLoginIpRanges": true,
+                "loginIpRanges": [
+                  "192.195.83.1",
+                  "192.195.83.255"
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -48579,7 +48623,83 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "enforcePasswordExpiration": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users are forced to change their password every X number of days."
+                },
+                "passwordExpirationDays": {
+                  "type": "integer",
+                  "description": "Number of days after which users will be forced to change their password."
+                },
+                "enforceDifferentPasswords": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users, when setting a new password, are forced to choose a new password that is different from any past passwords."
+                },
+                "numDifferentPasswords": {
+                  "type": "integer",
+                  "description": "Number of recent passwords that new password must be distinct from."
+                },
+                "enforceStrongPasswords": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users will be forced to choose strong passwords for their accounts. Strong passwords are at least 8 characters that contain 3 of the following: number, uppercase letter, lowercase letter, and symbol"
+                },
+                "enforceAccountLockout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users' Dashboard accounts will be locked out after a specified number of consecutive failed login attempts."
+                },
+                "accountLockoutAttempts": {
+                  "type": "integer",
+                  "description": "Number of consecutive failed login attempts after which users' accounts will be locked."
+                },
+                "enforceIdleTimeout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users will be logged out after being idle for the specified number of minutes."
+                },
+                "idleTimeoutMinutes": {
+                  "type": "integer",
+                  "description": "Number of minutes users can remain idle before being logged out of their accounts."
+                },
+                "enforceTwoFactorAuth": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
+                },
+                "enforceLoginIpRanges": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether organization will restrict access to Dashboard (including the API) from certain IP addresses."
+                },
+                "loginIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                        }
+                      },
+                      "description": "Details for API-only IP restrictions."
+                    }
+                  },
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -51086,7 +51206,86 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of client"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of client"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "ID of client"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of network"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID of network"
+                      }
+                    },
+                    "description": ""
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total data usage by client"
+                      },
+                      "upstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Upstream data usage by client"
+                      },
+                      "downstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Downstream data usage by client"
+                      },
+                      "percentage": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Percentage of total data usage by client"
+                      }
+                    },
+                    "description": "Data usage information"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Office Switch",
+                  "mac": "22:33:44:55:66:77",
+                  "id": "k74272e",
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "usage": {
+                    "total": 18000.0,
+                    "upstream": 8000.0,
+                    "downstream": 10000.0,
+                    "percentage": 80.2
+                  }
+                }
+              ]
+            }
           }
         },
         "summary": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
