@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.19.0-beta.2",
+    "version": "1.19.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 16 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 23 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -866,6 +866,41 @@
         ]
       }
     },
+    "/devices/{serial}/appliance/vmx/authenticationToken": {
+      "post": {
+        "description": "Generate a new vMX authentication token",
+        "operationId": "createDeviceApplianceVmxAuthenticationToken",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "token": "ffc0b7b578b61be5bd1d172132c78044/9af03bd84d474",
+                "expiresAt": "2021-06-18T12:40:10Z"
+              }
+            }
+          }
+        },
+        "summary": "Generate a new vMX authentication token",
+        "tags": [
+          "appliance",
+          "configure",
+          "vmx",
+          "authenticationToken"
+        ]
+      }
+    },
     "/devices/{serial}/blinkLeds": {
       "post": {
         "description": "Blink the LEDs on a device",
@@ -1218,6 +1253,132 @@
           "analytics",
           "zones",
           "history"
+        ]
+      }
+    },
+    "/devices/{serial}/camera/customAnalytics": {
+      "get": {
+        "description": "Return custom analytics settings for a camera",
+        "operationId": "getDeviceCameraCustomAnalytics",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": 0.5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return custom analytics settings for a camera",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics"
+        ]
+      },
+      "put": {
+        "description": "Update custom analytics settings for a camera",
+        "operationId": "updateDeviceCameraCustomAnalytics",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCameraCustomAnalytics",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable custom analytics"
+                },
+                "artifactId": {
+                  "type": "string",
+                  "description": "The ID of the custom analytics artifact"
+                },
+                "parameters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the parameter"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Value of the parameter"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ]
+                  },
+                  "description": "Parameters for the custom analytics workload"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": "0.5"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": 0.5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update custom analytics settings for a camera",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics"
         ]
       }
     },
@@ -3152,6 +3313,10 @@
                   "rstpEnabled": true,
                   "stpGuard": "disabled",
                   "linkNegotiation": "Auto negotiate",
+                  "linkNegotiationCapabilities": [
+                    "Auto negotiate",
+                    "1 Gigabit full duplex (auto)"
+                  ],
                   "portScheduleId": "1234",
                   "udld": "Alert only",
                   "adaptivePolicyGroupId": "123",
@@ -3493,6 +3658,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -3674,6 +3843,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -3712,6 +3885,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -25074,6 +25251,9 @@
                     "suspendReAuthentication": true
                   },
                   "hostMode": "Single-Host",
+                  "dot1x": {
+                    "controlDirection": "inbound"
+                  },
                   "accessPolicyType": "Hybrid authentication",
                   "increaseAccessSpeed": false,
                   "guestVlanId": 100,
@@ -25280,6 +25460,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -25335,6 +25518,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -25406,6 +25592,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -25617,6 +25806,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -25662,6 +25854,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -25866,7 +26061,7 @@
     },
     "/networks/{networkId}/switch/dhcpServerPolicy": {
       "get": {
-        "description": "Return the DHCP server policy",
+        "description": "Return the DHCP server settings. Blocked/allowed servers are the configured exceptions when default policy is allow/block, respectively",
         "operationId": "getNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -25884,16 +26079,31 @@
             },
             "examples": {
               "application/json": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false,
+                  "unsupportedModels": [
+                    "MS120"
+                  ]
+                }
               }
             }
           }
         },
-        "summary": "Return the DHCP server policy",
+        "summary": "Return the DHCP server settings",
         "tags": [
           "switch",
           "configure",
@@ -25901,7 +26111,7 @@
         ]
       },
       "put": {
-        "description": "Update the DHCP server policy",
+        "description": "Update the DHCP server settings",
         "operationId": "updateNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -25940,11 +26150,19 @@
                 }
               },
               "example": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false
+                }
               }
             }
           }
@@ -25957,16 +26175,31 @@
             },
             "examples": {
               "application/json": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false,
+                  "unsupportedModels": [
+                    "MS120"
+                  ]
+                }
               }
             }
           }
         },
-        "summary": "Update the DHCP server policy",
+        "summary": "Update the DHCP server settings",
         "tags": [
           "switch",
           "configure",
@@ -45201,6 +45434,184 @@
         ]
       }
     },
+    "/organizations/{organizationId}/camera/customAnalytics/artifacts": {
+      "get": {
+        "description": "List Custom Analytics Artifacts",
+        "operationId": "getOrganizationCameraCustomAnalyticsArtifacts",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "artifactId": "1",
+                  "organizationId": "2",
+                  "name": "example",
+                  "status": {
+                    "type": "pending",
+                    "message": null
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List Custom Analytics Artifacts",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      },
+      "post": {
+        "description": "Create custom analytics artifact. Returns an artifact upload URL with expiry time. Upload the artifact file with a put request to the returned upload URL before its expiry.",
+        "operationId": "createOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationCameraCustomAnalyticsArtifact",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Unique name of the artifact"
+                }
+              },
+              "example": {
+                "name": "example"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "artifactId": "1",
+                "organizationId": "2",
+                "name": "example",
+                "status": {
+                  "type": "pending",
+                  "message": null
+                },
+                "uploadId": "00112233445566778899aabbccddeeff",
+                "uploadUrl": "https://meraki_custom_cv_upload_url",
+                "uploadUrlExpiry": "2022-01-23T01:23:45.123456+00:00"
+              }
+            }
+          }
+        },
+        "summary": "Create custom analytics artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/customAnalytics/artifacts/{artifactId}": {
+      "get": {
+        "description": "Get Custom Analytics Artifact",
+        "operationId": "getOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "artifactId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "artifactId": "1",
+                "organizationId": "2",
+                "name": "example",
+                "status": {
+                  "type": "pending",
+                  "message": null
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Custom Analytics Artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      },
+      "delete": {
+        "description": "Delete Custom Analytics Artifact",
+        "operationId": "deleteOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "artifactId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete Custom Analytics Artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      }
+    },
     "/organizations/{organizationId}/camera/onboarding/statuses": {
       "get": {
         "description": "Fetch onboarding status of cameras",
@@ -46211,6 +46622,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -46289,6 +46704,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -46476,6 +46895,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -46514,6 +46937,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -48788,6 +49215,12 @@
             "name": "configTemplateId",
             "in": "query",
             "description": "An optional parameter that is the ID of a config template. Will return all networks bound to that template."
+          },
+          {
+            "type": "boolean",
+            "name": "isBoundToConfigTemplate",
+            "in": "query",
+            "description": "An optional parameter to filter config template bound networks. If configTemplateId is set, this cannot be false."
           },
           {
             "type": "array",
@@ -52161,6 +52594,12 @@
       "name": "applications"
     },
     {
+      "name": "artifacts"
+    },
+    {
+      "name": "authenticationToken"
+    },
+    {
       "name": "bandwidthUsageHistory"
     },
     {
@@ -52246,6 +52685,9 @@
     },
     {
       "name": "contentFiltering"
+    },
+    {
+      "name": "customAnalytics"
     },
     {
       "name": "customPerformanceClasses"
@@ -52722,6 +53164,9 @@
       "name": "vlans"
     },
     {
+      "name": "vmx"
+    },
+    {
       "name": "vpn"
     },
     {
@@ -52802,6 +53247,12 @@
       "group": "Bluetooth device setting",
       "summary": "Update the bluetooth settings for a wireless device",
       "resource": "/devices/{serial}/wireless/bluetooth/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Camera custom analytics settings",
+      "summary": "Update custom analytics settings for a camera",
+      "resource": "/devices/{serial}/camera/customAnalytics",
       "operation": "update"
     },
     {
@@ -52908,7 +53359,7 @@
     },
     {
       "group": "Dhcp server policy",
-      "summary": "Update the DHCP server policy",
+      "summary": "Update the DHCP server settings",
       "resource": "/networks/{networkId}/switch/dhcpServerPolicy",
       "operation": "update"
     },
@@ -53673,6 +54124,12 @@
       "summary": "Claim a vMX into a network",
       "resource": "/networks/{networkId}/devices/claim",
       "operation": "claim"
+    },
+    {
+      "group": "Vmx token",
+      "summary": "Generate a new vMX authentication token",
+      "resource": "/devices/{serial}/appliance/vmx/authenticationToken",
+      "operation": "create"
     },
     {
       "group": "Warm spare",
