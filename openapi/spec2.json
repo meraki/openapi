@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.19.0-beta.4",
+    "version": "1.20.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 30 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -11969,7 +11969,8 @@
                       "type": "text",
                       "value": "five"
                     }
-                  ]
+                  ],
+                  "interfaceId": 123
                 }
               ]
             }
@@ -12269,7 +12270,8 @@
                     "type": "text",
                     "value": "five"
                   }
-                ]
+                ],
+                "interfaceId": 123
               }
             }
           }
@@ -12562,7 +12564,8 @@
                     "type": "text",
                     "value": "five"
                   }
-                ]
+                ],
+                "interfaceId": 123
               }
             }
           }
@@ -26068,7 +26071,7 @@
     },
     "/networks/{networkId}/switch/dhcpServerPolicy": {
       "get": {
-        "description": "Return the DHCP server settings. Blocked/allowed servers are the configured exceptions when default policy is allow/block, respectively",
+        "description": "Return the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
         "operationId": "getNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -26103,7 +26106,8 @@
                 "arpInspection": {
                   "enabled": false,
                   "unsupportedModels": [
-                    "MS120"
+                    "MS120-8-HW",
+                    "MS125-24-HW"
                   ]
                 }
               }
@@ -26118,7 +26122,7 @@
         ]
       },
       "put": {
-        "description": "Update the DHCP server settings",
+        "description": "Update the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
         "operationId": "updateNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -26146,14 +26150,14 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "List the MAC addresses of DHCP servers to permit on the network. Applicable only if defaultPolicy is set to block. An empty array will clear the entries."
+                  "description": "List the MAC addresses of DHCP servers to permit on the network when defaultPolicy is set to block. An empty array will clear the entries."
                 },
                 "blockedServers": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "List the MAC addresses of DHCP servers to block on the network. Applicable only if defaultPolicy is set to allow. An empty array will clear the entries."
+                  "description": "List the MAC addresses of DHCP servers to block on the network when defaultPolicy is set to allow. An empty array will clear the entries."
                 }
               },
               "example": {
@@ -26163,6 +26167,10 @@
                   }
                 },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
@@ -26199,7 +26207,8 @@
                 "arpInspection": {
                   "enabled": false,
                   "unsupportedModels": [
-                    "MS120"
+                    "MS120-8-HW",
+                    "MS125-24-HW"
                   ]
                 }
               }
@@ -39942,6 +39951,10 @@
             },
             "examples": {
               "application/json": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -39999,6 +40012,16 @@
             "schema": {
               "type": "object",
               "properties": {
+                "concentrator": {
+                  "type": "object",
+                  "properties": {
+                    "networkId": {
+                      "type": "string",
+                      "description": "The NAT ID of the concentrator that should be set."
+                    }
+                  },
+                  "description": "The VPN concentrator settings for this SSID."
+                },
                 "splitTunnel": {
                   "type": "object",
                   "properties": {
@@ -40067,6 +40090,10 @@
                 }
               },
               "example": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -40102,6 +40129,10 @@
             },
             "examples": {
               "application/json": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -43730,6 +43761,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -45824,6 +45859,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -49682,7 +49721,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -52210,6 +52249,144 @@
         ]
       }
     },
+    "/organizations/{organizationId}/switch/ports/bySwitch": {
+      "get": {
+        "description": "List the switchports in an organization",
+        "operationId": "getOrganizationSwitchPortsBySwitch",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "configurationUpdatedAfter",
+            "in": "query",
+            "description": "Optional parameter to filter results by switches where the configuration has been updated after the given timestamp"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter switchports by network."
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to switches by name. All returned switches will have a name that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "mac",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to switches by MAC address. All returned switches will have a MAC address that contains the search term or is an exact match."
+          },
+          {
+            "type": "string",
+            "name": "serial",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to switches by serial number.  All returned switches will have a serial number that contains the search term or is an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to switches with one or more serial numbers. All switchports returned belong to serial numbers of switches that are an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "macs",
+            "in": "query",
+            "description": "Optional parameter to filter switchports by one or more  MAC addresses belonging to devices. All switchports returned belong to MAC addresses of switches that are an exact match."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "portId": "1",
+                "name": "My switch port",
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "enabled": true,
+                "poeEnabled": true,
+                "type": "access",
+                "vlan": 10,
+                "voiceVlan": 20,
+                "isolationEnabled": false,
+                "rstpEnabled": true,
+                "stpGuard": "disabled",
+                "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
+                "portScheduleId": "1234",
+                "udld": "Alert only",
+                "adaptivePolicyGroupId": "123",
+                "peerSgtCapable": false,
+                "accessPolicyType": "Sticky MAC allow list",
+                "stickyMacAllowList": [
+                  "34:56:fe:ce:8e:b0",
+                  "34:56:fe:ce:8e:b1"
+                ],
+                "stickyMacAllowListLimit": 5,
+                "stormControlEnabled": true
+              }
+            }
+          }
+        },
+        "summary": "List the switchports in an organization",
+        "tags": [
+          "switch",
+          "configure",
+          "ports",
+          "bySwitch"
+        ]
+      }
+    },
     "/organizations/{organizationId}/uplinks/statuses": {
       "get": {
         "description": "List the uplink status of every Meraki MX, MG and Z series devices in the organization",
@@ -52313,6 +52490,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -52336,6 +52517,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -52645,6 +52830,9 @@
     },
     {
       "name": "byInterval"
+    },
+    {
+      "name": "bySwitch"
     },
     {
       "name": "byUsage"
@@ -53379,7 +53567,7 @@
     },
     {
       "group": "Dhcp server policy",
-      "summary": "Update the DHCP server settings",
+      "summary": "Update the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
       "resource": "/networks/{networkId}/switch/dhcpServerPolicy",
       "operation": "update"
     },
