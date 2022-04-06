@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.19.0",
+    "version": "1.20.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 March, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -267,6 +267,41 @@
           "appliance",
           "monitor",
           "performance"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/vmx/authenticationToken": {
+      "post": {
+        "description": "Generate a new vMX authentication token",
+        "operationId": "createDeviceApplianceVmxAuthenticationToken",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "token": "ffc0b7b578b61be5bd1d172132c78044/9af03bd84d474",
+                "expiresAt": "2021-06-18T12:40:10Z"
+              }
+            }
+          }
+        },
+        "summary": "Generate a new vMX authentication token",
+        "tags": [
+          "appliance",
+          "configure",
+          "vmx",
+          "authenticationToken"
         ]
       }
     },
@@ -622,6 +657,132 @@
           "analytics",
           "zones",
           "history"
+        ]
+      }
+    },
+    "/devices/{serial}/camera/customAnalytics": {
+      "get": {
+        "description": "Return custom analytics settings for a camera",
+        "operationId": "getDeviceCameraCustomAnalytics",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": 0.5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return custom analytics settings for a camera",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics"
+        ]
+      },
+      "put": {
+        "description": "Update custom analytics settings for a camera",
+        "operationId": "updateDeviceCameraCustomAnalytics",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCameraCustomAnalytics",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Enable custom analytics"
+                },
+                "artifactId": {
+                  "type": "string",
+                  "description": "The ID of the custom analytics artifact"
+                },
+                "parameters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the parameter"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Value of the parameter"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value"
+                    ]
+                  },
+                  "description": "Parameters for the custom analytics workload"
+                }
+              },
+              "example": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": "0.5"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "enabled": true,
+                "artifactId": "1",
+                "parameters": [
+                  {
+                    "name": "detection_threshold",
+                    "value": 0.5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update custom analytics settings for a camera",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics"
         ]
       }
     },
@@ -2439,6 +2600,10 @@
                   "rstpEnabled": true,
                   "stpGuard": "disabled",
                   "linkNegotiation": "Auto negotiate",
+                  "linkNegotiationCapabilities": [
+                    "Auto negotiate",
+                    "1 Gigabit full duplex (auto)"
+                  ],
                   "portScheduleId": "1234",
                   "udld": "Alert only",
                   "adaptivePolicyGroupId": "123",
@@ -2569,6 +2734,7 @@
                   "portId": "1",
                   "enabled": true,
                   "status": "Connected",
+                  "isUplink": false,
                   "errors": [
                     "PoE overload",
                     "Very high proportion of CRC errors"
@@ -2780,6 +2946,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -2961,6 +3131,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -2999,6 +3173,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -10209,7 +10387,8 @@
                       "type": "text",
                       "value": "five"
                     }
-                  ]
+                  ],
+                  "interfaceId": 123
                 }
               ]
             }
@@ -10454,7 +10633,8 @@
                     "type": "text",
                     "value": "five"
                   }
-                ]
+                ],
+                "interfaceId": 123
               }
             }
           }
@@ -10692,7 +10872,8 @@
                     "type": "text",
                     "value": "five"
                   }
-                ]
+                ],
+                "interfaceId": 123
               }
             }
           }
@@ -15149,7 +15330,8 @@
                       "id": 4321,
                       "firmware": "camera-11-2-1",
                       "shortName": "MV 11.2.1",
-                      "releaseType": "stable"
+                      "releaseType": "stable",
+                      "releaseDate": "2020-03-17T17:22:52Z"
                     },
                     "lastUpgrade": {
                       "time": "timestamp",
@@ -15157,13 +15339,15 @@
                         "id": 1234,
                         "firmware": "camera-10-8-1",
                         "shortName": "MV 10.8.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       },
                       "toVersion": {
                         "id": 4321,
                         "firmware": "camera-11-2-1",
                         "shortName": "MV 11.2.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-17T17:22:52Z"
                       }
                     },
                     "nextUpgrade": {
@@ -15172,7 +15356,8 @@
                         "id": 2134,
                         "firmware": "camera-15-5-2",
                         "shortName": "MV 25.5.2",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-05-28T17:22:52Z"
                       }
                     },
                     "availableVersions": [
@@ -15180,25 +15365,29 @@
                         "id": 3421,
                         "firmware": "camera-16-x-y",
                         "shortName": "MV 16.x.y",
-                        "releaseType": "beta"
+                        "releaseType": "beta",
+                        "releaseDate": "2020-11-28T17:22:52Z"
                       },
                       {
                         "id": 2345,
                         "firmware": "camera-15-x-x",
                         "shortName": "MV 15.x.x",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-07T17:22:52Z"
                       },
                       {
                         "id": 5435,
                         "firmware": "camera-15-x-y",
                         "shortName": "MV 15.x.y",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
                         "id": 4534,
                         "firmware": "camera-18-z-z",
                         "shortName": "MV 18.z.z",
-                        "releaseType": "other?"
+                        "releaseType": "other?",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       }
                     ],
                     "participateInNextBetaRelease": false
@@ -15208,7 +15397,8 @@
                       "id": 5678,
                       "firmware": "switch-11-2-1",
                       "shortName": "MS 11.2.1",
-                      "releaseType": "stable"
+                      "releaseType": "stable",
+                      "releaseDate": "2019-03-17T17:22:52Z"
                     },
                     "lastUpgrade": {
                       "time": "timestamp",
@@ -15216,13 +15406,15 @@
                         "id": 7647,
                         "firmware": "switch-10-8-1",
                         "shortName": "MS 10.8.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-17T17:22:52Z"
                       },
                       "toVersion": {
                         "id": 5678,
                         "firmware": "switch-11-2-1",
                         "shortName": "MS 11.2.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       }
                     },
                     "nextUpgrade": {
@@ -15231,7 +15423,8 @@
                         "id": 7857,
                         "firmware": "switch-15-5-2",
                         "shortName": "MS 25.5.2",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       }
                     },
                     "availableVersions": [
@@ -15239,25 +15432,29 @@
                         "id": 7768,
                         "firmware": "switch-16-x-y",
                         "shortName": "MS 16.x.y",
-                        "releaseType": "beta"
+                        "releaseType": "beta",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
                         "id": 9768,
                         "firmware": "switch-15-x-x",
                         "shortName": "MS 15.x.x",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-02-17T17:22:52Z"
                       },
                       {
                         "id": 8896,
                         "firmware": "switch-15-x-y",
                         "shortName": "MS 15.x.y",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-01-17T17:22:52Z"
                       },
                       {
                         "id": 8766,
                         "firmware": "switch-18-z-z",
                         "shortName": "MS 18.z.z",
-                        "releaseType": "other?"
+                        "releaseType": "other?",
+                        "releaseDate": "2021-04-17T17:22:52Z"
                       }
                     ],
                     "participateInNextBetaRelease": false
@@ -15630,7 +15827,8 @@
                       "id": 4321,
                       "firmware": "camera-11-2-1",
                       "shortName": "MV 11.2.1",
-                      "releaseType": "stable"
+                      "releaseType": "stable",
+                      "releaseDate": "2020-03-17T17:22:52Z"
                     },
                     "lastUpgrade": {
                       "time": "timestamp",
@@ -15638,13 +15836,15 @@
                         "id": 1234,
                         "firmware": "camera-10-8-1",
                         "shortName": "MV 10.8.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       },
                       "toVersion": {
                         "id": 4321,
                         "firmware": "camera-11-2-1",
                         "shortName": "MV 11.2.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-17T17:22:52Z"
                       }
                     },
                     "nextUpgrade": {
@@ -15653,7 +15853,8 @@
                         "id": 2134,
                         "firmware": "camera-15-5-2",
                         "shortName": "MV 25.5.2",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-05-28T17:22:52Z"
                       }
                     },
                     "availableVersions": [
@@ -15661,25 +15862,29 @@
                         "id": 3421,
                         "firmware": "camera-16-x-y",
                         "shortName": "MV 16.x.y",
-                        "releaseType": "beta"
+                        "releaseType": "beta",
+                        "releaseDate": "2020-11-28T17:22:52Z"
                       },
                       {
                         "id": 2345,
                         "firmware": "camera-15-x-x",
                         "shortName": "MV 15.x.x",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-07T17:22:52Z"
                       },
                       {
                         "id": 5435,
                         "firmware": "camera-15-x-y",
                         "shortName": "MV 15.x.y",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
                         "id": 4534,
                         "firmware": "camera-18-z-z",
                         "shortName": "MV 18.z.z",
-                        "releaseType": "other?"
+                        "releaseType": "other?",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       }
                     ],
                     "participateInNextBetaRelease": false
@@ -15689,7 +15894,8 @@
                       "id": 5678,
                       "firmware": "switch-11-2-1",
                       "shortName": "MS 11.2.1",
-                      "releaseType": "stable"
+                      "releaseType": "stable",
+                      "releaseDate": "2019-03-17T17:22:52Z"
                     },
                     "lastUpgrade": {
                       "time": "timestamp",
@@ -15697,13 +15903,15 @@
                         "id": 7647,
                         "firmware": "switch-10-8-1",
                         "shortName": "MS 10.8.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2019-03-17T17:22:52Z"
                       },
                       "toVersion": {
                         "id": 5678,
                         "firmware": "switch-11-2-1",
                         "shortName": "MS 11.2.1",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       }
                     },
                     "nextUpgrade": {
@@ -15712,7 +15920,8 @@
                         "id": 7857,
                         "firmware": "switch-15-5-2",
                         "shortName": "MS 25.5.2",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-03-17T17:22:52Z"
                       }
                     },
                     "availableVersions": [
@@ -15720,25 +15929,29 @@
                         "id": 7768,
                         "firmware": "switch-16-x-y",
                         "shortName": "MS 16.x.y",
-                        "releaseType": "beta"
+                        "releaseType": "beta",
+                        "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
                         "id": 9768,
                         "firmware": "switch-15-x-x",
                         "shortName": "MS 15.x.x",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-02-17T17:22:52Z"
                       },
                       {
                         "id": 8896,
                         "firmware": "switch-15-x-y",
                         "shortName": "MS 15.x.y",
-                        "releaseType": "stable"
+                        "releaseType": "stable",
+                        "releaseDate": "2021-01-17T17:22:52Z"
                       },
                       {
                         "id": 8766,
                         "firmware": "switch-18-z-z",
                         "shortName": "MS 18.z.z",
-                        "releaseType": "other?"
+                        "releaseType": "other?",
+                        "releaseDate": "2021-04-17T17:22:52Z"
                       }
                     ],
                     "participateInNextBetaRelease": false
@@ -15870,7 +16083,8 @@
                   "id": 7857,
                   "firmware": "switch-15-5-2",
                   "shortName": "MS 25.5.2",
-                  "releaseType": "stable"
+                  "releaseType": "stable",
+                  "releaseDate": "2020-03-28T17:22:52Z"
                 },
                 "reasons": [
                   {
@@ -22984,6 +23198,9 @@
                     "suspendReAuthentication": true
                   },
                   "hostMode": "Single-Host",
+                  "dot1x": {
+                    "controlDirection": "inbound"
+                  },
                   "accessPolicyType": "Hybrid authentication",
                   "increaseAccessSpeed": false,
                   "guestVlanId": 100,
@@ -23190,6 +23407,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -23245,6 +23465,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -23316,6 +23539,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -23527,6 +23753,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -23572,6 +23801,9 @@
                   "suspendReAuthentication": true
                 },
                 "hostMode": "Single-Host",
+                "dot1x": {
+                  "controlDirection": "inbound"
+                },
                 "accessPolicyType": "Hybrid authentication",
                 "increaseAccessSpeed": false,
                 "guestVlanId": 100,
@@ -23776,7 +24008,7 @@
     },
     "/networks/{networkId}/switch/dhcpServerPolicy": {
       "get": {
-        "description": "Return the DHCP server policy",
+        "description": "Return the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
         "operationId": "getNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -23794,16 +24026,32 @@
             },
             "examples": {
               "application/json": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false,
+                  "unsupportedModels": [
+                    "MS120-8-HW",
+                    "MS125-24-HW"
+                  ]
+                }
               }
             }
           }
         },
-        "summary": "Return the DHCP server policy",
+        "summary": "Return the DHCP server settings",
         "tags": [
           "switch",
           "configure",
@@ -23811,7 +24059,7 @@
         ]
       },
       "put": {
-        "description": "Update the DHCP server policy",
+        "description": "Update the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
         "operationId": "updateNetworkSwitchDhcpServerPolicy",
         "parameters": [
           {
@@ -23839,22 +24087,34 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "List the MAC addresses of DHCP servers to permit on the network. Applicable only if defaultPolicy is set to block. An empty array will clear the entries."
+                  "description": "List the MAC addresses of DHCP servers to permit on the network when defaultPolicy is set to block. An empty array will clear the entries."
                 },
                 "blockedServers": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "List the MAC addresses of DHCP servers to block on the network. Applicable only if defaultPolicy is set to allow. An empty array will clear the entries."
+                  "description": "List the MAC addresses of DHCP servers to block on the network when defaultPolicy is set to allow. An empty array will clear the entries."
                 }
               },
               "example": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false
+                }
               }
             }
           }
@@ -23867,16 +24127,32 @@
             },
             "examples": {
               "application/json": {
+                "alerts": {
+                  "email": {
+                    "enabled": false
+                  }
+                },
                 "defaultPolicy": "block",
+                "blockedServers": [
+                  "00:50:56:00:00:03",
+                  "00:50:56:00:00:04"
+                ],
                 "allowedServers": [
                   "00:50:56:00:00:01",
                   "00:50:56:00:00:02"
-                ]
+                ],
+                "arpInspection": {
+                  "enabled": false,
+                  "unsupportedModels": [
+                    "MS120-8-HW",
+                    "MS125-24-HW"
+                  ]
+                }
               }
             }
           }
         },
-        "summary": "Update the DHCP server policy",
+        "summary": "Update the DHCP server settings",
         "tags": [
           "switch",
           "configure",
@@ -37301,6 +37577,10 @@
             },
             "examples": {
               "application/json": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -37358,6 +37638,16 @@
             "schema": {
               "type": "object",
               "properties": {
+                "concentrator": {
+                  "type": "object",
+                  "properties": {
+                    "networkId": {
+                      "type": "string",
+                      "description": "The NAT ID of the concentrator that should be set."
+                    }
+                  },
+                  "description": "The VPN concentrator settings for this SSID."
+                },
                 "splitTunnel": {
                   "type": "object",
                   "properties": {
@@ -37426,6 +37716,10 @@
                 }
               },
               "example": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -37461,6 +37755,10 @@
             },
             "examples": {
               "application/json": {
+                "concentrator": {
+                  "networkId": "N_123",
+                  "name": "some concentrator name"
+                },
                 "failover": {
                   "requestIp": "1.1.1.1",
                   "heartbeatInterval": 10,
@@ -37691,6 +37989,11 @@
                   },
                   "licensing": {
                     "model": "co-term"
+                  },
+                  "cloud": {
+                    "region": {
+                      "name": "North America"
+                    }
                   }
                 }
               ]
@@ -37839,6 +38142,11 @@
                 },
                 "licensing": {
                   "model": "co-term"
+                },
+                "cloud": {
+                  "region": {
+                    "name": "North America"
+                  }
                 }
               }
             }
@@ -41079,6 +41387,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -42790,6 +43102,184 @@
         ]
       }
     },
+    "/organizations/{organizationId}/camera/customAnalytics/artifacts": {
+      "get": {
+        "description": "List Custom Analytics Artifacts",
+        "operationId": "getOrganizationCameraCustomAnalyticsArtifacts",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "artifactId": "1",
+                  "organizationId": "2",
+                  "name": "example",
+                  "status": {
+                    "type": "pending",
+                    "message": null
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List Custom Analytics Artifacts",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      },
+      "post": {
+        "description": "Create custom analytics artifact. Returns an artifact upload URL with expiry time. Upload the artifact file with a put request to the returned upload URL before its expiry.",
+        "operationId": "createOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationCameraCustomAnalyticsArtifact",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Unique name of the artifact"
+                }
+              },
+              "example": {
+                "name": "example"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "artifactId": "1",
+                "organizationId": "2",
+                "name": "example",
+                "status": {
+                  "type": "pending",
+                  "message": null
+                },
+                "uploadId": "00112233445566778899aabbccddeeff",
+                "uploadUrl": "https://meraki_custom_cv_upload_url",
+                "uploadUrlExpiry": "2022-01-23T01:23:45.123456+00:00"
+              }
+            }
+          }
+        },
+        "summary": "Create custom analytics artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/customAnalytics/artifacts/{artifactId}": {
+      "get": {
+        "description": "Get Custom Analytics Artifact",
+        "operationId": "getOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "artifactId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "artifactId": "1",
+                "organizationId": "2",
+                "name": "example",
+                "status": {
+                  "type": "pending",
+                  "message": null
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Custom Analytics Artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      },
+      "delete": {
+        "description": "Delete Custom Analytics Artifact",
+        "operationId": "deleteOrganizationCameraCustomAnalyticsArtifact",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "artifactId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete Custom Analytics Artifact",
+        "tags": [
+          "camera",
+          "configure",
+          "customAnalytics",
+          "artifacts"
+        ]
+      }
+    },
     "/organizations/{organizationId}/camera/onboarding/statuses": {
       "get": {
         "description": "Fetch onboarding status of cameras",
@@ -42995,6 +43485,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -43800,6 +44294,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -43878,6 +44376,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -44065,6 +44567,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -44103,6 +44609,10 @@
                 "rstpEnabled": true,
                 "stpGuard": "disabled",
                 "linkNegotiation": "Auto negotiate",
+                "linkNegotiationCapabilities": [
+                  "Auto negotiate",
+                  "1 Gigabit full duplex (auto)"
+                ],
                 "portScheduleId": "1234",
                 "udld": "Alert only",
                 "adaptivePolicyGroupId": "123",
@@ -45097,7 +45607,18 @@
                 }
               },
               "example": {
-
+                "orders": [
+                  "4CXXXXXXX"
+                ],
+                "serials": [
+                  "Q234-ABCD-5678"
+                ],
+                "licenses": [
+                  {
+                    "key": "Z2XXXXXXXXXX",
+                    "mode": "addDevices"
+                  }
+                ]
               }
             }
           }
@@ -45376,7 +45897,9 @@
                 }
               },
               "example": {
-
+                "serials": [
+                  "Q234-ABCD-5678"
+                ]
               }
             }
           }
@@ -46003,43 +46526,54 @@
               "properties": {
                 "enforcePasswordExpiration": {
                   "type": "boolean",
-                  "description": "Whether password expiration should be enforced"
+                  "description": "Boolean indicating whether users are forced to change their password every X number of days."
                 },
                 "passwordExpirationDays": {
                   "type": "integer",
-                  "description": "How long the password is valid, in days"
+                  "description": "Number of days after which users will be forced to change their password."
                 },
                 "enforceDifferentPasswords": {
                   "type": "boolean",
-                  "description": "Whether the org is forced to choose a password that is distinct from previous passwords"
+                  "description": "Boolean indicating whether users, when setting a new password, are forced to choose a new password that is different from any past passwords."
                 },
                 "numDifferentPasswords": {
                   "type": "integer",
-                  "description": "How many recent password that cannot be reused"
+                  "description": "Number of recent passwords that new password must be distinct from."
                 },
                 "enforceStrongPasswords": {
                   "type": "boolean",
-                  "description": "Whether the org must choose a strong password"
+                  "description": "Boolean indicating whether users will be forced to choose strong passwords for their accounts. Strong passwords are at least 8 characters that contain 3 of the following: number, uppercase letter, lowercase letter, and symbol"
+                },
+                "enforceAccountLockout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users' Dashboard accounts will be locked out after a specified number of consecutive failed login attempts."
                 },
                 "accountLockoutAttempts": {
                   "type": "integer",
-                  "description": "Number of failed login attempts before the admin is locked out of the org"
+                  "description": "Number of consecutive failed login attempts after which users' accounts will be locked."
                 },
                 "enforceIdleTimeout": {
                   "type": "boolean",
-                  "description": "Whether the org admin should be logged out after idling for the given idle timeout duration"
+                  "description": "Boolean indicating whether users will be logged out after being idle for the specified number of minutes."
                 },
                 "idleTimeoutMinutes": {
                   "type": "integer",
-                  "description": "Length of time, in minutes, an org admin is idle before being logged out"
+                  "description": "Number of minutes users can remain idle before being logged out of their accounts."
                 },
                 "enforceTwoFactorAuth": {
                   "type": "boolean",
-                  "description": "Whether the org uses two factor authentication"
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
                 },
                 "enforceLoginIpRanges": {
                   "type": "boolean",
-                  "description": "Whether the org restricts access to Dashboard by IP addresses"
+                  "description": "Boolean indicating whether organization will restrict access to Dashboard (including the API) from certain IP addresses."
+                },
+                "loginIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
                 },
                 "apiAuthentication": {
                   "type": "object",
@@ -46049,20 +46583,20 @@
                       "properties": {
                         "enabled": {
                           "type": "boolean",
-                          "description": "Whether API IP restrictions are enabled"
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
                         },
                         "ranges": {
                           "type": "array",
                           "items": {
                             "type": "string"
                           },
-                          "description": "The list of IP address ranges that are allowed to make API requests for the org"
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
                         }
                       },
-                      "description": "Collection of restrictions by IP address"
+                      "description": "Details for API-only IP restrictions."
                     }
                   },
-                  "description": "Collection of properties related to API authentication"
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
                 }
               }
             },
@@ -46195,7 +46729,30 @@
                 }
               },
               "example": {
-
+                "enforcePasswordExpiration": true,
+                "passwordExpirationDays": 90,
+                "enforceDifferentPasswords": true,
+                "numDifferentPasswords": 3,
+                "enforceStrongPasswords": true,
+                "enforceAccountLockout": true,
+                "accountLockoutAttempts": 3,
+                "enforceIdleTimeout": true,
+                "idleTimeoutMinutes": 30,
+                "enforceTwoFactorAuth": true,
+                "enforceLoginIpRanges": true,
+                "loginIpRanges": [
+                  "192.195.83.1",
+                  "192.195.83.255"
+                ],
+                "apiAuthentication": {
+                  "ipRestrictionsForKeys": {
+                    "enabled": true,
+                    "ranges": [
+                      "192.195.83.1",
+                      "192.168.33.33"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -46204,7 +46761,83 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "enforcePasswordExpiration": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users are forced to change their password every X number of days."
+                },
+                "passwordExpirationDays": {
+                  "type": "integer",
+                  "description": "Number of days after which users will be forced to change their password."
+                },
+                "enforceDifferentPasswords": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users, when setting a new password, are forced to choose a new password that is different from any past passwords."
+                },
+                "numDifferentPasswords": {
+                  "type": "integer",
+                  "description": "Number of recent passwords that new password must be distinct from."
+                },
+                "enforceStrongPasswords": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users will be forced to choose strong passwords for their accounts. Strong passwords are at least 8 characters that contain 3 of the following: number, uppercase letter, lowercase letter, and symbol"
+                },
+                "enforceAccountLockout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users' Dashboard accounts will be locked out after a specified number of consecutive failed login attempts."
+                },
+                "accountLockoutAttempts": {
+                  "type": "integer",
+                  "description": "Number of consecutive failed login attempts after which users' accounts will be locked."
+                },
+                "enforceIdleTimeout": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users will be logged out after being idle for the specified number of minutes."
+                },
+                "idleTimeoutMinutes": {
+                  "type": "integer",
+                  "description": "Number of minutes users can remain idle before being logged out of their accounts."
+                },
+                "enforceTwoFactorAuth": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
+                },
+                "enforceLoginIpRanges": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether organization will restrict access to Dashboard (including the API) from certain IP addresses."
+                },
+                "loginIpRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                },
+                "apiAuthentication": {
+                  "type": "object",
+                  "properties": {
+                    "ipRestrictionsForKeys": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Boolean indicating whether the organization will restrict API key (not Dashboard GUI) usage to a specific list of IP addresses or CIDR ranges."
+                        },
+                        "ranges": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of acceptable IP ranges. Entries can be single IP addresses, IP address ranges, and CIDR subnets."
+                        }
+                      },
+                      "description": "Details for API-only IP restrictions."
+                    }
+                  },
+                  "description": "Details for indicating whether organization will restrict access to API (but not Dashboard) to certain IP addresses."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -47412,7 +48045,7 @@
             },
             "name": "metrics",
             "in": "query",
-            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, and battery."
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
           }
         ],
         "responses": {
@@ -47512,7 +48145,7 @@
             },
             "name": "metrics",
             "in": "query",
-            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, and battery."
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
           }
         ],
         "responses": {
@@ -47916,7 +48549,86 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of client"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of client"
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "ID of client"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of network"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID of network"
+                      }
+                    },
+                    "description": ""
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total data usage by client"
+                      },
+                      "upstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Upstream data usage by client"
+                      },
+                      "downstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Downstream data usage by client"
+                      },
+                      "percentage": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Percentage of total data usage by client"
+                      }
+                    },
+                    "description": "Data usage information"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Office Switch",
+                  "mac": "22:33:44:55:66:77",
+                  "id": "k74272e",
+                  "network": {
+                    "name": "Main Office",
+                    "id": "N_24329156"
+                  },
+                  "usage": {
+                    "total": 18000.0,
+                    "upstream": 8000.0,
+                    "downstream": 10000.0,
+                    "percentage": 80.2
+                  }
+                }
+              ]
+            }
           }
         },
         "summary": "Return metrics for organization's top 10 clients by data usage (in mb) over given time range.",
@@ -48458,6 +49170,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -48481,6 +49197,10 @@
                       },
                       "connectionType": "4g",
                       "apn": "internet",
+                      "gateway": "100.100.100.100",
+                      "dns1": "111.111.111.111",
+                      "dns2": "222.222.222.222",
+                      "signalType": "4G",
                       "iccid": "123456789"
                     }
                   ]
@@ -48759,6 +49479,12 @@
       "name": "applications"
     },
     {
+      "name": "artifacts"
+    },
+    {
+      "name": "authenticationToken"
+    },
+    {
       "name": "bandwidthUsageHistory"
     },
     {
@@ -48841,6 +49567,9 @@
     },
     {
       "name": "contentFiltering"
+    },
+    {
+      "name": "customAnalytics"
     },
     {
       "name": "customPerformanceClasses"
@@ -49287,6 +50016,9 @@
       "name": "vlans"
     },
     {
+      "name": "vmx"
+    },
+    {
       "name": "vpn"
     },
     {
@@ -49361,6 +50093,12 @@
       "group": "Bluetooth device setting",
       "summary": "Update the bluetooth settings for a wireless device",
       "resource": "/devices/{serial}/wireless/bluetooth/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Camera custom analytics settings",
+      "summary": "Update custom analytics settings for a camera",
+      "resource": "/devices/{serial}/camera/customAnalytics",
       "operation": "update"
     },
     {
@@ -49467,7 +50205,7 @@
     },
     {
       "group": "Dhcp server policy",
-      "summary": "Update the DHCP server policy",
+      "summary": "Update the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
       "resource": "/networks/{networkId}/switch/dhcpServerPolicy",
       "operation": "update"
     },
@@ -50160,6 +50898,12 @@
       "summary": "Claim a vMX into a network",
       "resource": "/networks/{networkId}/devices/claim",
       "operation": "claim"
+    },
+    {
+      "group": "Vmx token",
+      "summary": "Generate a new vMX authentication token",
+      "resource": "/devices/{serial}/appliance/vmx/authenticationToken",
+      "operation": "create"
     },
     {
       "group": "Warm spare",
