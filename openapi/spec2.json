@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.20.0-beta.0",
+    "version": "1.20.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -5739,7 +5739,8 @@
                   "wireless"
                 ],
                 "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office"
+                "notes": "Combined network for Long Island Office",
+                "isBoundToConfigTemplate": false
               }
             }
           }
@@ -5824,7 +5825,8 @@
                   "wireless"
                 ],
                 "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office"
+                "notes": "Combined network for Long Island Office",
+                "isBoundToConfigTemplate": false
               }
             }
           }
@@ -11970,7 +11972,7 @@
                       "value": "five"
                     }
                   ],
-                  "interfaceId": 123
+                  "interfaceId": "123"
                 }
               ]
             }
@@ -12271,7 +12273,7 @@
                     "value": "five"
                   }
                 ],
-                "interfaceId": 123
+                "interfaceId": "123"
               }
             }
           }
@@ -12565,7 +12567,7 @@
                     "value": "five"
                   }
                 ],
-                "interfaceId": 123
+                "interfaceId": "123"
               }
             }
           }
@@ -13197,6 +13199,7 @@
                 ],
                 "enrollmentString": "long-island-office",
                 "notes": "Combined network for Long Island Office",
+                "isBoundToConfigTemplate": false,
                 "configTemplateId": "N_23952905"
               }
             }
@@ -22321,6 +22324,134 @@
         ]
       }
     },
+    "/networks/{networkId}/policies/byClient": {
+      "get": {
+        "description": "Get policies for all clients with policies",
+        "operationId": "getNetworkPoliciesByClient",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of client"
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "description": "ID of client"
+                  },
+                  "assigned": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "name of policy"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "type of policy"
+                        },
+                        "ssid": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "ssidNumber": {
+                                "type": "integer",
+                                "description": "number of ssid"
+                              }
+                            }
+                          },
+                          "description": "ssid"
+                        }
+                      }
+                    },
+                    "description": "Assigned policies"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "my phone",
+                  "clientId": "abc",
+                  "assigned": [
+                    {
+                      "name": "Allowed",
+                      "type": "ssid",
+                      "ssid": [
+                        {
+                          "ssidNumber": 1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get policies for all clients with policies",
+        "tags": [
+          "networks",
+          "configure",
+          "policies",
+          "byClient"
+        ]
+      }
+    },
     "/networks/{networkId}/sensor/relationships": {
       "get": {
         "description": "List the sensor roles for devices in a given network",
@@ -26106,8 +26237,8 @@
                 "arpInspection": {
                   "enabled": false,
                   "unsupportedModels": [
-                    "MS120-8-HW",
-                    "MS125-24-HW"
+                    "MS120-8",
+                    "MS125-24"
                   ]
                 }
               }
@@ -26207,8 +26338,8 @@
                 "arpInspection": {
                   "enabled": false,
                   "unsupportedModels": [
-                    "MS120-8-HW",
-                    "MS125-24-HW"
+                    "MS120-8",
+                    "MS125-24"
                   ]
                 }
               }
@@ -31358,7 +31489,8 @@
                   "wireless"
                 ],
                 "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office"
+                "notes": "Combined network for Long Island Office",
+                "isBoundToConfigTemplate": false
               }
             }
           }
@@ -44766,6 +44898,15 @@
                     "apiDocsSubtab": "default or inherit",
                     "hardwareReplacementsSubtab": "hide",
                     "smForums": "hide"
+                  },
+                  "customLogo": {
+                    "enabled": true,
+                    "image": {
+                      "preview": {
+                        "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                        "expiresAt": "2022-04-06T06:19:27-07:00"
+                      }
+                    }
                   }
                 }
               ]
@@ -44946,6 +45087,37 @@
                     }
                   },
                   "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n Each property defaults to 'default or inherit' when not provided."
+                },
+                "customLogo": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether or not there is a custom logo enabled."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+
+                      },
+                      "description": "Properties for setting the image."
+                    },
+                    "contents": {
+                      "type": "string",
+                      "format": "byte",
+                      "description": "The file contents (a base 64 encoded string) of your new logo."
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "gif",
+                        "png",
+                        "jpg"
+                      ],
+                      "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                    }
+                  },
+                  "description": "Properties describing the custom logo attached to the branding policy."
                 }
               },
               "example": {
@@ -44974,6 +45146,15 @@
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
                   "smForums": "hide"
+                },
+                "customLogo": {
+                  "enabled": true,
+                  "image": {
+                    "preview": {
+                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                      "expiresAt": "2022-04-06T06:19:27-07:00"
+                    }
+                  }
                 }
               },
               "required": [
@@ -45018,6 +45199,15 @@
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
                   "smForums": "hide"
+                },
+                "customLogo": {
+                  "enabled": true,
+                  "image": {
+                    "preview": {
+                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                      "expiresAt": "2022-04-06T06:19:27-07:00"
+                    }
+                  }
                 }
               }
             }
@@ -45183,6 +45373,15 @@
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
                   "smForums": "hide"
+                },
+                "customLogo": {
+                  "enabled": true,
+                  "image": {
+                    "preview": {
+                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                      "expiresAt": "2022-04-06T06:19:27-07:00"
+                    }
+                  }
                 }
               }
             }
@@ -45368,6 +45567,37 @@
                     }
                   },
                   "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n"
+                },
+                "customLogo": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether or not there is a custom logo enabled."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+
+                      },
+                      "description": "Properties for setting the image."
+                    },
+                    "contents": {
+                      "type": "string",
+                      "format": "byte",
+                      "description": "The file contents (a base 64 encoded string) of your new logo."
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "gif",
+                        "png",
+                        "jpg"
+                      ],
+                      "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                    }
+                  },
+                  "description": "Properties describing the custom logo attached to the branding policy."
                 }
               },
               "example": {
@@ -45396,6 +45626,15 @@
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
                   "smForums": "hide"
+                },
+                "customLogo": {
+                  "enabled": true,
+                  "image": {
+                    "preview": {
+                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                      "expiresAt": "2022-04-06T06:19:27-07:00"
+                    }
+                  }
                 }
               }
             }
@@ -45434,6 +45673,15 @@
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
                   "smForums": "hide"
+                },
+                "customLogo": {
+                  "enabled": true,
+                  "image": {
+                    "preview": {
+                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
+                      "expiresAt": "2022-04-06T06:19:27-07:00"
+                    }
+                  }
                 }
               }
             }
@@ -46198,7 +46446,8 @@
                         "wireless"
                       ],
                       "enrollmentString": "long-island-office",
-                      "notes": "Combined network for Long Island Office"
+                      "notes": "Combined network for Long Island Office",
+                      "isBoundToConfigTemplate": false
                     },
                     "description": "Miles's phone",
                     "os": "iOS",
@@ -49351,7 +49600,8 @@
                     "wireless"
                   ],
                   "enrollmentString": "long-island-office",
-                  "notes": "Combined network for Long Island Office"
+                  "notes": "Combined network for Long Island Office",
+                  "isBoundToConfigTemplate": false
                 }
               ]
             }
@@ -49465,7 +49715,8 @@
                   "wireless"
                 ],
                 "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office"
+                "notes": "Combined network for Long Island Office",
+                "isBoundToConfigTemplate": false
               }
             }
           }
@@ -49549,7 +49800,8 @@
                     "wireless"
                   ],
                   "enrollmentString": "long-island-office",
-                  "notes": "Combined network for Long Island Office"
+                  "notes": "Combined network for Long Island Office",
+                  "isBoundToConfigTemplate": false
                 }
               }
             }
@@ -52824,6 +53076,9 @@
     },
     {
       "name": "brandingPolicies"
+    },
+    {
+      "name": "byClient"
     },
     {
       "name": "byEnergyUsage"
