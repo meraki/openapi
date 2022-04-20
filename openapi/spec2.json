@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.20.0-beta.1",
+    "version": "1.20.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 20 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -40085,6 +40085,7 @@
               "application/json": {
                 "concentrator": {
                   "networkId": "N_123",
+                  "vlanId": 44,
                   "name": "some concentrator name"
                 },
                 "failover": {
@@ -40150,6 +40151,10 @@
                     "networkId": {
                       "type": "string",
                       "description": "The NAT ID of the concentrator that should be set."
+                    },
+                    "vlanId": {
+                      "type": "integer",
+                      "description": "The VLAN that should be tagged for the concentrator."
                     }
                   },
                   "description": "The VPN concentrator settings for this SSID."
@@ -40224,6 +40229,7 @@
               "example": {
                 "concentrator": {
                   "networkId": "N_123",
+                  "vlanId": 44,
                   "name": "some concentrator name"
                 },
                 "failover": {
@@ -40263,6 +40269,7 @@
               "application/json": {
                 "concentrator": {
                   "networkId": "N_123",
+                  "vlanId": 44,
                   "name": "some concentrator name"
                 },
                 "failover": {
@@ -41797,36 +41804,6 @@
           "groups"
         ]
       },
-      "delete": {
-        "description": "Deletes the specified adaptive policy group and any associated policies and references",
-        "operationId": "deleteOrganizationAdaptivePolicyGroup",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "groupId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Deletes the specified adaptive policy group and any associated policies and references",
-        "tags": [
-          "organizations",
-          "configure",
-          "adaptivePolicy",
-          "groups"
-        ]
-      },
       "put": {
         "description": "Updates an adaptive policy group. If updating \"Infrastructure\", only the SGT is allowed. Cannot update \"Unknown\".",
         "operationId": "updateOrganizationAdaptivePolicyGroup",
@@ -41926,6 +41903,36 @@
           }
         },
         "summary": "Updates an adaptive policy group",
+        "tags": [
+          "organizations",
+          "configure",
+          "adaptivePolicy",
+          "groups"
+        ]
+      },
+      "delete": {
+        "description": "Deletes the specified adaptive policy group and any associated policies and references",
+        "operationId": "deleteOrganizationAdaptivePolicyGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "groupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes the specified adaptive policy group and any associated policies and references",
         "tags": [
           "organizations",
           "configure",
@@ -52516,7 +52523,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 50. Default is 50."
           },
           {
             "type": "string",
@@ -52580,6 +52587,12 @@
             "name": "macs",
             "in": "query",
             "description": "Optional parameter to filter switchports by one or more  MAC addresses belonging to devices. All switchports returned belong to MAC addresses of switches that are an exact match."
+          },
+          {
+            "type": "boolean",
+            "name": "extendedParams",
+            "in": "query",
+            "description": "Optional flag to return all of the switchport data vs smaller dataset"
           }
         ],
         "responses": {
@@ -53678,9 +53691,21 @@
     },
     {
       "group": "Adaptive policy group",
+      "summary": "Creates a new adaptive policy group",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/groups",
+      "operation": "create"
+    },
+    {
+      "group": "Adaptive policy group",
       "summary": "Deletes the specified adaptive policy group and any associated policies and references",
       "resource": "/organizations/{organizationId}/adaptivePolicy/groups/{groupId}",
       "operation": "destroy"
+    },
+    {
+      "group": "Adaptive policy group",
+      "summary": "Updates an adaptive policy group. If updating \"Infrastructure\", only the SGT is allowed. Cannot update \"Unknown\".",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/groups/{groupId}",
+      "operation": "update"
     },
     {
       "group": "Alternate management interface",
@@ -54544,18 +54569,6 @@
       "group": "V1/adaptive policy acl",
       "summary": "Updates an adaptive policy ACL",
       "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
-      "operation": "update"
-    },
-    {
-      "group": "V1/adaptive policy group",
-      "summary": "Creates a new adaptive policy group",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/groups",
-      "operation": "create"
-    },
-    {
-      "group": "V1/adaptive policy group",
-      "summary": "Updates an adaptive policy group. If updating \"Infrastructure\", only the SGT is allowed. Cannot update \"Unknown\".",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/groups/{groupId}",
       "operation": "update"
     },
     {
