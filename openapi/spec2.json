@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.20.0-beta.2",
+    "version": "1.20.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 20 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 27 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -43412,6 +43412,12 @@
           },
           {
             "type": "string",
+            "enum": [
+              "GET",
+              "PUT",
+              "POST",
+              "DELETE"
+            ],
             "name": "method",
             "in": "query",
             "description": "Filter the results by the method of the API requests (must be 'GET', 'PUT', 'POST' or 'DELETE')"
@@ -43427,6 +43433,12 @@
             "name": "sourceIp",
             "in": "query",
             "description": "Filter the results by the IP address of the originating API request"
+          },
+          {
+            "type": "string",
+            "name": "userAgent",
+            "in": "query",
+            "description": "Filter the results by the user agent string of the API request"
           }
         ],
         "responses": {
@@ -43435,7 +43447,46 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "adminId": {
+                    "type": "string",
+                    "description": "Database ID for the admin user who made the API request."
+                  },
+                  "method": {
+                    "type": "string",
+                    "description": "HTTP method used in the API request."
+                  },
+                  "host": {
+                    "type": "string",
+                    "description": "The host which the API request was directed at."
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "The API request path."
+                  },
+                  "queryString": {
+                    "type": "string",
+                    "description": "The query string sent with the API request."
+                  },
+                  "userAgent": {
+                    "type": "string",
+                    "description": "The API request user agent."
+                  },
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp, in iso8601 format, indicating when the API request was made."
+                  },
+                  "responseCode": {
+                    "type": "integer",
+                    "description": "API request response code."
+                  },
+                  "sourceIp": {
+                    "type": "string",
+                    "description": "Public IP address from which the API request was made."
+                  }
+                }
               }
             },
             "headers": {
@@ -43449,11 +43500,11 @@
                 {
                   "adminId": "212406",
                   "method": "GET",
-                  "host": "api.meraki.com",
-                  "path": "/api/v0/organizations/33349/apiRequests",
+                  "host": "server.example.com",
+                  "path": "/api/v1/organizations/12345/apiRequests",
                   "queryString": "timespan=604800",
                   "userAgent": "PostmanRuntime/7.6.0",
-                  "ts": "2019-02-20T17:31:23Z",
+                  "ts": "2018-02-11T00:00:00.090210Z",
                   "responseCode": 200,
                   "sourceIp": "123.123.123.1"
                 }
@@ -49980,7 +50031,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
@@ -51922,7 +51973,56 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      }
+                    },
+                    "description": "Network info"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the appliance"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "Mac address of the appliance"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the appliance"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the appliance"
+                  },
+                  "utilization": {
+                    "type": "object",
+                    "properties": {
+                      "average": {
+                        "type": "object",
+                        "properties": {
+                          "percentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Average percentage utilization of the appliance"
+                          }
+                        },
+                        "description": "Average utilization of the appliance"
+                      }
+                    },
+                    "description": "Utilization of the appliance"
+                  }
+                }
               }
             },
             "examples": {
@@ -52120,7 +52220,50 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the manufacturer"
+                  },
+                  "clients": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total counts of clients"
+                          }
+                        },
+                        "description": "Counts of clients"
+                      }
+                    },
+                    "description": "Clients info"
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total data usage by client"
+                      },
+                      "upstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Upstream data usage by client"
+                      },
+                      "downstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Downstream data usage by client"
+                      }
+                    },
+                    "description": "Clients usage"
+                  }
+                }
               }
             },
             "examples": {
@@ -52134,8 +52277,8 @@
                   },
                   "usage": {
                     "total": 9000.0,
-                    "downstream": 8000.0,
-                    "upstream": 1000.0
+                    "upstream": 1000.0,
+                    "downstream": 8000.0
                   }
                 }
               ]
@@ -52191,7 +52334,75 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the device"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the device"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the device"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "Mac address of the device"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product type of the device"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      }
+                    },
+                    "description": "Network info"
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total data usage of the device"
+                      },
+                      "percentage": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Data usage of the device by percentage"
+                      }
+                    },
+                    "description": "Data usage of the device"
+                  },
+                  "clients": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total counts of clients"
+                          }
+                        },
+                        "description": "Counts of clients"
+                      }
+                    },
+                    "description": "Clients"
+                  }
+                }
               }
             },
             "examples": {
@@ -52207,7 +52418,7 @@
                     "id": "N_24329156"
                   },
                   "usage": {
-                    "total": 18000,
+                    "total": 18000.111,
                     "percentage": 80.223456789
                   },
                   "clients": {
@@ -52405,7 +52616,46 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      }
+                    },
+                    "description": "Network info"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the switch"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "Mac address of the switch"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the switch"
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total energy usage of the switch"
+                      }
+                    },
+                    "description": "Energy usage of the switch"
+                  }
+                }
               }
             },
             "examples": {
