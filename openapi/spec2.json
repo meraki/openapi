@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.20.0-beta.3",
+    "version": "1.21.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 27 April, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 May, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -25554,6 +25554,20 @@
                   "type": "integer",
                   "description": "ID for the guest VLAN allow unauthorized devices access to limited network resources"
                 },
+                "dot1x": {
+                  "type": "object",
+                  "properties": {
+                    "controlDirection": {
+                      "type": "string",
+                      "enum": [
+                        "inbound",
+                        "both"
+                      ],
+                      "description": "Supports either 'both' or 'inbound'. Set to 'inbound' to allow unauthorized egress on the switchport. Set to 'both' to control both traffic directions with authorization. Defaults to 'both'"
+                    }
+                  },
+                  "description": "802.1x Settings"
+                },
                 "voiceVlanClients": {
                   "type": "boolean",
                   "description": "CDP/LLDP capable voice clients will be able to use this VLAN. Automatically true when hostMode is 'Multi-Domain'."
@@ -25899,6 +25913,20 @@
                 "guestVlanId": {
                   "type": "integer",
                   "description": "ID for the guest VLAN allow unauthorized devices access to limited network resources"
+                },
+                "dot1x": {
+                  "type": "object",
+                  "properties": {
+                    "controlDirection": {
+                      "type": "string",
+                      "enum": [
+                        "inbound",
+                        "both"
+                      ],
+                      "description": "Supports either 'both' or 'inbound'. Set to 'inbound' to allow unauthorized egress on the switchport. Set to 'both' to control both traffic directions with authorization. Defaults to 'both'"
+                    }
+                  },
+                  "description": "802.1x Settings"
                 },
                 "voiceVlanClients": {
                   "type": "boolean",
@@ -50031,7 +50059,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -52760,7 +52788,7 @@
     },
     "/organizations/{organizationId}/switch/ports/bySwitch": {
       "get": {
-        "description": "List the switchports in an organization",
+        "description": "List the switchports in an organization by switch",
         "operationId": "getOrganizationSwitchPortsBySwitch",
         "parameters": [
           {
@@ -52859,41 +52887,43 @@
             },
             "examples": {
               "application/json": {
-                "portId": "1",
-                "name": "My switch port",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
-                "enabled": true,
-                "poeEnabled": true,
-                "type": "access",
-                "vlan": 10,
-                "voiceVlan": 20,
-                "isolationEnabled": false,
-                "rstpEnabled": true,
-                "stpGuard": "disabled",
-                "linkNegotiation": "Auto negotiate",
-                "linkNegotiationCapabilities": [
-                  "Auto negotiate",
-                  "1 Gigabit full duplex (auto)"
-                ],
-                "portScheduleId": "1234",
-                "udld": "Alert only",
-                "adaptivePolicyGroupId": "123",
-                "peerSgtCapable": false,
-                "accessPolicyType": "Sticky MAC allow list",
-                "stickyMacAllowList": [
-                  "34:56:fe:ce:8e:b0",
-                  "34:56:fe:ce:8e:b1"
-                ],
-                "stickyMacAllowListLimit": 5,
-                "stormControlEnabled": true
+                "name": "My switch",
+                "serial": "Q234-ABCD-5678",
+                "mac": "00:11:22:33:44:55",
+                "network": {
+                  "name": "Main Office",
+                  "id": "N_24329156"
+                },
+                "model": "MS",
+                "ports": [
+                  {
+                    "portId": "1",
+                    "name": "My switch port",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ],
+                    "enabled": true,
+                    "poeEnabled": true,
+                    "type": "access",
+                    "vlan": 10,
+                    "voiceVlan": 20,
+                    "rstpEnabled": true,
+                    "stpGuard": "disabled",
+                    "linkNegotiation": "Auto negotiate",
+                    "accessPolicyType": "Sticky MAC allow list",
+                    "stickyMacAllowList": [
+                      "34:56:fe:ce:8e:b0",
+                      "34:56:fe:ce:8e:b1"
+                    ],
+                    "stickyMacAllowListLimit": 5
+                  }
+                ]
               }
             }
           }
         },
-        "summary": "List the switchports in an organization",
+        "summary": "List the switchports in an organization by switch",
         "tags": [
           "switch",
           "configure",
