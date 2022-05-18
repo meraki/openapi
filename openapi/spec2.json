@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.21.0-beta.1",
+    "version": "1.21.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 11 May, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 May, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -25481,6 +25481,14 @@
                         }
                       },
                       "description": "Critical auth settings for when authentication is rejected by the RADIUS server"
+                    },
+                    "failedAuthVlanId": {
+                      "type": "integer",
+                      "description": "VLAN that clients will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                    },
+                    "reAuthenticationInterval": {
+                      "type": "integer",
+                      "description": "Re-authentication period in seconds. Will be null if hostMode is Multi-Auth"
                     }
                   },
                   "description": "Object for RADIUS Settings"
@@ -25841,6 +25849,14 @@
                         }
                       },
                       "description": "Critical auth settings for when authentication is rejected by the RADIUS server"
+                    },
+                    "failedAuthVlanId": {
+                      "type": "integer",
+                      "description": "VLAN that clients will be placed on when RADIUS authentication fails. Will be null if hostMode is Multi-Auth"
+                    },
+                    "reAuthenticationInterval": {
+                      "type": "integer",
+                      "description": "Re-authentication period in seconds. Will be null if hostMode is Multi-Auth"
                     }
                   },
                   "description": "Object for RADIUS Settings"
@@ -35265,6 +35281,16 @@
                   },
                   "description": "Settings related to 5Ghz band"
                 },
+                "transmission": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Toggle for radio transmission. When false, radios will not transmit at all."
+                    }
+                  },
+                  "description": "Settings related to radio transmission."
+                },
                 "perSsidSettings": {
                   "type": "object",
                   "properties": {
@@ -35944,6 +35970,16 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "transmission": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Toggle for radio transmission. When false, radios will not transmit at all."
+                    }
+                  },
+                  "description": "Settings related to radio transmission."
                 },
                 "perSsidSettings": {
                   "type": "object",
@@ -47969,6 +48005,306 @@
         ]
       }
     },
+    "/organizations/{organizationId}/earlyAccess/features": {
+      "get": {
+        "description": "List the available early access features for organization",
+        "operationId": "getOrganizationEarlyAccessFeatures",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1",
+                  "name": "New Feature Beta",
+                  "description": {
+                    "short": "New Feature Beta",
+                    "long": "New Feature Beta long description. consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                  },
+                  "topic": "Dashboard"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the available early access features for organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/earlyAccess/features/optIns": {
+      "get": {
+        "description": "List the early access feature opt-ins for an organization",
+        "operationId": "getOrganizationEarlyAccessFeaturesOptIns",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1",
+                  "shortName": "has_new_feature",
+                  "limitScopeToNetworks": [
+                    "L_1234"
+                  ],
+                  "createdAt": "2022-05-01T04:07:15Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the early access feature opt-ins for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      },
+      "post": {
+        "description": "Create a new early access feature opt-in for an organization",
+        "operationId": "createOrganizationEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationEarlyAccessFeaturesOptIn",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "shortName": {
+                  "type": "string",
+                  "description": "Short name of the early access feature"
+                },
+                "limitScopeToNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of network IDs to apply the opt-in to"
+                }
+              },
+              "example": {
+                "shortName": "has_magnetic_beta",
+                "limitScopeToNetworks": [
+                  "N_12345"
+                ]
+              },
+              "required": [
+                "shortName"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1",
+                "shortName": "has_new_feature",
+                "limitScopeToNetworks": [
+                  "L_1234"
+                ],
+                "createdAt": "2022-05-01T04:07:15Z"
+              }
+            }
+          }
+        },
+        "summary": "Create a new early access feature opt-in for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/earlyAccess/features/optIns/{optInId}": {
+      "get": {
+        "description": "Show an early access feature opt-in for an organization",
+        "operationId": "getOrganizationEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "optInId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1",
+                "shortName": "has_new_feature",
+                "limitScopeToNetworks": [
+                  "L_1234"
+                ],
+                "createdAt": "2022-05-01T04:07:15Z"
+              }
+            }
+          }
+        },
+        "summary": "Show an early access feature opt-in for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      },
+      "put": {
+        "description": "Update an early access feature opt-in for an organization",
+        "operationId": "updateOrganizationEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "optInId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationEarlyAccessFeaturesOptIn",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "limitScopeToNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of network IDs to apply the opt-in to"
+                }
+              },
+              "example": {
+                "limitScopeToNetworks": [
+                  "N_12345"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1",
+                "shortName": "has_new_feature",
+                "limitScopeToNetworks": [
+                  "L_1234"
+                ],
+                "createdAt": "2022-05-01T04:07:15Z"
+              }
+            }
+          }
+        },
+        "summary": "Update an early access feature opt-in for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      },
+      "delete": {
+        "description": "Delete an early access feature opt-in",
+        "operationId": "deleteOrganizationEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "optInId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an early access feature opt-in",
+        "tags": [
+          "organizations",
+          "configure",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      }
+    },
     "/organizations/{organizationId}/insight/applications": {
       "get": {
         "description": "List all Insight tracked applications",
@@ -50059,7 +50395,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
                 },
                 "cidr": {
                   "type": "string",
@@ -53482,6 +53818,9 @@
       "name": "eapOverride"
     },
     {
+      "name": "earlyAccess"
+    },
+    {
       "name": "eventTypes"
     },
     {
@@ -53489,6 +53828,9 @@
     },
     {
       "name": "failedConnections"
+    },
+    {
+      "name": "features"
     },
     {
       "name": "fields"
@@ -53657,6 +53999,9 @@
     },
     {
       "name": "openapiSpec"
+    },
+    {
+      "name": "optIns"
     },
     {
       "name": "order"
@@ -54141,6 +54486,12 @@
       "group": "Eap override",
       "summary": "Update the EAP overridden parameters for an SSID.",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/eapOverride",
+      "operation": "update"
+    },
+    {
+      "group": "Feature opt in",
+      "summary": "Update an early access feature opt-in for an organization",
+      "resource": "/organizations/{organizationId}/earlyAccess/features/optIns/{optInId}",
       "operation": "update"
     },
     {
