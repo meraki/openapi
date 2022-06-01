@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.21.0-beta.3",
+    "version": "1.22.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 25 May, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 June, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -26244,6 +26244,179 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/dhcp/v4/servers/seen": {
+      "get": {
+        "description": "Return the network's DHCPv4 servers seen within the selected timeframe (default 1 day)",
+        "operationId": "getNetworkSwitchDhcpV4ServersSeen",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "mac": "00:11:22:33:44:55",
+                  "vlan": 100,
+                  "ipv4": {
+                    "address": "10.0.0.0/24",
+                    "subnet": "192.168.1.0/24",
+                    "gateway": "1.2.3.5"
+                  },
+                  "clientId": "k74272e",
+                  "isAllowed": true,
+                  "isConfigured": true,
+                  "lastSeenAt": "2018-02-11T00:00:00.090210Z",
+                  "lastAck": {
+                    "ts": "2018-02-11T00:00:00.090210Z",
+                    "ipv4": {
+                      "address": "123.123.123.1"
+                    }
+                  },
+                  "seenBy": [
+                    {
+                      "serial": "Q234-ABCD-0001",
+                      "name": "My switch2",
+                      "url": "https://n1.meraki.com//n//manage/nodes/new_list/0000000000001"
+                    }
+                  ],
+                  "type": "device",
+                  "device": {
+                    "serial": "Q234-ABCD-0002",
+                    "name": null,
+                    "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                    "interface": {
+                      "name": "My L3 Interface",
+                      "url": "https://n1.meraki.com//n//manage/configure/switch_l3/l3_interface/00000"
+                    }
+                  },
+                  "lastPacket": {
+                    "source": {
+                      "mac": "00:11:22:33:44:55",
+                      "ipv4": {
+                        "address": "1.2.3.4"
+                      },
+                      "port": 443
+                    },
+                    "destination": {
+                      "mac": "22:33:44:55:66:77",
+                      "ipv4": {
+                        "address": "123.123.123.1"
+                      },
+                      "port": 444
+                    },
+                    "type": "ACK",
+                    "ethernet": {
+                      "type": "0x1212"
+                    },
+                    "ip": {
+                      "id": "0x1313",
+                      "version": 4,
+                      "length": 24929,
+                      "headerLength": 1,
+                      "protocol": 1,
+                      "ttl": 50,
+                      "dscp": {
+                        "tag": 24,
+                        "ecn": 1
+                      }
+                    },
+                    "udp": {
+                      "length": 24929,
+                      "checksum": "0x1414"
+                    },
+                    "fields": {
+                      "op": 1,
+                      "htype": 1,
+                      "hlen": 6,
+                      "hops": 0,
+                      "xid": "0x11111111",
+                      "secs": 1526087474,
+                      "flags": "0x0000",
+                      "ciaddr": "1.2.3.4",
+                      "yiaddr": "123.123.123.1",
+                      "siaddr": "1.2.3.4",
+                      "giaddr": "1.2.3.5",
+                      "chaddr": "abcdefghijkl",
+                      "sname": "1.2.3.4",
+                      "magicCookie": "0x22222222",
+                      "options": [
+                        {
+                          "name": "Lease time",
+                          "value": "86400 seconds"
+                        },
+                        {
+                          "name": "Subnet mask",
+                          "value": "255.255.255.0"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the network's DHCPv4 servers seen within the selected timeframe (default 1 day)",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcp",
+          "v4",
+          "servers",
+          "seen"
+        ]
+      }
+    },
     "/networks/{networkId}/switch/dhcpServerPolicy": {
       "get": {
         "description": "Return the DHCP server settings. Blocked/allowed servers are only applied when default policy is allow/block, respectively",
@@ -26312,6 +26485,22 @@
             "schema": {
               "type": "object",
               "properties": {
+                "alerts": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "When enabled, send an email if a new DHCP server is seen. Default value is false."
+                        }
+                      },
+                      "description": "Email alert settings for DHCP servers"
+                    }
+                  },
+                  "description": "Alert settings for DHCP servers"
+                },
                 "defaultPolicy": {
                   "type": "string",
                   "enum": [
@@ -26333,6 +26522,16 @@
                     "type": "string"
                   },
                   "description": "List the MAC addresses of DHCP servers to block on the network when defaultPolicy is set to allow. An empty array will clear the entries."
+                },
+                "arpInspection": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable or disable Dynamic ARP Inspection on the network. Default value is false."
+                    }
+                  },
+                  "description": "Dynamic ARP Inspection settings"
                 }
               },
               "example": {
@@ -26395,6 +26594,333 @@
           "switch",
           "configure",
           "dhcpServerPolicy"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers": {
+      "get": {
+        "description": "Return the list of servers trusted by Dynamic ARP Inspection on this network. These are also known as whitelisted snoop entries",
+        "operationId": "getNetworkSwitchDhcpServerPolicyArpInspectionTrustedServers",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "trustedServerId": "123",
+                  "mac": "00:11:22:33:44:55",
+                  "vlan": 100,
+                  "ipv4": {
+                    "address": "1.2.3.4"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the list of servers trusted by Dynamic ARP Inspection on this network",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcpServerPolicy",
+          "arpInspection",
+          "trustedServers"
+        ]
+      },
+      "post": {
+        "description": "Add a server to be trusted by Dynamic ARP Inspection on this network",
+        "operationId": "createNetworkSwitchDhcpServerPolicyArpInspectionTrustedServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSwitchDhcpServerPolicyArpInspectionTrustedServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mac": {
+                  "type": "string",
+                  "description": "The mac address of the trusted server being added"
+                },
+                "vlan": {
+                  "type": "integer",
+                  "description": "The VLAN of the trusted server being added. It must be between 1 and 4094"
+                },
+                "ipv4": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "description": "The IPv4 address of the trusted server being added"
+                    }
+                  },
+                  "description": "The IPv4 attributes of the trusted server being added"
+                }
+              },
+              "example": {
+                "mac": "00:11:22:33:44:55",
+                "vlan": 100,
+                "ipv4": {
+                  "address": "1.2.3.4"
+                }
+              },
+              "required": [
+                "mac",
+                "vlan",
+                "ipv4"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "trustedServerId": "123",
+                "mac": "00:11:22:33:44:55",
+                "vlan": 100,
+                "ipv4": {
+                  "address": "1.2.3.4"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Add a server to be trusted by Dynamic ARP Inspection on this network",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcpServerPolicy",
+          "arpInspection",
+          "trustedServers"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers/{trustedServerId}": {
+      "put": {
+        "description": "Update a server that is trusted by Dynamic ARP Inspection on this network",
+        "operationId": "updateNetworkSwitchDhcpServerPolicyArpInspectionTrustedServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "trustedServerId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSwitchDhcpServerPolicyArpInspectionTrustedServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "mac": {
+                  "type": "string",
+                  "description": "The updated mac address of the trusted server"
+                },
+                "vlan": {
+                  "type": "integer",
+                  "description": "The updated VLAN of the trusted server. It must be between 1 and 4094"
+                },
+                "ipv4": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "description": "The updated IPv4 address of the trusted server"
+                    }
+                  },
+                  "description": "The updated IPv4 attributes of the trusted server"
+                }
+              },
+              "example": {
+                "mac": "00:11:22:33:44:55",
+                "vlan": 100,
+                "ipv4": {
+                  "address": "1.2.3.4"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "trustedServerId": "123",
+                "mac": "00:11:22:33:44:55",
+                "vlan": 100,
+                "ipv4": {
+                  "address": "1.2.3.4"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a server that is trusted by Dynamic ARP Inspection on this network",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcpServerPolicy",
+          "arpInspection",
+          "trustedServers"
+        ]
+      },
+      "delete": {
+        "description": "Remove a server from being trusted by Dynamic ARP Inspection on this network",
+        "operationId": "deleteNetworkSwitchDhcpServerPolicyArpInspectionTrustedServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "trustedServerId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Remove a server from being trusted by Dynamic ARP Inspection on this network",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcpServerPolicy",
+          "arpInspection",
+          "trustedServers"
+        ]
+      }
+    },
+    "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/warnings/byDevice": {
+      "get": {
+        "description": "Return the devices that have a Dynamic ARP Inspection warning and their warnings",
+        "operationId": "getNetworkSwitchDhcpServerPolicyArpInspectionWarningsByDevice",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "serial": "Q234-ABCD-0001",
+                  "name": "My switch",
+                  "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                  "supportsInspection": false,
+                  "hasTrustedPort": false
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the devices that have a Dynamic ARP Inspection warning and their warnings",
+        "tags": [
+          "switch",
+          "configure",
+          "dhcpServerPolicy",
+          "arpInspection",
+          "warnings",
+          "byDevice"
         ]
       }
     },
@@ -50429,7 +50955,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -53714,6 +54240,9 @@
       "name": "applications"
     },
     {
+      "name": "arpInspection"
+    },
+    {
       "name": "artifacts"
     },
     {
@@ -53742,6 +54271,9 @@
     },
     {
       "name": "byClient"
+    },
+    {
+      "name": "byDevice"
     },
     {
       "name": "byEnergyUsage"
@@ -54158,7 +54690,13 @@
       "name": "securityCenters"
     },
     {
+      "name": "seen"
+    },
+    {
       "name": "sense"
+    },
+    {
+      "name": "servers"
     },
     {
       "name": "settings"
@@ -54260,6 +54798,9 @@
       "name": "trafficShaping"
     },
     {
+      "name": "trustedServers"
+    },
+    {
       "name": "uplink"
     },
     {
@@ -54287,6 +54828,9 @@
       "name": "users"
     },
     {
+      "name": "v4"
+    },
+    {
       "name": "video"
     },
     {
@@ -54312,6 +54856,9 @@
     },
     {
       "name": "warmSpare"
+    },
+    {
+      "name": "warnings"
     },
     {
       "name": "webhookTests"
@@ -54484,6 +55031,24 @@
       "group": "Custom performance class",
       "summary": "Update a custom performance class for an MX network",
       "resource": "/networks/{networkId}/appliance/trafficShaping/customPerformanceClasses/{customPerformanceClassId}",
+      "operation": "update"
+    },
+    {
+      "group": "Dai trusted server",
+      "summary": "Add a server to be trusted by Dynamic ARP Inspection on this network",
+      "resource": "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers",
+      "operation": "create"
+    },
+    {
+      "group": "Dai trusted server",
+      "summary": "Remove a server from being trusted by Dynamic ARP Inspection on this network",
+      "resource": "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers/{trustedServerId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Dai trusted server",
+      "summary": "Update a server that is trusted by Dynamic ARP Inspection on this network",
+      "resource": "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers/{trustedServerId}",
       "operation": "update"
     },
     {
