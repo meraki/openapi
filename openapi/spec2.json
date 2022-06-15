@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.22.0-beta.1",
+    "version": "1.22.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 June, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 15 June, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -5276,11 +5276,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "serial": {
+                  "type": "string",
+                  "description": "The serial number for the device"
+                },
+                "connectionStats": {
+                  "type": "object",
+                  "properties": {
+                    "assoc": {
+                      "type": "integer",
+                      "description": "The number of failed association attempts"
+                    },
+                    "auth": {
+                      "type": "integer",
+                      "description": "The number of failed authentication attempts"
+                    },
+                    "dhcp": {
+                      "type": "integer",
+                      "description": "The number of failed DHCP attempts"
+                    },
+                    "dns": {
+                      "type": "integer",
+                      "description": "The number of failed DNS attempts"
+                    },
+                    "success": {
+                      "type": "integer",
+                      "description": "The number of successful connection attempts"
+                    }
+                  },
+                  "description": "The connection stats of the device"
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "serial": "Q2JC-2MJM-FHRD",
+                "serial": "Q234-ABCD-5678",
                 "connectionStats": {
                   "assoc": 0,
                   "auth": 1,
@@ -5316,12 +5348,44 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "device": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "device serial number"
+                    }
+                  },
+                  "description": "device information"
+                },
+                "performance": {
+                  "type": "object",
+                  "properties": {
+                    "latest": {
+                      "type": "integer",
+                      "description": "device performance score"
+                    }
+                  },
+                  "description": "performance information"
+                },
+                "onboarding": {
+                  "type": "object",
+                  "properties": {
+                    "latest": {
+                      "type": "integer",
+                      "description": "device onboarding score"
+                    }
+                  },
+                  "description": "onboarding information"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "device": {
-                  "serial": "Q234-ABCD-0001"
+                  "serial": "Q234-ABCD-5678"
                 },
                 "performance": {
                   "latest": 80
@@ -20772,6 +20836,7 @@
                         "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                         "name": "Example Webhook Server",
                         "url": "https://www.example.com/my_custom_webhook",
+                        "networkId": "N_12345678",
                         "validator": "xxx",
                         "validatedAt": "2018-02-11T00:00:00Z",
                         "sharedSecret": "******"
@@ -20866,6 +20931,7 @@
                     "httpServer": {
                       "name": "Example Webhook Server",
                       "url": "https://example.com",
+                      "networkId": "N_12345678",
                       "validator": "xxx",
                       "validatedAt": "2018-02-11T00:00:00Z",
                       "sharedSecret": "shhh"
@@ -20896,6 +20962,7 @@
                       "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                       "name": "Example Webhook Server",
                       "url": "https://www.example.com/my_custom_webhook",
+                      "networkId": "N_12345678",
                       "validator": "xxx",
                       "validatedAt": "2018-02-11T00:00:00Z",
                       "sharedSecret": "******"
@@ -22912,7 +22979,63 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki Id of the device record."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the device."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of tags associated with the device."
+                  },
+                  "ssid": {
+                    "type": "string",
+                    "description": "The name of the SSID the device was last connected to."
+                  },
+                  "wifiMac": {
+                    "type": "string",
+                    "description": "The MAC of the device."
+                  },
+                  "osName": {
+                    "type": "string",
+                    "description": "The name of the device OS."
+                  },
+                  "systemModel": {
+                    "type": "string",
+                    "description": "The device model."
+                  },
+                  "uuid": {
+                    "type": "string",
+                    "description": "The UUID of the device."
+                  },
+                  "serialNumber": {
+                    "type": "string",
+                    "description": "The device serial number."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The device serial."
+                  },
+                  "ip": {
+                    "type": "string",
+                    "description": "The IP address of the device."
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes associated with the device."
+                  }
+                }
+              }
             },
             "headers": {
               "Link": {
@@ -22921,23 +23044,25 @@
               }
             },
             "examples": {
-              "application/json": {
-                "id": "1284392014819",
-                "name": "Miles's phone",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
-                "ssid": "My SSID",
-                "wifiMac": "00:11:22:33:44:55",
-                "osName": "iOS 9.3.5",
-                "systemModel": "iPhone",
-                "uuid": "3d990628ede4c628d52",
-                "serialNumber": "F5XKHEBX",
-                "serial": "F5XKHEBX",
-                "ip": "1.2.3.4",
-                "notes": "Here's some info about my device"
-              }
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "Miles's phone",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "ssid": "My SSID",
+                  "wifiMac": "00:11:22:33:44:55",
+                  "osName": "iOS 9.3.5",
+                  "systemModel": "iPhone",
+                  "uuid": "3d990628ede4c628d52",
+                  "serialNumber": "F5XKHEBX",
+                  "serial": "F5XKHEBX",
+                  "ip": "1.2.3.4",
+                  "notes": "Here's some info about my device"
+                }
+              ]
             }
           }
         },
@@ -22996,8 +23121,22 @@
                 }
               },
               "example": {
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
+                ],
                 "ids": [
-                  "1284392014819"
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
+                "scope": [
+                  "withAny",
+                  "tag1",
+                  "tag2"
                 ]
               }
             }
@@ -23007,12 +23146,22 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The Meraki Ids of the set of devices."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "ids": [
-                  "1284392014819"
+                  "1284392014819",
+                  "2983092129865"
                 ]
               }
             }
@@ -23071,7 +23220,9 @@
                 }
               },
               "example": {
+                "wifiMac": "00:11:22:33:44:55",
                 "id": "1284392014819",
+                "serial": "Q234-ABCD-5678",
                 "deviceFields": {
                   "name": "Miles's phone",
                   "notes": "Here's some info about my device"
@@ -23088,16 +23239,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki Id of the device record."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the device."
+                  },
+                  "wifiMac": {
+                    "type": "string",
+                    "description": "The MAC of the device."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The device serial."
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes associated with the device."
+                  }
+                }
+              }
             },
             "examples": {
-              "application/json": {
-                "id": "1284392014819",
-                "serial": "F5XKHEBX",
-                "wifiMac": "00:11:22:33:44:55",
-                "name": "Miles's phone",
-                "notes": "Here's some info about my device"
-              }
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "Miles's phone",
+                  "wifiMac": "00:11:22:33:44:55",
+                  "serial": "F5XKHEBX",
+                  "notes": "Here's some info about my device"
+                }
+              ]
             }
           }
         },
@@ -23161,9 +23339,24 @@
                 }
               },
               "example": {
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
+                ],
                 "ids": [
-                  "1284392014819"
-                ]
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
+                "scope": [
+                  "withAny",
+                  "tag1",
+                  "tag2"
+                ],
+                "pin": 123456
               }
             }
           }
@@ -23172,12 +23365,22 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The Meraki Ids of the set of devices."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "ids": [
-                  "1284392014819"
+                  "1284392014819",
+                  "2983092129865"
                 ]
               }
             }
@@ -23249,14 +23452,26 @@
                 }
               },
               "example": {
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
+                ],
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
                 "scope": [
                   "withAny, old_tag"
                 ],
-                "updateAction": "add",
                 "tags": [
                   "tag1",
                   "tag2"
-                ]
+                ],
+                "updateAction": "add"
               },
               "required": [
                 "tags",
@@ -23272,19 +23487,40 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki Id of the device record."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "An array of tags associated with the device."
+                  },
+                  "wifiMac": {
+                    "type": "string",
+                    "description": "The MAC of the device."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The device serial."
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
                   "id": "1284392014819",
-                  "serial": "F5XKHEBX",
-                  "wifiMac": "00:11:22:33:44:55",
                   "tags": [
                     "tag1",
                     "tag2"
-                  ]
+                  ],
+                  "wifiMac": "00:11:22:33:44:55",
+                  "serial": "F5XKHEBX"
                 }
               ]
             }
@@ -23349,10 +23585,24 @@
                 }
               },
               "example": {
-                "ids": [
-                  "1284392014819"
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
                 ],
-                "newNetwork": "N_24329156"
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
+                "scope": [
+                  "withAny",
+                  "tag1",
+                  "tag2"
+                ],
+                "newNetwork": "1284392014819"
               },
               "required": [
                 "newNetwork"
@@ -23365,14 +23615,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The Meraki Ids of the set of devices."
+                },
+                "newNetwork": {
+                  "type": "string",
+                  "description": "The network to which the devices was moved."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "ids": [
-                  "1284392014819"
+                  "1284392014819",
+                  "2983092129865"
                 ],
-                "newNetwork": "N_24329156"
+                "newNetwork": "1284392014819"
               }
             }
           }
@@ -23420,7 +23684,10 @@
                 }
               },
               "example": {
-                "id": "1284392014819"
+                "wifiMac": "00:11:22:33:44:55",
+                "id": "1284392014819",
+                "serial": "Q234-ABCD-5678",
+                "pin": 123456
               }
             }
           }
@@ -23429,7 +23696,13 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The Meraki Id of the devices."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -23470,7 +23743,23 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "received": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The amount of cellular data received by the device."
+                  },
+                  "sent": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The amount of cellular sent received by the device."
+                  },
+                  "ts": {
+                    "type": "string",
+                    "description": "When the cellular usage data was collected."
+                  }
+                }
               }
             },
             "examples": {
@@ -23517,7 +23806,41 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the certificate."
+                  },
+                  "notValidAfter": {
+                    "type": "string",
+                    "description": "The date after which the certificate is no longer valid."
+                  },
+                  "notValidBefore": {
+                    "type": "string",
+                    "description": "The date before which the certificate is not valid."
+                  },
+                  "certPem": {
+                    "type": "string",
+                    "description": "The PEM of the certificate."
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "The Meraki managed device Id."
+                  },
+                  "issuer": {
+                    "type": "string",
+                    "description": "The certificate issuer."
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "The subject of the certificate."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki Id of the certificate record."
+                  }
+                }
               }
             },
             "examples": {
@@ -23587,7 +23910,17 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "firstSeenAt": {
+                    "type": "string",
+                    "description": "When the device was first seen as connected to the internet in each connection."
+                  },
+                  "lastSeenAt": {
+                    "type": "string",
+                    "description": "When the device was last seen as connected to the internet in each connection."
+                  }
+                }
               }
             },
             "headers": {
@@ -23657,7 +23990,81 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "measuredAt": {
+                    "type": "string",
+                    "description": "The time the data was measured at."
+                  },
+                  "user": {
+                    "type": "string",
+                    "description": "The user during connection."
+                  },
+                  "networkDevice": {
+                    "type": "string",
+                    "description": "The network device for the device used for connection."
+                  },
+                  "networkDriver": {
+                    "type": "string",
+                    "description": "The network driver for the device."
+                  },
+                  "wifiChannel": {
+                    "type": "string",
+                    "description": "Channel through which the connection is routing."
+                  },
+                  "wifiAuth": {
+                    "type": "string",
+                    "description": "The type of authentication used by the SSID."
+                  },
+                  "wifiBssid": {
+                    "type": "string",
+                    "description": "The MAC of the access point the device is connected to."
+                  },
+                  "wifiSsid": {
+                    "type": "string",
+                    "description": "The name of the network the device is connected to."
+                  },
+                  "wifiRssi": {
+                    "type": "string",
+                    "description": "The Received Signal Strength Indicator for the device."
+                  },
+                  "wifiNoise": {
+                    "type": "string",
+                    "description": "The wireless signal power level received by the device."
+                  },
+                  "dhcpServer": {
+                    "type": "string",
+                    "description": "The IP address of the DCHP Server."
+                  },
+                  "ip": {
+                    "type": "string",
+                    "description": "The IP of the device during connection."
+                  },
+                  "networkMTU": {
+                    "type": "string",
+                    "description": "The network max transmission unit."
+                  },
+                  "subnet": {
+                    "type": "string",
+                    "description": "The subnet of the device connection."
+                  },
+                  "gateway": {
+                    "type": "string",
+                    "description": "The gateway IP the device was connected to."
+                  },
+                  "publicIP": {
+                    "type": "string",
+                    "description": "The public IP address of the device."
+                  },
+                  "dnsServer": {
+                    "type": "string",
+                    "description": "The DNS Server during the connection."
+                  },
+                  "ts": {
+                    "type": "string",
+                    "description": "The time the connection was logged."
+                  }
+                }
               }
             },
             "headers": {
@@ -23743,7 +24150,29 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "The type of command sent to the device."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the device to which the command is sent."
+                  },
+                  "details": {
+                    "type": "string",
+                    "description": "A JSON string object containing command details."
+                  },
+                  "dashboardUser": {
+                    "type": "string",
+                    "description": "The Meraki dashboard user who initiated the command."
+                  },
+                  "ts": {
+                    "type": "string",
+                    "description": "The time the command was sent to the device."
+                  }
+                }
               }
             },
             "headers": {
@@ -23798,7 +24227,41 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "deviceId": {
+                    "type": "string",
+                    "description": "The Meraki managed device Id."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The numerical Meraki Id of the profile."
+                  },
+                  "isEncrypted": {
+                    "type": "boolean",
+                    "description": "A boolean indicating if the profile is encrypted."
+                  },
+                  "isManaged": {
+                    "type": "boolean",
+                    "description": "Whether or not the profile is managed by Meraki."
+                  },
+                  "profileData": {
+                    "type": "string",
+                    "description": "A string containing a JSON object with the profile data."
+                  },
+                  "profileIdentifier": {
+                    "type": "string",
+                    "description": "The identifier of the profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile."
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "The verison of the profile."
+                  }
+                }
               }
             },
             "examples": {
@@ -23808,9 +24271,7 @@
                   "id": "1284392014819",
                   "isEncrypted": true,
                   "isManaged": true,
-                  "profileData": {
-
-                  },
+                  "profileData": "{}",
                   "profileIdentifier": "com.test.app",
                   "name": "My profile",
                   "version": "0.0.1"
@@ -23852,7 +24313,41 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "dhcpServer": {
+                    "type": "string",
+                    "description": "The IP address of the DCHP Server."
+                  },
+                  "dnsServer": {
+                    "type": "string",
+                    "description": "The IP address of the DNS Server."
+                  },
+                  "gateway": {
+                    "type": "string",
+                    "description": "The IP address of the Gateway."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki Id of the network adapter record."
+                  },
+                  "ip": {
+                    "type": "string",
+                    "description": "The IP address of the network adapter."
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "The MAC associated with the network adapter."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the newtwork adapter."
+                  },
+                  "subnet": {
+                    "type": "string",
+                    "description": "The subnet for the network adapter."
+                  }
+                }
               }
             },
             "examples": {
@@ -23922,7 +24417,66 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "cpuPercentUsed": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The percentage of CPU used as a decimal format."
+                  },
+                  "memFree": {
+                    "type": "integer",
+                    "description": "Memory that is not yet in use by the system."
+                  },
+                  "memWired": {
+                    "type": "integer",
+                    "description": "Memory used for core OS functions on the device."
+                  },
+                  "memActive": {
+                    "type": "integer",
+                    "description": "The active RAM on the device."
+                  },
+                  "memInactive": {
+                    "type": "integer",
+                    "description": "The inactive RAM on the device."
+                  },
+                  "networkSent": {
+                    "type": "integer",
+                    "description": "Network bandwith transmitted."
+                  },
+                  "networkReceived": {
+                    "type": "integer",
+                    "description": "Network bandwith received."
+                  },
+                  "swapUsed": {
+                    "type": "integer",
+                    "description": "The amount of space being used on the startup disk to swap unused files to and from RAM."
+                  },
+                  "diskUsage": {
+                    "type": "object",
+                    "properties": {
+                      "c": {
+                        "type": "object",
+                        "properties": {
+                          "used": {
+                            "type": "integer",
+                            "description": "The used disk space."
+                          },
+                          "space": {
+                            "type": "integer",
+                            "description": "The available disk space."
+                          }
+                        },
+                        "description": "An object containing current disk usage details."
+                      }
+                    },
+                    "description": "An object containing disk usage details."
+                  },
+                  "ts": {
+                    "type": "string",
+                    "description": "The time at which the performance was measured."
+                  }
+                }
               }
             },
             "headers": {
@@ -24068,7 +24622,49 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "isRooted": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device is rooted."
+                  },
+                  "hasAntiVirus": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device has Antivirus."
+                  },
+                  "antiVirusName": {
+                    "type": "string",
+                    "description": "The name of the Antivirus."
+                  },
+                  "isFireWallEnabled": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device has a Firewall enabled."
+                  },
+                  "hasFireWallInstalled": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device has a Firewall installed."
+                  },
+                  "fireWallName": {
+                    "type": "string",
+                    "description": "The name of the Firewall."
+                  },
+                  "isDiskEncrypted": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device has disk encryption."
+                  },
+                  "isAutoLoginDisabled": {
+                    "type": "boolean",
+                    "description": "Boolean indicating if the device has auto login disabled."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki identifier for the security center record."
+                  },
+                  "runningProcs": {
+                    "type": "string",
+                    "description": "A comma seperated list of procs running on the device."
+                  }
+                }
               }
             },
             "examples": {
@@ -24122,32 +24718,126 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "appId": {
+                    "type": "string",
+                    "description": "The Meraki managed application Id for this record on a particular device."
+                  },
+                  "bundleSize": {
+                    "type": "integer",
+                    "description": "The size of the software bundle."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "description": "When the Meraki record for the software was created."
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "The Meraki managed device Id."
+                  },
+                  "dynamicSize": {
+                    "type": "integer",
+                    "description": "The size of the data stored in the application."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki software Id."
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "description": "Software bundle identifier."
+                  },
+                  "installedAt": {
+                    "type": "string",
+                    "description": "When the Software was installed on the device."
+                  },
+                  "toInstall": {
+                    "type": "boolean",
+                    "description": "A boolean indicating this software record should be installed on the associated device."
+                  },
+                  "iosRedemptionCode": {
+                    "type": "boolean",
+                    "description": "A boolean indicating whether or not an iOS redemption code was used."
+                  },
+                  "isManaged": {
+                    "type": "boolean",
+                    "description": "A boolean indicating whether or not the software is managed by Meraki."
+                  },
+                  "itunesId": {
+                    "type": "string",
+                    "description": "The itunes numerical identifier."
+                  },
+                  "licenseKey": {
+                    "type": "string",
+                    "description": "The license key associated with this software installation."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the software."
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "The path on the device where the software record is located."
+                  },
+                  "redemptionCode": {
+                    "type": "integer",
+                    "description": "The redemption code used for this software."
+                  },
+                  "shortVersion": {
+                    "type": "string",
+                    "description": "Short version notation for the software."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The management status of the software."
+                  },
+                  "toUninstall": {
+                    "type": "boolean",
+                    "description": "A boolean indicating this software record should be uninstalled on the associated device."
+                  },
+                  "uninstalledAt": {
+                    "type": "string",
+                    "description": "When the record was uninstalled from the device."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "When the record was last updated by Meraki."
+                  },
+                  "vendor": {
+                    "type": "string",
+                    "description": "The vendor of the software."
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "Full version notation for the software."
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
                   "appId": "1234",
-                  "bundleSize": null,
+                  "bundleSize": 1024,
                   "createdAt": "2018-02-11T00:00:00Z",
                   "deviceId": "1234",
-                  "dynamicSize": null,
+                  "dynamicSize": 2048,
                   "id": "1284392014819",
                   "identifier": "com.test.app",
                   "installedAt": "2018-05-12T00:00:00Z",
-                  "toInstall": null,
-                  "iosRedemptionCode": null,
+                  "toInstall": true,
+                  "iosRedemptionCode": false,
                   "isManaged": true,
-                  "itunesId": null,
-                  "licenseKey": null,
+                  "itunesId": "1234",
+                  "licenseKey": "Z21234567890",
                   "name": "My app",
                   "path": "/Path/to/app.app",
-                  "redemptionCode": null,
-                  "shortVersion": null,
-                  "status": null,
+                  "redemptionCode": 1234,
+                  "shortVersion": "1.1",
+                  "status": "Managed",
                   "toUninstall": false,
-                  "uninstalledAt": null,
+                  "uninstalledAt": "2018-02-11T00:00:00Z",
                   "updatedAt": "2018-05-12T00:00:00Z",
                   "vendor": "Apple",
                   "version": "0.1"
@@ -24228,7 +24918,21 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "createdAt": {
+                    "type": "string",
+                    "description": "When the Meraki record for the wlanList was created."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki managed Id of the wlanList record."
+                  },
+                  "xml": {
+                    "type": "string",
+                    "description": "An XML string containing the WLAN List for the device."
+                  }
+                }
               }
             },
             "examples": {
@@ -24542,6 +25246,112 @@
         ]
       }
     },
+    "/networks/{networkId}/sm/trustedAccessConfigs": {
+      "get": {
+        "description": "List Trusted Access Configs",
+        "operationId": "getNetworkSmTrustedAccessConfigs",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "device ID"
+                  },
+                  "ssidName": {
+                    "type": "string",
+                    "description": "SSID name"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "device name"
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "scope"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "device tags"
+                  },
+                  "accessStartAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "time that access starts"
+                  },
+                  "accessEndAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "time that access ends"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "ssidName": "My SSID",
+                  "name": "Cisco Meraki valued client",
+                  "scope": "with",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "accessStartAt": "2018-02-11T00:00:00Z",
+                  "accessEndAt": "2018-05-12T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List Trusted Access Configs",
+        "tags": [
+          "sm",
+          "configure",
+          "trustedAccessConfigs"
+        ]
+      }
+    },
     "/networks/{networkId}/sm/userAccessDevices": {
       "get": {
         "description": "List User Access Devices and its Trusted Access Connections",
@@ -24578,7 +25388,67 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "device ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "device name"
+                  },
+                  "systemType": {
+                    "type": "string",
+                    "description": "system type"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "mac address"
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "username"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "user email"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "device tags"
+                  },
+                  "trustedAccessConnections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "trustedAccessConfigId": {
+                          "type": "string",
+                          "description": "config id"
+                        },
+                        "downloadedAt": {
+                          "type": "string",
+                          "description": "time that config was downloaded"
+                        },
+                        "scepCompletedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "time that SCEP completed"
+                        },
+                        "lastConnectedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "time of last connection"
+                        }
+                      }
+                    },
+                    "description": "Array of trusted access configs"
+                  }
+                }
               }
             },
             "headers": {
@@ -24591,7 +25461,7 @@
               "application/json": [
                 {
                   "id": "1284392014819",
-                  "name": "My Personal Phone",
+                  "name": "Cisco Meraki valued client",
                   "systemType": "ios",
                   "mac": "00:11:22:33:44:55",
                   "username": "milesmeraki",
@@ -24706,7 +25576,77 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki managed Id of the user record."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "User email."
+                  },
+                  "fullName": {
+                    "type": "string",
+                    "description": "User full name."
+                  },
+                  "username": {
+                    "type": "string",
+                    "description": "The users username."
+                  },
+                  "hasPassword": {
+                    "type": "boolean",
+                    "description": "A boolean denoting if the user has a password associated with the record."
+                  },
+                  "tags": {
+                    "type": "string",
+                    "description": "The set of tags the user is scoped to."
+                  },
+                  "adGroups": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Active Directory Groups the user belongs to."
+                  },
+                  "azureAdGroups": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Azure Active Directory Groups the user belongs to."
+                  },
+                  "samlGroups": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "SAML Groups the user belongs to."
+                  },
+                  "asmGroups": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Apple School Manager Groups the user belongs to."
+                  },
+                  "isExternal": {
+                    "type": "boolean",
+                    "description": "Whether the user was created using an external integration, or via the Meraki Dashboard."
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "The user display name."
+                  },
+                  "hasIdentityCertificate": {
+                    "type": "boolean",
+                    "description": "A boolean indicating if the user has an associated identity certificate.."
+                  },
+                  "userThumbnail": {
+                    "type": "string",
+                    "description": "The url where the users thumbnail is hosted."
+                  }
+                }
               }
             },
             "examples": {
@@ -24717,10 +25657,7 @@
                   "fullName": "Miles Meraki",
                   "username": "",
                   "hasPassword": false,
-                  "tags": [
-                    "tag1",
-                    "tag2"
-                  ],
+                  "tags": " tag1 tag2 ",
                   "adGroups": [
 
                   ],
@@ -24774,7 +25711,41 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "deviceId": {
+                    "type": "string",
+                    "description": "The Meraki managed device Id."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The numerical Meraki Id of the profile."
+                  },
+                  "isEncrypted": {
+                    "type": "boolean",
+                    "description": "A boolean indicating if the profile is encrypted."
+                  },
+                  "isManaged": {
+                    "type": "boolean",
+                    "description": "Whether or not the profile is managed by Meraki."
+                  },
+                  "profileData": {
+                    "type": "string",
+                    "description": "A string containing a JSON object with the profile data."
+                  },
+                  "profileIdentifier": {
+                    "type": "string",
+                    "description": "The identifier of the profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile."
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "The verison of the profile."
+                  }
+                }
               }
             },
             "examples": {
@@ -24784,9 +25755,7 @@
                   "id": "1284392014819",
                   "isEncrypted": true,
                   "isManaged": true,
-                  "profileData": {
-
-                  },
+                  "profileData": "{}",
                   "profileIdentifier": "com.test.app",
                   "name": "My profile",
                   "version": "0.0.1"
@@ -24828,32 +25797,126 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "appId": {
+                    "type": "string",
+                    "description": "The Meraki managed application Id for this record on a particular device."
+                  },
+                  "bundleSize": {
+                    "type": "integer",
+                    "description": "The size of the software bundle."
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "description": "When the Meraki record for the software was created."
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "The Meraki managed device Id."
+                  },
+                  "dynamicSize": {
+                    "type": "integer",
+                    "description": "The size of the data stored in the application."
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "The Meraki software Id."
+                  },
+                  "identifier": {
+                    "type": "string",
+                    "description": "Software bundle identifier."
+                  },
+                  "installedAt": {
+                    "type": "string",
+                    "description": "When the Software was installed on the device."
+                  },
+                  "toInstall": {
+                    "type": "boolean",
+                    "description": "A boolean indicating this software record should be installed on the associated device."
+                  },
+                  "iosRedemptionCode": {
+                    "type": "boolean",
+                    "description": "A boolean indicating whether or not an iOS redemption code was used."
+                  },
+                  "isManaged": {
+                    "type": "boolean",
+                    "description": "A boolean indicating whether or not the software is managed by Meraki."
+                  },
+                  "itunesId": {
+                    "type": "string",
+                    "description": "The itunes numerical identifier."
+                  },
+                  "licenseKey": {
+                    "type": "string",
+                    "description": "The license key associated with this software installation."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the software."
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "The path on the device where the software record is located."
+                  },
+                  "redemptionCode": {
+                    "type": "integer",
+                    "description": "The redemption code used for this software."
+                  },
+                  "shortVersion": {
+                    "type": "string",
+                    "description": "Short version notation for the software."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The management status of the software."
+                  },
+                  "toUninstall": {
+                    "type": "boolean",
+                    "description": "A boolean indicating this software record should be uninstalled on the associated device."
+                  },
+                  "uninstalledAt": {
+                    "type": "string",
+                    "description": "When the record was uninstalled from the device."
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "description": "When the record was last updated by Meraki."
+                  },
+                  "vendor": {
+                    "type": "string",
+                    "description": "The vendor of the software."
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "Full version notation for the software."
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
                   "appId": "1234",
-                  "bundleSize": null,
+                  "bundleSize": 1024,
                   "createdAt": "2018-02-11T00:00:00Z",
                   "deviceId": "1234",
-                  "dynamicSize": null,
+                  "dynamicSize": 2048,
                   "id": "1284392014819",
                   "identifier": "com.test.app",
                   "installedAt": "2018-05-12T00:00:00Z",
-                  "toInstall": null,
-                  "iosRedemptionCode": null,
+                  "toInstall": true,
+                  "iosRedemptionCode": false,
                   "isManaged": true,
-                  "itunesId": null,
-                  "licenseKey": null,
+                  "itunesId": "1234",
+                  "licenseKey": "Z21234567890",
                   "name": "My app",
                   "path": "/Path/to/app.app",
-                  "redemptionCode": null,
-                  "shortVersion": null,
-                  "status": null,
+                  "redemptionCode": 1234,
+                  "shortVersion": "1.1",
+                  "status": "Managed",
                   "toUninstall": false,
-                  "uninstalledAt": null,
+                  "uninstalledAt": "2018-02-11T00:00:00Z",
                   "updatedAt": "2018-05-12T00:00:00Z",
                   "vendor": "Apple",
                   "version": "0.1"
@@ -26307,7 +27370,344 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "mac": {
+                    "type": "string",
+                    "description": "Mac address of the DHCPv4 server."
+                  },
+                  "vlan": {
+                    "type": "integer",
+                    "description": "Vlan id of the DHCPv4 server."
+                  },
+                  "ipv4": {
+                    "type": "object",
+                    "properties": {
+                      "address": {
+                        "type": "string",
+                        "description": "IPv4 address of the DHCPv4 server."
+                      },
+                      "subnet": {
+                        "type": "string",
+                        "description": "Subnet of the DHCPv4 server."
+                      },
+                      "gateway": {
+                        "type": "string",
+                        "description": "IPv4 gateway address of the DHCPv4 server."
+                      }
+                    },
+                    "description": "IPv4 attributes of the DHCPv4 server."
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "description": "Client id of the DHCPv4 server if available."
+                  },
+                  "isAllowed": {
+                    "type": "boolean",
+                    "description": "Whether the DHCPv4 server is allowed or blocked. Always true for configured servers."
+                  },
+                  "isConfigured": {
+                    "type": "boolean",
+                    "description": "Whether the DHCPv4 server is configured."
+                  },
+                  "lastSeenAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Last time the DHCPv4 server was seen."
+                  },
+                  "lastAck": {
+                    "type": "object",
+                    "properties": {
+                      "ts": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Last time the DHCPv4 server was acked."
+                      },
+                      "ipv4": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                            "description": "IPv4 address of the last ack."
+                          }
+                        },
+                        "description": "IPv4 attributes of the last ack."
+                      }
+                    },
+                    "description": "Attributes of the DHCPv4 server's last ack."
+                  },
+                  "seenBy": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "serial": {
+                          "type": "string",
+                          "description": "Device serial."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Device name."
+                        },
+                        "url": {
+                          "type": "string",
+                          "description": "Url link to device."
+                        }
+                      }
+                    },
+                    "description": "Devices that saw the DHCPv4 server."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "device",
+                      "stack",
+                      "discovered"
+                    ],
+                    "description": "DHCPv4 server type. Can be a 'device', 'stack', or 'discovered' (i.e client)."
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Device serial."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Device name."
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "Url link to device."
+                      },
+                      "interface": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Interface name."
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "Url link to interface."
+                          }
+                        },
+                        "description": "Interface attributes of the DHCPv4 server. Only for configured servers."
+                      }
+                    },
+                    "description": "Attributes of the DHCPv4 server when it's a device."
+                  },
+                  "lastPacket": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "object",
+                        "properties": {
+                          "mac": {
+                            "type": "string",
+                            "description": "Source mac address of the packet."
+                          },
+                          "ipv4": {
+                            "type": "object",
+                            "properties": {
+                              "address": {
+                                "type": "string",
+                                "description": "Source ipv4 address of the packet."
+                              }
+                            },
+                            "description": "Source ipv4 attributes of the packet."
+                          },
+                          "port": {
+                            "type": "integer",
+                            "description": "Source port of the packet."
+                          }
+                        },
+                        "description": "Source of the packet."
+                      },
+                      "destination": {
+                        "type": "object",
+                        "properties": {
+                          "mac": {
+                            "type": "string",
+                            "description": "Destination mac address of the packet."
+                          },
+                          "ipv4": {
+                            "type": "object",
+                            "properties": {
+                              "address": {
+                                "type": "string",
+                                "description": "Destination ipv4 address of the packet."
+                              }
+                            },
+                            "description": "Destination ipv4 attributes of the packet."
+                          },
+                          "port": {
+                            "type": "integer",
+                            "description": "Destination port of the packet."
+                          }
+                        },
+                        "description": "Destination of the packet."
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "Packet type."
+                      },
+                      "ethernet": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Ethernet type of the packet."
+                          }
+                        },
+                        "description": "Additional ethernet attributes of the packet."
+                      },
+                      "ip": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "IP ID of the packet."
+                          },
+                          "version": {
+                            "type": "integer",
+                            "enum": [
+                              4,
+                              6
+                            ],
+                            "description": "IP version of the packet."
+                          },
+                          "length": {
+                            "type": "integer",
+                            "description": "IP length of the packet."
+                          },
+                          "headerLength": {
+                            "type": "integer",
+                            "description": "IP header length of the packet."
+                          },
+                          "protocol": {
+                            "type": "integer",
+                            "description": "IP protocol number of the packet."
+                          },
+                          "ttl": {
+                            "type": "integer",
+                            "description": "Time to live of the packet."
+                          },
+                          "dscp": {
+                            "type": "object",
+                            "properties": {
+                              "tag": {
+                                "type": "integer",
+                                "description": "DSCP tag number of the packet."
+                              },
+                              "ecn": {
+                                "type": "integer",
+                                "description": "ECN number of the packet."
+                              }
+                            },
+                            "description": "DSCP attributes of the packet."
+                          }
+                        },
+                        "description": "Additional IP attributes of the packet."
+                      },
+                      "udp": {
+                        "type": "object",
+                        "properties": {
+                          "length": {
+                            "type": "integer",
+                            "description": "UDP length of the packet."
+                          },
+                          "checksum": {
+                            "type": "string",
+                            "description": "UDP checksum of the packet."
+                          }
+                        },
+                        "description": "UDP attributes of the packet."
+                      },
+                      "fields": {
+                        "type": "object",
+                        "properties": {
+                          "op": {
+                            "type": "integer",
+                            "description": "Operation code of the packet."
+                          },
+                          "htype": {
+                            "type": "integer",
+                            "description": "Hardware type code of the packet."
+                          },
+                          "hlen": {
+                            "type": "integer",
+                            "description": "Hardware length of the packet."
+                          },
+                          "hops": {
+                            "type": "integer",
+                            "description": "Number of hops the packet took."
+                          },
+                          "xid": {
+                            "type": "string",
+                            "description": "Transaction id of the packet."
+                          },
+                          "secs": {
+                            "type": "integer",
+                            "description": "Number of seconds since receiving the packet."
+                          },
+                          "flags": {
+                            "type": "string",
+                            "description": "Packet flags."
+                          },
+                          "ciaddr": {
+                            "type": "string",
+                            "description": "Client IP address of the packet."
+                          },
+                          "yiaddr": {
+                            "type": "string",
+                            "description": "Assigned IP address of the packet."
+                          },
+                          "siaddr": {
+                            "type": "string",
+                            "description": "Server IP address of the packet."
+                          },
+                          "giaddr": {
+                            "type": "string",
+                            "description": "Gateway IP address of the packet."
+                          },
+                          "chaddr": {
+                            "type": "string",
+                            "description": "Client hardware address of the packet."
+                          },
+                          "sname": {
+                            "type": "string",
+                            "description": "Server identifier address of the packet."
+                          },
+                          "magicCookie": {
+                            "type": "string",
+                            "description": "Magic cookie of the packet."
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Option name."
+                                },
+                                "value": {
+                                  "type": "string",
+                                  "description": "Option value."
+                                }
+                              }
+                            },
+                            "description": "Additional DHCP options of the packet."
+                          }
+                        },
+                        "description": "DHCP-specific fields of the packet."
+                      }
+                    },
+                    "description": "Last packet the DHCPv4 server received."
+                  }
+                }
               }
             },
             "headers": {
@@ -26346,7 +27746,7 @@
                   "type": "device",
                   "device": {
                     "serial": "Q234-ABCD-0002",
-                    "name": null,
+                    "name": "My AP",
                     "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
                     "interface": {
                       "name": "My L3 Interface",
@@ -26407,10 +27807,6 @@
                         {
                           "name": "Lease time",
                           "value": "86400 seconds"
-                        },
-                        {
-                          "name": "Subnet mask",
-                          "value": "255.255.255.0"
                         }
                       ]
                     }
@@ -26647,7 +28043,31 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "trustedServerId": {
+                    "type": "string",
+                    "description": "ID of the trusted server."
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "Mac address of the trusted server."
+                  },
+                  "vlan": {
+                    "type": "integer",
+                    "description": "Vlan ID of the trusted server."
+                  },
+                  "ipv4": {
+                    "type": "object",
+                    "properties": {
+                      "address": {
+                        "type": "string",
+                        "description": "IPv4 address of the trusted server."
+                      }
+                    },
+                    "description": "IPv4 attributes of the trusted server."
+                  }
+                }
               }
             },
             "headers": {
@@ -26734,7 +28154,31 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "trustedServerId": {
+                  "type": "string",
+                  "description": "ID of the trusted server."
+                },
+                "mac": {
+                  "type": "string",
+                  "description": "Mac address of the trusted server."
+                },
+                "vlan": {
+                  "type": "integer",
+                  "description": "Vlan ID of the trusted server."
+                },
+                "ipv4": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "description": "IPv4 address of the trusted server."
+                    }
+                  },
+                  "description": "IPv4 attributes of the trusted server."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -26814,7 +28258,31 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "trustedServerId": {
+                  "type": "string",
+                  "description": "ID of the trusted server."
+                },
+                "mac": {
+                  "type": "string",
+                  "description": "Mac address of the trusted server."
+                },
+                "vlan": {
+                  "type": "integer",
+                  "description": "Vlan ID of the trusted server."
+                },
+                "ipv4": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "description": "IPv4 address of the trusted server."
+                    }
+                  },
+                  "description": "IPv4 attributes of the trusted server."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -26905,7 +28373,29 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "Switch serial."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Switch name."
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Url link to switch."
+                  },
+                  "supportsInspection": {
+                    "type": "boolean",
+                    "description": "Whether this switch supports Dynamic ARP Inspection."
+                  },
+                  "hasTrustedPort": {
+                    "type": "boolean",
+                    "description": "Whether this switch has a trusted DAI port. Always false if supportsInspection is false."
+                  }
+                }
               }
             },
             "headers": {
@@ -32104,7 +33594,40 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "byte",
+                    "description": "A Base64 encoded ID."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "A name for easy reference to the HTTP server"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "The URL of the HTTP server."
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "A Meraki network ID."
+                  },
+                  "payloadTemplate": {
+                    "type": "object",
+                    "properties": {
+                      "payloadTemplateId": {
+                        "type": "string",
+                        "description": "The ID of the payload template."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the payload template."
+                      }
+                    },
+                    "description": "The payload template to use when posting data to the HTTP server."
+                  }
+                }
               }
             },
             "examples": {
@@ -32113,6 +33636,7 @@
                   "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                   "name": "Example Webhook Server",
                   "url": "https://www.example.com/my_custom_webhook",
+                  "networkId": "N_12345678",
                   "payloadTemplate": {
                     "payloadTemplateId": "wpt_00001",
                     "name": "Meraki (included)"
@@ -32176,6 +33700,7 @@
               "example": {
                 "name": "Example Webhook Server",
                 "url": "https://example.com",
+                "networkId": "N_12345678",
                 "sharedSecret": "shhh",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
@@ -32201,6 +33726,7 @@
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
                   "name": "Meraki (included)"
@@ -32240,13 +33766,47 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "A Base64 encoded ID."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "A name for easy reference to the HTTP server"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The URL of the HTTP server."
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "A Meraki network ID."
+                },
+                "payloadTemplate": {
+                  "type": "object",
+                  "properties": {
+                    "payloadTemplateId": {
+                      "type": "string",
+                      "description": "The ID of the payload template."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the payload template."
+                    }
+                  },
+                  "description": "The payload template to use when posting data to the HTTP server."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
                   "name": "Meraki (included)"
@@ -32307,6 +33867,7 @@
               "example": {
                 "name": "Example Webhook Server",
                 "url": "https://example.com",
+                "networkId": "N_12345678",
                 "sharedSecret": "shhh",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
@@ -32327,6 +33888,7 @@
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
                   "name": "Meraki (included)"
@@ -32701,6 +34263,7 @@
                 "url": "https://www.example.com/path",
                 "sharedSecret": "shhh",
                 "payloadTemplateId": "wpt_00001",
+                "payloadTemplateName": "Payload Template",
                 "alertTypeId": "power_supply_down"
               },
               "required": [
@@ -32714,7 +34277,28 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Webhook delivery identifier"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL where the webhook was delivered"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "abandoned",
+                    "delivered",
+                    "retrying",
+                    "enqueued",
+                    "processing"
+                  ],
+                  "description": "Current status of the webhook delivery"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -32756,13 +34340,34 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Webhook delivery identifier"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL where the webhook was delivered"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "abandoned",
+                    "delivered",
+                    "retrying",
+                    "enqueued",
+                    "processing"
+                  ],
+                  "description": "Current status of the webhook delivery"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "id": "1234",
                 "url": "https://www.example.com/path",
-                "status": "delivered"
+                "status": "enqueued"
               }
             }
           }
@@ -33394,7 +34999,34 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "utilizationTotal": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Total channel utilization"
+                  },
+                  "utilization80211": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Average wifi utilization"
+                  },
+                  "utilizationNon80211": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Average signal interference"
+                  }
+                }
               }
             },
             "examples": {
@@ -33405,13 +35037,6 @@
                   "utilizationTotal": 9.89,
                   "utilization80211": 7.22,
                   "utilizationNon80211": 2.67
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "utilizationTotal": 8.78,
-                  "utilization80211": 6.38,
-                  "utilizationNon80211": 2.41
                 }
               ]
             }
@@ -33509,7 +35134,23 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "clientCount": {
+                    "type": "integer",
+                    "description": "Number of connected clients"
+                  }
+                }
               }
             },
             "examples": {
@@ -33518,11 +35159,6 @@
                   "startTs": "2020-01-01T00:00:00Z",
                   "endTs": "2020-01-01T01:00:00Z",
                   "clientCount": 14
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "clientCount": 29
                 }
               ]
             }
@@ -33936,7 +35572,121 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "clientCounts": {
+                    "type": "object",
+                    "properties": {
+                      "summary": {
+                        "type": "object",
+                        "properties": {
+                          "prospective": {
+                            "type": "integer",
+                            "description": "Total attempted connections"
+                          },
+                          "successful": {
+                            "type": "integer",
+                            "description": "Successful connections"
+                          },
+                          "failed": {
+                            "type": "integer",
+                            "description": "Failed connections"
+                          }
+                        },
+                        "description": "Client connections across all steps"
+                      },
+                      "connectionSteps": {
+                        "type": "object",
+                        "properties": {
+                          "association": {
+                            "type": "object",
+                            "properties": {
+                              "prospective": {
+                                "type": "integer",
+                                "description": "Total attempted connections"
+                              },
+                              "successful": {
+                                "type": "integer",
+                                "description": "Successful connections"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "description": "Failed connections"
+                              }
+                            },
+                            "description": "Client connections at association stage"
+                          },
+                          "authentication": {
+                            "type": "object",
+                            "properties": {
+                              "prospective": {
+                                "type": "integer",
+                                "description": "Total attempted connections"
+                              },
+                              "successful": {
+                                "type": "integer",
+                                "description": "Successful connections"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "description": "Failed connections"
+                              }
+                            },
+                            "description": "Client connections at auth stage"
+                          },
+                          "dhcp": {
+                            "type": "object",
+                            "properties": {
+                              "prospective": {
+                                "type": "integer",
+                                "description": "Total attempted connections"
+                              },
+                              "successful": {
+                                "type": "integer",
+                                "description": "Successful connections"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "description": "Failed connections"
+                              }
+                            },
+                            "description": "Client connections at dhcp stage"
+                          },
+                          "dns": {
+                            "type": "object",
+                            "properties": {
+                              "prospective": {
+                                "type": "integer",
+                                "description": "Total attempted connections"
+                              },
+                              "successful": {
+                                "type": "integer",
+                                "description": "Successful connections"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "description": "Failed connections"
+                              }
+                            },
+                            "description": "Client connections at dns stage"
+                          }
+                        },
+                        "description": "Client connections broken down by step"
+                      }
+                    },
+                    "description": "Client connection counts"
+                  }
+                }
               }
             },
             "examples": {
@@ -34619,7 +36369,29 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "assoc": {
+                  "type": "integer",
+                  "description": "The number of failed association attempts"
+                },
+                "auth": {
+                  "type": "integer",
+                  "description": "The number of failed authentication attempts"
+                },
+                "dhcp": {
+                  "type": "integer",
+                  "description": "The number of failed DHCP attempts"
+                },
+                "dns": {
+                  "type": "integer",
+                  "description": "The number of failed DNS attempts"
+                },
+                "success": {
+                  "type": "integer",
+                  "description": "The number of successful connection attempts"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -34724,7 +36496,31 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "averageKbps": {
+                    "type": "integer",
+                    "description": "Average data rate in kilobytes-per-second"
+                  },
+                  "downloadKbps": {
+                    "type": "integer",
+                    "description": "Download rate in kilobytes-per-second"
+                  },
+                  "uploadKbps": {
+                    "type": "integer",
+                    "description": "Upload rate in kilobytes-per-second"
+                  }
+                }
               }
             },
             "examples": {
@@ -34735,13 +36531,6 @@
                   "averageKbps": 151806,
                   "downloadKbps": 144839,
                   "uploadKbps": 158837
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "averageKbps": 167864,
-                  "downloadKbps": 156179,
-                  "uploadKbps": 188375
                 }
               ]
             }
@@ -34821,29 +36610,51 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "The serial number for the device"
+                  },
+                  "connectionStats": {
+                    "type": "object",
+                    "properties": {
+                      "assoc": {
+                        "type": "integer",
+                        "description": "The number of failed association attempts"
+                      },
+                      "auth": {
+                        "type": "integer",
+                        "description": "The number of failed authentication attempts"
+                      },
+                      "dhcp": {
+                        "type": "integer",
+                        "description": "The number of failed DHCP attempts"
+                      },
+                      "dns": {
+                        "type": "integer",
+                        "description": "The number of failed DNS attempts"
+                      },
+                      "success": {
+                        "type": "integer",
+                        "description": "The number of successful connection attempts"
+                      }
+                    },
+                    "description": "The connection stats of the device"
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
-                  "serial": "Q2JC-2MJM-FHRD",
+                  "serial": "Q234-ABCD-5678",
                   "connectionStats": {
                     "assoc": 0,
                     "auth": 1,
                     "dhcp": 0,
                     "dns": 0,
                     "success": 43
-                  }
-                },
-                {
-                  "serial": "Q2FJ-3SHB-Y2K2",
-                  "connectionStats": {
-                    "assoc": 1,
-                    "auth": 4,
-                    "dhcp": 0,
-                    "dns": 0,
-                    "success": 8
                   }
                 }
               ]
@@ -34877,31 +36688,52 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "device serial number"
+                      }
+                    },
+                    "description": "device information"
+                  },
+                  "performance": {
+                    "type": "object",
+                    "properties": {
+                      "latest": {
+                        "type": "integer",
+                        "description": "device performance score"
+                      }
+                    },
+                    "description": "performance information"
+                  },
+                  "onboarding": {
+                    "type": "object",
+                    "properties": {
+                      "latest": {
+                        "type": "integer",
+                        "description": "device onboarding score"
+                      }
+                    },
+                    "description": "onboarding information"
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
                   "device": {
-                    "serial": "Q234-ABCD-0001"
+                    "serial": "Q234-ABCD-5678"
                   },
                   "performance": {
                     "latest": 80
                   },
                   "onboarding": {
                     "latest": 20
-                  }
-                },
-                {
-                  "device": {
-                    "serial": "Q234-ABCD-0003"
-                  },
-                  "performance": {
-                    "latest": 30
-                  },
-                  "onboarding": {
-                    "latest": 90
                   }
                 }
               ]
@@ -35137,62 +36969,48 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "ssidNumber": {
+                    "type": "integer",
+                    "description": "SSID Number"
+                  },
+                  "vlan": {
+                    "type": "integer",
+                    "description": "LAN"
+                  },
+                  "clientMac": {
+                    "type": "string",
+                    "description": "Client Mac"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial Number"
+                  },
+                  "failureStep": {
+                    "type": "string",
+                    "description": "The failed onboarding step. One of: assoc, auth, dhcp, dns."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The failure type in the onboarding step"
+                  },
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The timestamp when the client mac failed"
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "00:61:71:c8:51:27",
-                  "serial": "Q2JC-2MJM-FHRD",
-                  "failureStep": "auth",
-                  "type": "802.1X auth fail",
-                  "ts": "2018-02-11T00:00:00.090210Z"
-                },
-                {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "00:61:71:c8:51:27",
-                  "nodeId": "Q2FJ-3SHB-Y2K2",
-                  "failureStep": "auth",
-                  "type": "802.1X auth fail",
-                  "ts": "2018-02-11T00:00:00.090210Z"
-                },
-                {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "00:61:71:c8:51:27",
-                  "nodeId": "Q2FJ-3SHB-Y2K2",
-                  "failureStep": "auth",
-                  "type": "802.1X auth fail",
-                  "ts": "2018-02-11T00:00:00.090210Z"
-                },
-                {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "00:61:71:c8:51:27",
-                  "nodeId": "Q2FJ-3SHB-Y2K2",
-                  "failureStep": "auth",
-                  "type": "802.1X auth fail",
-                  "ts": "2018-02-11T00:00:00.090210Z"
-                },
-                {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "1c:4d:70:7f:5e:5e",
-                  "nodeId": "Q2FJ-3SHB-Y2K2",
-                  "failureStep": "assoc",
-                  "type": "802.1X auth fail",
-                  "ts": "2018-02-11T00:00:00.090210Z"
-                },
-                {
-                  "ssidNumber": 0,
-                  "vlan": -1,
-                  "clientMac": "1c:4d:70:81:8d:0a",
-                  "nodeId": "Q2FJ-3SHB-Y2K2",
-                  "failureStep": "auth",
+                  "ssidNumber": 1,
+                  "vlan": 100,
+                  "clientMac": "22:33:44:55:66:77",
+                  "serial": "Q234-ABCD-5678",
+                  "failureStep": "dns",
                   "type": "802.1X auth fail",
                   "ts": "2018-02-11T00:00:00.090210Z"
                 }
@@ -35304,7 +37122,23 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "avgLatencyMs": {
+                    "type": "integer",
+                    "description": "Average latency in milliseconds"
+                  }
+                }
               }
             },
             "examples": {
@@ -35313,11 +37147,6 @@
                   "startTs": "2020-01-01T00:00:00Z",
                   "endTs": "2020-01-01T01:00:00Z",
                   "avgLatencyMs": 29
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "avgLatencyMs": 76
                 }
               ]
             }
@@ -37468,7 +39297,27 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "snr": {
+                    "type": "integer",
+                    "description": "Signal to noise ratio"
+                  },
+                  "rssi": {
+                    "type": "integer",
+                    "description": "Received signal strength indicator"
+                  }
+                }
               }
             },
             "examples": {
@@ -37478,12 +39327,6 @@
                   "endTs": "2020-01-01T01:00:00Z",
                   "snr": 27,
                   "rssi": -77
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "snr": 28,
-                  "rssi": -76
                 }
               ]
             }
@@ -40996,7 +42839,31 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the query range"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the query range"
+                  },
+                  "totalKbps": {
+                    "type": "integer",
+                    "description": "Total usage in kilobytes-per-second"
+                  },
+                  "sentKbps": {
+                    "type": "integer",
+                    "description": "Sent kilobytes-per-second"
+                  },
+                  "receivedKbps": {
+                    "type": "integer",
+                    "description": "Received kilobytes-per-second"
+                  }
+                }
               }
             },
             "examples": {
@@ -41007,13 +42874,6 @@
                   "totalKbps": 2590,
                   "sentKbps": 159,
                   "receivedKbps": 2431
-                },
-                {
-                  "startTs": "2020-01-01T01:00:00Z",
-                  "endTs": "2020-01-01T02:00:00Z",
-                  "totalKbps": 1108,
-                  "sentKbps": 144,
-                  "receivedKbps": 964
                 }
               ]
             }
@@ -41152,7 +43012,62 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Organization name"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Organization URL"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable API access"
+                    }
+                  },
+                  "description": "API related settings"
+                },
+                "licensing": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "enum": [
+                        "co-term",
+                        "per-device",
+                        "subscription"
+                      ],
+                      "description": "Organization licensing model. Can be 'co-term', 'per-device', or 'subscription'."
+                    }
+                  },
+                  "description": "Licensing related settings"
+                },
+                "cloud": {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of region"
+                        }
+                      },
+                      "description": "Region info"
+                    }
+                  },
+                  "description": "Data for this organization"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -41164,6 +43079,11 @@
                 },
                 "licensing": {
                   "model": "co-term"
+                },
+                "cloud": {
+                  "region": {
+                    "name": "North America"
+                  }
                 }
               }
             }
@@ -41307,7 +43227,10 @@
                 }
               },
               "example": {
-                "name": "My organization"
+                "name": "My organization",
+                "api": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -41316,7 +43239,62 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Organization name"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Organization URL"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable API access"
+                    }
+                  },
+                  "description": "API related settings"
+                },
+                "licensing": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "enum": [
+                        "co-term",
+                        "per-device",
+                        "subscription"
+                      ],
+                      "description": "Organization licensing model. Can be 'co-term', 'per-device', or 'subscription'."
+                    }
+                  },
+                  "description": "Licensing related settings"
+                },
+                "cloud": {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of region"
+                        }
+                      },
+                      "description": "Region info"
+                    }
+                  },
+                  "description": "Data for this organization"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -41328,6 +43306,11 @@
                 },
                 "licensing": {
                   "model": "co-term"
+                },
+                "cloud": {
+                  "region": {
+                    "name": "North America"
+                  }
                 }
               }
             }
@@ -47042,15 +49025,59 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "usage": {
+                  "type": "object",
+                  "properties": {
+                    "overall": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Total data usage (in kb) of all clients across organization"
+                        },
+                        "downstream": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Downstream data usage (in kb) of all clients across organization"
+                        },
+                        "upstream": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Upstream data usage (in kb) of all clients across organization"
+                        }
+                      },
+                      "description": "Overall data usage of all clients across organization"
+                    },
+                    "average": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Average data usage (in kb) of each client in organization"
+                    }
+                  },
+                  "description": "Usage information of all clients across organization"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of clients with data usage in organization"
+                    }
+                  },
+                  "description": "Client count information"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "usage": {
                   "overall": {
-                    "total": 18000,
-                    "downstream": 10000,
-                    "upstream": 8000
+                    "total": 18000.0,
+                    "downstream": 10000.0,
+                    "upstream": 8000.0
                   },
                   "average": 1.37
                 },
@@ -47242,7 +49269,62 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Organization name"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Organization URL"
+                },
+                "api": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable API access"
+                    }
+                  },
+                  "description": "API related settings"
+                },
+                "licensing": {
+                  "type": "object",
+                  "properties": {
+                    "model": {
+                      "type": "string",
+                      "enum": [
+                        "co-term",
+                        "per-device",
+                        "subscription"
+                      ],
+                      "description": "Organization licensing model. Can be 'co-term', 'per-device', or 'subscription'."
+                    }
+                  },
+                  "description": "Licensing related settings"
+                },
+                "cloud": {
+                  "type": "object",
+                  "properties": {
+                    "region": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of region"
+                        }
+                      },
+                      "description": "Region info"
+                    }
+                  },
+                  "description": "Data for this organization"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -47254,6 +49336,11 @@
                 },
                 "licensing": {
                   "model": "co-term"
+                },
+                "cloud": {
+                  "region": {
+                    "name": "North America"
+                  }
                 }
               }
             }
@@ -48253,6 +50340,180 @@
         ]
       }
     },
+    "/organizations/{organizationId}/devices/availabilities": {
+      "get": {
+        "description": "List the availability information for devices in an organization. The data returned by this endpoint is updated every 5 minutes.",
+        "operationId": "getOrganizationDevicesAvailabilities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities by network ID. This filter uses multiple exact matches."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities by device product types. This filter uses multiple exact matches."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities by device serial numbers. This filter uses multiple exact matches."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "query",
+            "description": "An optional parameter to filter devices by tags. The filtering is case-sensitive. If tags are included, 'tagsFilterType' should also be included (see below). This filter uses multiple exact matches."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "withAnyTags",
+              "withAllTags"
+            ],
+            "name": "tagsFilterType",
+            "in": "query",
+            "description": "An optional parameter of value 'withAnyTags' or 'withAllTags' to indicate whether to return devices which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "mac": {
+                    "type": "string",
+                    "description": "The device MAC address."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The device name."
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID for the network containing the device."
+                      }
+                    },
+                    "description": "Network info."
+                  },
+                  "productType": {
+                    "type": "string",
+                    "enum": [
+                      "wireless",
+                      "appliance",
+                      "switch",
+                      "systemsManager",
+                      "camera",
+                      "cellularGateway",
+                      "sensor"
+                    ],
+                    "description": "Device product type."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The device serial number."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "online",
+                      "alerting",
+                      "offline",
+                      "dormant"
+                    ],
+                    "description": "Status of the device. Possible values are: online, alerting, offline, dormant."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of custom tags for the device."
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "mac": "00:11:22:33:44:55",
+                  "name": "My AP",
+                  "network": {
+                    "id": "N_24329156"
+                  },
+                  "productType": "switch",
+                  "serial": "Q234-ABCD-5678",
+                  "status": "online",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the availability information for devices in an organization",
+        "tags": [
+          "organizations",
+          "monitor",
+          "devices",
+          "availabilities"
+        ]
+      }
+    },
     "/organizations/{organizationId}/devices/statuses": {
       "get": {
         "description": "List the status of every Meraki device in the organization",
@@ -48373,9 +50634,84 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Device Name"
+                },
+                "serial": {
+                  "type": "string",
+                  "description": "Device Serial Number"
+                },
+                "mac": {
+                  "type": "string",
+                  "description": "MAC Address"
+                },
+                "publicIp": {
+                  "type": "string",
+                  "description": "Public IP Address"
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "Network ID"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Device Status"
+                },
+                "lastReportedAt": {
+                  "type": "string",
+                  "description": "Device Last Reported Location"
+                },
+                "lanIp": {
+                  "type": "string",
+                  "description": "LAN IP Address"
+                },
+                "gateway": {
+                  "type": "string",
+                  "description": "IP Gateway"
+                },
+                "ipType": {
+                  "type": "string",
+                  "description": "IP Type"
+                },
+                "primaryDns": {
+                  "type": "string",
+                  "description": "Primary DNS"
+                },
+                "secondaryDns": {
+                  "type": "string",
+                  "description": "Secondary DNS"
+                },
+                "productType": {
+                  "type": "string",
+                  "description": "Product Type"
+                },
+                "components": {
+                  "type": "object",
+                  "properties": {
+                    "powerSupplies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Power Supplies"
+                    }
+                  },
+                  "description": "Components"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Model"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Tags"
+                }
               }
             },
             "headers": {
@@ -48385,33 +50721,31 @@
               }
             },
             "examples": {
-              "application/json": [
-                {
-                  "name": "My AP",
-                  "serial": "Q234-ABCD-5678",
-                  "mac": "00:11:22:33:44:55",
-                  "publicIp": "123.123.123.1",
-                  "networkId": "N_24329156",
-                  "status": "online",
-                  "lastReportedAt": "2018-02-11T00:00:00.090210Z",
-                  "lanIp": "1.2.3.4",
-                  "gateway": "1.2.3.5",
-                  "ipType": "dhcp",
-                  "primaryDns": "8.8.8.8",
-                  "secondaryDns": "8.8.4.4",
-                  "productType": null,
-                  "components": {
-                    "powerSupplies": [
+              "application/json": {
+                "name": "My AP",
+                "serial": "Q234-ABCD-5678",
+                "mac": "00:11:22:33:44:55",
+                "publicIp": "123.123.123.1",
+                "networkId": "N_24329156",
+                "status": "online",
+                "lastReportedAt": "2018-02-11T00:00:00.090210Z",
+                "lanIp": "1.2.3.4",
+                "gateway": "1.2.3.5",
+                "ipType": "dhcp",
+                "primaryDns": "8.8.8.8",
+                "secondaryDns": "8.8.4.4",
+                "productType": "wireless",
+                "components": {
+                  "powerSupplies": [
 
-                    ]
-                  },
-                  "model": "MR34",
-                  "tags": [
-                    "tag1",
-                    "tag2"
                   ]
-                }
-              ]
+                },
+                "model": "MR34",
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ]
+              }
             }
           }
         },
@@ -48602,14 +50936,14 @@
             "examples": {
               "application/json": [
                 {
-                  "id": "1",
                   "shortName": "has_new_feature",
                   "name": "New Feature Beta",
                   "descriptions": {
                     "short": "New Feature Beta",
                     "long": "New Feature Beta long description. consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
                   },
-                  "topic": "Dashboard"
+                  "topic": "Dashboard",
+                  "isOrgScopedOnly": true
                 }
               ]
             }
@@ -48651,7 +50985,10 @@
                   "id": "1",
                   "shortName": "has_new_feature",
                   "limitScopeToNetworks": [
-                    "L_1234"
+                    {
+                      "id": "L_1234",
+                      "name": "My Network"
+                    }
                   ],
                   "createdAt": "2022-05-01T04:07:15Z"
                 }
@@ -48720,7 +51057,10 @@
                 "id": "1",
                 "shortName": "has_new_feature",
                 "limitScopeToNetworks": [
-                  "L_1234"
+                  {
+                    "id": "L_1234",
+                    "name": "My Network"
+                  }
                 ],
                 "createdAt": "2022-05-01T04:07:15Z"
               }
@@ -48766,7 +51106,10 @@
                 "id": "1",
                 "shortName": "has_new_feature",
                 "limitScopeToNetworks": [
-                  "L_1234"
+                  {
+                    "id": "L_1234",
+                    "name": "My Network"
+                  }
                 ],
                 "createdAt": "2022-05-01T04:07:15Z"
               }
@@ -48831,7 +51174,10 @@
                 "id": "1",
                 "shortName": "has_new_feature",
                 "limitScopeToNetworks": [
-                  "L_1234"
+                  {
+                    "id": "L_1234",
+                    "name": "My Network"
+                  }
                 ],
                 "createdAt": "2022-05-01T04:07:15Z"
               }
@@ -50570,7 +52916,55 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Network ID"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "Organization ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Network name"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of the product types that the network supports"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "Timezone of the network"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Network tags"
+                  },
+                  "enrollmentString": {
+                    "type": "string",
+                    "description": "Enrollment string for the network"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL to the network Dashboard UI"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes for the network"
+                  },
+                  "isBoundToConfigTemplate": {
+                    "type": "boolean",
+                    "description": "If the network is bound to a config template"
+                  }
+                }
               }
             },
             "headers": {
@@ -50585,17 +52979,18 @@
                   "id": "L_123456",
                   "organizationId": "2930418",
                   "name": "Long Island Office",
-                  "timeZone": "America/Los_Angeles",
-                  "tags": [
-                    "tag1",
-                    "tag2"
-                  ],
                   "productTypes": [
                     "appliance",
                     "switch",
                     "wireless"
                   ],
+                  "timeZone": "America/Los_Angeles",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
                   "enrollmentString": "long-island-office",
+                  "url": "https://n1.meraki.com//n//manage/nodes/list",
                   "notes": "Combined network for Long Island Office",
                   "isBoundToConfigTemplate": false
                 }
@@ -52339,7 +54734,151 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "string",
+                    "description": "Time at which the reading occurred, in ISO8601 format."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the sensor that took the reading."
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the network."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the network."
+                      }
+                    },
+                    "description": "Network to which the sensor belongs."
+                  },
+                  "metric": {
+                    "type": "string",
+                    "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                  },
+                  "temperature": {
+                    "type": "object",
+                    "properties": {
+                      "fahrenheit": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Temperature reading in degrees Fahrenheit."
+                      },
+                      "celsius": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Temperature reading in degrees Celsius."
+                      }
+                    },
+                    "description": "Reading for the 'temperature' metric."
+                  },
+                  "humidity": {
+                    "type": "object",
+                    "properties": {
+                      "relativePercentage": {
+                        "type": "integer",
+                        "description": "Humidity reading in %RH."
+                      }
+                    },
+                    "description": "Reading for the 'humidity' metric."
+                  },
+                  "water": {
+                    "type": "object",
+                    "properties": {
+                      "present": {
+                        "type": "boolean",
+                        "description": "True if water is detected."
+                      }
+                    },
+                    "description": "Reading for the 'water' metric."
+                  },
+                  "door": {
+                    "type": "object",
+                    "properties": {
+                      "open": {
+                        "type": "boolean",
+                        "description": "True if the door is open."
+                      }
+                    },
+                    "description": "Reading for the 'door' metric."
+                  },
+                  "tvoc": {
+                    "type": "object",
+                    "properties": {
+                      "concentration": {
+                        "type": "integer",
+                        "description": "TVOC reading in micrograms per cubic meter."
+                      }
+                    },
+                    "description": "Reading for the 'tvoc' metric."
+                  },
+                  "pm25": {
+                    "type": "object",
+                    "properties": {
+                      "concentration": {
+                        "type": "integer",
+                        "description": "PM2.5 reading in micrograms per cubic meter."
+                      }
+                    },
+                    "description": "Reading for the 'pm25' metric."
+                  },
+                  "noise": {
+                    "type": "object",
+                    "properties": {
+                      "ambient": {
+                        "type": "object",
+                        "properties": {
+                          "level": {
+                            "type": "integer",
+                            "description": "Ambient noise reading in adjusted decibels."
+                          }
+                        },
+                        "description": "Ambient noise reading."
+                      }
+                    },
+                    "description": "Reading for the 'noise' metric."
+                  },
+                  "indoorAirQuality": {
+                    "type": "object",
+                    "properties": {
+                      "score": {
+                        "type": "integer",
+                        "description": "Indoor air quality score between 0 and 100."
+                      }
+                    },
+                    "description": "Reading for the 'indoorAirQuality' metric."
+                  },
+                  "button": {
+                    "type": "object",
+                    "properties": {
+                      "pressType": {
+                        "type": "string",
+                        "enum": [
+                          "long",
+                          "short"
+                        ],
+                        "description": "Type of button press that occurred."
+                      }
+                    },
+                    "description": "Reading for the 'button' metric."
+                  },
+                  "battery": {
+                    "type": "object",
+                    "properties": {
+                      "percentage": {
+                        "type": "integer",
+                        "description": "Remaining battery life."
+                      }
+                    },
+                    "description": "Reading for the 'battery' metric."
+                  }
+                }
               }
             },
             "headers": {
@@ -52361,6 +54900,35 @@
                   "temperature": {
                     "fahrenheit": 77.81,
                     "celsius": 25.45
+                  },
+                  "humidity": {
+                    "relativePercentage": 34
+                  },
+                  "water": {
+                    "present": true
+                  },
+                  "door": {
+                    "open": true
+                  },
+                  "tvoc": {
+                    "concentration": 100
+                  },
+                  "pm25": {
+                    "concentration": 100
+                  },
+                  "noise": {
+                    "ambient": {
+                      "level": 45
+                    }
+                  },
+                  "indoorAirQuality": {
+                    "score": 89
+                  },
+                  "button": {
+                    "pressType": "short"
+                  },
+                  "battery": {
+                    "percentage": 91
                   }
                 }
               ]
@@ -52473,7 +55041,299 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "description": "Starting time of the interval, in ISO8601 format."
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "description": "Ending time of the interval, in ISO8601 format."
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the sensor that took the reading."
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the sensor that took the reading."
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the network."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the network."
+                      }
+                    },
+                    "description": "Network to which the sensor belongs."
+                  },
+                  "metric": {
+                    "type": "string",
+                    "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                  },
+                  "temperature": {
+                    "type": "object",
+                    "properties": {
+                      "fahrenheit": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Minimum temperature reading in degrees Fahrenheit."
+                          },
+                          "maximum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Maximum temperature reading in degrees Fahrenheit."
+                          },
+                          "average": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Average temperature reading in degrees Fahrenheit."
+                          }
+                        },
+                        "description": "Aggregated temperature readings in degrees Fahrenheit."
+                      },
+                      "celsius": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Minimum temperature reading in degrees Celsius."
+                          },
+                          "maximum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Maximum temperature reading in degrees Celsius."
+                          },
+                          "average": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Average temperature reading in degrees Celsius."
+                          }
+                        },
+                        "description": "Aggregated temperature readings in degrees Celsius."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'temperature' metric."
+                  },
+                  "humidity": {
+                    "type": "object",
+                    "properties": {
+                      "relativePercentage": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "integer",
+                            "description": "Minimum humidity reading in %RH."
+                          },
+                          "maximum": {
+                            "type": "integer",
+                            "description": "Maximum humidity reading in %RH."
+                          },
+                          "average": {
+                            "type": "integer",
+                            "description": "Average humidity reading in %RH."
+                          }
+                        },
+                        "description": "Aggregated humidity readings in %RH."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'humidity' metric."
+                  },
+                  "water": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "type": "integer",
+                            "description": "Number of times that water was detected."
+                          }
+                        },
+                        "description": "Accumulated counts of water detection readings."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'water' metric."
+                  },
+                  "door": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "open": {
+                            "type": "integer",
+                            "description": "Number of times the door was opened."
+                          }
+                        },
+                        "description": "Accumulated counts of door readings."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'door' metric."
+                  },
+                  "tvoc": {
+                    "type": "object",
+                    "properties": {
+                      "concentration": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "integer",
+                            "description": "Minimum TVOC reading in micrograms per cubic meter."
+                          },
+                          "maximum": {
+                            "type": "integer",
+                            "description": "Maximum TVOC reading in micrograms per cubic meter."
+                          },
+                          "average": {
+                            "type": "integer",
+                            "description": "Average TVOC reading in micrograms per cubic meter."
+                          }
+                        },
+                        "description": "Aggregated TVOC readings in micrograms per cubic meter."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'tvoc' metric."
+                  },
+                  "pm25": {
+                    "type": "object",
+                    "properties": {
+                      "concentration": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "integer",
+                            "description": "Minimum PM2.5 reading in micrograms per cubic meter."
+                          },
+                          "maximum": {
+                            "type": "integer",
+                            "description": "Maximum PM2.5 reading in micrograms per cubic meter."
+                          },
+                          "average": {
+                            "type": "integer",
+                            "description": "Average PM2.5 reading in micrograms per cubic meter."
+                          }
+                        },
+                        "description": "Aggregated PM2.5 readings in micrograms per cubic meter."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'pm25' metric."
+                  },
+                  "noise": {
+                    "type": "object",
+                    "properties": {
+                      "ambient": {
+                        "type": "object",
+                        "properties": {
+                          "level": {
+                            "type": "object",
+                            "properties": {
+                              "minimum": {
+                                "type": "integer",
+                                "description": "Minimum ambient noise reading in adjusted decibels."
+                              },
+                              "maximum": {
+                                "type": "integer",
+                                "description": "Maximum ambient noise reading in adjusted decibels."
+                              },
+                              "average": {
+                                "type": "integer",
+                                "description": "Average ambient noise reading in adjusted decibels."
+                              }
+                            },
+                            "description": "Aggregated ambient noise readings in adjusted decibels."
+                          }
+                        },
+                        "description": "Ambient noise reading."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'noise' metric."
+                  },
+                  "indoorAirQuality": {
+                    "type": "object",
+                    "properties": {
+                      "score": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "integer",
+                            "description": "Minimum indoor air quality reading as a score between 0-100."
+                          },
+                          "maximum": {
+                            "type": "integer",
+                            "description": "Maximum indoor air quality reading as a score between 0-100."
+                          },
+                          "average": {
+                            "type": "integer",
+                            "description": "Average indoor air quality reading as a score between 0-100."
+                          }
+                        },
+                        "description": "Aggregated indoor air quality readings as a score between 0-100."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'indoorAirQuality' metric."
+                  },
+                  "button": {
+                    "type": "object",
+                    "properties": {
+                      "pressType": {
+                        "type": "object",
+                        "properties": {
+                          "counts": {
+                            "type": "object",
+                            "properties": {
+                              "short": {
+                                "type": "integer",
+                                "description": "Number of times that a short press was performed."
+                              },
+                              "long": {
+                                "type": "integer",
+                                "description": "Number of times that a long press was performed."
+                              }
+                            },
+                            "description": "Accumulated button presses by press type."
+                          }
+                        },
+                        "description": "Accumulated counts of button press readings."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'button' metric."
+                  },
+                  "battery": {
+                    "type": "object",
+                    "properties": {
+                      "percentage": {
+                        "type": "object",
+                        "properties": {
+                          "minimum": {
+                            "type": "integer",
+                            "description": "Minimum battery life reading as a percentage."
+                          },
+                          "maximum": {
+                            "type": "integer",
+                            "description": "Maximum battery life reading as a percentage."
+                          },
+                          "average": {
+                            "type": "integer",
+                            "description": "Average battery life reading as a percentage."
+                          }
+                        },
+                        "description": "Aggregated battery life readings as a percentage."
+                      }
+                    },
+                    "description": "Reading information over the interval for the 'battery' metric."
+                  }
+                }
               }
             },
             "headers": {
@@ -52503,7 +55363,69 @@
                     "celsius": {
                       "minimum": 20.08,
                       "maximum": 23.84,
-                      "average": 72.08
+                      "average": 22.27
+                    }
+                  },
+                  "humidity": {
+                    "relativePercentage": {
+                      "minimum": 33,
+                      "maximum": 35,
+                      "average": 33
+                    }
+                  },
+                  "water": {
+                    "counts": {
+                      "present": 6
+                    }
+                  },
+                  "door": {
+                    "counts": {
+                      "open": 6
+                    }
+                  },
+                  "tvoc": {
+                    "concentration": {
+                      "minimum": 221,
+                      "maximum": 504,
+                      "average": 440
+                    }
+                  },
+                  "pm25": {
+                    "concentration": {
+                      "minimum": 0,
+                      "maximum": 3,
+                      "average": 1
+                    }
+                  },
+                  "noise": {
+                    "ambient": {
+                      "level": {
+                        "minimum": 22,
+                        "maximum": 45,
+                        "average": 31
+                      }
+                    }
+                  },
+                  "indoorAirQuality": {
+                    "score": {
+                      "minimum": 33,
+                      "maximum": 35,
+                      "average": 33
+                    }
+                  },
+                  "button": {
+                    "pressType": {
+                      "counts": {
+                        "short": 2,
+                        "long": 4
+                      }
+                    }
+                  },
+                  "battery": {
+                    "percentage": {
+                      "minimum": 95,
+                      "maximum": 97,
+                      "average": 96
                     }
                   }
                 }
@@ -52584,7 +55506,160 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the sensor that took the readings."
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the network."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the network."
+                      }
+                    },
+                    "description": "Network to which the sensor belongs."
+                  },
+                  "readings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ts": {
+                          "type": "string",
+                          "description": "Time at which the reading occurred, in ISO8601 format."
+                        },
+                        "metric": {
+                          "type": "string",
+                          "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                        },
+                        "temperature": {
+                          "type": "object",
+                          "properties": {
+                            "fahrenheit": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Temperature reading in degrees Fahrenheit."
+                            },
+                            "celsius": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Temperature reading in degrees Celsius."
+                            }
+                          },
+                          "description": "Reading for the 'temperature' metric."
+                        },
+                        "humidity": {
+                          "type": "object",
+                          "properties": {
+                            "relativePercentage": {
+                              "type": "integer",
+                              "description": "Humidity reading in %RH."
+                            }
+                          },
+                          "description": "Reading for the 'humidity' metric."
+                        },
+                        "water": {
+                          "type": "object",
+                          "properties": {
+                            "present": {
+                              "type": "boolean",
+                              "description": "True if water is detected."
+                            }
+                          },
+                          "description": "Reading for the 'water' metric."
+                        },
+                        "door": {
+                          "type": "object",
+                          "properties": {
+                            "open": {
+                              "type": "boolean",
+                              "description": "True if the door is open."
+                            }
+                          },
+                          "description": "Reading for the 'door' metric."
+                        },
+                        "tvoc": {
+                          "type": "object",
+                          "properties": {
+                            "concentration": {
+                              "type": "integer",
+                              "description": "TVOC reading in micrograms per cubic meter."
+                            }
+                          },
+                          "description": "Reading for the 'tvoc' metric."
+                        },
+                        "pm25": {
+                          "type": "object",
+                          "properties": {
+                            "concentration": {
+                              "type": "integer",
+                              "description": "PM2.5 reading in micrograms per cubic meter."
+                            }
+                          },
+                          "description": "Reading for the 'pm25' metric."
+                        },
+                        "noise": {
+                          "type": "object",
+                          "properties": {
+                            "ambient": {
+                              "type": "object",
+                              "properties": {
+                                "level": {
+                                  "type": "integer",
+                                  "description": "Ambient noise reading in adjusted decibels."
+                                }
+                              },
+                              "description": "Ambient noise reading."
+                            }
+                          },
+                          "description": "Reading for the 'noise' metric."
+                        },
+                        "indoorAirQuality": {
+                          "type": "object",
+                          "properties": {
+                            "score": {
+                              "type": "integer",
+                              "description": "Indoor air quality score between 0 and 100."
+                            }
+                          },
+                          "description": "Reading for the 'indoorAirQuality' metric."
+                        },
+                        "button": {
+                          "type": "object",
+                          "properties": {
+                            "pressType": {
+                              "type": "string",
+                              "enum": [
+                                "long",
+                                "short"
+                              ],
+                              "description": "Type of button press that occurred."
+                            }
+                          },
+                          "description": "Reading for the 'button' metric."
+                        },
+                        "battery": {
+                          "type": "object",
+                          "properties": {
+                            "percentage": {
+                              "type": "integer",
+                              "description": "Remaining battery life."
+                            }
+                          },
+                          "description": "Reading for the 'battery' metric."
+                        }
+                      }
+                    },
+                    "description": "Array of latest readings from the sensor."
+                  }
+                }
               }
             },
             "headers": {
@@ -52608,6 +55683,35 @@
                       "temperature": {
                         "fahrenheit": 77.81,
                         "celsius": 25.45
+                      },
+                      "humidity": {
+                        "relativePercentage": 34
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 100
+                      },
+                      "pm25": {
+                        "concentration": 100
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 45
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 89
+                      },
+                      "button": {
+                        "pressType": "short"
+                      },
+                      "battery": {
+                        "percentage": 91
                       }
                     }
                   ]
@@ -52641,11 +55745,17 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "certificate": {
+                  "type": "string",
+                  "description": "Organization APNS Certificate used by devices to communication with Apple"
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "certificate": "-----BEGIN CERTIFICATE-----\nMIIFdjCCBF6gAwIBAgIIM/hhf5ww8MwwDQYJKoZIhvcNAQELBQAwgYwxQDA+BgNV\nBAMMN0FwcGxlIEFwcGxpY2F0aW9uIEludGVncmF0aW9uIDIgQ2VydGlmaWNhdGlv\nbiBBdXRob3JpdHkxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9y\naXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzAeFw0yMDAyMjYx\nODIzNDJaFw0yMTAyMjUxODIzNDJaMIGPMUwwSgYKCZImiZPyLGQBAQw8Y29tLmFw\ncGxlLm1nbXQuRXh0ZXJuYWwuOTA3NDJhYmYtZDhhZC00MTc2LTllZmQtMGNiMzg1\nMTM1MGM0MTIwMAYDVQQDDClBUFNQOjkwNzQyYWJmLWQ4YWQtNDE3Ni05ZWZkLTBj\nYjM4NTEzNTBjNDELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw\nggEKAoIBAQDANdpo62hfxkP1IpMPXuO1+xKekUkY+iYae6cRaP886bodUaH1OwCj\nQd011u9Vng6m8I9rcLdIOS+IkFGKcTAHRYY3noqfEQUPyi5TN6yM1/mVYVoWZUnY\nTrNWqDN/HfRagdYfZyQ7kAtOY2K8TF78HLLqQm7ez2+r4qibumoSli9+qCzKwDW/\nhbx7JTeMlbYkhLTFgBkRxlp+usKymsLKm8D7kdbxtct4mx6p9z1FiNu4U1Hi/PgK\nI/V3zHD4Ww7SzTICiLdCPeAmt042JvXAMQi0qhzrEdDiapmWwUC9xiiORN0BTIRA\nT+DddTx8Xcly4wj9vQFdGUGLrJnzB3xZAgMBAAGjggHVMIIB0TAJBgNVHRMEAjAA\nMB8GA1UdIwQYMBaAFPe+fCFgkds9G3vYOjKBad+ebH+bMIIBHAYDVR0gBIIBEzCC\nAQ8wggELBgkqhkiG92NkBQEwgf0wgcMGCCsGAQUFBwICMIG2DIGzUmVsaWFuY2Ug\nb24gdGhpcyBjZXJ0aWZpY2F0ZSBieSBhbnkgcGFydHkgYXNzdW1lcyBhY2NlcHRh\nbmNlIG9mIHRoZSB0aGVuIGFwcGxpY2FibGUgc3RhbmRhcmQgdGVybXMgYW5kIGNv\nbmRpdGlvbnMgb2YgdXNlLCBjZXJ0aWZpY2F0ZSBwb2xpY3kgYW5kIGNlcnRpZmlj\nYXRpb24gcHJhY3RpY2Ugc3RhdGVtZW50cy4wNQYIKwYBBQUHAgEWKWh0dHA6Ly93\nd3cuYXBwbGUuY29tL2NlcnRpZmljYXRlYXV0aG9yaXR5MBMGA1UdJQQMMAoGCCsG\nAQUFBwMCMDAGA1UdHwQpMCcwJaAjoCGGH2h0dHA6Ly9jcmwuYXBwbGUuY29tL2Fh\naTJjYS5jcmwwHQYDVR0OBBYEFDj4Jizt9bQX7dn3ypIanvaNIy8fMAsGA1UdDwQE\nAwIHgDAQBgoqhkiG92NkBgMCBAIFADANBgkqhkiG9w0BAQsFAAOCAQEARmLmy4Mh\n80hTBHMj2whrC2LR0dIe2ngAUwYGSocyPZOzlGZYntUvpsNGwflbWSPNxFpVF15z\nexEcLPKM4f9KGdM27s/m/x1Es2us9Vve+wS+N0C84zMC++FJBIxj3yAINXqSpYJv\nbA5wccHlzP9F9Ks7sVNQB8y0mibYahtxVV959gC4522t5SRaEEsd82oTCtXE2Ljg\nfQ1IAmWi4MuMSPwp26oDSwun8Wxyx+sfi/it9YWxD36Ga9mrfIjK1WIHyhge0HHr\nolnvMfxgwI9E5gGV/4bQzPlmsHdz+/pLupWMkALaAxI9D7ajUG7iyyjJBCOpsr1s\nFjDvo6WUkaqMHA==\n-----END CERTIFICATE-----\n"
+                "certificate": "          -----BEGIN CERTIFICATE-----\n          MIIFdjCCBF6gAwIBAgIIM/hhf5ww8MwwDQYJKoZIhvcNAQELBQAwgYwxQDA+BgNV\n          BAMMN0FwcGxlIEFwcGxpY2F0aW9uIEludGVncmF0aW9uIDIgQ2VydGlmaWNhdGlv\n          biBBdXRob3JpdHkxJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9y\n          aXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzAeFw0yMDAyMjYx\n          ODIzNDJaFw0yMTAyMjUxODIzNDJaMIGPMUwwSgYKCZImiZPyLGQBAQw8Y29tLmFw\n          cGxlLm1nbXQuRXh0ZXJuYWwuOTA3NDJhYmYtZDhhZC00MTc2LTllZmQtMGNiMzg1\n          MTM1MGM0MTIwMAYDVQQDDClBUFNQOjkwNzQyYWJmLWQ4YWQtNDE3Ni05ZWZkLTBj\n          YjM4NTEzNTBjNDELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw\n          ggEKAoIBAQDANdpo62hfxkP1IpMPXuO1+xKekUkY+iYae6cRaP886bodUaH1OwCj\n          Qd011u9Vng6m8I9rcLdIOS+IkFGKcTAHRYY3noqfEQUPyi5TN6yM1/mVYVoWZUnY\n          TrNWqDN/HfRagdYfZyQ7kAtOY2K8TF78HLLqQm7ez2+r4qibumoSli9+qCzKwDW/\n          hbx7JTeMlbYkhLTFgBkRxlp+usKymsLKm8D7kdbxtct4mx6p9z1FiNu4U1Hi/PgK\n          I/V3zHD4Ww7SzTICiLdCPeAmt042JvXAMQi0qhzrEdDiapmWwUC9xiiORN0BTIRA\n          T+DddTx8Xcly4wj9vQFdGUGLrJnzB3xZAgMBAAGjggHVMIIB0TAJBgNVHRMEAjAA\n          MB8GA1UdIwQYMBaAFPe+fCFgkds9G3vYOjKBad+ebH+bMIIBHAYDVR0gBIIBEzCC\n          AQ8wggELBgkqhkiG92NkBQEwgf0wgcMGCCsGAQUFBwICMIG2DIGzUmVsaWFuY2Ug\n          b24gdGhpcyBjZXJ0aWZpY2F0ZSBieSBhbnkgcGFydHkgYXNzdW1lcyBhY2NlcHRh\n          bmNlIG9mIHRoZSB0aGVuIGFwcGxpY2FibGUgc3RhbmRhcmQgdGVybXMgYW5kIGNv\n          bmRpdGlvbnMgb2YgdXNlLCBjZXJ0aWZpY2F0ZSBwb2xpY3kgYW5kIGNlcnRpZmlj\n          YXRpb24gcHJhY3RpY2Ugc3RhdGVtZW50cy4wNQYIKwYBBQUHAgEWKWh0dHA6Ly93\n          d3cuYXBwbGUuY29tL2NlcnRpZmljYXRlYXV0aG9yaXR5MBMGA1UdJQQMMAoGCCsG\n          AQUFBwMCMDAGA1UdHwQpMCcwJaAjoCGGH2h0dHA6Ly9jcmwuYXBwbGUuY29tL2Fh\n          aTJjYS5jcmwwHQYDVR0OBBYEFDj4Jizt9bQX7dn3ypIanvaNIy8fMAsGA1UdDwQE\n          AwIHgDAQBgoqhkiG92NkBgMCBAIFADANBgkqhkiG9w0BAQsFAAOCAQEARmLmy4Mh\n          80hTBHMj2whrC2LR0dIe2ngAUwYGSocyPZOzlGZYntUvpsNGwflbWSPNxFpVF15z\n          exEcLPKM4f9KGdM27s/m/x1Es2us9Vve+wS+N0C84zMC++FJBIxj3yAINXqSpYJv\n          bA5wccHlzP9F9Ks7sVNQB8y0mibYahtxVV959gC4522t5SRaEEsd82oTCtXE2Ljg\n          fQ1IAmWi4MuMSPwp26oDSwun8Wxyx+sfi/it9YWxD36Ga9mrfIjK1WIHyhge0HHr\n          olnvMfxgwI9E5gGV/4bQzPlmsHdz+/pLupWMkALaAxI9D7ajUG7iyyjJBCOpsr1s\n          FjDvo6WUkaqMHA==\n          -----END CERTIFICATE-----\n"
               }
             }
           }
@@ -53417,7 +56527,33 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "model": {
+                    "type": "string",
+                    "description": "The device model"
+                  },
+                  "count": {
+                    "type": "integer",
+                    "description": "Total number of devices per model"
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total usage in megabytes"
+                      },
+                      "average": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Average usage in megabytes"
+                      }
+                    },
+                    "description": "Usage info in megabytes"
+                  }
+                }
               }
             },
             "examples": {
@@ -53426,8 +56562,8 @@
                   "model": "MR34",
                   "count": 2,
                   "usage": {
-                    "total": 2000,
-                    "average": 1000
+                    "total": 2000.0,
+                    "average": 1000.0
                   }
                 }
               ]
@@ -53483,7 +56619,55 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the SSID"
+                  },
+                  "usage": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Total usage of the SSID"
+                      },
+                      "downstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Downstream usage of the SSID"
+                      },
+                      "upstream": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Upstream usage of the SSID"
+                      },
+                      "percentage": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Percentage usage of the SSID"
+                      }
+                    },
+                    "description": "Date usage of the SSID, in megabytes"
+                  },
+                  "clients": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total counts of the clients"
+                          }
+                        },
+                        "description": "Counts of the clients"
+                      }
+                    },
+                    "description": "Clients info of the SSID"
+                  }
+                }
               }
             },
             "examples": {
@@ -53491,9 +56675,9 @@
                 {
                   "name": "My SSID",
                   "usage": {
-                    "total": 18000,
-                    "downstream": 10000,
-                    "upstream": 8000,
+                    "total": 18000.0,
+                    "downstream": 10000.0,
+                    "upstream": 8000.0,
                     "percentage": 80.223456789
                   },
                   "clients": {
@@ -54133,7 +57317,43 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "alertType": {
+                    "type": "string",
+                    "description": "Type of alert that the webhook is delivering"
+                  },
+                  "loggedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the webhook log was created, in ISO8601 format"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network ID for the webhook log"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "ID for the webhook log's organization"
+                  },
+                  "responseCode": {
+                    "type": "integer",
+                    "description": "Response code from the webhook"
+                  },
+                  "responseDuration": {
+                    "type": "integer",
+                    "description": "Duration of the response, in milliseconds"
+                  },
+                  "sentAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the webhook was sent, in ISO8601 format"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL where the webhook was sent"
+                  }
+                }
               }
             },
             "headers": {
@@ -54145,14 +57365,14 @@
             "examples": {
               "application/json": [
                 {
-                  "organizationId": "33619",
-                  "networkId": "L_22742",
                   "alertType": "Settings changed",
-                  "url": "https://www.example.com/path",
-                  "sentAt": "2019-01-01T13:37:28.123456Z",
                   "loggedAt": "2019-01-01T13:37:28.423456Z",
+                  "networkId": "N_24329156",
+                  "organizationId": "2930418",
                   "responseCode": 200,
-                  "responseDuration": 244
+                  "responseDuration": 244,
+                  "sentAt": "2019-01-01T13:37:28.123456Z",
+                  "url": "https://www.example.com/path"
                 }
               ]
             }
@@ -54261,6 +57481,9 @@
     },
     {
       "name": "authenticationToken"
+    },
+    {
+      "name": "availabilities"
     },
     {
       "name": "bandwidthUsageHistory"
@@ -54810,6 +58033,9 @@
     },
     {
       "name": "trafficShaping"
+    },
+    {
+      "name": "trustedAccessConfigs"
     },
     {
       "name": "trustedServers"
