@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.22.0-beta.3",
+    "version": "1.22.0-beta.4",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 June, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 29 June, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -35,6 +35,109 @@
     }
   ],
   "paths": {
+    "/administered/identities/me": {
+      "get": {
+        "description": "Returns the identity of the current user.",
+        "operationId": "getAdministeredIdentitiesMe",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Username"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "User email"
+                },
+                "lastUsedDashboardAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Last seen active on Dashboard UI"
+                },
+                "authentication": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "description": "Authentication mode"
+                    },
+                    "api": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "object",
+                          "properties": {
+                            "created": {
+                              "type": "boolean",
+                              "description": "If API key is created for this user"
+                            }
+                          },
+                          "description": "API key"
+                        }
+                      },
+                      "description": "API authentication"
+                    },
+                    "twoFactor": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "If twoFactor authentication is enabled for this user"
+                        }
+                      },
+                      "description": "TwoFactor authentication"
+                    },
+                    "saml": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "If SAML authentication is enabled for this user"
+                        }
+                      },
+                      "description": "SAML authentication"
+                    }
+                  },
+                  "description": "Authentication info"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "name": "Miles Meraki",
+                "email": "miles@meraki.com",
+                "lastUsedDashboardAt": "2018-02-11T00:00:00.090210Z",
+                "authentication": {
+                  "mode": "email",
+                  "api": {
+                    "key": {
+                      "created": true
+                    }
+                  },
+                  "twoFactor": {
+                    "enabled": false
+                  },
+                  "saml": {
+                    "enabled": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the identity of the current user.",
+        "tags": [
+          "administered",
+          "monitor",
+          "identities",
+          "me"
+        ]
+      }
+    },
     "/devices/{serial}": {
       "get": {
         "description": "Return a single device",
@@ -892,7 +995,17 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "The newly generated authentication token for the vMX instance"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "description": "The expiration time for the token, in ISO 8601 format"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -17658,7 +17771,7 @@
                 "products": {
                   "camera": {
                     "currentVersion": {
-                      "id": 4321,
+                      "id": "4321",
                       "firmware": "camera-11-2-1",
                       "shortName": "MV 11.2.1",
                       "releaseType": "stable",
@@ -17667,14 +17780,14 @@
                     "lastUpgrade": {
                       "time": "timestamp",
                       "fromVersion": {
-                        "id": 1234,
+                        "id": "1234",
                         "firmware": "camera-10-8-1",
                         "shortName": "MV 10.8.1",
                         "releaseType": "stable",
                         "releaseDate": "2021-03-17T17:22:52Z"
                       },
                       "toVersion": {
-                        "id": 4321,
+                        "id": "4321",
                         "firmware": "camera-11-2-1",
                         "shortName": "MV 11.2.1",
                         "releaseType": "stable",
@@ -17684,7 +17797,7 @@
                     "nextUpgrade": {
                       "time": "timestamp",
                       "toVersion": {
-                        "id": 2134,
+                        "id": "2134",
                         "firmware": "camera-15-5-2",
                         "shortName": "MV 25.5.2",
                         "releaseType": "stable",
@@ -17693,28 +17806,28 @@
                     },
                     "availableVersions": [
                       {
-                        "id": 3421,
+                        "id": "3421",
                         "firmware": "camera-16-x-y",
                         "shortName": "MV 16.x.y",
                         "releaseType": "beta",
                         "releaseDate": "2020-11-28T17:22:52Z"
                       },
                       {
-                        "id": 2345,
+                        "id": "2345",
                         "firmware": "camera-15-x-x",
                         "shortName": "MV 15.x.x",
                         "releaseType": "stable",
                         "releaseDate": "2019-03-07T17:22:52Z"
                       },
                       {
-                        "id": 5435,
+                        "id": "5435",
                         "firmware": "camera-15-x-y",
                         "shortName": "MV 15.x.y",
                         "releaseType": "stable",
                         "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
-                        "id": 4534,
+                        "id": "4534",
                         "firmware": "camera-18-z-z",
                         "shortName": "MV 18.z.z",
                         "releaseType": "other?",
@@ -17725,7 +17838,7 @@
                   },
                   "switch": {
                     "currentVersion": {
-                      "id": 5678,
+                      "id": "5678",
                       "firmware": "switch-11-2-1",
                       "shortName": "MS 11.2.1",
                       "releaseType": "stable",
@@ -17734,14 +17847,14 @@
                     "lastUpgrade": {
                       "time": "timestamp",
                       "fromVersion": {
-                        "id": 7647,
+                        "id": "7647",
                         "firmware": "switch-10-8-1",
                         "shortName": "MS 10.8.1",
                         "releaseType": "stable",
                         "releaseDate": "2019-03-17T17:22:52Z"
                       },
                       "toVersion": {
-                        "id": 5678,
+                        "id": "5678",
                         "firmware": "switch-11-2-1",
                         "shortName": "MS 11.2.1",
                         "releaseType": "stable",
@@ -17751,7 +17864,7 @@
                     "nextUpgrade": {
                       "time": "timestamp",
                       "toVersion": {
-                        "id": 7857,
+                        "id": "7857",
                         "firmware": "switch-15-5-2",
                         "shortName": "MS 25.5.2",
                         "releaseType": "stable",
@@ -17760,28 +17873,28 @@
                     },
                     "availableVersions": [
                       {
-                        "id": 7768,
+                        "id": "7768",
                         "firmware": "switch-16-x-y",
                         "shortName": "MS 16.x.y",
                         "releaseType": "beta",
                         "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
-                        "id": 9768,
+                        "id": "9768",
                         "firmware": "switch-15-x-x",
                         "shortName": "MS 15.x.x",
                         "releaseType": "stable",
                         "releaseDate": "2021-02-17T17:22:52Z"
                       },
                       {
-                        "id": 8896,
+                        "id": "8896",
                         "firmware": "switch-15-x-y",
                         "shortName": "MS 15.x.y",
                         "releaseType": "stable",
                         "releaseDate": "2021-01-17T17:22:52Z"
                       },
                       {
-                        "id": 8766,
+                        "id": "8766",
                         "firmware": "switch-18-z-z",
                         "shortName": "MS 18.z.z",
                         "releaseType": "other?",
@@ -18155,7 +18268,7 @@
                 "products": {
                   "camera": {
                     "currentVersion": {
-                      "id": 4321,
+                      "id": "4321",
                       "firmware": "camera-11-2-1",
                       "shortName": "MV 11.2.1",
                       "releaseType": "stable",
@@ -18164,14 +18277,14 @@
                     "lastUpgrade": {
                       "time": "timestamp",
                       "fromVersion": {
-                        "id": 1234,
+                        "id": "1234",
                         "firmware": "camera-10-8-1",
                         "shortName": "MV 10.8.1",
                         "releaseType": "stable",
                         "releaseDate": "2021-03-17T17:22:52Z"
                       },
                       "toVersion": {
-                        "id": 4321,
+                        "id": "4321",
                         "firmware": "camera-11-2-1",
                         "shortName": "MV 11.2.1",
                         "releaseType": "stable",
@@ -18181,7 +18294,7 @@
                     "nextUpgrade": {
                       "time": "timestamp",
                       "toVersion": {
-                        "id": 2134,
+                        "id": "2134",
                         "firmware": "camera-15-5-2",
                         "shortName": "MV 25.5.2",
                         "releaseType": "stable",
@@ -18190,28 +18303,28 @@
                     },
                     "availableVersions": [
                       {
-                        "id": 3421,
+                        "id": "3421",
                         "firmware": "camera-16-x-y",
                         "shortName": "MV 16.x.y",
                         "releaseType": "beta",
                         "releaseDate": "2020-11-28T17:22:52Z"
                       },
                       {
-                        "id": 2345,
+                        "id": "2345",
                         "firmware": "camera-15-x-x",
                         "shortName": "MV 15.x.x",
                         "releaseType": "stable",
                         "releaseDate": "2019-03-07T17:22:52Z"
                       },
                       {
-                        "id": 5435,
+                        "id": "5435",
                         "firmware": "camera-15-x-y",
                         "shortName": "MV 15.x.y",
                         "releaseType": "stable",
                         "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
-                        "id": 4534,
+                        "id": "4534",
                         "firmware": "camera-18-z-z",
                         "shortName": "MV 18.z.z",
                         "releaseType": "other?",
@@ -18222,7 +18335,7 @@
                   },
                   "switch": {
                     "currentVersion": {
-                      "id": 5678,
+                      "id": "5678",
                       "firmware": "switch-11-2-1",
                       "shortName": "MS 11.2.1",
                       "releaseType": "stable",
@@ -18231,14 +18344,14 @@
                     "lastUpgrade": {
                       "time": "timestamp",
                       "fromVersion": {
-                        "id": 7647,
+                        "id": "7647",
                         "firmware": "switch-10-8-1",
                         "shortName": "MS 10.8.1",
                         "releaseType": "stable",
                         "releaseDate": "2019-03-17T17:22:52Z"
                       },
                       "toVersion": {
-                        "id": 5678,
+                        "id": "5678",
                         "firmware": "switch-11-2-1",
                         "shortName": "MS 11.2.1",
                         "releaseType": "stable",
@@ -18248,7 +18361,7 @@
                     "nextUpgrade": {
                       "time": "timestamp",
                       "toVersion": {
-                        "id": 7857,
+                        "id": "7857",
                         "firmware": "switch-15-5-2",
                         "shortName": "MS 25.5.2",
                         "releaseType": "stable",
@@ -18257,28 +18370,28 @@
                     },
                     "availableVersions": [
                       {
-                        "id": 7768,
+                        "id": "7768",
                         "firmware": "switch-16-x-y",
                         "shortName": "MS 16.x.y",
                         "releaseType": "beta",
                         "releaseDate": "2020-03-17T17:22:52Z"
                       },
                       {
-                        "id": 9768,
+                        "id": "9768",
                         "firmware": "switch-15-x-x",
                         "shortName": "MS 15.x.x",
                         "releaseType": "stable",
                         "releaseDate": "2021-02-17T17:22:52Z"
                       },
                       {
-                        "id": 8896,
+                        "id": "8896",
                         "firmware": "switch-15-x-y",
                         "shortName": "MS 15.x.y",
                         "releaseType": "stable",
                         "releaseDate": "2021-01-17T17:22:52Z"
                       },
                       {
-                        "id": 8766,
+                        "id": "8766",
                         "firmware": "switch-18-z-z",
                         "shortName": "MS 18.z.z",
                         "releaseType": "other?",
@@ -18408,10 +18521,10 @@
               "application/json": {
                 "product": "switch",
                 "status": "pending",
-                "upgradeBatchId": 23456,
+                "upgradeBatchId": "23456",
                 "time": "2020-10-21T02:00:00Z",
                 "toVersion": {
-                  "id": 7857,
+                  "id": "7857",
                   "firmware": "switch-15-5-2",
                   "shortName": "MS 25.5.2",
                   "releaseType": "stable",
@@ -52637,16 +52750,46 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "byStatus": {
+                      "type": "object",
+                      "properties": {
+                        "online": {
+                          "type": "integer",
+                          "description": "online count"
+                        },
+                        "alerting": {
+                          "type": "integer",
+                          "description": "alerting count"
+                        },
+                        "offline": {
+                          "type": "integer",
+                          "description": "offline count"
+                        },
+                        "dormant": {
+                          "type": "integer",
+                          "description": "dormant count"
+                        }
+                      },
+                      "description": "byStatus"
+                    }
+                  },
+                  "description": "counts"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "counts": {
                   "byStatus": {
                     "online": 5,
-                    "alerting": 2,
-                    "offline": 0,
-                    "dormant": 2
+                    "alerting": 4,
+                    "offline": 2,
+                    "dormant": 1
                   }
                 }
               }
@@ -55755,7 +55898,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
                 },
                 "cidr": {
                   "type": "string",
@@ -59511,7 +59654,121 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network identifier"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The uplink serial"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "The uplink model"
+                  },
+                  "lastReportedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Last reported time for the device"
+                  },
+                  "uplinks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "interface": {
+                          "type": "string",
+                          "enum": [
+                            "cellular",
+                            "wan1",
+                            "wan2"
+                          ],
+                          "description": "Uplink interface"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "ready",
+                            "failed",
+                            "connecting",
+                            "not connected"
+                          ],
+                          "description": "Uplink status"
+                        },
+                        "ip": {
+                          "type": "string",
+                          "description": "Uplink IP"
+                        },
+                        "gateway": {
+                          "type": "string",
+                          "description": "Gateway IP"
+                        },
+                        "publicIp": {
+                          "type": "string",
+                          "description": "Public IP"
+                        },
+                        "primaryDns": {
+                          "type": "string",
+                          "description": "Primary DNS IP"
+                        },
+                        "secondaryDns": {
+                          "type": "string",
+                          "description": "Secondary DNS IP"
+                        },
+                        "ipAssignedBy": {
+                          "type": "string",
+                          "description": "The way in which the IP is assigned"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "description": "Network Provider"
+                        },
+                        "signalStat": {
+                          "type": "object",
+                          "properties": {
+                            "rsrp": {
+                              "type": "string",
+                              "description": "Reference Signal Received Power"
+                            },
+                            "rsrq": {
+                              "type": "string",
+                              "description": "Reference Signal Received Quality"
+                            }
+                          },
+                          "description": "Tower Signal Status"
+                        },
+                        "connectionType": {
+                          "type": "string",
+                          "description": "Connection Type"
+                        },
+                        "apn": {
+                          "type": "string",
+                          "description": "Access Point Name"
+                        },
+                        "dns1": {
+                          "type": "string",
+                          "description": "Primary DNS IP"
+                        },
+                        "dns2": {
+                          "type": "string",
+                          "description": "Secondary DNS IP"
+                        },
+                        "signalType": {
+                          "type": "string",
+                          "description": "Signal Type"
+                        },
+                        "iccid": {
+                          "type": "string",
+                          "description": "Integrated Circuit Card Identification Number"
+                        }
+                      }
+                    },
+                    "description": "Uplinks"
+                  }
+                }
               }
             },
             "headers": {
@@ -59536,49 +59793,14 @@
                       "publicIp": "123.123.123.1",
                       "primaryDns": "8.8.8.8",
                       "secondaryDns": "8.8.4.4",
-                      "ipAssignedBy": "static"
-                    },
-                    {
-                      "interface": "cellular",
-                      "status": "ready",
-                      "ip": "1.2.3.4",
+                      "ipAssignedBy": "static",
                       "provider": "at&t",
-                      "publicIp": "123.123.123.1",
-                      "model": "integrated",
                       "signalStat": {
                         "rsrp": "-120",
                         "rsrq": "-13"
                       },
                       "connectionType": "4g",
                       "apn": "internet",
-                      "gateway": "100.100.100.100",
-                      "dns1": "111.111.111.111",
-                      "dns2": "222.222.222.222",
-                      "signalType": "4G",
-                      "iccid": "123456789"
-                    }
-                  ]
-                },
-                {
-                  "networkId": "N_24329156",
-                  "serial": "Q234-ABCD-5678",
-                  "model": "MG21",
-                  "lastReportedAt": "2018-02-11T00:00:00Z",
-                  "uplinks": [
-                    {
-                      "interface": "cellular",
-                      "status": "ready",
-                      "ip": "1.2.3.4",
-                      "provider": "at&t",
-                      "publicIp": "123.123.123.1",
-                      "model": "integrated",
-                      "signalStat": {
-                        "rsrp": "-120",
-                        "rsrq": "-13"
-                      },
-                      "connectionType": "4g",
-                      "apn": "internet",
-                      "gateway": "100.100.100.100",
                       "dns1": "111.111.111.111",
                       "dns2": "222.222.222.222",
                       "signalType": "4G",
@@ -59845,6 +60067,9 @@
       "name": "sensor"
     },
     {
+      "name": "administered"
+    },
+    {
       "name": "accessControlLists"
     },
     {
@@ -60097,6 +60322,9 @@
       "name": "httpServers"
     },
     {
+      "name": "identities"
+    },
+    {
       "name": "identityPsks"
     },
     {
@@ -60173,6 +60401,9 @@
     },
     {
       "name": "manufacturers"
+    },
+    {
+      "name": "me"
     },
     {
       "name": "merakiAuthUsers"
