@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.23.0-beta.2",
+    "version": "1.23.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 20 July, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 27 July, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -6900,25 +6900,74 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Network ID"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Network name"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of the product types that the network supports"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "Timezone of the network"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Network tags"
+                },
+                "enrollmentString": {
+                  "type": "string",
+                  "description": "Enrollment string for the network"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL to the network Dashboard UI"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Notes for the network"
+                },
+                "isBoundToConfigTemplate": {
+                  "type": "boolean",
+                  "description": "If the network is bound to a config template"
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "id": "L_123456",
+                "id": "N_24329156",
                 "organizationId": "2930418",
-                "name": "Long Island Office",
-                "timeZone": "America/Los_Angeles",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
+                "name": "Main Office",
                 "productTypes": [
                   "appliance",
                   "switch",
                   "wireless"
                 ],
-                "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office",
+                "timeZone": "America/Los_Angeles",
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "enrollmentString": "my-enrollment-string",
+                "url": "https://n1.meraki.com//n//manage/nodes/list",
+                "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
             }
@@ -6971,13 +7020,13 @@
                 }
               },
               "example": {
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "timeZone": "America/Los_Angeles",
                 "tags": [
                   "tag1",
                   "tag2"
                 ],
-                "notes": "Combined network for Long Island Office"
+                "notes": "Additional description of the network"
               }
             }
           }
@@ -6990,9 +7039,9 @@
             },
             "examples": {
               "application/json": {
-                "id": "L_123456",
+                "id": "N_24329156",
                 "organizationId": "2930418",
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "timeZone": "America/Los_Angeles",
                 "tags": [
                   "tag1",
@@ -7003,8 +7052,8 @@
                   "switch",
                   "wireless"
                 ],
-                "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office",
+                "enrollmentString": "my-enrollment-string",
+                "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
             }
@@ -7036,6 +7085,165 @@
         "tags": [
           "networks",
           "configure"
+        ]
+      }
+    },
+    "/networks/{networkId}/alerts/history": {
+      "get": {
+        "description": "Return the alert history for this network",
+        "operationId": "getNetworkAlertsHistory",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 30."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "occurredAt": {
+                    "type": "string",
+                    "description": "time when the event that caused the alert occurred"
+                  },
+                  "alertTypeId": {
+                    "type": "string",
+                    "description": "type of alert"
+                  },
+                  "alertType": {
+                    "type": "string",
+                    "description": "user friendly alert type"
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "device serial"
+                      }
+                    },
+                    "description": "info related to the device that caused the alert"
+                  },
+                  "destinations": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "object",
+                        "properties": {
+                          "sentAt": {
+                            "type": "string",
+                            "description": "time when the alert was sent to the user(s) for this channel"
+                          }
+                        },
+                        "description": "email destinations for this alert"
+                      },
+                      "push": {
+                        "type": "object",
+                        "properties": {
+                          "sentAt": {
+                            "type": "string",
+                            "description": "time when the alert was sent to the user(s) for this channel"
+                          }
+                        },
+                        "description": "push destinations for this alert"
+                      },
+                      "sms": {
+                        "type": "object",
+                        "properties": {
+                          "sentAt": {
+                            "type": "string",
+                            "description": "time when the alert was sent to the user(s) for this channel"
+                          }
+                        },
+                        "description": "sms destinations for this alert"
+                      },
+                      "webhook": {
+                        "type": "object",
+                        "properties": {
+                          "sentAt": {
+                            "type": "string",
+                            "description": "time when the alert was sent to the user(s) for this channel"
+                          }
+                        },
+                        "description": "webhook destinations for this alert"
+                      }
+                    },
+                    "description": "the destinations this alert is configured to be delivered to"
+                  },
+                  "alertData": {
+                    "type": "object",
+                    "properties": {
+
+                    },
+                    "description": "relevant data about the event that caused the alert"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "occurredAt": "2022-07-11T22:35:34Z",
+                  "alertTypeId": "settings_changed",
+                  "alertType": "Settings changed",
+                  "device": {
+                    "serial": "Q2KN-6CN7-EC4X"
+                  },
+                  "destinations": {
+                    "email": {
+                      "sentAt": "2022-07-11T22:40:34Z"
+                    },
+                    "push": {
+                      "sentAt": "2022-07-11T22:40:34Z"
+                    },
+                    "sms": {
+                      "sentAt": "2022-07-11T22:40:34Z"
+                    },
+                    "webhook": {
+                      "sentAt": "2022-07-11T22:40:34Z"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the alert history for this network",
+        "tags": [
+          "networks",
+          "monitor",
+          "alerts",
+          "history"
         ]
       }
     },
@@ -14827,9 +15035,9 @@
             },
             "examples": {
               "application/json": {
-                "id": "L_123456",
+                "id": "N_24329156",
                 "organizationId": "2930418",
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "timeZone": "America/Los_Angeles",
                 "tags": [
                   "tag1",
@@ -14840,8 +15048,8 @@
                   "switch",
                   "wireless"
                 ],
-                "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office",
+                "enrollmentString": "my-enrollment-string",
+                "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false,
                 "configTemplateId": "N_23952905"
               }
@@ -27606,6 +27814,2026 @@
         ]
       }
     },
+    "/networks/{networkId}/sensor/alerts/profiles": {
+      "get": {
+        "description": "Lists all sensor alert profiles for a network.",
+        "operationId": "getNetworkSensorAlertsProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "description": "ID of the sensor alert profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the sensor alert profile."
+                  },
+                  "schedule": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the sensor schedule to use with the alert profile."
+                      }
+                    },
+                    "description": "The sensor schedule to use with the alert profile."
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "metric": {
+                          "type": "string",
+                          "enum": [
+                            "temperature",
+                            "humidity",
+                            "water",
+                            "door",
+                            "tvoc",
+                            "pm25",
+                            "noise",
+                            "indoorAirQuality"
+                          ],
+                          "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                        },
+                        "threshold": {
+                          "type": "object",
+                          "properties": {
+                            "temperature": {
+                              "type": "object",
+                              "properties": {
+                                "celsius": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in degrees Celsius."
+                                },
+                                "fahrenheit": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in degrees Fahrenheit."
+                                },
+                                "quality": {
+                                  "type": "string",
+                                  "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                                }
+                              },
+                              "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                            },
+                            "humidity": {
+                              "type": "object",
+                              "properties": {
+                                "relativePercentage": {
+                                  "type": "integer",
+                                  "description": "Alerting threshold in %RH."
+                                },
+                                "quality": {
+                                  "type": "string",
+                                  "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                                }
+                              },
+                              "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                            },
+                            "water": {
+                              "type": "object",
+                              "properties": {
+                                "present": {
+                                  "type": "boolean",
+                                  "description": "Alerting threshold for a water detection event. Must be set to true."
+                                }
+                              },
+                              "required": [
+                                "present"
+                              ],
+                              "description": "Water detection threshold. 'present' must be provided and set to true."
+                            },
+                            "door": {
+                              "type": "object",
+                              "properties": {
+                                "open": {
+                                  "type": "boolean",
+                                  "description": "Alerting threshold for a door open event. Must be set to true."
+                                }
+                              },
+                              "required": [
+                                "open"
+                              ],
+                              "description": "Door open threshold. 'open' must be provided and set to true."
+                            },
+                            "tvoc": {
+                              "type": "object",
+                              "properties": {
+                                "concentration": {
+                                  "type": "integer",
+                                  "description": "Alerting threshold as TVOC parts per million."
+                                },
+                                "quality": {
+                                  "type": "string",
+                                  "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                                }
+                              },
+                              "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                            },
+                            "pm25": {
+                              "type": "object",
+                              "properties": {
+                                "concentration": {
+                                  "type": "integer",
+                                  "description": "Alerting threshold as PM2.5 parts per million."
+                                },
+                                "quality": {
+                                  "type": "string",
+                                  "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                                }
+                              },
+                              "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                            },
+                            "noise": {
+                              "type": "object",
+                              "properties": {
+                                "ambient": {
+                                  "type": "object",
+                                  "properties": {
+                                    "level": {
+                                      "type": "integer",
+                                      "description": "Alerting threshold as adjusted decibels."
+                                    },
+                                    "quality": {
+                                      "type": "string",
+                                      "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                    }
+                                  },
+                                  "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                                }
+                              },
+                              "required": [
+                                "ambient"
+                              ],
+                              "description": "Noise threshold. 'ambient' must be provided."
+                            },
+                            "indoorAirQuality": {
+                              "type": "object",
+                              "properties": {
+                                "score": {
+                                  "type": "integer",
+                                  "description": "Alerting threshold as indoor air quality score."
+                                },
+                                "quality": {
+                                  "type": "string",
+                                  "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                                }
+                              },
+                              "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                            }
+                          },
+                          "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                        },
+                        "direction": {
+                          "type": "string",
+                          "enum": [
+                            "above",
+                            "below"
+                          ],
+                          "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "enum": [
+                            0,
+                            60,
+                            120,
+                            180,
+                            240,
+                            300,
+                            600,
+                            900,
+                            1800,
+                            3600
+                          ],
+                          "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                          "default": 0
+                        }
+                      },
+                      "required": [
+                        "metric",
+                        "threshold"
+                      ]
+                    },
+                    "description": "List of conditions that will cause the profile to send an alert."
+                  },
+                  "recipients": {
+                    "type": "object",
+                    "properties": {
+                      "emails": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of emails that will receive information about the alert."
+                      },
+                      "smsNumbers": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of SMS numbers that will receive information about the alert."
+                      },
+                      "httpServerIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                      }
+                    },
+                    "description": "List of recipients that will recieve the alert."
+                  },
+                  "serials": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of device serials assigned to this sensor alert profile."
+                  }
+                },
+                "required": [
+                  "conditions"
+                ]
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "profileId": "1",
+                  "name": "My Sensor Alert Profile",
+                  "schedule": {
+                    "id": "5",
+                    "name": "My Schedule"
+                  },
+                  "conditions": [
+                    {
+                      "metric": "temperature",
+                      "threshold": {
+                        "temperature": {
+                          "celsius": 20.5,
+                          "fahrenheit": 70.0,
+                          "quality": "good"
+                        },
+                        "humidity": {
+                          "relativePercentage": 65,
+                          "quality": "inadequate"
+                        },
+                        "water": {
+                          "present": true
+                        },
+                        "door": {
+                          "open": true
+                        },
+                        "tvoc": {
+                          "concentration": 400,
+                          "quality": "poor"
+                        },
+                        "pm25": {
+                          "concentration": 90,
+                          "quality": "fair"
+                        },
+                        "noise": {
+                          "ambient": {
+                            "level": 120,
+                            "quality": "poor"
+                          }
+                        },
+                        "indoorAirQuality": {
+                          "score": 80,
+                          "quality": "fair"
+                        }
+                      },
+                      "direction": "above",
+                      "duration": 60
+                    }
+                  ],
+                  "recipients": {
+                    "emails": [
+                      "miles@meraki.com"
+                    ],
+                    "smsNumbers": [
+                      "+15555555555"
+                    ],
+                    "httpServerIds": [
+                      "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                    ]
+                  },
+                  "serials": [
+                    "Q234-ABCD-0001",
+                    "Q234-ABCD-0002",
+                    "Q234-ABCD-0003"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Lists all sensor alert profiles for a network.",
+        "tags": [
+          "sensor",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "post": {
+        "description": "Creates a sensor alert profile for a network.",
+        "operationId": "createNetworkSensorAlertsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkSensorAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the sensor alert profile."
+                },
+                "schedule": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                    }
+                  },
+                  "description": "The sensor schedule to use with the alert profile."
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "temperature",
+                          "humidity",
+                          "water",
+                          "door",
+                          "tvoc",
+                          "pm25",
+                          "noise",
+                          "indoorAirQuality"
+                        ],
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                      },
+                      "threshold": {
+                        "type": "object",
+                        "properties": {
+                          "temperature": {
+                            "type": "object",
+                            "properties": {
+                              "celsius": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Celsius."
+                              },
+                              "fahrenheit": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Fahrenheit."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                          },
+                          "humidity": {
+                            "type": "object",
+                            "properties": {
+                              "relativePercentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold in %RH."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                          },
+                          "water": {
+                            "type": "object",
+                            "properties": {
+                              "present": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a water detection event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "present"
+                            ],
+                            "description": "Water detection threshold. 'present' must be provided and set to true."
+                          },
+                          "door": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a door open event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "open"
+                            ],
+                            "description": "Door open threshold. 'open' must be provided and set to true."
+                          },
+                          "tvoc": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as TVOC parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "pm25": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as PM2.5 parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "noise": {
+                            "type": "object",
+                            "properties": {
+                              "ambient": {
+                                "type": "object",
+                                "properties": {
+                                  "level": {
+                                    "type": "integer",
+                                    "description": "Alerting threshold as adjusted decibels."
+                                  },
+                                  "quality": {
+                                    "type": "string",
+                                    "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                  }
+                                },
+                                "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                              }
+                            },
+                            "required": [
+                              "ambient"
+                            ],
+                            "description": "Noise threshold. 'ambient' must be provided."
+                          },
+                          "indoorAirQuality": {
+                            "type": "object",
+                            "properties": {
+                              "score": {
+                                "type": "integer",
+                                "description": "Alerting threshold as indoor air quality score."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          }
+                        },
+                        "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "above",
+                          "below"
+                        ],
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          0,
+                          60,
+                          120,
+                          180,
+                          240,
+                          300,
+                          600,
+                          900,
+                          1800,
+                          3600
+                        ],
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "metric",
+                      "threshold"
+                    ]
+                  },
+                  "description": "List of conditions that will cause the profile to send an alert."
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert."
+                    },
+                    "smsNumbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of SMS numbers that will receive information about the alert."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of device serials assigned to this sensor alert profile."
+                }
+              },
+              "example": {
+                "name": "My Sensor Alert Profile",
+                "schedule": {
+                  "id": "5"
+                },
+                "conditions": [
+                  {
+                    "metric": "temperature",
+                    "threshold": {
+                      "temperature": {
+                        "celsius": 20.5,
+                        "fahrenheit": 70.0,
+                        "quality": "good"
+                      },
+                      "humidity": {
+                        "relativePercentage": 65,
+                        "quality": "inadequate"
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 400,
+                        "quality": "poor"
+                      },
+                      "pm25": {
+                        "concentration": 90,
+                        "quality": "fair"
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 120,
+                          "quality": "poor"
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 80,
+                        "quality": "fair"
+                      }
+                    },
+                    "direction": "above",
+                    "duration": 60
+                  }
+                ],
+                "recipients": {
+                  "emails": [
+                    "miles@meraki.com"
+                  ],
+                  "smsNumbers": [
+                    "+15555555555"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  ]
+                },
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
+              },
+              "required": [
+                "name",
+                "conditions"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "ID of the sensor alert profile."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the sensor alert profile."
+                },
+                "schedule": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the sensor schedule to use with the alert profile."
+                    }
+                  },
+                  "description": "The sensor schedule to use with the alert profile."
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "temperature",
+                          "humidity",
+                          "water",
+                          "door",
+                          "tvoc",
+                          "pm25",
+                          "noise",
+                          "indoorAirQuality"
+                        ],
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                      },
+                      "threshold": {
+                        "type": "object",
+                        "properties": {
+                          "temperature": {
+                            "type": "object",
+                            "properties": {
+                              "celsius": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Celsius."
+                              },
+                              "fahrenheit": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Fahrenheit."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                          },
+                          "humidity": {
+                            "type": "object",
+                            "properties": {
+                              "relativePercentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold in %RH."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                          },
+                          "water": {
+                            "type": "object",
+                            "properties": {
+                              "present": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a water detection event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "present"
+                            ],
+                            "description": "Water detection threshold. 'present' must be provided and set to true."
+                          },
+                          "door": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a door open event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "open"
+                            ],
+                            "description": "Door open threshold. 'open' must be provided and set to true."
+                          },
+                          "tvoc": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as TVOC parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "pm25": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as PM2.5 parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "noise": {
+                            "type": "object",
+                            "properties": {
+                              "ambient": {
+                                "type": "object",
+                                "properties": {
+                                  "level": {
+                                    "type": "integer",
+                                    "description": "Alerting threshold as adjusted decibels."
+                                  },
+                                  "quality": {
+                                    "type": "string",
+                                    "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                  }
+                                },
+                                "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                              }
+                            },
+                            "required": [
+                              "ambient"
+                            ],
+                            "description": "Noise threshold. 'ambient' must be provided."
+                          },
+                          "indoorAirQuality": {
+                            "type": "object",
+                            "properties": {
+                              "score": {
+                                "type": "integer",
+                                "description": "Alerting threshold as indoor air quality score."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          }
+                        },
+                        "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "above",
+                          "below"
+                        ],
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          0,
+                          60,
+                          120,
+                          180,
+                          240,
+                          300,
+                          600,
+                          900,
+                          1800,
+                          3600
+                        ],
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "metric",
+                      "threshold"
+                    ]
+                  },
+                  "description": "List of conditions that will cause the profile to send an alert."
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert."
+                    },
+                    "smsNumbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of SMS numbers that will receive information about the alert."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of device serials assigned to this sensor alert profile."
+                }
+              },
+              "required": [
+                "conditions"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1",
+                "name": "My Sensor Alert Profile",
+                "schedule": {
+                  "id": "5",
+                  "name": "My Schedule"
+                },
+                "conditions": [
+                  {
+                    "metric": "temperature",
+                    "threshold": {
+                      "temperature": {
+                        "celsius": 20.5,
+                        "fahrenheit": 70.0,
+                        "quality": "good"
+                      },
+                      "humidity": {
+                        "relativePercentage": 65,
+                        "quality": "inadequate"
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 400,
+                        "quality": "poor"
+                      },
+                      "pm25": {
+                        "concentration": 90,
+                        "quality": "fair"
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 120,
+                          "quality": "poor"
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 80,
+                        "quality": "fair"
+                      }
+                    },
+                    "direction": "above",
+                    "duration": 60
+                  }
+                ],
+                "recipients": {
+                  "emails": [
+                    "miles@meraki.com"
+                  ],
+                  "smsNumbers": [
+                    "+15555555555"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  ]
+                },
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates a sensor alert profile for a network.",
+        "tags": [
+          "sensor",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/sensor/alerts/profiles/{id}": {
+      "get": {
+        "description": "Show details of a sensor alert profile for a network.",
+        "operationId": "getNetworkSensorAlertsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "ID of the sensor alert profile."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the sensor alert profile."
+                },
+                "schedule": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the sensor schedule to use with the alert profile."
+                    }
+                  },
+                  "description": "The sensor schedule to use with the alert profile."
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "temperature",
+                          "humidity",
+                          "water",
+                          "door",
+                          "tvoc",
+                          "pm25",
+                          "noise",
+                          "indoorAirQuality"
+                        ],
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                      },
+                      "threshold": {
+                        "type": "object",
+                        "properties": {
+                          "temperature": {
+                            "type": "object",
+                            "properties": {
+                              "celsius": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Celsius."
+                              },
+                              "fahrenheit": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Fahrenheit."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                          },
+                          "humidity": {
+                            "type": "object",
+                            "properties": {
+                              "relativePercentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold in %RH."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                          },
+                          "water": {
+                            "type": "object",
+                            "properties": {
+                              "present": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a water detection event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "present"
+                            ],
+                            "description": "Water detection threshold. 'present' must be provided and set to true."
+                          },
+                          "door": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a door open event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "open"
+                            ],
+                            "description": "Door open threshold. 'open' must be provided and set to true."
+                          },
+                          "tvoc": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as TVOC parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "pm25": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as PM2.5 parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "noise": {
+                            "type": "object",
+                            "properties": {
+                              "ambient": {
+                                "type": "object",
+                                "properties": {
+                                  "level": {
+                                    "type": "integer",
+                                    "description": "Alerting threshold as adjusted decibels."
+                                  },
+                                  "quality": {
+                                    "type": "string",
+                                    "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                  }
+                                },
+                                "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                              }
+                            },
+                            "required": [
+                              "ambient"
+                            ],
+                            "description": "Noise threshold. 'ambient' must be provided."
+                          },
+                          "indoorAirQuality": {
+                            "type": "object",
+                            "properties": {
+                              "score": {
+                                "type": "integer",
+                                "description": "Alerting threshold as indoor air quality score."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          }
+                        },
+                        "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "above",
+                          "below"
+                        ],
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          0,
+                          60,
+                          120,
+                          180,
+                          240,
+                          300,
+                          600,
+                          900,
+                          1800,
+                          3600
+                        ],
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "metric",
+                      "threshold"
+                    ]
+                  },
+                  "description": "List of conditions that will cause the profile to send an alert."
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert."
+                    },
+                    "smsNumbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of SMS numbers that will receive information about the alert."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of device serials assigned to this sensor alert profile."
+                }
+              },
+              "required": [
+                "conditions"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1",
+                "name": "My Sensor Alert Profile",
+                "schedule": {
+                  "id": "5",
+                  "name": "My Schedule"
+                },
+                "conditions": [
+                  {
+                    "metric": "temperature",
+                    "threshold": {
+                      "temperature": {
+                        "celsius": 20.5,
+                        "fahrenheit": 70.0,
+                        "quality": "good"
+                      },
+                      "humidity": {
+                        "relativePercentage": 65,
+                        "quality": "inadequate"
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 400,
+                        "quality": "poor"
+                      },
+                      "pm25": {
+                        "concentration": 90,
+                        "quality": "fair"
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 120,
+                          "quality": "poor"
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 80,
+                        "quality": "fair"
+                      }
+                    },
+                    "direction": "above",
+                    "duration": 60
+                  }
+                ],
+                "recipients": {
+                  "emails": [
+                    "miles@meraki.com"
+                  ],
+                  "smsNumbers": [
+                    "+15555555555"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  ]
+                },
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Show details of a sensor alert profile for a network.",
+        "tags": [
+          "sensor",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "put": {
+        "description": "Updates a sensor alert profile for a network.",
+        "operationId": "updateNetworkSensorAlertsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkSensorAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the sensor alert profile."
+                },
+                "schedule": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                    }
+                  },
+                  "description": "The sensor schedule to use with the alert profile."
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "temperature",
+                          "humidity",
+                          "water",
+                          "door",
+                          "tvoc",
+                          "pm25",
+                          "noise",
+                          "indoorAirQuality"
+                        ],
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                      },
+                      "threshold": {
+                        "type": "object",
+                        "properties": {
+                          "temperature": {
+                            "type": "object",
+                            "properties": {
+                              "celsius": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Celsius."
+                              },
+                              "fahrenheit": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Fahrenheit."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                          },
+                          "humidity": {
+                            "type": "object",
+                            "properties": {
+                              "relativePercentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold in %RH."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                          },
+                          "water": {
+                            "type": "object",
+                            "properties": {
+                              "present": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a water detection event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "present"
+                            ],
+                            "description": "Water detection threshold. 'present' must be provided and set to true."
+                          },
+                          "door": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a door open event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "open"
+                            ],
+                            "description": "Door open threshold. 'open' must be provided and set to true."
+                          },
+                          "tvoc": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as TVOC parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "pm25": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as PM2.5 parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "noise": {
+                            "type": "object",
+                            "properties": {
+                              "ambient": {
+                                "type": "object",
+                                "properties": {
+                                  "level": {
+                                    "type": "integer",
+                                    "description": "Alerting threshold as adjusted decibels."
+                                  },
+                                  "quality": {
+                                    "type": "string",
+                                    "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                  }
+                                },
+                                "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                              }
+                            },
+                            "required": [
+                              "ambient"
+                            ],
+                            "description": "Noise threshold. 'ambient' must be provided."
+                          },
+                          "indoorAirQuality": {
+                            "type": "object",
+                            "properties": {
+                              "score": {
+                                "type": "integer",
+                                "description": "Alerting threshold as indoor air quality score."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          }
+                        },
+                        "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "above",
+                          "below"
+                        ],
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          0,
+                          60,
+                          120,
+                          180,
+                          240,
+                          300,
+                          600,
+                          900,
+                          1800,
+                          3600
+                        ],
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "metric",
+                      "threshold"
+                    ]
+                  },
+                  "description": "List of conditions that will cause the profile to send an alert."
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert."
+                    },
+                    "smsNumbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of SMS numbers that will receive information about the alert."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of device serials assigned to this sensor alert profile."
+                }
+              },
+              "example": {
+                "name": "My Sensor Alert Profile",
+                "schedule": {
+                  "id": "5"
+                },
+                "conditions": [
+                  {
+                    "metric": "temperature",
+                    "threshold": {
+                      "temperature": {
+                        "celsius": 20.5,
+                        "fahrenheit": 70.0,
+                        "quality": "good"
+                      },
+                      "humidity": {
+                        "relativePercentage": 65,
+                        "quality": "inadequate"
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 400,
+                        "quality": "poor"
+                      },
+                      "pm25": {
+                        "concentration": 90,
+                        "quality": "fair"
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 120,
+                          "quality": "poor"
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 80,
+                        "quality": "fair"
+                      }
+                    },
+                    "direction": "above",
+                    "duration": 60
+                  }
+                ],
+                "recipients": {
+                  "emails": [
+                    "miles@meraki.com"
+                  ],
+                  "smsNumbers": [
+                    "+15555555555"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  ]
+                },
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "ID of the sensor alert profile."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the sensor alert profile."
+                },
+                "schedule": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "ID of the sensor schedule to use with the alert profile. If not defined, the alert profile will be active at all times."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the sensor schedule to use with the alert profile."
+                    }
+                  },
+                  "description": "The sensor schedule to use with the alert profile."
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "temperature",
+                          "humidity",
+                          "water",
+                          "door",
+                          "tvoc",
+                          "pm25",
+                          "noise",
+                          "indoorAirQuality"
+                        ],
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are temperature, humidity, water, door, tvoc, pm25, noise, and indoorAirQuality."
+                      },
+                      "threshold": {
+                        "type": "object",
+                        "properties": {
+                          "temperature": {
+                            "type": "object",
+                            "properties": {
+                              "celsius": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Celsius."
+                              },
+                              "fahrenheit": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in degrees Fahrenheit."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative temperature level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Temperature threshold. One of 'celsius', 'fahrenheit', or 'quality' must be provided."
+                          },
+                          "humidity": {
+                            "type": "object",
+                            "properties": {
+                              "relativePercentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold in %RH."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative humidity level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Humidity threshold. One of 'relativePercentage' or 'quality' must be provided."
+                          },
+                          "water": {
+                            "type": "object",
+                            "properties": {
+                              "present": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a water detection event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "present"
+                            ],
+                            "description": "Water detection threshold. 'present' must be provided and set to true."
+                          },
+                          "door": {
+                            "type": "object",
+                            "properties": {
+                              "open": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for a door open event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "open"
+                            ],
+                            "description": "Door open threshold. 'open' must be provided and set to true."
+                          },
+                          "tvoc": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as TVOC parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative TVOC level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "TVOC concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "pm25": {
+                            "type": "object",
+                            "properties": {
+                              "concentration": {
+                                "type": "integer",
+                                "description": "Alerting threshold as PM2.5 parts per million."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative PM2.5 level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "PM2.5 concentration threshold. One of 'concentration' or 'quality' must be provided."
+                          },
+                          "noise": {
+                            "type": "object",
+                            "properties": {
+                              "ambient": {
+                                "type": "object",
+                                "properties": {
+                                  "level": {
+                                    "type": "integer",
+                                    "description": "Alerting threshold as adjusted decibels."
+                                  },
+                                  "quality": {
+                                    "type": "string",
+                                    "description": "Alerting threshold as a qualitative ambient noise level. Available qualities are inadequate, poor, fair, and good."
+                                  }
+                                },
+                                "description": "Ambient noise threshold. One of 'level' or 'quality' must be provided."
+                              }
+                            },
+                            "required": [
+                              "ambient"
+                            ],
+                            "description": "Noise threshold. 'ambient' must be provided."
+                          },
+                          "indoorAirQuality": {
+                            "type": "object",
+                            "properties": {
+                              "score": {
+                                "type": "integer",
+                                "description": "Alerting threshold as indoor air quality score."
+                              },
+                              "quality": {
+                                "type": "string",
+                                "description": "Alerting threshold as a qualitative indoor air quality level. Available qualities are inadequate, poor, fair, and good."
+                              }
+                            },
+                            "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          }
+                        },
+                        "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "above",
+                          "below"
+                        ],
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "enum": [
+                          0,
+                          60,
+                          120,
+                          180,
+                          240,
+                          300,
+                          600,
+                          900,
+                          1800,
+                          3600
+                        ],
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "default": 0
+                      }
+                    },
+                    "required": [
+                      "metric",
+                      "threshold"
+                    ]
+                  },
+                  "description": "List of conditions that will cause the profile to send an alert."
+                },
+                "recipients": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of emails that will receive information about the alert."
+                    },
+                    "smsNumbers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of SMS numbers that will receive information about the alert."
+                    },
+                    "httpServerIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of webhook endpoint IDs that will receive information about the alert."
+                    }
+                  },
+                  "description": "List of recipients that will recieve the alert."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of device serials assigned to this sensor alert profile."
+                }
+              },
+              "required": [
+                "conditions"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1",
+                "name": "My Sensor Alert Profile",
+                "schedule": {
+                  "id": "5",
+                  "name": "My Schedule"
+                },
+                "conditions": [
+                  {
+                    "metric": "temperature",
+                    "threshold": {
+                      "temperature": {
+                        "celsius": 20.5,
+                        "fahrenheit": 70.0,
+                        "quality": "good"
+                      },
+                      "humidity": {
+                        "relativePercentage": 65,
+                        "quality": "inadequate"
+                      },
+                      "water": {
+                        "present": true
+                      },
+                      "door": {
+                        "open": true
+                      },
+                      "tvoc": {
+                        "concentration": 400,
+                        "quality": "poor"
+                      },
+                      "pm25": {
+                        "concentration": 90,
+                        "quality": "fair"
+                      },
+                      "noise": {
+                        "ambient": {
+                          "level": 120,
+                          "quality": "poor"
+                        }
+                      },
+                      "indoorAirQuality": {
+                        "score": 80,
+                        "quality": "fair"
+                      }
+                    },
+                    "direction": "above",
+                    "duration": 60
+                  }
+                ],
+                "recipients": {
+                  "emails": [
+                    "miles@meraki.com"
+                  ],
+                  "smsNumbers": [
+                    "+15555555555"
+                  ],
+                  "httpServerIds": [
+                    "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  ]
+                },
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates a sensor alert profile for a network.",
+        "tags": [
+          "sensor",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a sensor alert profile from a network.",
+        "operationId": "deleteNetworkSensorAlertsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a sensor alert profile from a network.",
+        "tags": [
+          "sensor",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      }
+    },
     "/networks/{networkId}/sensor/relationships": {
       "get": {
         "description": "List the sensor roles for devices in a given network",
@@ -31279,7 +33507,7 @@
                   {
                     "id": "N_1234",
                     "organizationId": "2930418",
-                    "name": "Long Island Office - switch",
+                    "name": "Main Office - switch",
                     "timeZone": "America/Los_Angeles",
                     "tags": [
                       "tag1",
@@ -31288,12 +33516,12 @@
                     "productTypes": [
                       "switch"
                     ],
-                    "enrollmentString": "long-island-office"
+                    "enrollmentString": "my-enrollment-string"
                   },
                   {
                     "id": "N_5678",
                     "organizationId": "2930418",
-                    "name": "Long Island Office - wireless",
+                    "name": "Main Office - wireless",
                     "timeZone": "America/Los_Angeles",
                     "tags": [
                       "tag1",
@@ -31302,7 +33530,7 @@
                     "productTypes": [
                       "wireless"
                     ],
-                    "enrollmentString": "long-island-office"
+                    "enrollmentString": "my-enrollment-string"
                   }
                 ]
               }
@@ -35449,6 +37677,228 @@
         ]
       }
     },
+    "/networks/{networkId}/switch/ports/profiles": {
+      "get": {
+        "description": "List the Switch Port Profiles in a network",
+        "operationId": "getNetworkSwitchPortsProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "description": "ID of the profile"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "ID of the network the profile belongs to"
+                  },
+                  "iname": {
+                    "type": "string",
+                    "description": "An immutable name that can be used as an ID for looking up and performing operations on a profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the profile."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Text describing the profile."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Space-seperated list of tags"
+                  },
+                  "port": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "trunk",
+                          "access"
+                        ],
+                        "description": "The type of the switch port profile."
+                      },
+                      "vlan": {
+                        "type": "integer",
+                        "description": "The VLAN of the switch port profile. A null value will clear the value set for trunk ports."
+                      },
+                      "voiceVlan": {
+                        "type": "integer",
+                        "description": "The voice VLAN of the switch port profile. Only applicable to access ports."
+                      },
+                      "allowedVlans": {
+                        "type": "string",
+                        "description": "The VLANs allowed on the switch port profile. Only applicable to trunk ports."
+                      },
+                      "poeEnabled": {
+                        "type": "boolean",
+                        "description": "The PoE status of the switch port profile."
+                      },
+                      "isolationEnabled": {
+                        "type": "boolean",
+                        "description": "The isolation status of the switch port profile."
+                      },
+                      "rstpEnabled": {
+                        "type": "boolean",
+                        "description": "The rapid spanning tree protocol status."
+                      },
+                      "stpGuard": {
+                        "type": "string",
+                        "enum": [
+                          "disabled",
+                          "root guard",
+                          "bpdu guard",
+                          "loop guard"
+                        ],
+                        "description": "The state of the STP guard."
+                      },
+                      "linkNegotiation": {
+                        "type": "string",
+                        "description": "The link speed for the switch port profile."
+                      },
+                      "linkNegotiationCapabilities": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of link negotiation options that are valid for the port profile"
+                      },
+                      "portScheduleId": {
+                        "type": "string",
+                        "description": "The ID of the port schedule. A value of null will clear the port schedule."
+                      },
+                      "udld": {
+                        "type": "string",
+                        "enum": [
+                          "Alert only",
+                          "Enforce"
+                        ],
+                        "description": "The action to take when Unidirectional Link is detected. LinkDefault configuration is Alert only."
+                      },
+                      "accessPolicyType": {
+                        "type": "string",
+                        "enum": [
+                          "Open",
+                          "Custom access policy",
+                          "MAC allow list",
+                          "Sticky MAC allow list"
+                        ],
+                        "description": "The type of the access policy of the switch port profile. Only applicable to access ports."
+                      },
+                      "accessPolicyNumber": {
+                        "type": "integer",
+                        "description": "The number of a custom access policy to configure on the switch port profile. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                      },
+                      "macAllowList": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Only devices with MAC addresses specified in this list will have access to this port. Up to 20 MAC addresses can be defined. Only applicable when 'accessPolicyType' is 'MAC allow list'."
+                      },
+                      "stickyMacAllowList": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The initial list of MAC addresses for sticky Mac allow list. Only applicable when 'accessPolicyType' is 'Sticky MAC allow list'."
+                      },
+                      "stickyMacAllowListLimit": {
+                        "type": "integer",
+                        "description": "The maximum number of MAC addresses for sticky MAC allow list. Only applicable when 'accessPolicyType' is 'Sticky MAC allow list'."
+                      },
+                      "stormControlEnabled": {
+                        "type": "boolean",
+                        "description": "The storm control status of the switch port profile."
+                      },
+                      "adaptivePolicyGroupId": {
+                        "type": "string",
+                        "description": "The adaptive policy group ID that will be used to tag traffic through this switch port profile. This ID must pre-exist during the configuration, else needs to be created using adaptivePolicy/groups API."
+                      },
+                      "peerSgtCapable": {
+                        "type": "boolean",
+                        "description": "If true, Peer SGT is enabled for traffic through this switch port profile. Applicable to trunk ports only."
+                      }
+                    },
+                    "description": "Switch Port Profile attributes"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "profileId": "1284392014819",
+                  "networkId": "N_24329156",
+                  "iname": "phone",
+                  "name": "Phone",
+                  "description": "IP Phones for all office workers",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "port": {
+                    "type": "access",
+                    "vlan": 10,
+                    "voiceVlan": 20,
+                    "allowedVlans": "1-100",
+                    "poeEnabled": true,
+                    "isolationEnabled": false,
+                    "rstpEnabled": true,
+                    "stpGuard": "disabled",
+                    "linkNegotiation": "Auto negotiate",
+                    "linkNegotiationCapabilities": [
+                      "Auto negotiate",
+                      "1 Gigabit full duplex (auto)"
+                    ],
+                    "portScheduleId": "1284392014819",
+                    "udld": "Alert only",
+                    "accessPolicyType": "Sticky MAC allow list",
+                    "accessPolicyNumber": 3,
+                    "macAllowList": [
+                      "34:56:fe:ce:8e:b0",
+                      "34:56:fe:ce:8e:b1"
+                    ],
+                    "stickyMacAllowList": [
+                      "34:56:fe:ce:8e:b0",
+                      "34:56:fe:ce:8e:b1"
+                    ],
+                    "stickyMacAllowListLimit": 5,
+                    "stormControlEnabled": true,
+                    "adaptivePolicyGroupId": "1284392014819",
+                    "peerSgtCapable": false
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the Switch Port Profiles in a network",
+        "tags": [
+          "switch",
+          "configure",
+          "ports",
+          "profiles"
+        ]
+      }
+    },
     "/networks/{networkId}/switch/qosRules": {
       "get": {
         "description": "List quality of service rules",
@@ -39346,9 +41796,9 @@
             },
             "examples": {
               "application/json": {
-                "id": "L_123456",
+                "id": "N_24329156",
                 "organizationId": "2930418",
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "productTypes": [
                   "appliance",
                   "switch",
@@ -39359,9 +41809,9 @@
                   "tag1",
                   "tag2"
                 ],
-                "enrollmentString": "long-island-office",
+                "enrollmentString": "my-enrollment-string",
                 "url": "https://n1.meraki.com//n//manage/nodes/list",
-                "notes": "Combined network for Long Island Office",
+                "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
             }
@@ -53902,6 +56352,152 @@
         ]
       }
     },
+    "/organizations/{organizationId}/apiRequests/overview/responseCodes/byInterval": {
+      "get": {
+        "description": "Tracks organizations' API requests by response code across a given time period",
+        "operationId": "getOrganizationApiRequestsOverviewResponseCodesByInterval",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days. If interval is provided, the timespan will be autocalculated."
+          },
+          {
+            "type": "integer",
+            "name": "interval",
+            "in": "query",
+            "description": "The time interval in seconds for returned data. The valid intervals are: 120, 3600, 14400, 21600. The default is 21600. Interval is calculated if time params are provided."
+          },
+          {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "name": "version",
+            "in": "query",
+            "description": "Filter by API version of the endpoint. Allowable values are: [0, 1]"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "operationIds",
+            "in": "query",
+            "description": "Filter by operation ID of the endpoint"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "sourceIps",
+            "in": "query",
+            "description": "Filter by source IP that made the API request"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "adminIds",
+            "in": "query",
+            "description": "Filter by admin ID of user that made the API request"
+          },
+          {
+            "type": "string",
+            "name": "userAgent",
+            "in": "query",
+            "description": "Filter by user agent string for API request. This will filter by a complete or partial match."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the access period"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The end time of the access period"
+                  },
+                  "counts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "description": "Response status code of the API response"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "description": "Number of records that match the status code"
+                        }
+                      }
+                    },
+                    "description": "list of response codes and a count of how many requests had that code in the given time period"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2018-02-11T00:00:00Z",
+                  "endTs": "2018-05-12T00:00:00Z",
+                  "counts": [
+                    {
+                      "code": 200,
+                      "count": 198938
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Tracks organizations' API requests by response code across a given time period",
+        "tags": [
+          "organizations",
+          "monitor",
+          "apiRequests",
+          "overview",
+          "responseCodes",
+          "byInterval"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/appliance/security/events": {
       "get": {
         "description": "List the security events for an organization",
@@ -56860,9 +59456,9 @@
                 "records": [
                   {
                     "network": {
-                      "id": "L_123456",
+                      "id": "N_24329156",
                       "organizationId": "2930418",
-                      "name": "Long Island Office",
+                      "name": "Main Office",
                       "timeZone": "America/Los_Angeles",
                       "tags": [
                         "tag1",
@@ -56873,8 +59469,8 @@
                         "switch",
                         "wireless"
                       ],
-                      "enrollmentString": "long-island-office",
-                      "notes": "Combined network for Long Island Office",
+                      "enrollmentString": "my-enrollment-string",
+                      "notes": "Additional description of the network",
                       "isBoundToConfigTemplate": false
                     },
                     "description": "Miles's phone",
@@ -62119,9 +64715,9 @@
             "examples": {
               "application/json": [
                 {
-                  "id": "L_123456",
+                  "id": "N_24329156",
                   "organizationId": "2930418",
-                  "name": "Long Island Office",
+                  "name": "Main Office",
                   "productTypes": [
                     "appliance",
                     "switch",
@@ -62132,9 +64728,9 @@
                     "tag1",
                     "tag2"
                   ],
-                  "enrollmentString": "long-island-office",
+                  "enrollmentString": "my-enrollment-string",
                   "url": "https://n1.meraki.com//n//manage/nodes/list",
-                  "notes": "Combined network for Long Island Office",
+                  "notes": "Additional description of the network",
                   "isBoundToConfigTemplate": false
                 }
               ]
@@ -62206,13 +64802,13 @@
                 }
               },
               "example": {
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "timeZone": "America/Los_Angeles",
                 "tags": [
                   "tag1",
                   "tag2"
                 ],
-                "notes": "Combined network for Long Island Office",
+                "notes": "Additional description of the network",
                 "productTypes": [
                   "appliance",
                   "switch",
@@ -62235,9 +64831,9 @@
             },
             "examples": {
               "application/json": {
-                "id": "L_123456",
+                "id": "N_24329156",
                 "organizationId": "2930418",
-                "name": "Long Island Office",
+                "name": "Main Office",
                 "timeZone": "America/Los_Angeles",
                 "tags": [
                   "tag1",
@@ -62248,8 +64844,8 @@
                   "switch",
                   "wireless"
                 ],
-                "enrollmentString": "long-island-office",
-                "notes": "Combined network for Long Island Office",
+                "enrollmentString": "my-enrollment-string",
+                "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
             }
@@ -62320,9 +64916,9 @@
             "examples": {
               "application/json": {
                 "resultingNetwork": {
-                  "id": "L_123456",
+                  "id": "N_24329156",
                   "organizationId": "2930418",
-                  "name": "Long Island Office",
+                  "name": "Main Office",
                   "timeZone": "America/Los_Angeles",
                   "tags": [
                     "tag1",
@@ -62333,8 +64929,8 @@
                     "switch",
                     "wireless"
                   ],
-                  "enrollmentString": "long-island-office",
-                  "notes": "Combined network for Long Island Office",
+                  "enrollmentString": "my-enrollment-string",
+                  "notes": "Additional description of the network",
                   "isBoundToConfigTemplate": false
                 }
               }
@@ -63460,7 +66056,13 @@
                 },
                 "orgAccess": {
                   "type": "string",
-                  "description": "The privilege of the SAML administrator on the organization"
+                  "enum": [
+                    "none",
+                    "read-only",
+                    "full",
+                    "enterprise"
+                  ],
+                  "description": "The privilege of the SAML administrator on the organization. Can be one of 'none', 'read-only', 'full' or 'enterprise'"
                 },
                 "tags": {
                   "type": "array",
@@ -63656,7 +66258,13 @@
                 },
                 "orgAccess": {
                   "type": "string",
-                  "description": "The privilege of the SAML administrator on the organization"
+                  "enum": [
+                    "none",
+                    "read-only",
+                    "full",
+                    "enterprise"
+                  ],
+                  "description": "The privilege of the SAML administrator on the organization. Can be one of 'none', 'read-only', 'full' or 'enterprise'"
                 },
                 "tags": {
                   "type": "array",
@@ -63727,12 +66335,8 @@
                     "access": "read-only"
                   }
                 ]
-              },
-              "required": [
-                "orgAccess"
-              ]
-            },
-            "required": true
+              }
+            }
           }
         ],
         "responses": {
@@ -66490,7 +69094,9 @@
                   "deviceModel": "MR34",
                   "networkId": "N_24329156",
                   "networkName": "Main Office",
-                  "networkUrl": "https://n1.meraki.com//n//manage/nodes/list"
+                  "networkUrl": "https://n1.meraki.com//n//manage/nodes/list",
+                  "enrollmentString": "my-enrollment-string",
+                  "notes": "Additional description of the network"
                 }
               ]
             }
@@ -67155,6 +69761,9 @@
       "name": "requests"
     },
     {
+      "name": "responseCodes"
+    },
+    {
       "name": "restrictions"
     },
     {
@@ -67418,6 +70027,30 @@
       "group": "Alternate management interface",
       "summary": "Update the switch alternate management interface for the network",
       "resource": "/networks/{networkId}/switch/alternateManagementInterface",
+      "operation": "update"
+    },
+    {
+      "group": "Api/v1/adaptive policy/acls controller/shim adaptive policy acl",
+      "summary": "Creates new adaptive policy ACL",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls",
+      "operation": "create"
+    },
+    {
+      "group": "Api/v1/adaptive policy/acls controller/shim adaptive policy acl",
+      "summary": "Deletes the specified adaptive policy ACL. Note this adaptive policy ACL will also be removed from policies using it.",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Api/v1/adaptive policy/acls controller/shim adaptive policy acl",
+      "summary": "Updates an adaptive policy ACL",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
+      "operation": "update"
+    },
+    {
+      "group": "Api/v1/adaptive policy/settings controller/shim adaptive policy settings",
+      "summary": "Update global adaptive policy settings",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
       "operation": "update"
     },
     {
@@ -68093,6 +70726,24 @@
       "operation": "update"
     },
     {
+      "group": "Sensor alert profiles",
+      "summary": "Creates a sensor alert profile for a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Sensor alert profiles",
+      "summary": "Deletes a sensor alert profile from a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Sensor alert profiles",
+      "summary": "Updates a sensor alert profile for a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
+      "operation": "update"
+    },
+    {
       "group": "Sensor gateway role",
       "summary": "Assign one or more sensor roles to a given device.",
       "resource": "/devices/{serial}/sensor/relationships",
@@ -68289,30 +70940,6 @@
       "summary": "Delete a User Access Device",
       "resource": "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}",
       "operation": "destroy"
-    },
-    {
-      "group": "V1/adaptive policy acl",
-      "summary": "Creates new adaptive policy ACL",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/acls",
-      "operation": "create"
-    },
-    {
-      "group": "V1/adaptive policy acl",
-      "summary": "Deletes the specified adaptive policy ACL. Note this adaptive policy ACL will also be removed from policies using it.",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
-      "operation": "destroy"
-    },
-    {
-      "group": "V1/adaptive policy acl",
-      "summary": "Updates an adaptive policy ACL",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{id}",
-      "operation": "update"
-    },
-    {
-      "group": "V1/adaptive policy settings",
-      "summary": "Update global adaptive policy settings",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
-      "operation": "update"
     },
     {
       "group": "VLAN",
