@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.24.0-beta.0",
+    "version": "1.24.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 August, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 10 August, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -3221,6 +3221,7 @@
         "tags": [
           "devices",
           "monitor",
+          "uplinks",
           "lossAndLatencyHistory"
         ]
       }
@@ -7026,6 +7027,7 @@
                   "tag1",
                   "tag2"
                 ],
+                "enrollmentString": "my-enrollment-string",
                 "notes": "Additional description of the network"
               }
             }
@@ -7035,24 +7037,73 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Network ID"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Network name"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of the product types that the network supports"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "Timezone of the network"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Network tags"
+                },
+                "enrollmentString": {
+                  "type": "string",
+                  "description": "Enrollment string for the network"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL to the network Dashboard UI"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Notes for the network"
+                },
+                "isBoundToConfigTemplate": {
+                  "type": "boolean",
+                  "description": "If the network is bound to a config template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "id": "N_24329156",
                 "organizationId": "2930418",
                 "name": "Main Office",
-                "timeZone": "America/Los_Angeles",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
                 "productTypes": [
                   "appliance",
                   "switch",
                   "wireless"
                 ],
+                "timeZone": "America/Los_Angeles",
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ],
                 "enrollmentString": "my-enrollment-string",
+                "url": "https://n1.meraki.com//n//manage/nodes/list",
                 "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
@@ -31380,7 +31431,7 @@
                   "id": "1284392014819",
                   "name": "My profile",
                   "description": "Some profile description",
-                  "scope": "with",
+                  "scope": "withAny",
                   "tags": [
                     "tag1",
                     "tag2"
@@ -31728,7 +31779,7 @@
                   "id": "1284392014819",
                   "ssidName": "My SSID",
                   "name": "Cisco Meraki valued client",
-                  "scope": "with",
+                  "scope": "withAny",
                   "tags": [
                     "tag1",
                     "tag2"
@@ -40404,7 +40455,7 @@
         "summary": "List of devices and connections among them within the network.",
         "tags": [
           "networks",
-          "configure",
+          "monitor",
           "topology",
           "linkLayer"
         ]
@@ -56000,7 +56051,7 @@
         "tags": [
           "appliance",
           "monitor",
-          "uplink",
+          "uplinks",
           "statuses"
         ]
       }
@@ -61097,10 +61148,10 @@
                         {
                           "protocol": "ipv6",
                           "assignmentMode": "static",
-                          "address": "2001:db8:3c4d:15::1",
-                          "gateway": "1.2.3.5",
+                          "address": "2001:db8:c15:c0:d0c::101:ca75",
+                          "gateway": "fe80:db8:c15:c0:d0c::10ca:1d02",
                           "public": {
-                            "address": "192.168.1.1"
+                            "address": "2001:db8:c15:c0:d0c:15e:15e:bab1"
                           }
                         }
                       ]
@@ -61245,6 +61296,7 @@
           "organizations",
           "monitor",
           "devices",
+          "uplinks",
           "uplinksLossAndLatency"
         ]
       }
@@ -63913,17 +63965,18 @@
               },
               "example": {
                 "name": "Main Office",
-                "timeZone": "America/Los_Angeles",
+                "productTypes": [
+                  "appliance",
+                  "switch",
+                  "wireless"
+                ],
                 "tags": [
                   "tag1",
                   "tag2"
                 ],
-                "notes": "Additional description of the network",
-                "productTypes": [
-                  "appliance",
-                  "switch",
-                  "camera"
-                ]
+                "timeZone": "America/Los_Angeles",
+                "copyFromNetworkId": "N_12345678",
+                "notes": "Additional description of the network"
               },
               "required": [
                 "name",
@@ -63937,24 +63990,73 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Network ID"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Network name"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of the product types that the network supports"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "Timezone of the network"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Network tags"
+                },
+                "enrollmentString": {
+                  "type": "string",
+                  "description": "Enrollment string for the network"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL to the network Dashboard UI"
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "Notes for the network"
+                },
+                "isBoundToConfigTemplate": {
+                  "type": "boolean",
+                  "description": "If the network is bound to a config template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "id": "N_24329156",
                 "organizationId": "2930418",
                 "name": "Main Office",
-                "timeZone": "America/Los_Angeles",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ],
                 "productTypes": [
                   "appliance",
                   "switch",
                   "wireless"
                 ],
+                "timeZone": "America/Los_Angeles",
+                "tags": [
+                  "tag1",
+                  "tag2"
+                ],
                 "enrollmentString": "my-enrollment-string",
+                "url": "https://n1.meraki.com//n//manage/nodes/list",
                 "notes": "Additional description of the network",
                 "isBoundToConfigTemplate": false
               }
@@ -65621,7 +65723,19 @@
                   },
                   "metric": {
                     "type": "string",
-                    "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                    "enum": [
+                      "temperature",
+                      "humidity",
+                      "water",
+                      "door",
+                      "tvoc",
+                      "pm25",
+                      "noise",
+                      "indoorAirQuality",
+                      "button",
+                      "battery"
+                    ],
+                    "description": "Type of sensor reading."
                   },
                   "temperature": {
                     "type": "object",
@@ -65637,7 +65751,7 @@
                         "description": "Temperature reading in degrees Celsius."
                       }
                     },
-                    "description": "Reading for the 'temperature' metric."
+                    "description": "Reading for the 'temperature' metric. This will only be present if the 'metric' property equals 'temperature'."
                   },
                   "humidity": {
                     "type": "object",
@@ -65647,7 +65761,7 @@
                         "description": "Humidity reading in %RH."
                       }
                     },
-                    "description": "Reading for the 'humidity' metric."
+                    "description": "Reading for the 'humidity' metric. This will only be present if the 'metric' property equals 'humidity'."
                   },
                   "water": {
                     "type": "object",
@@ -65657,7 +65771,7 @@
                         "description": "True if water is detected."
                       }
                     },
-                    "description": "Reading for the 'water' metric."
+                    "description": "Reading for the 'water' metric. This will only be present if the 'metric' property equals 'water'."
                   },
                   "door": {
                     "type": "object",
@@ -65667,7 +65781,7 @@
                         "description": "True if the door is open."
                       }
                     },
-                    "description": "Reading for the 'door' metric."
+                    "description": "Reading for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
                   },
                   "tvoc": {
                     "type": "object",
@@ -65677,7 +65791,7 @@
                         "description": "TVOC reading in micrograms per cubic meter."
                       }
                     },
-                    "description": "Reading for the 'tvoc' metric."
+                    "description": "Reading for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
                   },
                   "pm25": {
                     "type": "object",
@@ -65687,7 +65801,7 @@
                         "description": "PM2.5 reading in micrograms per cubic meter."
                       }
                     },
-                    "description": "Reading for the 'pm25' metric."
+                    "description": "Reading for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
                   },
                   "noise": {
                     "type": "object",
@@ -65703,7 +65817,7 @@
                         "description": "Ambient noise reading."
                       }
                     },
-                    "description": "Reading for the 'noise' metric."
+                    "description": "Reading for the 'noise' metric. This will only be present if the 'metric' property equals 'noise'."
                   },
                   "indoorAirQuality": {
                     "type": "object",
@@ -65713,7 +65827,7 @@
                         "description": "Indoor air quality score between 0 and 100."
                       }
                     },
-                    "description": "Reading for the 'indoorAirQuality' metric."
+                    "description": "Reading for the 'indoorAirQuality' metric. This will only be present if the 'metric' property equals 'indoorAirQuality'."
                   },
                   "button": {
                     "type": "object",
@@ -65727,7 +65841,7 @@
                         "description": "Type of button press that occurred."
                       }
                     },
-                    "description": "Reading for the 'button' metric."
+                    "description": "Reading for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
                   },
                   "battery": {
                     "type": "object",
@@ -65737,7 +65851,7 @@
                         "description": "Remaining battery life."
                       }
                     },
-                    "description": "Reading for the 'battery' metric."
+                    "description": "Reading for the 'battery' metric. This will only be present if the 'metric' property equals 'battery'."
                   }
                 }
               }
@@ -65936,7 +66050,19 @@
                   },
                   "metric": {
                     "type": "string",
-                    "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                    "enum": [
+                      "temperature",
+                      "humidity",
+                      "water",
+                      "door",
+                      "tvoc",
+                      "pm25",
+                      "noise",
+                      "indoorAirQuality",
+                      "button",
+                      "battery"
+                    ],
+                    "description": "Type of sensor reading."
                   },
                   "temperature": {
                     "type": "object",
@@ -65984,7 +66110,7 @@
                         "description": "Aggregated temperature readings in degrees Celsius."
                       }
                     },
-                    "description": "Reading information over the interval for the 'temperature' metric."
+                    "description": "Reading information over the interval for the 'temperature' metric. This will only be present if the 'metric' property equals 'temperature'."
                   },
                   "humidity": {
                     "type": "object",
@@ -66008,7 +66134,7 @@
                         "description": "Aggregated humidity readings in %RH."
                       }
                     },
-                    "description": "Reading information over the interval for the 'humidity' metric."
+                    "description": "Reading information over the interval for the 'humidity' metric. This will only be present if the 'metric' property equals 'humidity'."
                   },
                   "water": {
                     "type": "object",
@@ -66024,7 +66150,7 @@
                         "description": "Accumulated counts of water detection readings."
                       }
                     },
-                    "description": "Reading information over the interval for the 'water' metric."
+                    "description": "Reading information over the interval for the 'water' metric. This will only be present if the 'metric' property equals 'water'."
                   },
                   "door": {
                     "type": "object",
@@ -66040,7 +66166,7 @@
                         "description": "Accumulated counts of door readings."
                       }
                     },
-                    "description": "Reading information over the interval for the 'door' metric."
+                    "description": "Reading information over the interval for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
                   },
                   "tvoc": {
                     "type": "object",
@@ -66064,7 +66190,7 @@
                         "description": "Aggregated TVOC readings in micrograms per cubic meter."
                       }
                     },
-                    "description": "Reading information over the interval for the 'tvoc' metric."
+                    "description": "Reading information over the interval for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
                   },
                   "pm25": {
                     "type": "object",
@@ -66088,7 +66214,7 @@
                         "description": "Aggregated PM2.5 readings in micrograms per cubic meter."
                       }
                     },
-                    "description": "Reading information over the interval for the 'pm25' metric."
+                    "description": "Reading information over the interval for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
                   },
                   "noise": {
                     "type": "object",
@@ -66118,7 +66244,7 @@
                         "description": "Ambient noise reading."
                       }
                     },
-                    "description": "Reading information over the interval for the 'noise' metric."
+                    "description": "Reading information over the interval for the 'noise' metric. This will only be present if the 'metric' property equals 'noise'."
                   },
                   "indoorAirQuality": {
                     "type": "object",
@@ -66142,7 +66268,7 @@
                         "description": "Aggregated indoor air quality readings as a score between 0-100."
                       }
                     },
-                    "description": "Reading information over the interval for the 'indoorAirQuality' metric."
+                    "description": "Reading information over the interval for the 'indoorAirQuality' metric. This will only be present if the 'metric' property equals 'indoorAirQuality'."
                   },
                   "button": {
                     "type": "object",
@@ -66168,7 +66294,7 @@
                         "description": "Accumulated counts of button press readings."
                       }
                     },
-                    "description": "Reading information over the interval for the 'button' metric."
+                    "description": "Reading information over the interval for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
                   },
                   "battery": {
                     "type": "object",
@@ -66192,7 +66318,7 @@
                         "description": "Aggregated battery life readings as a percentage."
                       }
                     },
-                    "description": "Reading information over the interval for the 'battery' metric."
+                    "description": "Reading information over the interval for the 'battery' metric. This will only be present if the 'metric' property equals 'battery'."
                   }
                 }
               }
@@ -66399,7 +66525,19 @@
                         },
                         "metric": {
                           "type": "string",
-                          "description": "Type of sensor reading. Possible values are temperature, humidity, water, door, tvoc, pm25, noise, indoorAirQuality, button, and battery."
+                          "enum": [
+                            "temperature",
+                            "humidity",
+                            "water",
+                            "door",
+                            "tvoc",
+                            "pm25",
+                            "noise",
+                            "indoorAirQuality",
+                            "button",
+                            "battery"
+                          ],
+                          "description": "Type of sensor reading."
                         },
                         "temperature": {
                           "type": "object",
@@ -66415,7 +66553,7 @@
                               "description": "Temperature reading in degrees Celsius."
                             }
                           },
-                          "description": "Reading for the 'temperature' metric."
+                          "description": "Reading for the 'temperature' metric. This will only be present if the 'metric' property equals 'temperature'."
                         },
                         "humidity": {
                           "type": "object",
@@ -66425,7 +66563,7 @@
                               "description": "Humidity reading in %RH."
                             }
                           },
-                          "description": "Reading for the 'humidity' metric."
+                          "description": "Reading for the 'humidity' metric. This will only be present if the 'metric' property equals 'humidity'."
                         },
                         "water": {
                           "type": "object",
@@ -66435,7 +66573,7 @@
                               "description": "True if water is detected."
                             }
                           },
-                          "description": "Reading for the 'water' metric."
+                          "description": "Reading for the 'water' metric. This will only be present if the 'metric' property equals 'water'."
                         },
                         "door": {
                           "type": "object",
@@ -66445,7 +66583,7 @@
                               "description": "True if the door is open."
                             }
                           },
-                          "description": "Reading for the 'door' metric."
+                          "description": "Reading for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
                         },
                         "tvoc": {
                           "type": "object",
@@ -66455,7 +66593,7 @@
                               "description": "TVOC reading in micrograms per cubic meter."
                             }
                           },
-                          "description": "Reading for the 'tvoc' metric."
+                          "description": "Reading for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
                         },
                         "pm25": {
                           "type": "object",
@@ -66465,7 +66603,7 @@
                               "description": "PM2.5 reading in micrograms per cubic meter."
                             }
                           },
-                          "description": "Reading for the 'pm25' metric."
+                          "description": "Reading for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
                         },
                         "noise": {
                           "type": "object",
@@ -66481,7 +66619,7 @@
                               "description": "Ambient noise reading."
                             }
                           },
-                          "description": "Reading for the 'noise' metric."
+                          "description": "Reading for the 'noise' metric. This will only be present if the 'metric' property equals 'noise'."
                         },
                         "indoorAirQuality": {
                           "type": "object",
@@ -66491,7 +66629,7 @@
                               "description": "Indoor air quality score between 0 and 100."
                             }
                           },
-                          "description": "Reading for the 'indoorAirQuality' metric."
+                          "description": "Reading for the 'indoorAirQuality' metric. This will only be present if the 'metric' property equals 'indoorAirQuality'."
                         },
                         "button": {
                           "type": "object",
@@ -66505,7 +66643,7 @@
                               "description": "Type of button press that occurred."
                             }
                           },
-                          "description": "Reading for the 'button' metric."
+                          "description": "Reading for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
                         },
                         "battery": {
                           "type": "object",
@@ -66515,11 +66653,11 @@
                               "description": "Remaining battery life."
                             }
                           },
-                          "description": "Reading for the 'battery' metric."
+                          "description": "Reading for the 'battery' metric. This will only be present if the 'metric' property equals 'battery'."
                         }
                       }
                     },
-                    "description": "Array of latest readings from the sensor."
+                    "description": "Array of latest readings from the sensor. Each object represents a single reading for a single metric."
                   }
                 }
               }
@@ -68334,7 +68472,12 @@
                   "networkName": "Main Office",
                   "networkUrl": "https://n1.meraki.com//n//manage/nodes/list",
                   "enrollmentString": "my-enrollment-string",
-                  "notes": "Additional description of the network"
+                  "notes": "Additional description of the network",
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ]
                 }
               ]
             }
