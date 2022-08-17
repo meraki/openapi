@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.24.0-beta.1",
+    "version": "1.24.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 10 August, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 August, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -135,6 +135,144 @@
           "monitor",
           "identities",
           "me"
+        ]
+      }
+    },
+    "/administered/identities/me/earlyAccess/features/optIns": {
+      "post": {
+        "description": "Enables the early access feature for the identity.",
+        "operationId": "createAdministeredIdentitiesMeEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "createAdministeredIdentitiesMeEarlyAccessFeaturesOptIn",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "shortName": {
+                  "type": "string",
+                  "enum": [
+                    "has_cross_org_page_access"
+                  ],
+                  "description": "The desired early access feature"
+                }
+              },
+              "example": {
+                "shortName": "has_cross_org_page_access"
+              },
+              "required": [
+                "shortName"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "shortName": {
+                    "type": "string",
+                    "enum": [
+                      "has_cross_org_page_access"
+                    ],
+                    "description": "Early access feature short name"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "shortName": "has_cross_org_page_access"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Enables the early access feature for the identity.",
+        "tags": [
+          "administered",
+          "configure",
+          "identities",
+          "me",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      },
+      "get": {
+        "description": "Returns list of enabled early access features for the identity.",
+        "operationId": "getAdministeredIdentitiesMeEarlyAccessFeaturesOptIns",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "shortName": {
+                    "type": "string",
+                    "enum": [
+                      "has_cross_org_page_access"
+                    ],
+                    "description": "Early access feature short name"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "shortName": "has_cross_org_page_access"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns list of enabled early access features for the identity.",
+        "tags": [
+          "administered",
+          "configure",
+          "identities",
+          "me",
+          "earlyAccess",
+          "features",
+          "optIns"
+        ]
+      }
+    },
+    "/administered/identities/me/earlyAccess/features/optIns/{featureShortName}": {
+      "delete": {
+        "description": "Disables the early access feature for the identity.",
+        "operationId": "deleteAdministeredIdentitiesMeEarlyAccessFeaturesOptIn",
+        "parameters": [
+          {
+            "name": "featureShortName",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Disables the early access feature for the identity.",
+        "tags": [
+          "administered",
+          "configure",
+          "identities",
+          "me",
+          "earlyAccess",
+          "features",
+          "optIns"
         ]
       }
     },
@@ -10948,7 +11086,13 @@
             },
             "examples": {
               "application/json": {
-                "clientTrackingMethod": "MAC address"
+                "clientTrackingMethod": "MAC address",
+                "deploymentMode": "routed",
+                "dynamicDns": {
+                  "enabled": true,
+                  "prefix": "test",
+                  "url": "test-adfgnnhjea.meraki.com"
+                }
               }
             }
           }
@@ -10992,10 +11136,29 @@
                     "passthrough"
                   ],
                   "description": "Deployment mode of a network"
+                },
+                "dynamicDns": {
+                  "type": "object",
+                  "properties": {
+                    "prefix": {
+                      "type": "string",
+                      "description": "Dynamic DNS url prefix. DDNS must be enabled to update"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Dynamic DNS enabled"
+                    }
+                  },
+                  "description": "Dynamic DNS settings for a network"
                 }
               },
               "example": {
-
+                "clientTrackingMethod": "MAC address",
+                "deploymentMode": "routed",
+                "dynamicDns": {
+                  "prefix": "default-hostname",
+                  "enabled": true
+                }
               }
             }
           }
@@ -11008,7 +11171,13 @@
             },
             "examples": {
               "application/json": {
-                "clientTrackingMethod": "MAC address"
+                "clientTrackingMethod": "MAC address",
+                "deploymentMode": "routed",
+                "dynamicDns": {
+                  "enabled": true,
+                  "prefix": "test",
+                  "url": "test-adfgnnhjea.meraki.com"
+                }
               }
             }
           }
@@ -11294,8 +11463,7 @@
           "appliance",
           "configure",
           "ssids"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/networks/{networkId}/appliance/ssids/{number}": {
@@ -11398,8 +11566,7 @@
           "appliance",
           "configure",
           "ssids"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "put": {
         "description": "Update the attributes of an MX SSID",
@@ -11595,8 +11762,7 @@
           "appliance",
           "configure",
           "ssids"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/networks/{networkId}/appliance/staticRoutes": {
@@ -14695,7 +14861,47 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "description": "The site-to-site VPN mode."
+                },
+                "hubs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "hubId": {
+                        "type": "string",
+                        "description": "The network ID of the hub."
+                      },
+                      "useDefaultRoute": {
+                        "type": "boolean",
+                        "description": "Indicates whether default route traffic should be sent to this hub."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN hubs, in order of preference."
+                },
+                "subnets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "localSubnet": {
+                        "type": "string",
+                        "description": "The CIDR notation subnet used within the VPN"
+                      },
+                      "useVpn": {
+                        "type": "boolean",
+                        "description": "Indicates the presence of the subnet in the VPN"
+                      }
+                    }
+                  },
+                  "description": "The list of subnets and their VPN presence."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -14704,19 +14910,11 @@
                   {
                     "hubId": "N_4901849",
                     "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
                   }
                 ],
                 "subnets": [
                   {
                     "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
                     "useVpn": true
                   }
                 ]
@@ -14804,19 +15002,11 @@
                   {
                     "hubId": "N_4901849",
                     "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
                   }
                 ],
                 "subnets": [
                   {
                     "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
                     "useVpn": true
                   }
                 ]
@@ -14832,7 +15022,47 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "description": "The site-to-site VPN mode."
+                },
+                "hubs": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "hubId": {
+                        "type": "string",
+                        "description": "The network ID of the hub."
+                      },
+                      "useDefaultRoute": {
+                        "type": "boolean",
+                        "description": "Indicates whether default route traffic should be sent to this hub."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN hubs, in order of preference."
+                },
+                "subnets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "localSubnet": {
+                        "type": "string",
+                        "description": "The CIDR notation subnet used within the VPN"
+                      },
+                      "useVpn": {
+                        "type": "boolean",
+                        "description": "Indicates the presence of the subnet in the VPN"
+                      }
+                    }
+                  },
+                  "description": "The list of subnets and their VPN presence."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -14841,19 +15071,11 @@
                   {
                     "hubId": "N_4901849",
                     "useDefaultRoute": true
-                  },
-                  {
-                    "hubId": "N_1892489",
-                    "useDefaultRoute": false
                   }
                 ],
                 "subnets": [
                   {
                     "localSubnet": "192.168.1.0/24",
-                    "useVpn": true
-                  },
-                  {
-                    "localSubnet": "192.168.128.0/24",
                     "useVpn": true
                   }
                 ]
@@ -68651,25 +68873,6 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
-          },
-          {
-            "type": "string",
-            "name": "t0",
-            "in": "query",
-            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
-          },
-          {
-            "type": "string",
-            "name": "t1",
-            "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
-          },
-          {
-            "type": "number",
-            "format": "float",
-            "name": "timespan",
-            "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
           }
         ],
         "responses": {
