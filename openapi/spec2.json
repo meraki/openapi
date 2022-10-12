@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.26.0-beta.0",
+    "version": "1.26.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -11653,29 +11653,11 @@
                     "passthrough"
                   ],
                   "description": "Deployment mode of a network"
-                },
-                "dynamicDns": {
-                  "type": "object",
-                  "properties": {
-                    "prefix": {
-                      "type": "string",
-                      "description": "Dynamic DNS url prefix. DDNS must be enabled to update"
-                    },
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Dynamic DNS enabled"
-                    }
-                  },
-                  "description": "Dynamic DNS settings for a network"
                 }
               },
               "example": {
                 "clientTrackingMethod": "MAC address",
-                "deploymentMode": "routed",
-                "dynamicDns": {
-                  "prefix": "default-hostname",
-                  "enabled": true
-                }
+                "deploymentMode": "routed"
               }
             }
           }
@@ -14609,6 +14591,14 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The VLAN ID of the VLAN"
+                  },
+                  "interfaceId": {
+                    "type": "string",
+                    "description": "The interface ID of the VLAN"
+                  },
                   "name": {
                     "type": "string",
                     "description": "The name of the VLAN"
@@ -14808,6 +14798,8 @@
             "examples": {
               "application/json": [
                 {
+                  "id": "1234",
+                  "interfaceId": "1284392014819",
                   "name": "My VLAN",
                   "subnet": "192.168.1.0/24",
                   "applianceIp": "192.168.1.2",
@@ -15000,7 +14992,11 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "The VLAN ID of the new VLAN (must be between 1 and 4094)"
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
                 },
                 "name": {
                   "type": "string",
@@ -15092,6 +15088,7 @@
             "examples": {
               "application/json": {
                 "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -15233,6 +15230,14 @@
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
+                },
                 "name": {
                   "type": "string",
                   "description": "The name of the VLAN"
@@ -15430,6 +15435,8 @@
             },
             "examples": {
               "application/json": {
+                "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -15777,6 +15784,14 @@
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
+                },
                 "name": {
                   "type": "string",
                   "description": "The name of the VLAN"
@@ -15974,6 +15989,8 @@
             },
             "examples": {
               "application/json": {
+                "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -66567,6 +66584,517 @@
         ]
       }
     },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/imports": {
+      "post": {
+        "description": "Commits the import operation to complete the onboarding of a device into Dashboard for monitoring.",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringImport",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringImport",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deviceId": {
+                        "type": "string",
+                        "description": "Import ID from the Import operation"
+                      },
+                      "udi": {
+                        "type": "string",
+                        "description": "Device UDI certificate"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "Network Id"
+                      }
+                    },
+                    "required": [
+                      "deviceId",
+                      "udi",
+                      "networkId"
+                    ]
+                  },
+                  "description": "A set of device imports to commit"
+                }
+              },
+              "example": {
+                "devices": [
+                  {
+                    "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
+                    "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
+                    "networkId": "1338481"
+                  }
+                ]
+              },
+              "required": [
+                "devices"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "Cloud monitor import status"
+                  },
+                  "importId": {
+                    "type": "string",
+                    "description": "Unique id associated with the import of the device"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Response method"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "status": "IMPORT JOB SUCCESS",
+                  "importId": "1234",
+                  "message": "Import Started"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Commits the import operation to complete the onboarding of a device into Dashboard for monitoring.",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "imports"
+        ]
+      },
+      "get": {
+        "description": "Check the status of a committed Import operation",
+        "operationId": "getOrganizationInventoryOnboardingCloudMonitoringImports",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "importIds",
+            "in": "query",
+            "required": true,
+            "description": "import ids from an imports"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "importId": {
+                    "type": "string",
+                    "description": "Database ID for the new entity entry."
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "The url to the device details page within dashboard."
+                      },
+                      "created": {
+                        "type": "boolean",
+                        "description": "Whether or not the device was successfully created in dashboard."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Represents the current state of importing the device."
+                      }
+                    },
+                    "description": "Represents the details of an imported device."
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "importId": "0000000000000000",
+                  "device": {
+                    "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                    "created": true,
+                    "status": "SUCCESS"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Check the status of a committed Import operation",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "imports"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/prepare": {
+      "post": {
+        "description": "Initiates or updates an import session. An import ID will be generated and used when you are ready to commit the import.",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sudi": {
+                        "type": "string",
+                        "description": "Device SUDI certificate"
+                      },
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "certificateName": {
+                            "type": "string",
+                            "description": "Name of the configured TLS certificate"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the configured TLS tunnel"
+                          },
+                          "loopbackNumber": {
+                            "type": "integer",
+                            "description": "Number of the configured Loopback Interface used for TLS overlay"
+                          },
+                          "localInterface": {
+                            "type": "integer",
+                            "description": "Number of the vlan expected to be used to connect to the cloud"
+                          }
+                        },
+                        "description": "TLS Related Parameters"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                            "description": "The name of the device user for Meraki monitoring"
+                          }
+                        },
+                        "description": "User parameters"
+                      },
+                      "vty": {
+                        "type": "object",
+                        "properties": {
+                          "startLineNumber": {
+                            "type": "integer",
+                            "description": "Starting line VTY number"
+                          },
+                          "endLineNumber": {
+                            "type": "integer",
+                            "description": "Ending line VTY number"
+                          },
+                          "authentication": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authentication"
+                          },
+                          "authorization": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authorization"
+                          },
+                          "accessList": {
+                            "type": "object",
+                            "properties": {
+                              "vtyIn": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY in ACL"
+                              },
+                              "vtyOut": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY out ACL"
+                              }
+                            },
+                            "description": "AccessList details"
+                          },
+                          "rotaryNumber": {
+                            "type": "integer",
+                            "description": "SSH rotary number"
+                          }
+                        },
+                        "description": "VTY Related Parameters"
+                      }
+                    },
+                    "required": [
+                      "sudi"
+                    ]
+                  },
+                  "description": "A set of devices to import (or update)"
+                }
+              },
+              "example": {
+                "devices": [
+                  {
+                    "sudi": "-----BEGIN CERTIFICATE-----\n        MIIDyTCCArGgAwIBAgIKBBNXOVCGU1YztjANBgkqhkiG9w0BAQsFADAnMQ4wDAYD\n        VQQKEwVDaXNjbzEVMBMGA1UEAxMMQUNUMiBTVURJIENBMB4XDTIxMDUzMTEzNTUx\n        NVoXDTI5MDUxNDIwMjU0MVowbTEpMCcGA1UEBRMgUElEOkM5MjAwTC0yNFAtNEcg\n        U046SkFFMjUyMjBSMksxDjAMBgNVBAoTBUNpc2NvMRgwFgYDVQQLEw9BQ1QtMiBM\n        aXRlIFNVREkxFjAUBgNVBAMTDUM5MjAwTC0yNFAtNEcwggEiMA0GCSqGSIb3DQEB\n        AQUAA4IBDwAwggEKAoIBAQDaUPxW76gT5MdoEAt+UrDFiYA9RYh2iHicDViBEyow\n        TR1TuP36bHh13X3vtGiDsCD88Ci2TZIqd/EDkkc7v9ipUUYVVH+YDrPt2Aukb1PH\n        D6K0R+KhgEzRo5x54TlU6oWvjUpwNZUwwdhMWIQaUVkMyZBYNy0jGPLO8jwZhyBg\n        1Fneybr9pwedGbLrAaz+gdEikB8B4a/fvPjVfL5Ngb4QRjFqWuE+X3nLc0kHedep\n        6nfgpUNXMlStVm5nIXKP6OjmzfCHPYh9L2Ehs1TrSk1ser9Ofx0ZMVL/jBZR2EIj\n        OZ8tH6KlX2/B2pbSPIO6kD5c4UA8Cf1SbDJCwJ/kI9ihAgMBAAGjgbAwga0wDgYD\n        VR0PAQH/BAQDAgXgMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUSNjx8cJw1Vu7\n        fHMJk6+4uDAD+H8wTQYDVR0RBEYwRKBCBgkrBgEEAQkVAgOgNRMzQ2hpcElEPVVV\n        VUNNaElGcUVFMklFUUVBQWNBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE9MB0GA1Ud\n        DgQWBBRdhMkFD/z5hokaQeLbaRsp4hkvbzANBgkqhkiG9w0BAQsFAAOCAQEAMtuh\n        YpBz4xEZ7YdJsLpw67Q0TTJGnTBRpzAeY1urYDoDz8TSx556XG7z3IRzuED5KVSp\n        OwmH/iZ+tDfYQ3W3ElWTW93871DkuW4WQIfbnoHg/F7bF0DKYVkD3rpZjyz3NhzH\n        d7cjTdJXQ85bTAOXDuxKH3qewrXxxOGXgh3I6NUq0UwMTWh84lND7Jl+ZAQkYNS2\n        iHanTZFQBk3ML0NUb7fKDYGRTZRqwQ/upIO4S6LV1cxH/6V0qbMy3sCSHZoMLrW3\n        0m3M6yKpe5+VZzHZwmWdUf3Ot+zKjhveK5/YNsMIASdvtvymxUizq2Hr1hvR/kPc\n        p1vuyWxipU8JfzOh/A==\n        -----END CERTIFICATE-----\n        ",
+                    "tunnel": {
+                      "certificateName": "DeviceSUDI",
+                      "name": "MERAKI",
+                      "loopbackNumber": 1000,
+                      "localInterface": 1
+                    },
+                    "user": {
+                      "username": "Meraki"
+                    },
+                    "vty": {
+                      "startLineNumber": 16,
+                      "endLineNumber": 17,
+                      "authentication": {
+                        "group": {
+                          "name": ""
+                        }
+                      },
+                      "authorization": {
+                        "group": {
+                          "name": "MERAKI"
+                        }
+                      },
+                      "accessList": {
+                        "vtyIn": {
+                          "name": "MERAKI_IN"
+                        },
+                        "vtyOut": {
+                          "name": "MERAKI_OUT"
+                        }
+                      },
+                      "rotaryNumber": 50
+                    }
+                  }
+                ]
+              },
+              "required": [
+                "devices"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message related to whether or not the device was found and can be imported."
+                  },
+                  "udi": {
+                    "type": "string",
+                    "description": "Device UDI certificate"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "Import ID from the Import operation"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The import status of the device"
+                  },
+                  "configParams": {
+                    "type": "object",
+                    "properties": {
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "description": ""
+                          },
+                          "port": {
+                            "type": "string",
+                            "description": "The port used for the ssh tunnel."
+                          },
+                          "host": {
+                            "type": "string",
+                            "description": "SSH tunnel URL used to connect to the device"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the tunnel we are attempting to connect to"
+                          },
+                          "rootCertificate": {
+                            "type": "object",
+                            "properties": {
+                              "content": {
+                                "type": "string",
+                                "description": "Public certificate value"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the server protected by the certificate"
+                              }
+                            },
+                            "description": "Root certificate information"
+                          }
+                        },
+                        "description": "Configuration options used to connect to the device"
+                      },
+                      "cloudStaticIp": {
+                        "type": "string",
+                        "description": "Static IP Address used to connect to the device"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "publicKey": {
+                            "type": "string",
+                            "description": "The public key for the registered user"
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "The username added to Catalyst device"
+                          },
+                          "secret": {
+                            "type": "object",
+                            "properties": {
+                              "hash": {
+                                "type": "string",
+                                "description": "The hashed secret"
+                              }
+                            },
+                            "description": "Stores the user secret hash"
+                          }
+                        },
+                        "description": "User credentials used to connect to the device"
+                      }
+                    },
+                    "description": "Params used in order to connect to the device"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "message": "Existing import found",
+                  "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
+                  "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
+                  "status": "SUCCESS",
+                  "configParams": {
+                    "tunnel": {
+                      "mode": "443",
+                      "port": "443",
+                      "host": "secgw-int3.ciscocloudoffer.com",
+                      "name": "MERAKI-PRIMARY",
+                      "rootCertificate": {
+                        "content": "",
+                        "name": "MERAKI_TLSGW_CA"
+                      }
+                    },
+                    "cloudStaticIp": "1.2.3.4",
+                    "user": {
+                      "publicKey": "",
+                      "username": "MERAKI_USER",
+                      "secret": {
+                        "hash": ""
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Initiates or updates an import session",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "prepare"
+        ]
+      }
+    },
     "/organizations/{organizationId}/inventory/release": {
       "post": {
         "description": "Release a list of claimed devices from an organization.",
@@ -74722,6 +75250,9 @@
       "name": "clients"
     },
     {
+      "name": "cloudMonitoring"
+    },
+    {
       "name": "configTemplates"
     },
     {
@@ -74855,6 +75386,9 @@
     },
     {
       "name": "idps"
+    },
+    {
+      "name": "imports"
     },
     {
       "name": "inboundCellularFirewallRules"
@@ -75041,6 +75575,9 @@
     },
     {
       "name": "prefixes"
+    },
+    {
+      "name": "prepare"
     },
     {
       "name": "priorities"
