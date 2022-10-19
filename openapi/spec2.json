@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.26.0-beta.1",
+    "version": "1.26.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 19 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -6772,54 +6772,6 @@
       }
     },
     "/devices/{serial}/wireless/bluetooth/settings": {
-      "get": {
-        "description": "Return the bluetooth settings for a wireless device",
-        "operationId": "getDeviceWirelessBluetoothSettings",
-        "parameters": [
-          {
-            "name": "serial",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "uuid": {
-                  "type": "string",
-                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "major": {
-                  "type": "integer",
-                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "minor": {
-                  "type": "integer",
-                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                }
-              }
-            },
-            "examples": {
-              "application/json": {
-                "uuid": "00000000-0000-0000-000-000000000000",
-                "major": 13,
-                "minor": 125
-              }
-            }
-          }
-        },
-        "summary": "Return the bluetooth settings for a wireless device",
-        "tags": [
-          "wireless",
-          "configure",
-          "bluetooth",
-          "settings"
-        ]
-      },
       "put": {
         "description": "Update the bluetooth settings for a wireless device",
         "operationId": "updateDeviceWirelessBluetoothSettings",
@@ -6887,6 +6839,54 @@
           }
         },
         "summary": "Update the bluetooth settings for a wireless device",
+        "tags": [
+          "wireless",
+          "configure",
+          "bluetooth",
+          "settings"
+        ]
+      },
+      "get": {
+        "description": "Return the bluetooth settings for a wireless device",
+        "operationId": "getDeviceWirelessBluetoothSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "major": {
+                  "type": "integer",
+                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "minor": {
+                  "type": "integer",
+                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        },
+        "summary": "Return the bluetooth settings for a wireless device",
         "tags": [
           "wireless",
           "configure",
@@ -11653,11 +11653,29 @@
                     "passthrough"
                   ],
                   "description": "Deployment mode of a network"
+                },
+                "dynamicDns": {
+                  "type": "object",
+                  "properties": {
+                    "prefix": {
+                      "type": "string",
+                      "description": "Dynamic DNS url prefix. DDNS must be enabled to update"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Dynamic DNS enabled"
+                    }
+                  },
+                  "description": "Dynamic DNS settings for a network"
                 }
               },
               "example": {
                 "clientTrackingMethod": "MAC address",
-                "deploymentMode": "routed"
+                "deploymentMode": "routed",
+                "dynamicDns": {
+                  "prefix": "default-hostname",
+                  "enabled": true
+                }
               }
             }
           }
@@ -28501,368 +28519,6 @@
         ]
       }
     },
-    "/networks/{networkId}/httpServers": {
-      "get": {
-        "description": "List the HTTP servers for a network",
-        "operationId": "getNetworkHttpServers",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                  "name": "Example Webhook Server",
-                  "url": "https://www.example.com/my_custom_webhook",
-                  "networkId": "N_12345678",
-                  "payloadTemplate": {
-                    "payloadTemplateId": "wpt_00001",
-                    "name": "Meraki (included)"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the HTTP servers for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "post": {
-        "description": "Add an HTTP server to a network",
-        "operationId": "createNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkHttpServer",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "A name for easy reference to the HTTP server"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "The URL of the HTTP server"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
-                }
-              },
-              "example": {
-                "name": "Example Webhook Server",
-                "url": "https://example.com",
-                "sharedSecret": "shhh"
-              },
-              "required": [
-                "name",
-                "url"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Add an HTTP server to a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/webhookTests": {
-      "post": {
-        "description": "Send a test webhook for a network",
-        "operationId": "createNetworkHttpServersWebhookTest",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkHttpServersWebhookTest",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "description": "The URL where the test webhook will be sent"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "The shared secret the test webhook will send. Optional. Defaults to an empty string.",
-                  "default": ""
-                }
-              },
-              "example": {
-                "url": "https://www.example.com/path"
-              },
-              "required": [
-                "url"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "1234",
-                "url": "https://www.example.com/path",
-                "status": "enqueued"
-              }
-            }
-          }
-        },
-        "summary": "Send a test webhook for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers",
-          "webhookTests"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/webhookTests/{id}": {
-      "get": {
-        "description": "Return the status of a webhook test for a network",
-        "operationId": "getNetworkHttpServersWebhookTest",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "1234",
-                "url": "https://www.example.com/path",
-                "status": "delivered"
-              }
-            }
-          }
-        },
-        "summary": "Return the status of a webhook test for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers",
-          "webhookTests"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/{id}": {
-      "get": {
-        "description": "Return an HTTP server for a network",
-        "operationId": "getNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Return an HTTP server for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "put": {
-        "description": "Update an HTTP server",
-        "operationId": "updateNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkHttpServer",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "A name for easy reference to the HTTP server"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "The URL of the HTTP server"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
-                }
-              },
-              "example": {
-                "name": "Example Webhook Server",
-                "url": "https://example.com",
-                "sharedSecret": "shhh"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Update an HTTP server",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "delete": {
-        "description": "Delete an HTTP server from a network",
-        "operationId": "deleteNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete an HTTP server from a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      }
-    },
     "/networks/{networkId}/insight/applications/{applicationId}/healthByTime": {
       "get": {
         "description": "Get application health by time",
@@ -30950,6 +30606,140 @@
           "monitor",
           "alerts",
           "current",
+          "overview",
+          "byMetric"
+        ]
+      }
+    },
+    "/networks/{networkId}/sensor/alerts/overview/byMetric": {
+      "get": {
+        "description": "Return an overview of alert occurrences over a timespan, by metric",
+        "operationId": "getNetworkSensorAlertsOverviewByMetric",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
+          },
+          {
+            "type": "integer",
+            "name": "interval",
+            "in": "query",
+            "description": "The time interval in seconds for returned data. The valid intervals are: 86400, 604800. The default is 604800."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Start of the timespan over which sensor alerts are counted"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "End of the timespan over which sensor alerts are counted"
+                  },
+                  "counts": {
+                    "type": "object",
+                    "properties": {
+                      "door": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to an open door"
+                      },
+                      "humidity": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to humidity readings"
+                      },
+                      "indoorAirQuality": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to indoor air quality readings"
+                      },
+                      "noise": {
+                        "type": "object",
+                        "properties": {
+                          "ambient": {
+                            "type": "integer",
+                            "description": "Number of sensor alerts that occurred due to ambient noise readings"
+                          }
+                        },
+                        "description": "Object containing the number of sensor alerts that occurred due to noise readings"
+                      },
+                      "pm25": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to PM2.5 readings"
+                      },
+                      "temperature": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to temperature readings"
+                      },
+                      "tvoc": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to TVOC readings"
+                      },
+                      "water": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to the presence of water"
+                      }
+                    },
+                    "description": "Counts of sensor alerts over the timespan, by reading metric"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2022-08-21T00:00:00Z",
+                  "endTs": "2022-08-27T23:59:59Z",
+                  "counts": {
+                    "door": 0,
+                    "humidity": 1,
+                    "indoorAirQuality": 0,
+                    "noise": {
+                      "ambient": 2
+                    },
+                    "pm25": 0,
+                    "temperature": 4,
+                    "tvoc": 0,
+                    "water": 0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return an overview of alert occurrences over a timespan, by metric",
+        "tags": [
+          "sensor",
+          "monitor",
+          "alerts",
           "overview",
           "byMetric"
         ]
@@ -33118,7 +32908,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successful operation"
           }
         },
@@ -44859,6 +44649,22 @@
             "in": "path",
             "type": "string",
             "required": true
+          },
+          {
+            "name": "unbindNetwork",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "retainConfigs": {
+                  "type": "boolean",
+                  "description": "Optional boolean to retain all the current configs given by the template."
+                }
+              },
+              "example": {
+                "retainConfigs": true
+              }
+            }
           }
         ],
         "responses": {
@@ -45608,20 +45414,55 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "payloadTemplateId": {
+                  "type": "string",
+                  "description": "Webhook payload template Id"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of the payload template"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the payload template"
+                },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the header attribute"
+                      },
+                      "template": {
+                        "type": "string",
+                        "description": "The value returned in the header attribute, in liquid template"
+                      }
+                    }
+                  },
+                  "description": "The payload template headers, will be rendered as a key-value pair in the webhook."
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The body of the payload template, in liquid template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
                 "name": "Weeb Hooks",
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
-                ]
+                ],
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
               }
             }
           }
@@ -45741,20 +45582,55 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "payloadTemplateId": {
+                  "type": "string",
+                  "description": "Webhook payload template Id"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of the payload template"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the payload template"
+                },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the header attribute"
+                      },
+                      "template": {
+                        "type": "string",
+                        "description": "The value returned in the header attribute, in liquid template"
+                      }
+                    }
+                  },
+                  "description": "The payload template headers, will be rendered as a key-value pair in the webhook."
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The body of the payload template, in liquid template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
                 "name": "Weeb Hooks",
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
-                ]
+                ],
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
               }
             }
           }
@@ -52491,13 +52367,14 @@
                     "psk",
                     "open-with-radius",
                     "8021x-meraki",
+                    "8021x-nac",
                     "8021x-radius",
                     "8021x-google",
                     "8021x-localradius",
                     "ipsk-with-radius",
                     "ipsk-without-radius"
                   ],
-                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -60596,20 +60473,163 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "peers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPN peer"
+                      },
+                      "publicIp": {
+                        "type": "string",
+                        "description": "[optional] The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
+                      "privateSubnets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The list of the private subnets of the VPN peer"
+                      },
+                      "ipsecPolicies": {
+                        "type": "object",
+                        "properties": {
+                          "ikeCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
+                            },
+                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
+                          },
+                          "ikeAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "ikePrfAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "prfsha256",
+                                "prfsha1",
+                                "prfmd5",
+                                "default"
+                              ]
+                            },
+                            "description": "[optional] This is the pseudo-random function to be used in IKE_SA. The value should be an array with one of the following algorithms: 'prfsha256', 'prfsha1', 'prfmd5', 'default'. The 'default' option can be used to default to the Authentication algorithm."
+                          },
+                          "ikeDiffieHellmanGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group14', 'group5', 'group2', 'group1'"
+                          },
+                          "ikeLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 1 SA in seconds."
+                          },
+                          "childCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
+                            },
+                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
+                          },
+                          "childAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "childPfsGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled','group14', 'group5', 'group2', 'group1'"
+                          },
+                          "childLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 2 SA in seconds."
+                          }
+                        },
+                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
+                      },
+                      "ipsecPoliciesPreset": {
+                        "type": "string",
+                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
+                      },
+                      "ikeVersion": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "2"
+                        ],
+                        "description": "[optional] The IKE version to be used for the IPsec VPN peer configuration. Defaults to '1' when omitted.",
+                        "default": "1"
+                      },
+                      "networkTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN peers"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
+                    "remoteId": "miles@meraki.com",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -60635,24 +60655,11 @@
                       ],
                       "childLifetime": 28800
                     },
+                    "ipsecPoliciesPreset": "default",
+                    "ikeVersion": "1",
                     "networkTags": [
                       "all"
                     ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
                   }
                 ]
               }
@@ -60694,11 +60701,7 @@
                       },
                       "publicIp": {
                         "type": "string",
-                        "description": "The public IP of the VPN peer"
-                      },
-                      "remoteId": {
-                        "type": "string",
-                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                        "description": "[optional] The public IP of the VPN peer"
                       },
                       "privateSubnets": {
                         "type": "array",
@@ -60707,20 +60710,36 @@
                         },
                         "description": "The list of the private subnets of the VPN peer"
                       },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
                       "ipsecPolicies": {
                         "type": "object",
                         "properties": {
                           "ikeCipherAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
                             },
                             "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
                           },
                           "ikeAuthAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
                             },
                             "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
                           },
@@ -60751,14 +60770,27 @@
                           "childCipherAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
                             },
                             "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
                           },
                           "childAuthAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
                             },
                             "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
                           },
@@ -60803,7 +60835,6 @@
                     },
                     "required": [
                       "name",
-                      "publicIp",
                       "privateSubnets",
                       "secret"
                     ]
@@ -60814,14 +60845,13 @@
               "example": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
+                    "remoteId": "miles@meraki.com",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -60847,24 +60877,12 @@
                       ],
                       "childLifetime": 28800
                     },
-                    "networkTags": [
-                      "all"
-                    ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
+                    "ipsecPoliciesPreset": "default",
+                    "secret": "Sample Password",
+                    "ikeVersion": "2",
                     "networkTags": [
                       "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
+                    ]
                   }
                 ]
               },
@@ -60879,20 +60897,163 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "peers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPN peer"
+                      },
+                      "publicIp": {
+                        "type": "string",
+                        "description": "[optional] The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
+                      "privateSubnets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The list of the private subnets of the VPN peer"
+                      },
+                      "ipsecPolicies": {
+                        "type": "object",
+                        "properties": {
+                          "ikeCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
+                            },
+                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
+                          },
+                          "ikeAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "ikePrfAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "prfsha256",
+                                "prfsha1",
+                                "prfmd5",
+                                "default"
+                              ]
+                            },
+                            "description": "[optional] This is the pseudo-random function to be used in IKE_SA. The value should be an array with one of the following algorithms: 'prfsha256', 'prfsha1', 'prfmd5', 'default'. The 'default' option can be used to default to the Authentication algorithm."
+                          },
+                          "ikeDiffieHellmanGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group14', 'group5', 'group2', 'group1'"
+                          },
+                          "ikeLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 1 SA in seconds."
+                          },
+                          "childCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
+                            },
+                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
+                          },
+                          "childAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "childPfsGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled','group14', 'group5', 'group2', 'group1'"
+                          },
+                          "childLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 2 SA in seconds."
+                          }
+                        },
+                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
+                      },
+                      "ipsecPoliciesPreset": {
+                        "type": "string",
+                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
+                      },
+                      "ikeVersion": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "2"
+                        ],
+                        "description": "[optional] The IKE version to be used for the IPsec VPN peer configuration. Defaults to '1' when omitted.",
+                        "default": "1"
+                      },
+                      "networkTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN peers"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
+                    "remoteId": "miles@meraki.com",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -60918,24 +61079,11 @@
                       ],
                       "childLifetime": 28800
                     },
+                    "ipsecPoliciesPreset": "default",
+                    "ikeVersion": "1",
                     "networkTags": [
                       "all"
                     ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
                   }
                 ]
               }
@@ -74903,6 +75051,15 @@
             "name": "endingBefore",
             "in": "query",
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "A list of Meraki network IDs to filter results to contain only specified networks. E.g.: networkIds[]=N_12345678&networkIds[]=L_3456"
           }
         ],
         "responses": {
@@ -76899,6 +77056,12 @@
       "group": "Wired/uplinks/settings",
       "summary": "Update the uplink settings for an MX appliance",
       "resource": "/devices/{serial}/appliance/uplinks/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/vpn/third party vpn peers",
+      "summary": "Update the third party VPN peers for an organization",
+      "resource": "/organizations/{organizationId}/appliance/vpn/thirdPartyVPNPeers",
       "operation": "update"
     },
     {
