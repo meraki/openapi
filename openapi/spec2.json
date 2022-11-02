@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.26.0",
+    "version": "1.27.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 November, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2230,9 +2230,13 @@
                     "1280x720",
                     "1920x1080",
                     "1080x1080",
-                    "2058x2058"
+                    "2058x2058",
+                    "2112x2112",
+                    "2880x2880",
+                    "2688x1512",
+                    "3840x2160"
                   ],
-                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080' or '2058x2058'. Not all resolutions are supported by every camera model."
+                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080', '2058x2058', '2112x2112', '2880x2880', '2688x1512' or '3840x2160'.Not all resolutions are supported by every camera model."
                 },
                 "motionDetectorVersion": {
                   "type": "integer",
@@ -2671,6 +2675,218 @@
           "camera",
           "configure",
           "wirelessProfiles"
+        ]
+      }
+    },
+    "/devices/{serial}/cellular/sims": {
+      "get": {
+        "description": "Return the SIM and APN configurations for a cellular device.",
+        "operationId": "getDeviceCellularSims",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "sims": [
+                  {
+                    "slot": "sim1",
+                    "isPrimary": true,
+                    "apns": [
+                      {
+                        "name": "internet",
+                        "allowedIpTypes": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "authentication": {
+                          "type": "pap",
+                          "username": "milesmeraki"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the SIM and APN configurations for a cellular device.",
+        "tags": [
+          "devices",
+          "configure",
+          "cellular",
+          "sims"
+        ]
+      },
+      "put": {
+        "description": "Updates the SIM and APN configurations for a cellular device.",
+        "operationId": "updateDeviceCellularSims",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCellularSims",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sims": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "slot": {
+                        "type": "string",
+                        "enum": [
+                          "sim1",
+                          "sim2"
+                        ],
+                        "description": "SIM slot being configured. Must be 'sim1' on single-sim devices."
+                      },
+                      "isPrimary": {
+                        "type": "boolean",
+                        "description": "If true, this SIM is used for boot. Must be true on single-sim devices.",
+                        "default": false
+                      },
+                      "apns": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "APN name."
+                            },
+                            "allowedIpTypes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "IP versions to support (permitted values include 'ipv4', 'ipv6')."
+                            },
+                            "authentication": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pap",
+                                    "chap",
+                                    "none"
+                                  ],
+                                  "description": "APN auth type.",
+                                  "default": "none"
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "description": "APN username, if type is set."
+                                },
+                                "password": {
+                                  "type": "string",
+                                  "description": "APN password, if type is set (if APN password is not supplied, the password is left unchanged)."
+                                }
+                              },
+                              "description": "APN authentication configurations."
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "allowedIpTypes"
+                          ]
+                        },
+                        "description": "APN configurations. If empty, the default APN will be used.",
+                        "default": [
+
+                        ]
+                      }
+                    }
+                  },
+                  "description": "List of SIMs. If a SIM was previously configured and not specified in this request, it will remain unchanged."
+                },
+                "simFailover": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Failover to secondary SIM (optional)"
+                    }
+                  },
+                  "description": "SIM Failover settings."
+                }
+              },
+              "example": {
+                "slot": "sim1",
+                "isPrimary": true,
+                "apns": [
+                  {
+                    "name": "internet",
+                    "allowedIpTypes": [
+                      "ipv4",
+                      "ipv6"
+                    ],
+                    "authentication": {
+                      "type": "pap",
+                      "username": "milesmeraki",
+                      "password": "secret"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "sims": [
+                  {
+                    "slot": "sim1",
+                    "isPrimary": true,
+                    "apns": [
+                      {
+                        "name": "internet",
+                        "allowedIpTypes": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "authentication": {
+                          "type": "pap",
+                          "username": "milesmeraki"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates the SIM and APN configurations for a cellular device.",
+        "tags": [
+          "devices",
+          "configure",
+          "cellular",
+          "sims"
         ]
       }
     },
@@ -4402,7 +4618,7 @@
                     "sent": 1.2,
                     "recv": 1.0
                   },
-                  "secureConnect": {
+                  "securePort": {
                     "enabled": true,
                     "active": true,
                     "authenticationStatus": "Authentication in progress",
@@ -6653,54 +6869,6 @@
       }
     },
     "/devices/{serial}/wireless/bluetooth/settings": {
-      "get": {
-        "description": "Return the bluetooth settings for a wireless device",
-        "operationId": "getDeviceWirelessBluetoothSettings",
-        "parameters": [
-          {
-            "name": "serial",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "uuid": {
-                  "type": "string",
-                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "major": {
-                  "type": "integer",
-                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "minor": {
-                  "type": "integer",
-                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                }
-              }
-            },
-            "examples": {
-              "application/json": {
-                "uuid": "00000000-0000-0000-000-000000000000",
-                "major": 13,
-                "minor": 125
-              }
-            }
-          }
-        },
-        "summary": "Return the bluetooth settings for a wireless device",
-        "tags": [
-          "wireless",
-          "configure",
-          "bluetooth",
-          "settings"
-        ]
-      },
       "put": {
         "description": "Update the bluetooth settings for a wireless device",
         "operationId": "updateDeviceWirelessBluetoothSettings",
@@ -6768,6 +6936,54 @@
           }
         },
         "summary": "Update the bluetooth settings for a wireless device",
+        "tags": [
+          "wireless",
+          "configure",
+          "bluetooth",
+          "settings"
+        ]
+      },
+      "get": {
+        "description": "Return the bluetooth settings for a wireless device",
+        "operationId": "getDeviceWirelessBluetoothSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "major": {
+                  "type": "integer",
+                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "minor": {
+                  "type": "integer",
+                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        },
+        "summary": "Return the bluetooth settings for a wireless device",
         "tags": [
           "wireless",
           "configure",
@@ -14416,6 +14632,14 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The VLAN ID of the VLAN"
+                  },
+                  "interfaceId": {
+                    "type": "string",
+                    "description": "The interface ID of the VLAN"
+                  },
                   "name": {
                     "type": "string",
                     "description": "The name of the VLAN"
@@ -14615,6 +14839,8 @@
             "examples": {
               "application/json": [
                 {
+                  "id": "1234",
+                  "interfaceId": "1284392014819",
                   "name": "My VLAN",
                   "subnet": "192.168.1.0/24",
                   "applianceIp": "192.168.1.2",
@@ -14807,7 +15033,11 @@
               "properties": {
                 "id": {
                   "type": "string",
-                  "description": "The VLAN ID of the new VLAN (must be between 1 and 4094)"
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
                 },
                 "name": {
                   "type": "string",
@@ -14899,6 +15129,7 @@
             "examples": {
               "application/json": {
                 "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -15040,6 +15271,14 @@
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
+                },
                 "name": {
                   "type": "string",
                   "description": "The name of the VLAN"
@@ -15237,6 +15476,8 @@
             },
             "examples": {
               "application/json": {
+                "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -15584,6 +15825,14 @@
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The VLAN ID of the VLAN"
+                },
+                "interfaceId": {
+                  "type": "string",
+                  "description": "The interface ID of the VLAN"
+                },
                 "name": {
                   "type": "string",
                   "description": "The name of the VLAN"
@@ -15781,6 +16030,8 @@
             },
             "examples": {
               "application/json": {
+                "id": "1234",
+                "interfaceId": "1284392014819",
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
@@ -16964,6 +17215,116 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV52 camera models."
+                    },
+                    "MV63": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1920x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1920x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV63 camera models."
+                    },
+                    "MV93": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV93 camera models."
+                    },
+                    "MV63X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1920x1080', '2688x1512' or '3840x2160'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV63X camera models."
+                    },
+                    "MV93X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112",
+                            "2880x2880"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV93X camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -17312,6 +17673,116 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV52 camera models."
+                    },
+                    "MV63": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1920x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1920x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV63 camera models."
+                    },
+                    "MV93": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV93 camera models."
+                    },
+                    "MV63X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1920x1080', '2688x1512' or '3840x2160'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV63X camera models."
+                    },
+                    "MV93X": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Standard",
+                            "Enhanced",
+                            "High"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112",
+                            "2880x2880"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV93X camera models."
                     }
                   },
                   "description": "Video quality and resolution settings for all the camera models."
@@ -17947,7 +18418,38 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "dhcpLeaseTime": {
+                  "type": "string",
+                  "enum": [
+                    "30 minutes",
+                    "1 hour",
+                    "4 hours",
+                    "12 hours",
+                    "1 day",
+                    "1 week"
+                  ],
+                  "description": "DHCP Lease time for all MG in the network."
+                },
+                "dnsNameservers": {
+                  "type": "string",
+                  "enum": [
+                    "upstream_dns",
+                    "google_dns",
+                    "opendns",
+                    "custom"
+                  ],
+                  "description": "DNS name servers mode for all MG in the network."
+                },
+                "dnsCustomNameservers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of fixed IPs representing the the DNS Name servers when the mode is 'custom'."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -17986,18 +18488,18 @@
               "properties": {
                 "dhcpLeaseTime": {
                   "type": "string",
-                  "description": "DHCP Lease time for all MG of the network. It can be '30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week'."
+                  "description": "DHCP Lease time for all MG of the network. Possible values are '30 minutes', '1 hour', '4 hours', '12 hours', '1 day' or '1 week'."
                 },
                 "dnsNameservers": {
                   "type": "string",
-                  "description": "DNS name servers mode for all MG of the network. It can take 4 different values: 'upstream_dns', 'google_dns', 'opendns', 'custom'."
+                  "description": "DNS name servers mode for all MG of the network. Possible values are: 'upstream_dns', 'google_dns', 'opendns', 'custom'."
                 },
                 "dnsCustomNameservers": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "list of fixed IP representing the the DNS Name servers when the mode is 'custom'"
+                  "description": "list of fixed IPs representing the the DNS Name servers when the mode is 'custom'"
                 }
               },
               "example": {
@@ -18015,7 +18517,38 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "dhcpLeaseTime": {
+                  "type": "string",
+                  "enum": [
+                    "30 minutes",
+                    "1 hour",
+                    "4 hours",
+                    "12 hours",
+                    "1 day",
+                    "1 week"
+                  ],
+                  "description": "DHCP Lease time for all MG in the network."
+                },
+                "dnsNameservers": {
+                  "type": "string",
+                  "enum": [
+                    "upstream_dns",
+                    "google_dns",
+                    "opendns",
+                    "custom"
+                  ],
+                  "description": "DNS name servers mode for all MG in the network."
+                },
+                "dnsCustomNameservers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of fixed IPs representing the the DNS Name servers when the mode is 'custom'."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -20287,7 +20820,21 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Event category"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Event type"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the event"
+                  }
+                }
               }
             },
             "examples": {
@@ -28291,368 +28838,6 @@
         ]
       }
     },
-    "/networks/{networkId}/httpServers": {
-      "get": {
-        "description": "List the HTTP servers for a network",
-        "operationId": "getNetworkHttpServers",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                  "name": "Example Webhook Server",
-                  "url": "https://www.example.com/my_custom_webhook",
-                  "networkId": "N_12345678",
-                  "payloadTemplate": {
-                    "payloadTemplateId": "wpt_00001",
-                    "name": "Meraki (included)"
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "summary": "List the HTTP servers for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "post": {
-        "description": "Add an HTTP server to a network",
-        "operationId": "createNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkHttpServer",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "A name for easy reference to the HTTP server"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "The URL of the HTTP server"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
-                }
-              },
-              "example": {
-                "name": "Example Webhook Server",
-                "url": "https://example.com",
-                "sharedSecret": "shhh"
-              },
-              "required": [
-                "name",
-                "url"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Add an HTTP server to a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/webhookTests": {
-      "post": {
-        "description": "Send a test webhook for a network",
-        "operationId": "createNetworkHttpServersWebhookTest",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "createNetworkHttpServersWebhookTest",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string",
-                  "description": "The URL where the test webhook will be sent"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "The shared secret the test webhook will send. Optional. Defaults to an empty string.",
-                  "default": ""
-                }
-              },
-              "example": {
-                "url": "https://www.example.com/path"
-              },
-              "required": [
-                "url"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "1234",
-                "url": "https://www.example.com/path",
-                "status": "enqueued"
-              }
-            }
-          }
-        },
-        "summary": "Send a test webhook for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers",
-          "webhookTests"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/webhookTests/{id}": {
-      "get": {
-        "description": "Return the status of a webhook test for a network",
-        "operationId": "getNetworkHttpServersWebhookTest",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "1234",
-                "url": "https://www.example.com/path",
-                "status": "delivered"
-              }
-            }
-          }
-        },
-        "summary": "Return the status of a webhook test for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers",
-          "webhookTests"
-        ]
-      }
-    },
-    "/networks/{networkId}/httpServers/{id}": {
-      "get": {
-        "description": "Return an HTTP server for a network",
-        "operationId": "getNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Return an HTTP server for a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "put": {
-        "description": "Update an HTTP server",
-        "operationId": "updateNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkHttpServer",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "A name for easy reference to the HTTP server"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "The URL of the HTTP server"
-                },
-                "sharedSecret": {
-                  "type": "string",
-                  "description": "A shared secret that will be included in POSTs sent to the HTTP server. This secret can be used to verify that the request was sent by Meraki."
-                }
-              },
-              "example": {
-                "name": "Example Webhook Server",
-                "url": "https://example.com",
-                "sharedSecret": "shhh"
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
-                "name": "Example Webhook Server",
-                "url": "https://www.example.com/my_custom_webhook",
-                "networkId": "N_12345678",
-                "payloadTemplate": {
-                  "payloadTemplateId": "wpt_00001",
-                  "name": "Meraki (included)"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Update an HTTP server",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      },
-      "delete": {
-        "description": "Delete an HTTP server from a network",
-        "operationId": "deleteNetworkHttpServer",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete an HTTP server from a network",
-        "tags": [
-          "networks",
-          "configure",
-          "httpServers"
-        ]
-      }
-    },
     "/networks/{networkId}/insight/applications/{applicationId}/healthByTime": {
       "get": {
         "description": "Get application health by time",
@@ -28808,7 +28993,64 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Meraki auth user id"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email address of the user"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the user"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Creation time of the user"
+                  },
+                  "accountType": {
+                    "type": "string",
+                    "description": "Authorization type for user."
+                  },
+                  "isAdmin": {
+                    "type": "boolean",
+                    "description": "Whether or not the user is a Dashboard administrator"
+                  },
+                  "authorizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "ssidNumber": {
+                          "type": "integer",
+                          "description": "SSID number"
+                        },
+                        "authorizedZone": {
+                          "type": "string",
+                          "description": "Authorized zone of the user"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Authorization expiration time"
+                        },
+                        "authorizedByName": {
+                          "type": "string",
+                          "description": "User is authorized by the account name"
+                        },
+                        "authorizedByEmail": {
+                          "type": "string",
+                          "description": "User is authorized by the account email address"
+                        }
+                      }
+                    },
+                    "description": "User authorization info"
+                  }
+                }
               }
             },
             "examples": {
@@ -28909,9 +29151,10 @@
               "example": {
                 "email": "miles@meraki.com",
                 "name": "Miles Meraki",
-                "accountType": "802.1X",
                 "password": "secret",
+                "accountType": "802.1X",
                 "emailPasswordToUser": false,
+                "isAdmin": false,
                 "authorizations": [
                   {
                     "ssidNumber": 1,
@@ -28931,7 +29174,64 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Meraki auth user id"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the user"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the user"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Creation time of the user"
+                },
+                "accountType": {
+                  "type": "string",
+                  "description": "Authorization type for user."
+                },
+                "isAdmin": {
+                  "type": "boolean",
+                  "description": "Whether or not the user is a Dashboard administrator"
+                },
+                "authorizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "SSID number"
+                      },
+                      "authorizedZone": {
+                        "type": "string",
+                        "description": "Authorized zone of the user"
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Authorization expiration time"
+                      },
+                      "authorizedByName": {
+                        "type": "string",
+                        "description": "User is authorized by the account name"
+                      },
+                      "authorizedByEmail": {
+                        "type": "string",
+                        "description": "User is authorized by the account email address"
+                      }
+                    }
+                  },
+                  "description": "User authorization info"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -28984,7 +29284,64 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Meraki auth user id"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the user"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the user"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Creation time of the user"
+                },
+                "accountType": {
+                  "type": "string",
+                  "description": "Authorization type for user."
+                },
+                "isAdmin": {
+                  "type": "boolean",
+                  "description": "Whether or not the user is a Dashboard administrator"
+                },
+                "authorizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "SSID number"
+                      },
+                      "authorizedZone": {
+                        "type": "string",
+                        "description": "Authorized zone of the user"
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Authorization expiration time"
+                      },
+                      "authorizedByName": {
+                        "type": "string",
+                        "description": "User is authorized by the account name"
+                      },
+                      "authorizedByEmail": {
+                        "type": "string",
+                        "description": "User is authorized by the account email address"
+                      }
+                    }
+                  },
+                  "description": "User authorization info"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -29100,7 +29457,15 @@
                 }
               },
               "example": {
-
+                "name": "Miles Meraki",
+                "password": "secret",
+                "emailPasswordToUser": false,
+                "authorizations": [
+                  {
+                    "ssidNumber": 1,
+                    "expiresAt": "2018-03-13T00:00:00.090210Z"
+                  }
+                ]
               }
             }
           }
@@ -29109,7 +29474,64 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Meraki auth user id"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address of the user"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the user"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Creation time of the user"
+                },
+                "accountType": {
+                  "type": "string",
+                  "description": "Authorization type for user."
+                },
+                "isAdmin": {
+                  "type": "boolean",
+                  "description": "Whether or not the user is a Dashboard administrator"
+                },
+                "authorizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "SSID number"
+                      },
+                      "authorizedZone": {
+                        "type": "string",
+                        "description": "Authorized zone of the user"
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Authorization expiration time"
+                      },
+                      "authorizedByName": {
+                        "type": "string",
+                        "description": "User is authorized by the account name"
+                      },
+                      "authorizedByEmail": {
+                        "type": "string",
+                        "description": "User is authorized by the account email address"
+                      }
+                    }
+                  },
+                  "description": "User authorization info"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30440,6 +30862,140 @@
           "monitor",
           "alerts",
           "current",
+          "overview",
+          "byMetric"
+        ]
+      }
+    },
+    "/networks/{networkId}/sensor/alerts/overview/byMetric": {
+      "get": {
+        "description": "Return an overview of alert occurrences over a timespan, by metric",
+        "operationId": "getNetworkSensorAlertsOverviewByMetric",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
+          },
+          {
+            "type": "integer",
+            "name": "interval",
+            "in": "query",
+            "description": "The time interval in seconds for returned data. The valid intervals are: 86400, 604800. The default is 604800."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Start of the timespan over which sensor alerts are counted"
+                  },
+                  "endTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "End of the timespan over which sensor alerts are counted"
+                  },
+                  "counts": {
+                    "type": "object",
+                    "properties": {
+                      "door": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to an open door"
+                      },
+                      "humidity": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to humidity readings"
+                      },
+                      "indoorAirQuality": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to indoor air quality readings"
+                      },
+                      "noise": {
+                        "type": "object",
+                        "properties": {
+                          "ambient": {
+                            "type": "integer",
+                            "description": "Number of sensor alerts that occurred due to ambient noise readings"
+                          }
+                        },
+                        "description": "Object containing the number of sensor alerts that occurred due to noise readings"
+                      },
+                      "pm25": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to PM2.5 readings"
+                      },
+                      "temperature": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to temperature readings"
+                      },
+                      "tvoc": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to TVOC readings"
+                      },
+                      "water": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to the presence of water"
+                      }
+                    },
+                    "description": "Counts of sensor alerts over the timespan, by reading metric"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2022-08-21T00:00:00Z",
+                  "endTs": "2022-08-27T23:59:59Z",
+                  "counts": {
+                    "door": 0,
+                    "humidity": 1,
+                    "indoorAirQuality": 0,
+                    "noise": {
+                      "ambient": 2
+                    },
+                    "pm25": 0,
+                    "temperature": 4,
+                    "tvoc": 0,
+                    "water": 0
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return an overview of alert occurrences over a timespan, by metric",
+        "tags": [
+          "sensor",
+          "monitor",
+          "alerts",
           "overview",
           "byMetric"
         ]
@@ -32608,7 +33164,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Successful operation"
           }
         },
@@ -32649,7 +33205,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -32693,7 +33249,7 @@
                   "type": "boolean",
                   "description": "Enables / disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if localStatusPageEnabled is set to true"
                 },
-                "secureConnect": {
+                "securePort": {
                   "type": "object",
                   "properties": {
                     "enabled": {
@@ -32733,7 +33289,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -32762,7 +33318,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -35327,6 +35883,14 @@
                     },
                     "description": "device tags"
                   },
+                  "timeboundType": {
+                    "type": "string",
+                    "enum": [
+                      "static",
+                      "dynamic"
+                    ],
+                    "description": "type of access period, either a static range or a dynamic period"
+                  },
                   "accessStartAt": {
                     "type": "string",
                     "format": "date-time",
@@ -35357,6 +35921,7 @@
                     "tag1",
                     "tag2"
                   ],
+                  "timeboundType": "static",
                   "accessStartAt": "2018-02-11T00:00:00Z",
                   "accessEndAt": "2018-05-12T00:00:00Z"
                 }
@@ -44203,6 +44768,22 @@
             "in": "path",
             "type": "string",
             "required": true
+          },
+          {
+            "name": "unbindNetwork",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "retainConfigs": {
+                  "type": "boolean",
+                  "description": "Optional boolean to retain all the current configs given by the template."
+                }
+              },
+              "example": {
+                "retainConfigs": true
+              }
+            }
           }
         ],
         "responses": {
@@ -44400,7 +44981,7 @@
                   "properties": {
                     "payloadTemplateId": {
                       "type": "string",
-                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Meraki-included templates: for the Webex (included) template use 'wpt_00002'; for the Slack (included) template use 'wpt_00003'; for the Microsoft Teams (included) template use 'wpt_00004'"
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Meraki-included templates: for the Webex (included) template use 'wpt_00002'; for the Slack (included) template use 'wpt_00003'; for the Microsoft Teams (included) template use 'wpt_00004'; for the ServiceNow (included) template use 'wpt_00006'"
                     },
                     "name": {
                       "type": "string",
@@ -44603,7 +45184,7 @@
                   "properties": {
                     "payloadTemplateId": {
                       "type": "string",
-                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Meraki-included templates: for the Webex (included) template use 'wpt_00002'; for the Slack (included) template use 'wpt_00003'; for the Microsoft Teams (included) template use 'wpt_00004'"
+                      "description": "The ID of the payload template. Defaults to 'wpt_00001' for the Meraki template. For Meraki-included templates: for the Webex (included) template use 'wpt_00002'; for the Slack (included) template use 'wpt_00003'; for the Microsoft Teams (included) template use 'wpt_00004'; for the ServiceNow (included) template use 'wpt_00006'"
                     }
                   },
                   "description": "The payload template to use when posting data to the HTTP server."
@@ -44952,20 +45533,55 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "payloadTemplateId": {
+                  "type": "string",
+                  "description": "Webhook payload template Id"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of the payload template"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the payload template"
+                },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the header attribute"
+                      },
+                      "template": {
+                        "type": "string",
+                        "description": "The value returned in the header attribute, in liquid template"
+                      }
+                    }
+                  },
+                  "description": "The payload template headers, will be rendered as a key-value pair in the webhook."
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The body of the payload template, in liquid template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
                 "name": "Weeb Hooks",
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
-                ]
+                ],
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
               }
             }
           }
@@ -45085,20 +45701,55 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "payloadTemplateId": {
+                  "type": "string",
+                  "description": "Webhook payload template Id"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The type of the payload template"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the payload template"
+                },
+                "headers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the header attribute"
+                      },
+                      "template": {
+                        "type": "string",
+                        "description": "The value returned in the header attribute, in liquid template"
+                      }
+                    }
+                  },
+                  "description": "The payload template headers, will be rendered as a key-value pair in the webhook."
+                },
+                "body": {
+                  "type": "string",
+                  "description": "The body of the payload template, in liquid template"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
                 "name": "Weeb Hooks",
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
-                ]
+                ],
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
               }
             }
           }
@@ -51421,13 +52072,14 @@
                     "psk",
                     "open-with-radius",
                     "8021x-meraki",
+                    "8021x-nac",
                     "8021x-radius",
                     "8021x-google",
                     "8021x-localradius",
                     "ipsk-with-radius",
                     "ipsk-without-radius"
                   ],
-                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -55328,6 +55980,29 @@
                       }
                     },
                     "description": "Data for this organization"
+                  },
+                  "management": {
+                    "type": "object",
+                    "properties": {
+                      "details": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Name of management data"
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "Value of management data"
+                            }
+                          }
+                        },
+                        "description": "Details related to organization management, possibly empty"
+                      }
+                    },
+                    "description": "Information about the organization's management system"
                   }
                 }
               }
@@ -55348,6 +56023,14 @@
                     "region": {
                       "name": "North America"
                     }
+                  },
+                  "management": {
+                    "details": [
+                      {
+                        "name": "MSP ID",
+                        "value": "123456"
+                      }
+                    ]
                   }
                 }
               ]
@@ -55373,10 +56056,41 @@
                 "name": {
                   "type": "string",
                   "description": "The name of the organization"
+                },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
                 }
               },
               "example": {
-                "name": "My organization"
+                "name": "My organization",
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
+                }
               },
               "required": [
                 "name"
@@ -55443,6 +56157,29 @@
                     }
                   },
                   "description": "Data for this organization"
+                },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
                 }
               }
             },
@@ -55461,6 +56198,14 @@
                   "region": {
                     "name": "North America"
                   }
+                },
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
                 }
               }
             }
@@ -55543,6 +56288,29 @@
                     }
                   },
                   "description": "Data for this organization"
+                },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
                 }
               }
             },
@@ -55561,6 +56329,14 @@
                   "region": {
                     "name": "North America"
                   }
+                },
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
                 }
               }
             }
@@ -55592,6 +56368,29 @@
                   "type": "string",
                   "description": "The name of the organization"
                 },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
+                },
                 "api": {
                   "type": "object",
                   "properties": {
@@ -55605,6 +56404,14 @@
               },
               "example": {
                 "name": "My organization",
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
+                },
                 "api": {
                   "enabled": true
                 }
@@ -55670,6 +56477,29 @@
                     }
                   },
                   "description": "Data for this organization"
+                },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
                 }
               }
             },
@@ -55688,6 +56518,14 @@
                   "region": {
                     "name": "North America"
                   }
+                },
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
                 }
               }
             }
@@ -56921,16 +57759,82 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "groups": {
+                      "type": "integer",
+                      "description": "Number of adaptive policy groups currently in the organization."
+                    },
+                    "customGroups": {
+                      "type": "integer",
+                      "description": "Number of user-created adaptive policy groups currently in the organization."
+                    },
+                    "customAcls": {
+                      "type": "integer",
+                      "description": "Number of user-created adaptive policy ACLs currently in the organization."
+                    },
+                    "policies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization."
+                    },
+                    "denyPolicies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization that deny all traffic."
+                    },
+                    "allowPolicies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization that allow all traffic."
+                    },
+                    "policyObjects": {
+                      "type": "integer",
+                      "description": "Number of policy objects (with the adaptive policy type) currently in the organization."
+                    }
+                  },
+                  "description": "The current amount of various adaptive policy objects."
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "customGroups": {
+                      "type": "integer",
+                      "description": "Maximum number of user-created adaptive policy groups allowed in the organization."
+                    },
+                    "rulesInAnAcl": {
+                      "type": "integer",
+                      "description": "Maximum number of rules allowed in an adaptive policy ACL in the organization."
+                    },
+                    "aclsInAPolicy": {
+                      "type": "integer",
+                      "description": "Maximum number of adaptive policy ACLs that can be assigned to an adaptive policy in the organization."
+                    },
+                    "policyObjects": {
+                      "type": "integer",
+                      "description": "Maximum number of policy objects (with the adaptive policy type) allowed in the organization."
+                    }
+                  },
+                  "description": "The current limits of various adaptive policy objects."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "counts": {
                   "groups": 10,
+                  "customGroups": 8,
                   "customAcls": 12,
                   "policies": 100,
                   "denyPolicies": 30,
-                  "allowPolicies": 70
+                  "allowPolicies": 70,
+                  "policyObjects": 13
+                },
+                "limits": {
+                  "customGroups": 60,
+                  "rulesInAnAcl": 16,
+                  "aclsInAPolicy": 7,
+                  "policyObjects": 8000
                 }
               }
             }
@@ -59380,20 +60284,168 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "peers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPN peer"
+                      },
+                      "publicIp": {
+                        "type": "string",
+                        "description": "[optional] The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
+                      "localId": {
+                        "type": "string",
+                        "description": "[optional] The local ID is used to identify the MX to the peer. This will apply to all MXs this peer applies to."
+                      },
+                      "privateSubnets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The list of the private subnets of the VPN peer"
+                      },
+                      "ipsecPolicies": {
+                        "type": "object",
+                        "properties": {
+                          "ikeCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
+                            },
+                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
+                          },
+                          "ikeAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "ikePrfAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "prfsha256",
+                                "prfsha1",
+                                "prfmd5",
+                                "default"
+                              ]
+                            },
+                            "description": "[optional] This is the pseudo-random function to be used in IKE_SA. The value should be an array with one of the following algorithms: 'prfsha256', 'prfsha1', 'prfmd5', 'default'. The 'default' option can be used to default to the Authentication algorithm."
+                          },
+                          "ikeDiffieHellmanGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group14', 'group5', 'group2', 'group1'"
+                          },
+                          "ikeLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 1 SA in seconds."
+                          },
+                          "childCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
+                            },
+                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
+                          },
+                          "childAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "childPfsGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled','group14', 'group5', 'group2', 'group1'"
+                          },
+                          "childLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 2 SA in seconds."
+                          }
+                        },
+                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
+                      },
+                      "ipsecPoliciesPreset": {
+                        "type": "string",
+                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
+                      },
+                      "ikeVersion": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "2"
+                        ],
+                        "description": "[optional] The IKE version to be used for the IPsec VPN peer configuration. Defaults to '1' when omitted.",
+                        "default": "1"
+                      },
+                      "networkTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN peers"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
+                    "remoteId": "miles@meraki.com",
+                    "localId": "myMXId@meraki.com",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -59419,24 +60471,11 @@
                       ],
                       "childLifetime": 28800
                     },
+                    "ipsecPoliciesPreset": "default",
+                    "ikeVersion": "1",
                     "networkTags": [
                       "all"
                     ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
                   }
                 ]
               }
@@ -59478,11 +60517,7 @@
                       },
                       "publicIp": {
                         "type": "string",
-                        "description": "The public IP of the VPN peer"
-                      },
-                      "remoteId": {
-                        "type": "string",
-                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                        "description": "[optional] The public IP of the VPN peer"
                       },
                       "privateSubnets": {
                         "type": "array",
@@ -59491,20 +60526,40 @@
                         },
                         "description": "The list of the private subnets of the VPN peer"
                       },
+                      "localId": {
+                        "type": "string",
+                        "description": "[optional] The local ID is used to identify the MX to the peer. This will apply to all MXs this peer applies to."
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
                       "ipsecPolicies": {
                         "type": "object",
                         "properties": {
                           "ikeCipherAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
                             },
                             "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
                           },
                           "ikeAuthAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
                             },
                             "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
                           },
@@ -59535,14 +60590,27 @@
                           "childCipherAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
                             },
                             "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
                           },
                           "childAuthAlgo": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
                             },
                             "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
                           },
@@ -59587,7 +60655,6 @@
                     },
                     "required": [
                       "name",
-                      "publicIp",
                       "privateSubnets",
                       "secret"
                     ]
@@ -59598,14 +60665,14 @@
               "example": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
+                    "localId": "myMXId@meraki.com",
+                    "remoteId": "miles@meraki.com",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -59631,24 +60698,12 @@
                       ],
                       "childLifetime": 28800
                     },
-                    "networkTags": [
-                      "all"
-                    ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
+                    "ipsecPoliciesPreset": "default",
+                    "secret": "Sample Password",
+                    "ikeVersion": "2",
                     "networkTags": [
                       "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
+                    ]
                   }
                 ]
               },
@@ -59663,20 +60718,168 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "peers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPN peer"
+                      },
+                      "publicIp": {
+                        "type": "string",
+                        "description": "[optional] The public IP of the VPN peer"
+                      },
+                      "remoteId": {
+                        "type": "string",
+                        "description": "[optional] The remote ID is used to identify the connecting VPN peer. This can either be a valid IPv4 Address, FQDN or User FQDN."
+                      },
+                      "localId": {
+                        "type": "string",
+                        "description": "[optional] The local ID is used to identify the MX to the peer. This will apply to all MXs this peer applies to."
+                      },
+                      "privateSubnets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The list of the private subnets of the VPN peer"
+                      },
+                      "ipsecPolicies": {
+                        "type": "object",
+                        "properties": {
+                          "ikeCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des"
+                              ]
+                            },
+                            "description": "This is the cipher algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des'"
+                          },
+                          "ikeAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithm to be used in Phase 1. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "ikePrfAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "prfsha256",
+                                "prfsha1",
+                                "prfmd5",
+                                "default"
+                              ]
+                            },
+                            "description": "[optional] This is the pseudo-random function to be used in IKE_SA. The value should be an array with one of the following algorithms: 'prfsha256', 'prfsha1', 'prfmd5', 'default'. The 'default' option can be used to default to the Authentication algorithm."
+                          },
+                          "ikeDiffieHellmanGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used in Phase 1. The value should be an array with one of the following algorithms: 'group14', 'group5', 'group2', 'group1'"
+                          },
+                          "ikeLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 1 SA in seconds."
+                          },
+                          "childCipherAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "aes256",
+                                "aes192",
+                                "aes128",
+                                "tripledes",
+                                "des",
+                                "null"
+                              ]
+                            },
+                            "description": "This is the cipher algorithms to be used in Phase 2. The value should be an array with one or more of the following algorithms: 'aes256', 'aes192', 'aes128', 'tripledes', 'des', 'null'"
+                          },
+                          "childAuthAlgo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "sha256",
+                                "sha1",
+                                "md5"
+                              ]
+                            },
+                            "description": "This is the authentication algorithms to be used in Phase 2. The value should be an array with one of the following algorithms: 'sha256', 'sha1', 'md5'"
+                          },
+                          "childPfsGroup": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This is the Diffie-Hellman group to be used for Perfect Forward Secrecy in Phase 2. The value should be an array with one of the following values: 'disabled','group14', 'group5', 'group2', 'group1'"
+                          },
+                          "childLifetime": {
+                            "type": "integer",
+                            "description": "The lifetime of the Phase 2 SA in seconds."
+                          }
+                        },
+                        "description": "Custom IPSec policies for the VPN peer. If not included and a preset has not been chosen, the default preset for IPSec policies will be used."
+                      },
+                      "ipsecPoliciesPreset": {
+                        "type": "string",
+                        "description": "One of the following available presets: 'default', 'aws', 'azure'. If this is provided, the 'ipsecPolicies' parameter is ignored."
+                      },
+                      "ikeVersion": {
+                        "type": "string",
+                        "enum": [
+                          "1",
+                          "2"
+                        ],
+                        "description": "[optional] The IKE version to be used for the IPsec VPN peer configuration. Defaults to '1' when omitted.",
+                        "default": "1"
+                      },
+                      "networkTags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "A list of network tags that will connect with this peer. Use ['all'] for all networks. Use ['none'] for no networks. If not included, the default is ['all']."
+                      }
+                    }
+                  },
+                  "description": "The list of VPN peers"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "peers": [
                   {
-                    "name": "My peer 1",
+                    "name": "Peer Name",
                     "publicIp": "123.123.123.1",
+                    "remoteId": "miles@meraki.com",
+                    "localId": "myMXId@meraki.com",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
                     ],
-                    "secret": "asdf1234",
-                    "ikeVersion": "2",
                     "ipsecPolicies": {
                       "ikeCipherAlgo": [
                         "tripledes"
@@ -59702,24 +60905,11 @@
                       ],
                       "childLifetime": 28800
                     },
+                    "ipsecPoliciesPreset": "default",
+                    "ikeVersion": "1",
                     "networkTags": [
                       "all"
                     ]
-                  },
-                  {
-                    "name": "My peer 2",
-                    "publicIp": "123.123.123.2",
-                    "remoteId": "miles@meraki.com",
-                    "privateSubnets": [
-                      "192.168.2.0/24",
-                      "192.168.129.0/24"
-                    ],
-                    "secret": "asdf56785678567856785678",
-                    "networkTags": [
-                      "none"
-                    ],
-                    "ikeVersion": "1",
-                    "ipsecPoliciesPreset": "default"
                   }
                 ]
               }
@@ -61136,7 +62326,101 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network Id"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the device"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Device model"
+                  },
+                  "lastReportedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Last reported time for the device"
+                  },
+                  "uplinks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "interface": {
+                          "type": "string",
+                          "description": "Uplink interface"
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Uplink status"
+                        },
+                        "ip": {
+                          "type": "string",
+                          "description": "Uplink IP"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "description": "Network Provider"
+                        },
+                        "publicIp": {
+                          "type": "string",
+                          "description": "Public IP"
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Uplink model"
+                        },
+                        "signalStat": {
+                          "type": "object",
+                          "properties": {
+                            "rsrp": {
+                              "type": "string",
+                              "description": "Reference Signal Received Power"
+                            },
+                            "rsrq": {
+                              "type": "string",
+                              "description": "Reference Signal Received Quality"
+                            }
+                          },
+                          "description": "Tower Signal Status"
+                        },
+                        "connectionType": {
+                          "type": "string",
+                          "description": "Connection Type"
+                        },
+                        "apn": {
+                          "type": "string",
+                          "description": "Access Point Name"
+                        },
+                        "gateway": {
+                          "type": "string",
+                          "description": "Gateway IP"
+                        },
+                        "dns1": {
+                          "type": "string",
+                          "description": "Primary DNS IP"
+                        },
+                        "dns2": {
+                          "type": "string",
+                          "description": "Secondary DNS IP"
+                        },
+                        "signalType": {
+                          "type": "string",
+                          "description": "Signal Type"
+                        },
+                        "iccid": {
+                          "type": "string",
+                          "description": "Integrated Circuit Card Identification Number"
+                        }
+                      }
+                    },
+                    "description": "Uplinks info"
+                  }
+                }
               }
             },
             "headers": {
@@ -61704,6 +62988,29 @@
                     }
                   },
                   "description": "Data for this organization"
+                },
+                "management": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name of management data"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Value of management data"
+                          }
+                        }
+                      },
+                      "description": "Details related to organization management, possibly empty"
+                    }
+                  },
+                  "description": "Information about the organization's management system"
                 }
               }
             },
@@ -61722,6 +63029,14 @@
                   "region": {
                     "name": "North America"
                   }
+                },
+                "management": {
+                  "details": [
+                    {
+                      "name": "MSP ID",
+                      "value": "123456"
+                    }
+                  ]
                 }
               }
             }
@@ -64688,6 +66003,236 @@
         ]
       }
     },
+    "/organizations/{organizationId}/firmware/upgrades/byDevice": {
+      "get": {
+        "description": "Get firmware upgrade status for the filtered devices",
+        "operationId": "getOrganizationFirmwareUpgradesByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 50. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter by network"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter by serial number.  All returned devices will have a serial number that is an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "macs",
+            "in": "query",
+            "description": "Optional parameter to filter by one or more MAC addresses belonging to devices. All devices returned belong to MAC addresses that are an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "firmwareUpgradeIds",
+            "in": "query",
+            "description": "Optional parameter to filter by firmware upgrade ids."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "firmwareUpgradeBatchIds",
+            "in": "query",
+            "description": "Optional parameter to filter by firmware upgrade batch ids."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial of the device"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name assigned to the device"
+                  },
+                  "deviceStatus": {
+                    "type": "string",
+                    "description": "Status of the device upgrade"
+                  },
+                  "upgrade": {
+                    "type": "object",
+                    "properties": {
+                      "time": {
+                        "type": "string",
+                        "description": "Start time of the upgrade"
+                      },
+                      "fromVersion": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the initial firmware version"
+                          },
+                          "shortName": {
+                            "type": "string",
+                            "description": "Firmware version short name"
+                          },
+                          "releaseType": {
+                            "type": "string",
+                            "description": "Release type of the firmware version"
+                          },
+                          "releaseDate": {
+                            "type": "string",
+                            "description": "Release date of the firmware version"
+                          }
+                        },
+                        "description": "The initial version of the device"
+                      },
+                      "toVersion": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the initial firmware version"
+                          },
+                          "shortName": {
+                            "type": "string",
+                            "description": "Firmware version short name"
+                          },
+                          "releaseType": {
+                            "type": "string",
+                            "description": "Release type of the firmware version"
+                          },
+                          "releaseDate": {
+                            "type": "string",
+                            "description": "Release date of the firmware version"
+                          }
+                        },
+                        "description": "Version the device is upgrading to"
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Status of the upgrade"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the upgrade"
+                      },
+                      "upgradeBatchId": {
+                        "type": "string",
+                        "description": "ID of the upgrade batch"
+                      },
+                      "staged": {
+                        "type": "object",
+                        "properties": {
+                          "group": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Id of the staged upgrade group"
+                              }
+                            },
+                            "description": "The staged upgrade group"
+                          }
+                        },
+                        "description": "Staged upgrade"
+                      }
+                    },
+                    "description": "The devices upgrade details and status"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "serial": "Q234-ABCD-5678",
+                  "name": "My AP",
+                  "deviceStatus": "completed",
+                  "upgrade": {
+                    "time": "2018-02-11T00:00:00.090210Z",
+                    "fromVersion": {
+                      "id": "1234",
+                      "shortName": "MV 10.8.1",
+                      "releaseType": "stable",
+                      "releaseDate": "2018-02-11T00:00:00.090210Z"
+                    },
+                    "toVersion": {
+                      "id": "1234",
+                      "shortName": "MV 11.2.1",
+                      "releaseType": "stable",
+                      "releaseDate": "2018-02-11T00:00:00.090210Z"
+                    },
+                    "status": "completed",
+                    "id": "1234",
+                    "upgradeBatchId": "1234",
+                    "staged": {
+                      "group": {
+                        "id": "1234"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get firmware upgrade status for the filtered devices",
+        "tags": [
+          "organizations",
+          "configure",
+          "firmware",
+          "upgrades",
+          "byDevice"
+        ]
+      }
+    },
     "/organizations/{organizationId}/insight/applications": {
       "get": {
         "description": "List all Insight tracked applications",
@@ -65269,7 +66814,54 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of the device"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the device"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the device"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model type of the device"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network Id of the device"
+                  },
+                  "orderNumber": {
+                    "type": "string",
+                    "description": "Order number of the device"
+                  },
+                  "claimedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Claimed time of the device"
+                  },
+                  "licenseExpirationDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "License expiration date of the device"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Device tags"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product type of the device"
+                  }
+                }
               }
             },
             "headers": {
@@ -65330,7 +66922,54 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "mac": {
+                  "type": "string",
+                  "description": "MAC address of the device"
+                },
+                "serial": {
+                  "type": "string",
+                  "description": "Serial number of the device"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the device"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Model type of the device"
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "Network Id of the device"
+                },
+                "orderNumber": {
+                  "type": "string",
+                  "description": "Order number of the device"
+                },
+                "claimedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Claimed time of the device"
+                },
+                "licenseExpirationDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "License expiration date of the device"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Device tags"
+                },
+                "productType": {
+                  "type": "string",
+                  "description": "Product type of the device"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -65357,6 +66996,517 @@
           "configure",
           "inventory",
           "devices"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/imports": {
+      "post": {
+        "description": "Commits the import operation to complete the onboarding of a device into Dashboard for monitoring.",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringImport",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringImport",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deviceId": {
+                        "type": "string",
+                        "description": "Import ID from the Import operation"
+                      },
+                      "udi": {
+                        "type": "string",
+                        "description": "Device UDI certificate"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "Network Id"
+                      }
+                    },
+                    "required": [
+                      "deviceId",
+                      "udi",
+                      "networkId"
+                    ]
+                  },
+                  "description": "A set of device imports to commit"
+                }
+              },
+              "example": {
+                "devices": [
+                  {
+                    "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
+                    "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
+                    "networkId": "1338481"
+                  }
+                ]
+              },
+              "required": [
+                "devices"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "Cloud monitor import status"
+                  },
+                  "importId": {
+                    "type": "string",
+                    "description": "Unique id associated with the import of the device"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Response method"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "status": "IMPORT JOB SUCCESS",
+                  "importId": "1234",
+                  "message": "Import Started"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Commits the import operation to complete the onboarding of a device into Dashboard for monitoring.",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "imports"
+        ]
+      },
+      "get": {
+        "description": "Check the status of a committed Import operation",
+        "operationId": "getOrganizationInventoryOnboardingCloudMonitoringImports",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "importIds",
+            "in": "query",
+            "required": true,
+            "description": "import ids from an imports"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "importId": {
+                    "type": "string",
+                    "description": "Database ID for the new entity entry."
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "The url to the device details page within dashboard."
+                      },
+                      "created": {
+                        "type": "boolean",
+                        "description": "Whether or not the device was successfully created in dashboard."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Represents the current state of importing the device."
+                      }
+                    },
+                    "description": "Represents the details of an imported device."
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "importId": "0000000000000000",
+                  "device": {
+                    "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                    "created": true,
+                    "status": "SUCCESS"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Check the status of a committed Import operation",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "imports"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/prepare": {
+      "post": {
+        "description": "Initiates or updates an import session. An import ID will be generated and used when you are ready to commit the import.",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sudi": {
+                        "type": "string",
+                        "description": "Device SUDI certificate"
+                      },
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "certificateName": {
+                            "type": "string",
+                            "description": "Name of the configured TLS certificate"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the configured TLS tunnel"
+                          },
+                          "loopbackNumber": {
+                            "type": "integer",
+                            "description": "Number of the configured Loopback Interface used for TLS overlay"
+                          },
+                          "localInterface": {
+                            "type": "integer",
+                            "description": "Number of the vlan expected to be used to connect to the cloud"
+                          }
+                        },
+                        "description": "TLS Related Parameters"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                            "description": "The name of the device user for Meraki monitoring"
+                          }
+                        },
+                        "description": "User parameters"
+                      },
+                      "vty": {
+                        "type": "object",
+                        "properties": {
+                          "startLineNumber": {
+                            "type": "integer",
+                            "description": "Starting line VTY number"
+                          },
+                          "endLineNumber": {
+                            "type": "integer",
+                            "description": "Ending line VTY number"
+                          },
+                          "authentication": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authentication"
+                          },
+                          "authorization": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authorization"
+                          },
+                          "accessList": {
+                            "type": "object",
+                            "properties": {
+                              "vtyIn": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY in ACL"
+                              },
+                              "vtyOut": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY out ACL"
+                              }
+                            },
+                            "description": "AccessList details"
+                          },
+                          "rotaryNumber": {
+                            "type": "integer",
+                            "description": "SSH rotary number"
+                          }
+                        },
+                        "description": "VTY Related Parameters"
+                      }
+                    },
+                    "required": [
+                      "sudi"
+                    ]
+                  },
+                  "description": "A set of devices to import (or update)"
+                }
+              },
+              "example": {
+                "devices": [
+                  {
+                    "sudi": "-----BEGIN CERTIFICATE-----\n        MIIDyTCCArGgAwIBAgIKBBNXOVCGU1YztjANBgkqhkiG9w0BAQsFADAnMQ4wDAYD\n        VQQKEwVDaXNjbzEVMBMGA1UEAxMMQUNUMiBTVURJIENBMB4XDTIxMDUzMTEzNTUx\n        NVoXDTI5MDUxNDIwMjU0MVowbTEpMCcGA1UEBRMgUElEOkM5MjAwTC0yNFAtNEcg\n        U046SkFFMjUyMjBSMksxDjAMBgNVBAoTBUNpc2NvMRgwFgYDVQQLEw9BQ1QtMiBM\n        aXRlIFNVREkxFjAUBgNVBAMTDUM5MjAwTC0yNFAtNEcwggEiMA0GCSqGSIb3DQEB\n        AQUAA4IBDwAwggEKAoIBAQDaUPxW76gT5MdoEAt+UrDFiYA9RYh2iHicDViBEyow\n        TR1TuP36bHh13X3vtGiDsCD88Ci2TZIqd/EDkkc7v9ipUUYVVH+YDrPt2Aukb1PH\n        D6K0R+KhgEzRo5x54TlU6oWvjUpwNZUwwdhMWIQaUVkMyZBYNy0jGPLO8jwZhyBg\n        1Fneybr9pwedGbLrAaz+gdEikB8B4a/fvPjVfL5Ngb4QRjFqWuE+X3nLc0kHedep\n        6nfgpUNXMlStVm5nIXKP6OjmzfCHPYh9L2Ehs1TrSk1ser9Ofx0ZMVL/jBZR2EIj\n        OZ8tH6KlX2/B2pbSPIO6kD5c4UA8Cf1SbDJCwJ/kI9ihAgMBAAGjgbAwga0wDgYD\n        VR0PAQH/BAQDAgXgMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUSNjx8cJw1Vu7\n        fHMJk6+4uDAD+H8wTQYDVR0RBEYwRKBCBgkrBgEEAQkVAgOgNRMzQ2hpcElEPVVV\n        VUNNaElGcUVFMklFUUVBQWNBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE9MB0GA1Ud\n        DgQWBBRdhMkFD/z5hokaQeLbaRsp4hkvbzANBgkqhkiG9w0BAQsFAAOCAQEAMtuh\n        YpBz4xEZ7YdJsLpw67Q0TTJGnTBRpzAeY1urYDoDz8TSx556XG7z3IRzuED5KVSp\n        OwmH/iZ+tDfYQ3W3ElWTW93871DkuW4WQIfbnoHg/F7bF0DKYVkD3rpZjyz3NhzH\n        d7cjTdJXQ85bTAOXDuxKH3qewrXxxOGXgh3I6NUq0UwMTWh84lND7Jl+ZAQkYNS2\n        iHanTZFQBk3ML0NUb7fKDYGRTZRqwQ/upIO4S6LV1cxH/6V0qbMy3sCSHZoMLrW3\n        0m3M6yKpe5+VZzHZwmWdUf3Ot+zKjhveK5/YNsMIASdvtvymxUizq2Hr1hvR/kPc\n        p1vuyWxipU8JfzOh/A==\n        -----END CERTIFICATE-----\n        ",
+                    "tunnel": {
+                      "certificateName": "DeviceSUDI",
+                      "name": "MERAKI",
+                      "loopbackNumber": 1000,
+                      "localInterface": 1
+                    },
+                    "user": {
+                      "username": "Meraki"
+                    },
+                    "vty": {
+                      "startLineNumber": 16,
+                      "endLineNumber": 17,
+                      "authentication": {
+                        "group": {
+                          "name": ""
+                        }
+                      },
+                      "authorization": {
+                        "group": {
+                          "name": "MERAKI"
+                        }
+                      },
+                      "accessList": {
+                        "vtyIn": {
+                          "name": "MERAKI_IN"
+                        },
+                        "vtyOut": {
+                          "name": "MERAKI_OUT"
+                        }
+                      },
+                      "rotaryNumber": 50
+                    }
+                  }
+                ]
+              },
+              "required": [
+                "devices"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message related to whether or not the device was found and can be imported."
+                  },
+                  "udi": {
+                    "type": "string",
+                    "description": "Device UDI certificate"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "Import ID from the Import operation"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The import status of the device"
+                  },
+                  "configParams": {
+                    "type": "object",
+                    "properties": {
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "description": ""
+                          },
+                          "port": {
+                            "type": "string",
+                            "description": "The port used for the ssh tunnel."
+                          },
+                          "host": {
+                            "type": "string",
+                            "description": "SSH tunnel URL used to connect to the device"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the tunnel we are attempting to connect to"
+                          },
+                          "rootCertificate": {
+                            "type": "object",
+                            "properties": {
+                              "content": {
+                                "type": "string",
+                                "description": "Public certificate value"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the server protected by the certificate"
+                              }
+                            },
+                            "description": "Root certificate information"
+                          }
+                        },
+                        "description": "Configuration options used to connect to the device"
+                      },
+                      "cloudStaticIp": {
+                        "type": "string",
+                        "description": "Static IP Address used to connect to the device"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "publicKey": {
+                            "type": "string",
+                            "description": "The public key for the registered user"
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "The username added to Catalyst device"
+                          },
+                          "secret": {
+                            "type": "object",
+                            "properties": {
+                              "hash": {
+                                "type": "string",
+                                "description": "The hashed secret"
+                              }
+                            },
+                            "description": "Stores the user secret hash"
+                          }
+                        },
+                        "description": "User credentials used to connect to the device"
+                      }
+                    },
+                    "description": "Params used in order to connect to the device"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "message": "Existing import found",
+                  "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
+                  "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
+                  "status": "SUCCESS",
+                  "configParams": {
+                    "tunnel": {
+                      "mode": "443",
+                      "port": "443",
+                      "host": "secgw-int3.ciscocloudoffer.com",
+                      "name": "MERAKI-PRIMARY",
+                      "rootCertificate": {
+                        "content": "",
+                        "name": "MERAKI_TLSGW_CA"
+                      }
+                    },
+                    "cloudStaticIp": "1.2.3.4",
+                    "user": {
+                      "publicKey": "",
+                      "username": "MERAKI_USER",
+                      "secret": {
+                        "hash": ""
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Initiates or updates an import session",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "prepare"
         ]
       }
     },
@@ -65555,7 +67705,7 @@
                         }
                       }
                     },
-                    "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                    "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                   },
                   "claimDate": {
                     "type": "string",
@@ -65751,7 +67901,7 @@
                             }
                           }
                         },
-                        "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                        "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                       },
                       "claimDate": {
                         "type": "string",
@@ -66141,7 +68291,7 @@
                             }
                           }
                         },
-                        "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                        "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                       },
                       "claimDate": {
                         "type": "string",
@@ -66305,7 +68455,7 @@
                       }
                     }
                   },
-                  "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                  "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                 },
                 "claimDate": {
                   "type": "string",
@@ -66475,7 +68625,7 @@
                       }
                     }
                   },
-                  "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                  "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                 },
                 "claimDate": {
                   "type": "string",
@@ -67421,6 +69571,656 @@
           "organizations",
           "monitor",
           "openapiSpec"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects": {
+      "get": {
+        "description": "Lists Policy Objects belonging to the organization.",
+        "operationId": "getOrganizationPolicyObjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 10 - 5000. Default is 5000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "name": "Web Servers - Datacenter 10",
+                  "category": "network",
+                  "type": "cidr",
+                  "cidr": "10.0.0.0/24",
+                  "created_at": "2018-05-12T00:00:00Z",
+                  "updated_at": "2018-05-12T00:00:00Z",
+                  "groupIds": [
+
+                  ],
+                  "networkIds": [
+
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Lists Policy Objects belonging to the organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "post": {
+        "description": "Creates a new Policy Object.",
+        "operationId": "createOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationPolicyObject",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of a policy object, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of a policy object (one of: adaptivePolicy, network)"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR Value of a policy object (e.g. 10.11.12.1/24\")"
+                },
+                "fqdn": {
+                  "type": "string",
+                  "description": "Fully qualified domain name of policy object (e.g. \"example.com\")"
+                },
+                "mask": {
+                  "type": "string",
+                  "description": "Mask of a policy object (e.g. \"255.255.0.0\")"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "IP Address of a policy object (e.g. \"1.2.3.4\")"
+                },
+                "groupIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "The IDs of policy object groups the policy object belongs to"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "groupIds": [
+
+                ]
+              },
+              "required": [
+                "name",
+                "category",
+                "type"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates a new Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/groups": {
+      "get": {
+        "description": "Lists Policy Object Groups belonging to the organization.",
+        "operationId": "getOrganizationPolicyObjectsGroups",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 10 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "name": "Web Servers - Datacenter 10",
+                  "category": "NetworkObjectGroup",
+                  "created_at": "2018-05-12T00:00:00Z",
+                  "updated_at": "2018-05-12T00:00:00Z",
+                  "objectIds": [
+
+                  ],
+                  "networkIds": [
+
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Lists Policy Object Groups belonging to the organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "post": {
+        "description": "Creates a new Policy Object Group.",
+        "operationId": "createOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationPolicyObjectsGroup",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the group of network addresses, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category of a policy object group (one of: NetworkObjectGroup, GeoLocationGroup, PortObjectGroup, ApplicationGroup)"
+                },
+                "objectIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "A list of Policy Object ID's that this NetworkObjectGroup should be associated to (note: these ID's will replace the existing associated Policy Objects)"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "objectIds": [
+
+                ]
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates a new Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}": {
+      "get": {
+        "description": "Shows details of a Policy Object Group.",
+        "operationId": "getOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Shows details of a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "put": {
+        "description": "Updates a Policy Object Group.",
+        "operationId": "updateOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationPolicyObjectsGroup",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "A name for the group of network addresses, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "objectIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "A list of Policy Object ID's that this NetworkObjectGroup should be associated to (note: these ID's will replace the existing associated Policy Objects)"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "objectIds": [
+
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "NetworkObjectGroup",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "objectIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a Policy Object Group.",
+        "operationId": "deleteOrganizationPolicyObjectsGroup",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectGroupId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a Policy Object Group.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects",
+          "groups"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/policyObjects/{policyObjectId}": {
+      "get": {
+        "description": "Shows details of a Policy Object.",
+        "operationId": "getOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Shows details of a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "put": {
+        "description": "Updates a Policy Object.",
+        "operationId": "updateOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationPolicyObject",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of a policy object, unique within the organization (alphanumeric, space, dash, or underscore characters only)"
+                },
+                "cidr": {
+                  "type": "string",
+                  "description": "CIDR Value of a policy object (e.g. 10.11.12.1/24\")"
+                },
+                "fqdn": {
+                  "type": "string",
+                  "description": "Fully qualified domain name of policy object (e.g. \"example.com\")"
+                },
+                "mask": {
+                  "type": "string",
+                  "description": "Mask of a policy object (e.g. \"255.255.0.0\")"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "IP Address of a policy object (e.g. \"1.2.3.4\")"
+                },
+                "groupIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "The IDs of policy object groups the policy object belongs to"
+                }
+              },
+              "example": {
+                "name": "Web Servers - Datacenter 10",
+                "type": "cidr",
+                "groupIds": [
+
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "Web Servers - Datacenter 10",
+                "category": "network",
+                "type": "cidr",
+                "cidr": "10.0.0.0/24",
+                "created_at": "2018-05-12T00:00:00Z",
+                "updated_at": "2018-05-12T00:00:00Z",
+                "groupIds": [
+
+                ],
+                "networkIds": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
+        ]
+      },
+      "delete": {
+        "description": "Deletes a Policy Object.",
+        "operationId": "deleteOrganizationPolicyObject",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "policyObjectId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a Policy Object.",
+        "tags": [
+          "organizations",
+          "configure",
+          "policyObjects"
         ]
       }
     },
@@ -70687,6 +73487,7 @@
               "appliance",
               "camera",
               "cellularGateway",
+              "health",
               "platform",
               "sensor",
               "sm",
@@ -71041,6 +73842,9 @@
       "name": "categories"
     },
     {
+      "name": "cellular"
+    },
+    {
       "name": "cellularFirewallRules"
     },
     {
@@ -71063,6 +73867,9 @@
     },
     {
       "name": "clients"
+    },
+    {
+      "name": "cloudMonitoring"
     },
     {
       "name": "configTemplates"
@@ -71192,6 +73999,9 @@
     },
     {
       "name": "idps"
+    },
+    {
+      "name": "imports"
     },
     {
       "name": "inboundCellularFirewallRules"
@@ -71356,6 +74166,9 @@
       "name": "policy"
     },
     {
+      "name": "policyObjects"
+    },
+    {
       "name": "portForwardingRules"
     },
     {
@@ -71369,6 +74182,9 @@
     },
     {
       "name": "prefixes"
+    },
+    {
+      "name": "prepare"
     },
     {
       "name": "priorities"
@@ -71447,6 +74263,9 @@
     },
     {
       "name": "signalQualityHistory"
+    },
+    {
+      "name": "sims"
     },
     {
       "name": "singleLan"
@@ -71673,6 +74492,12 @@
       "operation": "update"
     },
     {
+      "group": "Adaptive policy settings",
+      "summary": "Update global adaptive policy settings",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
+      "operation": "update"
+    },
+    {
       "group": "Alternate management interface",
       "summary": "Update the switch alternate management interface for the network",
       "resource": "/networks/{networkId}/switch/alternateManagementInterface",
@@ -71694,12 +74519,6 @@
       "group": "Api/v1/adaptive policy/acls controller/shim adaptive policy acl",
       "summary": "Updates an adaptive policy ACL",
       "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{aclId}",
-      "operation": "update"
-    },
-    {
-      "group": "Api/v1/adaptive policy/settings controller/shim adaptive policy settings",
-      "summary": "Update global adaptive policy settings",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
       "operation": "update"
     },
     {
@@ -72225,6 +75044,42 @@
       "operation": "update"
     },
     {
+      "group": "Policy object",
+      "summary": "Creates a new Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects",
+      "operation": "create"
+    },
+    {
+      "group": "Policy object",
+      "summary": "Deletes a Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects/{policyObjectId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Policy object",
+      "summary": "Updates a Policy Object.",
+      "resource": "/organizations/{organizationId}/policyObjects/{policyObjectId}",
+      "operation": "update"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Creates a new Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups",
+      "operation": "create"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Deletes a Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Policy object group",
+      "summary": "Updates a Policy Object Group.",
+      "resource": "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}",
+      "operation": "update"
+    },
+    {
       "group": "Psk group",
       "summary": "Create an Identity PSK",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/identityPsks",
@@ -72612,6 +75467,12 @@
       "group": "Wired/uplinks/settings",
       "summary": "Update the uplink settings for an MX appliance",
       "resource": "/devices/{serial}/appliance/uplinks/settings",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/vpn/third party vpn peers",
+      "summary": "Update the third party VPN peers for an organization",
+      "resource": "/organizations/{organizationId}/appliance/vpn/thirdPartyVPNPeers",
       "operation": "update"
     },
     {
