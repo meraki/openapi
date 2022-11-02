@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.26.0-beta.3",
+    "version": "1.27.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 26 October, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 November, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2231,11 +2231,12 @@
                     "1920x1080",
                     "1080x1080",
                     "2058x2058",
+                    "2112x2112",
                     "2880x2880",
                     "2688x1512",
                     "3840x2160"
                   ],
-                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080', '2058x2058', '2880x2880', '2688x1512' or '3840x2160'. Not all resolutions are supported by every camera model."
+                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080', '2058x2058', '2112x2112', '2880x2880', '2688x1512' or '3840x2160'.Not all resolutions are supported by every camera model."
                 },
                 "motionDetectorVersion": {
                   "type": "integer",
@@ -2674,6 +2675,218 @@
           "camera",
           "configure",
           "wirelessProfiles"
+        ]
+      }
+    },
+    "/devices/{serial}/cellular/sims": {
+      "get": {
+        "description": "Return the SIM and APN configurations for a cellular device.",
+        "operationId": "getDeviceCellularSims",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "sims": [
+                  {
+                    "slot": "sim1",
+                    "isPrimary": true,
+                    "apns": [
+                      {
+                        "name": "internet",
+                        "allowedIpTypes": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "authentication": {
+                          "type": "pap",
+                          "username": "milesmeraki"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return the SIM and APN configurations for a cellular device.",
+        "tags": [
+          "devices",
+          "configure",
+          "cellular",
+          "sims"
+        ]
+      },
+      "put": {
+        "description": "Updates the SIM and APN configurations for a cellular device.",
+        "operationId": "updateDeviceCellularSims",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceCellularSims",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sims": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "slot": {
+                        "type": "string",
+                        "enum": [
+                          "sim1",
+                          "sim2"
+                        ],
+                        "description": "SIM slot being configured. Must be 'sim1' on single-sim devices."
+                      },
+                      "isPrimary": {
+                        "type": "boolean",
+                        "description": "If true, this SIM is used for boot. Must be true on single-sim devices.",
+                        "default": false
+                      },
+                      "apns": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "APN name."
+                            },
+                            "allowedIpTypes": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "IP versions to support (permitted values include 'ipv4', 'ipv6')."
+                            },
+                            "authentication": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "pap",
+                                    "chap",
+                                    "none"
+                                  ],
+                                  "description": "APN auth type.",
+                                  "default": "none"
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "description": "APN username, if type is set."
+                                },
+                                "password": {
+                                  "type": "string",
+                                  "description": "APN password, if type is set (if APN password is not supplied, the password is left unchanged)."
+                                }
+                              },
+                              "description": "APN authentication configurations."
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "allowedIpTypes"
+                          ]
+                        },
+                        "description": "APN configurations. If empty, the default APN will be used.",
+                        "default": [
+
+                        ]
+                      }
+                    }
+                  },
+                  "description": "List of SIMs. If a SIM was previously configured and not specified in this request, it will remain unchanged."
+                },
+                "simFailover": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Failover to secondary SIM (optional)"
+                    }
+                  },
+                  "description": "SIM Failover settings."
+                }
+              },
+              "example": {
+                "slot": "sim1",
+                "isPrimary": true,
+                "apns": [
+                  {
+                    "name": "internet",
+                    "allowedIpTypes": [
+                      "ipv4",
+                      "ipv6"
+                    ],
+                    "authentication": {
+                      "type": "pap",
+                      "username": "milesmeraki",
+                      "password": "secret"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "sims": [
+                  {
+                    "slot": "sim1",
+                    "isPrimary": true,
+                    "apns": [
+                      {
+                        "name": "internet",
+                        "allowedIpTypes": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "authentication": {
+                          "type": "pap",
+                          "username": "milesmeraki"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Updates the SIM and APN configurations for a cellular device.",
+        "tags": [
+          "devices",
+          "configure",
+          "cellular",
+          "sims"
         ]
       }
     },
@@ -4524,7 +4737,7 @@
                     "sent": 1.2,
                     "recv": 1.0
                   },
-                  "secureConnect": {
+                  "securePort": {
                     "enabled": true,
                     "active": true,
                     "authenticationStatus": "Authentication in progress",
@@ -17239,9 +17452,9 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058"
+                            "2112x2112"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
                         }
                       },
                       "required": [
@@ -17294,10 +17507,10 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058",
+                            "2112x2112",
                             "2880x2880"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080', '2058x2058' or '2880x2880'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
                         }
                       },
                       "required": [
@@ -17697,9 +17910,9 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058"
+                            "2112x2112"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
                         }
                       },
                       "required": [
@@ -17752,10 +17965,10 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058",
+                            "2112x2112",
                             "2880x2880"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080', '2058x2058' or '2880x2880'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
                         }
                       },
                       "required": [
@@ -20800,7 +21013,21 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string",
+                    "description": "Event category"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Event type"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the event"
+                  }
+                }
               }
             },
             "examples": {
@@ -33568,7 +33795,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -33612,7 +33839,7 @@
                   "type": "boolean",
                   "description": "Enables / disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if localStatusPageEnabled is set to true"
                 },
-                "secureConnect": {
+                "securePort": {
                   "type": "object",
                   "properties": {
                     "enabled": {
@@ -33663,7 +33890,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -33692,7 +33919,7 @@
                     "username": "admin"
                   }
                 },
-                "secureConnect": {
+                "securePort": {
                   "enabled": false
                 },
                 "fips": {
@@ -58585,16 +58812,82 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "groups": {
+                      "type": "integer",
+                      "description": "Number of adaptive policy groups currently in the organization."
+                    },
+                    "customGroups": {
+                      "type": "integer",
+                      "description": "Number of user-created adaptive policy groups currently in the organization."
+                    },
+                    "customAcls": {
+                      "type": "integer",
+                      "description": "Number of user-created adaptive policy ACLs currently in the organization."
+                    },
+                    "policies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization."
+                    },
+                    "denyPolicies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization that deny all traffic."
+                    },
+                    "allowPolicies": {
+                      "type": "integer",
+                      "description": "Number of adaptive policies currently in the organization that allow all traffic."
+                    },
+                    "policyObjects": {
+                      "type": "integer",
+                      "description": "Number of policy objects (with the adaptive policy type) currently in the organization."
+                    }
+                  },
+                  "description": "The current amount of various adaptive policy objects."
+                },
+                "limits": {
+                  "type": "object",
+                  "properties": {
+                    "customGroups": {
+                      "type": "integer",
+                      "description": "Maximum number of user-created adaptive policy groups allowed in the organization."
+                    },
+                    "rulesInAnAcl": {
+                      "type": "integer",
+                      "description": "Maximum number of rules allowed in an adaptive policy ACL in the organization."
+                    },
+                    "aclsInAPolicy": {
+                      "type": "integer",
+                      "description": "Maximum number of adaptive policy ACLs that can be assigned to an adaptive policy in the organization."
+                    },
+                    "policyObjects": {
+                      "type": "integer",
+                      "description": "Maximum number of policy objects (with the adaptive policy type) allowed in the organization."
+                    }
+                  },
+                  "description": "The current limits of various adaptive policy objects."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "counts": {
                   "groups": 10,
+                  "customGroups": 8,
                   "customAcls": 12,
                   "policies": 100,
                   "denyPolicies": 30,
-                  "allowPolicies": 70
+                  "allowPolicies": 70,
+                  "policyObjects": 13
+                },
+                "limits": {
+                  "customGroups": 60,
+                  "rulesInAnAcl": 16,
+                  "aclsInAPolicy": 7,
+                  "policyObjects": 8000
                 }
               }
             }
@@ -64059,6 +64352,188 @@
         ]
       }
     },
+    "/organizations/{organizationId}/cloud/connectivity/requirements": {
+      "get": {
+        "description": "List of source/destination traffic rules",
+        "operationId": "getOrganizationCloudConnectivityRequirements",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string",
+                    "description": "Describes the purpose of this requirement"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Devices using this firewall rule"
+                  },
+                  "rule": {
+                    "type": "object",
+                    "properties": {
+                      "sources": {
+                        "type": "object",
+                        "properties": {
+                          "includeAddressesInYourNetworks": {
+                            "type": "boolean",
+                            "description": "If the source includes IP addresses in your networks"
+                          },
+                          "addresses": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "ipv4",
+                                    "ipv6"
+                                  ],
+                                  "description": "Firewall rule source IP address type"
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "Firewall rule source IP address"
+                                }
+                              }
+                            },
+                            "description": "A list of firewall rule source IP addresses"
+                          }
+                        },
+                        "description": "Firewall rule sources"
+                      },
+                      "destinations": {
+                        "type": "object",
+                        "properties": {
+                          "includeAddressesInYourNetworks": {
+                            "type": "boolean",
+                            "description": "If the destination IP includes IP address in your networks"
+                          },
+                          "includeAnyAddress": {
+                            "type": "boolean",
+                            "description": "If the destination IP includes any address"
+                          },
+                          "addresses": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "ipv4",
+                                    "ipv6",
+                                    "fqdn"
+                                  ],
+                                  "description": "Firewall rule destination IP address type"
+                                },
+                                "address": {
+                                  "type": "string",
+                                  "description": "Firewall rule destination IP address"
+                                }
+                              }
+                            },
+                            "description": "A list of firewall rule destination IP addresses"
+                          }
+                        },
+                        "description": "Firewall rule destinations"
+                      },
+                      "ports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "port": {
+                              "type": "string",
+                              "description": "Port required for connectivity"
+                            },
+                            "protocols": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Protocols used for this purpose"
+                            }
+                          }
+                        },
+                        "description": "Ports that are applied by this firewall rule"
+                      }
+                    },
+                    "description": "An object of source IP, destination IP, and ports required for connectivity"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "description": "Meraki cloud communication",
+                  "productTypes": [
+                    "appliance",
+                    "wireless",
+                    "camera",
+                    "switch"
+                  ],
+                  "rule": {
+                    "sources": {
+                      "includeAddressesInYourNetworks": false,
+                      "addresses": [
+                        {
+                          "type": "ipv4",
+                          "address": "209.206.48.0/20"
+                        }
+                      ]
+                    },
+                    "destinations": {
+                      "includeAddressesInYourNetworks": false,
+                      "includeAnyAddress": false,
+                      "addresses": [
+                        {
+                          "type": "fqdn",
+                          "address": "webhook.site"
+                        }
+                      ]
+                    },
+                    "ports": [
+                      {
+                        "port": "443",
+                        "protocols": [
+                          "TCP"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List of source/destination traffic rules",
+        "tags": [
+          "organizations",
+          "monitor",
+          "cloud",
+          "connectivity",
+          "requirements"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/configTemplates": {
       "get": {
         "description": "List the configuration templates for this organization",
@@ -67021,6 +67496,236 @@
         ]
       }
     },
+    "/organizations/{organizationId}/firmware/upgrades/byDevice": {
+      "get": {
+        "description": "Get firmware upgrade status for the filtered devices",
+        "operationId": "getOrganizationFirmwareUpgradesByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 50. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter by network"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter by serial number.  All returned devices will have a serial number that is an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "macs",
+            "in": "query",
+            "description": "Optional parameter to filter by one or more MAC addresses belonging to devices. All devices returned belong to MAC addresses that are an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "firmwareUpgradeIds",
+            "in": "query",
+            "description": "Optional parameter to filter by firmware upgrade ids."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "firmwareUpgradeBatchIds",
+            "in": "query",
+            "description": "Optional parameter to filter by firmware upgrade batch ids."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial of the device"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name assigned to the device"
+                  },
+                  "deviceStatus": {
+                    "type": "string",
+                    "description": "Status of the device upgrade"
+                  },
+                  "upgrade": {
+                    "type": "object",
+                    "properties": {
+                      "time": {
+                        "type": "string",
+                        "description": "Start time of the upgrade"
+                      },
+                      "fromVersion": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the initial firmware version"
+                          },
+                          "shortName": {
+                            "type": "string",
+                            "description": "Firmware version short name"
+                          },
+                          "releaseType": {
+                            "type": "string",
+                            "description": "Release type of the firmware version"
+                          },
+                          "releaseDate": {
+                            "type": "string",
+                            "description": "Release date of the firmware version"
+                          }
+                        },
+                        "description": "The initial version of the device"
+                      },
+                      "toVersion": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the initial firmware version"
+                          },
+                          "shortName": {
+                            "type": "string",
+                            "description": "Firmware version short name"
+                          },
+                          "releaseType": {
+                            "type": "string",
+                            "description": "Release type of the firmware version"
+                          },
+                          "releaseDate": {
+                            "type": "string",
+                            "description": "Release date of the firmware version"
+                          }
+                        },
+                        "description": "Version the device is upgrading to"
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Status of the upgrade"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the upgrade"
+                      },
+                      "upgradeBatchId": {
+                        "type": "string",
+                        "description": "ID of the upgrade batch"
+                      },
+                      "staged": {
+                        "type": "object",
+                        "properties": {
+                          "group": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Id of the staged upgrade group"
+                              }
+                            },
+                            "description": "The staged upgrade group"
+                          }
+                        },
+                        "description": "Staged upgrade"
+                      }
+                    },
+                    "description": "The devices upgrade details and status"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "serial": "Q234-ABCD-5678",
+                  "name": "My AP",
+                  "deviceStatus": "completed",
+                  "upgrade": {
+                    "time": "2018-02-11T00:00:00.090210Z",
+                    "fromVersion": {
+                      "id": "1234",
+                      "shortName": "MV 10.8.1",
+                      "releaseType": "stable",
+                      "releaseDate": "2018-02-11T00:00:00.090210Z"
+                    },
+                    "toVersion": {
+                      "id": "1234",
+                      "shortName": "MV 11.2.1",
+                      "releaseType": "stable",
+                      "releaseDate": "2018-02-11T00:00:00.090210Z"
+                    },
+                    "status": "completed",
+                    "id": "1234",
+                    "upgradeBatchId": "1234",
+                    "staged": {
+                      "group": {
+                        "id": "1234"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get firmware upgrade status for the filtered devices",
+        "tags": [
+          "organizations",
+          "configure",
+          "firmware",
+          "upgrades",
+          "byDevice"
+        ]
+      }
+    },
     "/organizations/{organizationId}/insight/applications": {
       "get": {
         "description": "List all Insight tracked applications",
@@ -68493,7 +69198,7 @@
                         }
                       }
                     },
-                    "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                    "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                   },
                   "claimDate": {
                     "type": "string",
@@ -68689,7 +69394,7 @@
                             }
                           }
                         },
-                        "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                        "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                       },
                       "claimDate": {
                         "type": "string",
@@ -69079,7 +69784,7 @@
                             }
                           }
                         },
-                        "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                        "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                       },
                       "claimDate": {
                         "type": "string",
@@ -69243,7 +69948,7 @@
                       }
                     }
                   },
-                  "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                  "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                 },
                 "claimDate": {
                   "type": "string",
@@ -69413,7 +70118,7 @@
                       }
                     }
                   },
-                  "description": "DEPRECATED List of permanently queued licenses attached to the license"
+                  "description": "DEPRECATED List of permanently queued licenses attached to the license. Instead, use /organizations/{organizationId}/licenses?deviceSerial= to retrieved queued licenses for a given device."
                 },
                 "claimDate": {
                   "type": "string",
@@ -70433,8 +71138,7 @@
           "organizations",
           "configure",
           "policyObjects"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "post": {
         "description": "Creates a new Policy Object.",
@@ -70462,7 +71166,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: cidr, adaptivePolicyIpv4Cidr, fqdn, ipAndMask)"
+                  "description": "Type of a policy object (one of: ipAndMask, cidr, adaptivePolicyIpv4Cidr, fqdn)"
                 },
                 "cidr": {
                   "type": "string",
@@ -70535,8 +71239,7 @@
           "organizations",
           "configure",
           "policyObjects"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/policyObjects/groups": {
@@ -70609,8 +71312,7 @@
           "configure",
           "policyObjects",
           "groups"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "post": {
         "description": "Creates a new Policy Object Group.",
@@ -70686,8 +71388,7 @@
           "configure",
           "policyObjects",
           "groups"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/policyObjects/groups/{policyObjectGroupId}": {
@@ -70737,8 +71438,7 @@
           "configure",
           "policyObjects",
           "groups"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "put": {
         "description": "Updates a Policy Object Group.",
@@ -70812,8 +71512,7 @@
           "configure",
           "policyObjects",
           "groups"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "delete": {
         "description": "Deletes a Policy Object Group.",
@@ -70843,8 +71542,7 @@
           "configure",
           "policyObjects",
           "groups"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/policyObjects/{policyObjectId}": {
@@ -70895,8 +71593,7 @@
           "organizations",
           "configure",
           "policyObjects"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "put": {
         "description": "Updates a Policy Object.",
@@ -70988,8 +71685,7 @@
           "organizations",
           "configure",
           "policyObjects"
-        ],
-        "x-release-stage": "beta"
+        ]
       },
       "delete": {
         "description": "Deletes a Policy Object.",
@@ -71018,8 +71714,7 @@
           "organizations",
           "configure",
           "policyObjects"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/saml": {
@@ -74804,6 +75499,7 @@
               "appliance",
               "camera",
               "cellularGateway",
+              "health",
               "platform",
               "sensor",
               "sm",
@@ -76441,6 +77137,9 @@
       "name": "categories"
     },
     {
+      "name": "cellular"
+    },
+    {
       "name": "cellularFirewallRules"
     },
     {
@@ -76463,6 +77162,9 @@
     },
     {
       "name": "clients"
+    },
+    {
+      "name": "cloud"
     },
     {
       "name": "cloudMonitoring"
@@ -76828,6 +77530,9 @@
       "name": "requests"
     },
     {
+      "name": "requirements"
+    },
+    {
       "name": "responseCodes"
     },
     {
@@ -76877,6 +77582,9 @@
     },
     {
       "name": "signalQualityHistory"
+    },
+    {
+      "name": "sims"
     },
     {
       "name": "singleLan"
@@ -77106,6 +77814,12 @@
       "operation": "update"
     },
     {
+      "group": "Adaptive policy settings",
+      "summary": "Update global adaptive policy settings",
+      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
+      "operation": "update"
+    },
+    {
       "group": "Alternate management interface",
       "summary": "Update the switch alternate management interface for the network",
       "resource": "/networks/{networkId}/switch/alternateManagementInterface",
@@ -77127,12 +77841,6 @@
       "group": "Api/v1/adaptive policy/acls controller/shim adaptive policy acl",
       "summary": "Updates an adaptive policy ACL",
       "resource": "/organizations/{organizationId}/adaptivePolicy/acls/{aclId}",
-      "operation": "update"
-    },
-    {
-      "group": "Api/v1/adaptive policy/settings controller/shim adaptive policy settings",
-      "summary": "Update global adaptive policy settings",
-      "resource": "/organizations/{organizationId}/adaptivePolicy/settings",
       "operation": "update"
     },
     {
