@@ -1,6 +1,6 @@
-# Cisco Meraki Dasbhoard API - OpenAPI Specification
+# Cisco Meraki Dashboard API - OpenAPI Specification
 
-This repository contains Open API specifications for the Meraki Dashboard API.
+This repository contains OpenAPI specifications for the Meraki Dashboard API.
 
 
 > [Changelog](https://meraki.io/whats-new)
