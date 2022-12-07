@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.27.0",
+    "version": "1.28.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 November, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 December, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -7457,7 +7457,19 @@
                     "enabled": true,
                     "band": "5 GHz",
                     "bssid": "8A:15:14:00:00:00",
-                    "channel": 149,
+                    "channel": 64,
+                    "channelWidth": "40 MHz",
+                    "power": "18 dBm",
+                    "visible": true,
+                    "broadcasting": true
+                  },
+                  {
+                    "ssidName": "My SSID",
+                    "ssidNumber": 0,
+                    "enabled": true,
+                    "band": "6 GHz",
+                    "bssid": "8A:15:24:00:00:00",
+                    "channel": 145,
                     "channelWidth": "80 MHz",
                     "power": "18 dBm",
                     "visible": true,
@@ -11622,7 +11634,44 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "clientTrackingMethod": {
+                  "type": "string",
+                  "enum": [
+                    "IP address",
+                    "MAC address",
+                    "Unique client identifier"
+                  ],
+                  "description": "Client tracking method of a network"
+                },
+                "deploymentMode": {
+                  "type": "string",
+                  "enum": [
+                    "routed",
+                    "passthrough"
+                  ],
+                  "description": "Deployment mode of a network"
+                },
+                "dynamicDns": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Dynamic DNS enabled"
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Dynamic DNS url prefix. DDNS must be enabled to update"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "Dynamic DNS url. DDNS must be enabled to update"
+                    }
+                  },
+                  "description": "Dynamic DNS settings for a network"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -11696,7 +11745,7 @@
                 "clientTrackingMethod": "MAC address",
                 "deploymentMode": "routed",
                 "dynamicDns": {
-                  "prefix": "default-hostname",
+                  "prefix": "test",
                   "enabled": true
                 }
               }
@@ -11707,7 +11756,44 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "clientTrackingMethod": {
+                  "type": "string",
+                  "enum": [
+                    "IP address",
+                    "MAC address",
+                    "Unique client identifier"
+                  ],
+                  "description": "Client tracking method of a network"
+                },
+                "deploymentMode": {
+                  "type": "string",
+                  "enum": [
+                    "routed",
+                    "passthrough"
+                  ],
+                  "description": "Deployment mode of a network"
+                },
+                "dynamicDns": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Dynamic DNS enabled"
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Dynamic DNS url prefix. DDNS must be enabled to update"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "Dynamic DNS url. DDNS must be enabled to update"
+                    }
+                  },
+                  "description": "Dynamic DNS settings for a network"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -11755,6 +11841,16 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the single LAN"
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on single LAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this single LAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 },
                 "ipv6": {
                   "type": "object",
@@ -11814,6 +11910,9 @@
               "application/json": {
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
+                "mandatoryDhcp": {
+                  "enabled": true
+                },
                 "ipv6": {
                   "enabled": true,
                   "prefixAssignments": [
@@ -11919,6 +12018,16 @@
                     }
                   },
                   "description": "IPv6 configuration on the VLAN"
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on LAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this LAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 }
               },
               "example": {
@@ -11940,6 +12049,16 @@
                 "applianceIp": {
                   "type": "string",
                   "description": "The local IP of the appliance on the single LAN"
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on single LAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this single LAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 },
                 "ipv6": {
                   "type": "object",
@@ -11999,6 +12118,9 @@
               "application/json": {
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
+                "mandatoryDhcp": {
+                  "enabled": true
+                },
                 "ipv6": {
                   "enabled": true,
                   "prefixAssignments": [
@@ -12321,6 +12443,16 @@
                 "visible": {
                   "type": "boolean",
                   "description": "Boolean indicating whether the MX should advertise or hide this SSID."
+                },
+                "dhcpEnforcedDeauthentication": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable DCHP Enforced Deauthentication on the SSID."
+                    }
+                  },
+                  "description": "DHCP Enforced Deauthentication enables the disassociation of wireless clients in addition to Mandatory DHCP. This param is only valid on firmware versions >= MX 17.0 where the associated LAN has Mandatory DHCP Enabled "
                 }
               },
               "example": {
@@ -12338,7 +12470,10 @@
                 ],
                 "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
-                "visible": true
+                "visible": true,
+                "dhcpEnforcedDeauthentication": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -13604,6 +13739,11 @@
             },
             "examples": {
               "application/json": {
+                "failoverAndFailback": {
+                  "immediate": {
+                    "enabled": true
+                  }
+                },
                 "activeActiveAutoVpnEnabled": true,
                 "defaultUplink": "wan1",
                 "loadBalancingEnabled": true,
@@ -13843,6 +13983,25 @@
                 "loadBalancingEnabled": {
                   "type": "boolean",
                   "description": "Toggle for enabling or disabling load balancing"
+                },
+                "failoverAndFailback": {
+                  "type": "object",
+                  "properties": {
+                    "immediate": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Toggle for enabling or disabling immediate WAN failover and failback"
+                        }
+                      },
+                      "required": [
+                        "enabled"
+                      ],
+                      "description": "Immediate WAN transition terminates all flows (new and existing) on current WAN when it is deemed unreliable."
+                    }
+                  },
+                  "description": "WAN failover and failback behavior"
                 },
                 "wanTrafficUplinkPreferences": {
                   "type": "array",
@@ -14102,6 +14261,11 @@
                 }
               },
               "example": {
+                "failoverAndFailback": {
+                  "immediate": {
+                    "enabled": true
+                  }
+                },
                 "activeActiveAutoVpnEnabled": true,
                 "defaultUplink": "wan1",
                 "loadBalancingEnabled": true,
@@ -14310,6 +14474,11 @@
             },
             "examples": {
               "application/json": {
+                "failoverAndFailback": {
+                  "immediate": {
+                    "enabled": true
+                  }
+                },
                 "activeActiveAutoVpnEnabled": true,
                 "defaultUplink": "wan1",
                 "loadBalancingEnabled": true,
@@ -14781,6 +14950,16 @@
                     "type": "string",
                     "description": "The translated VPN subnet if VPN and VPN subnet translation are enabled on the VLAN"
                   },
+                  "mandatoryDhcp": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enable Mandatory DHCP on VLAN."
+                      }
+                    },
+                    "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
+                  },
                   "ipv6": {
                     "type": "object",
                     "properties": {
@@ -14873,6 +15052,9 @@
                     }
                   ],
                   "vpnNatSubnet": "192.168.1.0/24",
+                  "mandatoryDhcp": {
+                    "enabled": true
+                  },
                   "ipv6": {
                     "enabled": true,
                     "prefixAssignments": [
@@ -15008,6 +15190,16 @@
                     }
                   },
                   "description": "IPv6 configuration on the VLAN"
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on VLAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 }
               },
               "example": {
@@ -15071,6 +15263,16 @@
                 "mask": {
                   "type": "integer",
                   "description": "Mask used for the subnet of all bound to the template networks. Applicable only for template network."
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on VLAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 },
                 "ipv6": {
                   "type": "object",
@@ -15137,6 +15339,9 @@
                 "templateVlanType": "same",
                 "cidr": "192.168.1.0/24",
                 "mask": 28,
+                "mandatoryDhcp": {
+                  "enabled": true
+                },
                 "ipv6": {
                   "enabled": true,
                   "prefixAssignments": [
@@ -15420,6 +15625,16 @@
                   "type": "string",
                   "description": "The translated VPN subnet if VPN and VPN subnet translation are enabled on the VLAN"
                 },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on VLAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
+                },
                 "ipv6": {
                   "type": "object",
                   "properties": {
@@ -15510,6 +15725,9 @@
                   }
                 ],
                 "vpnNatSubnet": "192.168.1.0/24",
+                "mandatoryDhcp": {
+                  "enabled": true
+                },
                 "ipv6": {
                   "enabled": true,
                   "prefixAssignments": [
@@ -15758,6 +15976,16 @@
                     }
                   },
                   "description": "IPv6 configuration on the VLAN"
+                },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on VLAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
                 }
               },
               "example": {
@@ -15809,6 +16037,9 @@
                       }
                     }
                   ]
+                },
+                "mandatoryDhcp": {
+                  "enabled": true
                 },
                 "dhcpRelayServerIps": [
                   "192.168.1.0/24",
@@ -15974,6 +16205,16 @@
                   "type": "string",
                   "description": "The translated VPN subnet if VPN and VPN subnet translation are enabled on the VLAN"
                 },
+                "mandatoryDhcp": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable Mandatory DHCP on VLAN."
+                    }
+                  },
+                  "description": "Mandatory DHCP will enforce that clients connecting to this VLAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
+                },
                 "ipv6": {
                   "type": "object",
                   "properties": {
@@ -16064,6 +16305,9 @@
                   }
                 ],
                 "vpnNatSubnet": "192.168.1.0/24",
+                "mandatoryDhcp": {
+                  "enabled": true
+                },
                 "ipv6": {
                   "enabled": true,
                   "prefixAssignments": [
@@ -18941,7 +19185,13 @@
                   "notes": "My client note",
                   "ip6Local": "fe80:0:0:0:1430:aac1:6826:75ab",
                   "smInstalled": true,
-                  "groupPolicy8021x": "Student_Access"
+                  "groupPolicy8021x": "Student_Access",
+                  "serialNumber": "Q234-ABCD-5678",
+                  "osVersion": "16.0",
+                  "lastMDMCheckin": "1575438728",
+                  "anyconnectAppVersion": "5.0.024",
+                  "ownerUsername": null,
+                  "ownerEmail": null
                 }
               ]
             }
@@ -19835,26 +20085,141 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the client"
+                },
+                "mac": {
+                  "type": "string",
+                  "description": "The MAC address of the client"
+                },
+                "ip": {
+                  "type": "string",
+                  "description": "The IP address of the client"
+                },
+                "ip6": {
+                  "type": "string",
+                  "description": "The IPv6 address of the client"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Short description of the client"
+                },
+                "firstSeen": {
+                  "type": "integer",
+                  "description": "Timestamp client was first seen in the network"
+                },
+                "lastSeen": {
+                  "type": "integer",
+                  "description": "Timestamp client was last seen in the network"
+                },
+                "manufacturer": {
+                  "type": "string",
+                  "description": "Manufacturer of the client"
+                },
+                "os": {
+                  "type": "string",
+                  "description": "The operating system of the client"
+                },
+                "user": {
+                  "type": "string",
+                  "description": "The username of the user of the client"
+                },
+                "vlan": {
+                  "type": "string",
+                  "description": "The name of the VLAN that the client is connected to"
+                },
+                "ssid": {
+                  "type": "string",
+                  "description": "The name of the SSID that the client is connected to"
+                },
+                "switchport": {
+                  "type": "string",
+                  "description": "The switch port that the client is connected to"
+                },
+                "wirelessCapabilities": {
+                  "type": "string",
+                  "description": "Wireless capabilities of the client"
+                },
+                "smInstalled": {
+                  "type": "boolean",
+                  "description": "Status of SM for the client"
+                },
+                "recentDeviceMac": {
+                  "type": "string",
+                  "description": "The MAC address of the node that the device was last connected to"
+                },
+                "clientVpnConnections": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "remoteIp": {
+                        "type": "string",
+                        "description": "The IP address of the VPN the client last connected to"
+                      },
+                      "connectedAt": {
+                        "type": "integer",
+                        "description": "The time the client last connected to the VPN"
+                      },
+                      "disconnectedAt": {
+                        "type": "integer",
+                        "description": "The time the client last disconnectd from the VPN"
+                      }
+                    }
+                  },
+                  "description": "VPN connections associated with the client"
+                },
+                "lldp": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "The link layer discover protocol settings for the client"
+                },
+                "cdp": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "description": "The Cisco discover protocol settings for the client"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "Offline",
+                    "Online"
+                  ],
+                  "description": "The connection status of the client"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "id": "k74272e",
-                "description": "Miles's phone",
                 "mac": "22:33:44:55:66:77",
                 "ip": "1.2.3.4",
-                "user": "null",
-                "vlan": "255",
-                "switchport": null,
-                "ip6": "",
+                "ip6": "2001:db8:3c4d:15::1",
+                "description": "Miles's phone",
                 "firstSeen": 1518365681,
                 "lastSeen": 1526087474,
                 "manufacturer": "Apple",
                 "os": "iOS",
+                "user": "milesmeraki",
+                "vlan": "100",
                 "ssid": "My SSID",
-                "wirelessCapabilities": "802.11ac - 2.4 and 5 GHz",
+                "switchport": "My switch port",
+                "wirelessCapabilities": "802.11b - 2.4 GHz",
                 "smInstalled": true,
-                "recentDeviceMac": "00:11:22:33:44:55",
+                "recentDeviceMac": "22:33:44:55:66:77",
                 "clientVpnConnections": [
                   {
                     "remoteIp": "1.2.3.4",
@@ -19888,7 +20253,32 @@
                     "Two-port MAC Relay"
                   ]
                 ],
-                "cdp": null,
+                "cdp": [
+                  [
+                    "System name",
+                    "Some system name"
+                  ],
+                  [
+                    "System description",
+                    "Some system description"
+                  ],
+                  [
+                    "Port ID",
+                    "1"
+                  ],
+                  [
+                    "Chassis ID",
+                    "00:18:0a:00:00:00"
+                  ],
+                  [
+                    "Port description",
+                    "eth0"
+                  ],
+                  [
+                    "System capabilities",
+                    "Two-port MAC Relay"
+                  ]
+                ],
                 "status": "Online"
               }
             }
@@ -28783,49 +29173,179 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
-            },
-            "examples": {
-              "application/json": {
-                "id": "1234",
-                "category": "Connectivity",
-                "type": "Poor connectivity to the Meraki cloud",
-                "severity": "warning",
-                "scope": {
-                  "devices": [
-                    {
-                      "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
-                      "name": "My AP",
-                      "productType": "switch",
-                      "serial": "Q234-ABCD-5678",
-                      "mac": "00:11:22:33:44:55",
-                      "lldp": {
-                        "portId": "1"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Alert identifier. Value can be empty"
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Category of the alert"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Alert type"
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "info",
+                      "warning",
+                      "error"
+                    ],
+                    "description": "Severity of the alert"
+                  },
+                  "scope": {
+                    "type": "object",
+                    "properties": {
+                      "devices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL to the device"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the device"
+                            },
+                            "productType": {
+                              "type": "string",
+                              "description": "Product type of the device"
+                            },
+                            "serial": {
+                              "type": "string",
+                              "description": "Serial number of the device"
+                            },
+                            "mac": {
+                              "type": "string",
+                              "description": "The mac address of the device"
+                            },
+                            "lldp": {
+                              "type": "object",
+                              "properties": {
+                                "portId": {
+                                  "type": "string",
+                                  "description": "Port Id"
+                                }
+                              },
+                              "description": "Lldp information"
+                            },
+                            "clients": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "mac": {
+                                    "type": "string",
+                                    "description": "Mac address of the client"
+                                  }
+                                }
+                              },
+                              "description": "Clients related to the device"
+                            }
+                          }
+                        },
+                        "description": "Devices related to the alert"
                       },
-                      "clients": [
-                        {
-                          "mac": "22:33:44:55:66:77"
-                        }
-                      ]
-                    }
-                  ],
-                  "applications": [
-                    {
-                      "url": "https://n1.meraki.com//n//manage/nodes/list",
-                      "name": "Application on application server"
-                    }
-                  ],
-                  "peers": [
-                    {
-                      "url": "https://n1.meraki.com//n//manage/nodes/list",
-                      "network": {
-                        "name": "Main Office",
-                        "id": null
+                      "applications": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL to the application"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the application"
+                            }
+                          }
+                        },
+                        "description": "Applications related to the alert"
+                      },
+                      "peers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "URL to the peer"
+                            },
+                            "network": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "description": "Name of the network"
+                                },
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the network"
+                                }
+                              },
+                              "description": "Network of the peer"
+                            }
+                          }
+                        },
+                        "description": "Peers related to the alert"
                       }
-                    }
-                  ]
+                    },
+                    "description": "The scope of the alert"
+                  }
                 }
               }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "category": "Connectivity",
+                  "type": "Poor connectivity to the Meraki cloud",
+                  "severity": "info",
+                  "scope": {
+                    "devices": [
+                      {
+                        "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
+                        "name": "My AP",
+                        "productType": "switch",
+                        "serial": "Q234-ABCD-5678",
+                        "mac": "00:11:22:33:44:55",
+                        "lldp": {
+                          "portId": "1"
+                        },
+                        "clients": [
+                          {
+                            "mac": "22:33:44:55:66:77"
+                          }
+                        ]
+                      }
+                    ],
+                    "applications": [
+                      {
+                        "url": "https://n1.meraki.com//n//manage/nodes/list",
+                        "name": "Application on application server"
+                      }
+                    ],
+                    "peers": [
+                      {
+                        "url": "https://n1.meraki.com//n//manage/nodes/list",
+                        "network": {
+                          "name": "Main Office",
+                          "id": "N_24329156"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           }
         },
@@ -33193,7 +33713,85 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "localStatusPageEnabled": {
+                  "type": "boolean",
+                  "description": "Enables / disables the local device status pages (<a target='_blank' href='http://my.meraki.com/'>my.meraki.com, </a><a target='_blank' href='http://ap.meraki.com/'>ap.meraki.com, </a><a target='_blank' href='http://switch.meraki.com/'>switch.meraki.com, </a><a target='_blank' href='http://wired.meraki.com/'>wired.meraki.com</a>). Optional (defaults to false)"
+                },
+                "remoteStatusPageEnabled": {
+                  "type": "boolean",
+                  "description": "Enables / disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if localStatusPageEnabled is set to true"
+                },
+                "localStatusPage": {
+                  "type": "object",
+                  "properties": {
+                    "authentication": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enables / disables the authentication on Local Status page(s)."
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username used for Local Status Page(s)."
+                        }
+                      },
+                      "description": "A hash of Local Status page(s)' authentication options applied to the Network."
+                    }
+                  },
+                  "description": "A hash of Local Status page(s)' authentication options applied to the Network."
+                },
+                "securePort": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables SecureConnect on the network. Optional."
+                    }
+                  },
+                  "description": "A hash of SecureConnect options applied to the Network."
+                },
+                "fips": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables FIPS on the network."
+                    }
+                  },
+                  "description": "A hash of FIPS options applied to the Network"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables Named VLANs on the Network."
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "description": "A hash of Named VLANs options applied to the Network."
+                },
+                "clientPrivacy": {
+                  "type": "object",
+                  "properties": {
+                    "expireDataOlderThan": {
+                      "type": "integer",
+                      "description": "The number of days, weeks, or months in Epoch time to expire the data before"
+                    },
+                    "expireDataBefore": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date to expire the data before"
+                    }
+                  },
+                  "description": "Privacy settings"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -33213,6 +33811,10 @@
                 },
                 "namedVlans": {
                   "enabled": true
+                },
+                "clientPrivacy": {
+                  "expireDataOlderThan": 86400,
+                  "expireDataBefore": "2022-10-01T00:00:00Z"
                 }
               }
             }
@@ -33249,16 +33851,6 @@
                   "type": "boolean",
                   "description": "Enables / disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if localStatusPageEnabled is set to true"
                 },
-                "securePort": {
-                  "type": "object",
-                  "properties": {
-                    "enabled": {
-                      "type": "boolean",
-                      "description": "Enables / disables SecureConnect on the network. Optional."
-                    }
-                  },
-                  "description": "A hash of SecureConnect options applied to the Network."
-                },
                 "localStatusPage": {
                   "type": "object",
                   "properties": {
@@ -33271,13 +33863,23 @@
                         },
                         "password": {
                           "type": "string",
-                          "description": "A password used for Local Status Page(s). Set this null to clear the password."
+                          "description": "The password used for Local Status Page(s). Set this to null to clear the password."
                         }
                       },
                       "description": "A hash of Local Status page(s)' authentication options applied to the Network."
                     }
                   },
-                  "description": "A hash of Local Status page(s) options applied to the Network."
+                  "description": "A hash of Local Status page(s)' authentication options applied to the Network."
+                },
+                "securePort": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables SecureConnect on the network. Optional."
+                    }
+                  },
+                  "description": "A hash of SecureConnect options applied to the Network."
                 }
               },
               "example": {
@@ -33286,17 +33888,11 @@
                 "localStatusPage": {
                   "authentication": {
                     "enabled": false,
-                    "username": "admin"
+                    "password": "miles123"
                   }
                 },
                 "securePort": {
                   "enabled": false
-                },
-                "fips": {
-                  "enabled": true
-                },
-                "namedVlans": {
-                  "enabled": true
                 }
               }
             }
@@ -33306,7 +33902,85 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "localStatusPageEnabled": {
+                  "type": "boolean",
+                  "description": "Enables / disables the local device status pages (<a target='_blank' href='http://my.meraki.com/'>my.meraki.com, </a><a target='_blank' href='http://ap.meraki.com/'>ap.meraki.com, </a><a target='_blank' href='http://switch.meraki.com/'>switch.meraki.com, </a><a target='_blank' href='http://wired.meraki.com/'>wired.meraki.com</a>). Optional (defaults to false)"
+                },
+                "remoteStatusPageEnabled": {
+                  "type": "boolean",
+                  "description": "Enables / disables access to the device status page (<a target='_blank'>http://[device's LAN IP])</a>. Optional. Can only be set if localStatusPageEnabled is set to true"
+                },
+                "localStatusPage": {
+                  "type": "object",
+                  "properties": {
+                    "authentication": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enables / disables the authentication on Local Status page(s)."
+                        },
+                        "username": {
+                          "type": "string",
+                          "description": "The username used for Local Status Page(s)."
+                        }
+                      },
+                      "description": "A hash of Local Status page(s)' authentication options applied to the Network."
+                    }
+                  },
+                  "description": "A hash of Local Status page(s)' authentication options applied to the Network."
+                },
+                "securePort": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables SecureConnect on the network. Optional."
+                    }
+                  },
+                  "description": "A hash of SecureConnect options applied to the Network."
+                },
+                "fips": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables FIPS on the network."
+                    }
+                  },
+                  "description": "A hash of FIPS options applied to the Network"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables Named VLANs on the Network."
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "description": "A hash of Named VLANs options applied to the Network."
+                },
+                "clientPrivacy": {
+                  "type": "object",
+                  "properties": {
+                    "expireDataOlderThan": {
+                      "type": "integer",
+                      "description": "The number of days, weeks, or months in Epoch time to expire the data before"
+                    },
+                    "expireDataBefore": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The date to expire the data before"
+                    }
+                  },
+                  "description": "Privacy settings"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -33326,6 +34000,10 @@
                 },
                 "namedVlans": {
                   "enabled": true
+                },
+                "clientPrivacy": {
+                  "expireDataOlderThan": 86400,
+                  "expireDataBefore": "2022-10-01T00:00:00Z"
                 }
               }
             }
@@ -44192,7 +44870,7 @@
     },
     "/networks/{networkId}/topology/linkLayer": {
       "get": {
-        "description": "List of devices and connections among them within the network.",
+        "description": "List the LLDP and CDP information for all discovered devices and connections in a network.",
         "operationId": "getNetworkTopologyLinkLayer",
         "parameters": [
           {
@@ -44376,7 +45054,7 @@
             }
           }
         },
-        "summary": "List of devices and connections among them within the network.",
+        "summary": "List the LLDP and CDP information for all discovered devices and connections in a network.",
         "tags": [
           "networks",
           "monitor",
@@ -51642,14 +52320,67 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "meshingEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling meshing in a network"
+                },
+                "ipv6BridgeEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling IPv6 bridging in a network (Note: if enabled, SSIDs must also be configured to use bridge mode)"
+                },
+                "locationAnalyticsEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling location analytics for your network"
+                },
+                "upgradeStrategy": {
+                  "type": "string",
+                  "enum": [
+                    "minimizeUpgradeTime",
+                    "minimizeClientDowntime"
+                  ],
+                  "description": "The upgrade strategy to apply to the network. Must be one of 'minimizeUpgradeTime' or 'minimizeClientDowntime'. Requires firmware version MR 26.8 or higher'"
+                },
+                "ledLightsOn": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling LED lights on all APs in the network (making them run dark)"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "poolDhcpMonitoring": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether or not devices using named VLAN pools should remove dirty VLANs from the pool, thereby preventing clients from being assigned to VLANs where they would be unable to obtain an IP address via DHCP"
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "description": "The duration in minutes that devices will refrain from using dirty VLANs before adding them back to the pool."
+                        }
+                      },
+                      "description": "Named VLAN Pool DHCP Monitoring settings."
+                    }
+                  },
+                  "description": "Named VLAN settings for wireless networks."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "meshingEnabled": true,
                 "ipv6BridgeEnabled": false,
                 "locationAnalyticsEnabled": false,
-                "upgradeStrategy": "minimizeUpgradeTime"
+                "upgradeStrategy": "minimizeUpgradeTime",
+                "ledLightsOn": false,
+                "namedVlans": {
+                  "poolDhcpMonitoring": {
+                    "enabled": true,
+                    "duration": 5
+                  }
+                }
               }
             }
           }
@@ -51706,7 +52437,8 @@
                 "meshingEnabled": true,
                 "ipv6BridgeEnabled": false,
                 "locationAnalyticsEnabled": false,
-                "upgradeStrategy": "minimizeUpgradeTime"
+                "upgradeStrategy": "minimizeUpgradeTime",
+                "ledLightsOn": false
               }
             }
           }
@@ -51715,14 +52447,67 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "meshingEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling meshing in a network"
+                },
+                "ipv6BridgeEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling IPv6 bridging in a network (Note: if enabled, SSIDs must also be configured to use bridge mode)"
+                },
+                "locationAnalyticsEnabled": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling location analytics for your network"
+                },
+                "upgradeStrategy": {
+                  "type": "string",
+                  "enum": [
+                    "minimizeUpgradeTime",
+                    "minimizeClientDowntime"
+                  ],
+                  "description": "The upgrade strategy to apply to the network. Must be one of 'minimizeUpgradeTime' or 'minimizeClientDowntime'. Requires firmware version MR 26.8 or higher'"
+                },
+                "ledLightsOn": {
+                  "type": "boolean",
+                  "description": "Toggle for enabling or disabling LED lights on all APs in the network (making them run dark)"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "poolDhcpMonitoring": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether or not devices using named VLAN pools should remove dirty VLANs from the pool, thereby preventing clients from being assigned to VLANs where they would be unable to obtain an IP address via DHCP"
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "description": "The duration in minutes that devices will refrain from using dirty VLANs before adding them back to the pool."
+                        }
+                      },
+                      "description": "Named VLAN Pool DHCP Monitoring settings."
+                    }
+                  },
+                  "description": "Named VLAN settings for wireless networks."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "meshingEnabled": true,
                 "ipv6BridgeEnabled": false,
                 "locationAnalyticsEnabled": false,
-                "upgradeStrategy": "minimizeUpgradeTime"
+                "upgradeStrategy": "minimizeUpgradeTime",
+                "ledLightsOn": false,
+                "namedVlans": {
+                  "poolDhcpMonitoring": {
+                    "enabled": true,
+                    "duration": 5
+                  }
+                }
               }
             }
           }
@@ -54815,6 +55600,26 @@
                     "extension": {
                       "type": "string",
                       "description": "The extension of the logo file."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "gif",
+                            "png",
+                            "jpg"
+                          ],
+                          "description": "The format of the encoded contents. Supported formats are 'png', 'gif', and jpg'."
+                        },
+                        "contents": {
+                          "type": "string",
+                          "format": "byte",
+                          "description": "The file contents (a base 64 encoded string) of your new logo."
+                        }
+                      },
+                      "description": "Properties for setting a new image."
                     }
                   },
                   "description": "The logo used in the splash page."
@@ -54829,6 +55634,26 @@
                     "extension": {
                       "type": "string",
                       "description": "The extension of the image file."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "gif",
+                            "png",
+                            "jpg"
+                          ],
+                          "description": "The format of the encoded contents. Supported formats are 'png', 'gif', and jpg'."
+                        },
+                        "contents": {
+                          "type": "string",
+                          "format": "byte",
+                          "description": "The file contents (a base 64 encoded string) of your new image."
+                        }
+                      },
+                      "description": "Properties for setting a new image."
                     }
                   },
                   "description": "The image used in the splash page."
@@ -54843,6 +55668,26 @@
                     "extension": {
                       "type": "string",
                       "description": "The extension of the prepaid front image file."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "gif",
+                            "png",
+                            "jpg"
+                          ],
+                          "description": "The format of the encoded contents. Supported formats are 'png', 'gif', and jpg'."
+                        },
+                        "contents": {
+                          "type": "string",
+                          "format": "byte",
+                          "description": "The file contents (a base 64 encoded string) of your new prepaid front."
+                        }
+                      },
+                      "description": "Properties for setting a new image."
                     }
                   },
                   "description": "The prepaid front image used in the splash page."
@@ -54951,15 +55796,27 @@
                 "welcomeMessage": "Welcome!",
                 "splashLogo": {
                   "md5": "abcd1234",
-                  "extension": "jpg"
+                  "extension": "jpg",
+                  "image": {
+                    "format": "jpg",
+                    "contents": "Q2lzY28gTWVyYWtp"
+                  }
                 },
                 "splashImage": {
                   "md5": "542cccac8d7dedee0f185311d154d194",
-                  "extension": "jpg"
+                  "extension": "jpg",
+                  "image": {
+                    "format": "jpg",
+                    "contents": "Q2lzY28gTWVyYWtp"
+                  }
                 },
                 "splashPrepaidFront": {
                   "md5": "542cccac8d7dedee0f185311d154d194",
-                  "extension": "jpg"
+                  "extension": "jpg",
+                  "image": {
+                    "format": "jpg",
+                    "contents": "Q2lzY28gTWVyYWtp"
+                  }
                 },
                 "blockAllTrafficBeforeSignOn": false,
                 "controllerDisconnectionBehavior": "default",
@@ -60307,6 +61164,10 @@
                         "type": "string",
                         "description": "[optional] The local ID is used to identify the MX to the peer. This will apply to all MXs this peer applies to."
                       },
+                      "secret": {
+                        "type": "string",
+                        "description": "The shared secret with the VPN peer"
+                      },
                       "privateSubnets": {
                         "type": "array",
                         "items": {
@@ -60442,6 +61303,7 @@
                     "publicIp": "123.123.123.1",
                     "remoteId": "miles@meraki.com",
                     "localId": "myMXId@meraki.com",
+                    "secret": "secret",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
@@ -60471,7 +61333,7 @@
                       ],
                       "childLifetime": 28800
                     },
-                    "ipsecPoliciesPreset": "default",
+                    "ipsecPoliciesPreset": "custom",
                     "ikeVersion": "1",
                     "networkTags": [
                       "all"
@@ -60741,6 +61603,10 @@
                         "type": "string",
                         "description": "[optional] The local ID is used to identify the MX to the peer. This will apply to all MXs this peer applies to."
                       },
+                      "secret": {
+                        "type": "string",
+                        "description": "The shared secret with the VPN peer"
+                      },
                       "privateSubnets": {
                         "type": "array",
                         "items": {
@@ -60876,6 +61742,7 @@
                     "publicIp": "123.123.123.1",
                     "remoteId": "miles@meraki.com",
                     "localId": "myMXId@meraki.com",
+                    "secret": "secret",
                     "privateSubnets": [
                       "192.168.1.0/24",
                       "192.168.128.0/24"
@@ -60905,7 +61772,7 @@
                       ],
                       "childLifetime": 28800
                     },
-                    "ipsecPoliciesPreset": "default",
+                    "ipsecPoliciesPreset": "custom",
                     "ikeVersion": "1",
                     "networkTags": [
                       "all"
@@ -61347,23 +62214,22 @@
                     "image": {
                       "type": "object",
                       "properties": {
-
+                        "contents": {
+                          "type": "string",
+                          "format": "byte",
+                          "description": "The file contents (a base 64 encoded string) of your new logo."
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "gif",
+                            "png",
+                            "jpg"
+                          ],
+                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                        }
                       },
                       "description": "Properties for setting the image."
-                    },
-                    "contents": {
-                      "type": "string",
-                      "format": "byte",
-                      "description": "The file contents (a base 64 encoded string) of your new logo."
-                    },
-                    "format": {
-                      "type": "string",
-                      "enum": [
-                        "gif",
-                        "png",
-                        "jpg"
-                      ],
-                      "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
                     }
                   },
                   "description": "Properties describing the custom logo attached to the branding policy."
@@ -61827,23 +62693,22 @@
                     "image": {
                       "type": "object",
                       "properties": {
-
+                        "contents": {
+                          "type": "string",
+                          "format": "byte",
+                          "description": "The file contents (a base 64 encoded string) of your new logo."
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "gif",
+                            "png",
+                            "jpg"
+                          ],
+                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                        }
                       },
                       "description": "Properties for setting the image."
-                    },
-                    "contents": {
-                      "type": "string",
-                      "format": "byte",
-                      "description": "The file contents (a base 64 encoded string) of your new logo."
-                    },
-                    "format": {
-                      "type": "string",
-                      "enum": [
-                        "gif",
-                        "png",
-                        "jpg"
-                      ],
-                      "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
                     }
                   },
                   "description": "Properties describing the custom logo attached to the branding policy."
@@ -69673,7 +70538,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, fqdn, ipAndMask, cidr)"
+                  "description": "Type of a policy object (one of: adaptivePolicyIpv4Cidr, cidr, fqdn, ipAndMask)"
                 },
                 "cidr": {
                   "type": "string",
@@ -70758,9 +71623,10 @@
                           "full",
                           "read-only",
                           "guest-ambassador",
-                          "monitor-only"
+                          "monitor-only",
+                          "ssid-admins"
                         ],
-                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador' or 'monitor-only'"
+                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admins'"
                       }
                     },
                     "required": [
@@ -70960,9 +71826,10 @@
                           "full",
                           "read-only",
                           "guest-ambassador",
-                          "monitor-only"
+                          "monitor-only",
+                          "ssid-admins"
                         ],
-                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador' or 'monitor-only'"
+                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admins'"
                       }
                     },
                     "required": [
@@ -72907,18 +73774,6 @@
             "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
-            "type": "string",
-            "name": "name",
-            "in": "query",
-            "description": "Optional parameter to filter switchports belonging to switches by name. All returned switches will have a name that contains the search term or is an exact match."
-          },
-          {
-            "type": "string",
-            "name": "configurationUpdatedAfter",
-            "in": "query",
-            "description": "Optional parameter to filter results by switches where the configuration has been updated after the given timestamp"
-          },
-          {
             "type": "array",
             "items": {
               "type": "string"
@@ -72928,10 +73783,25 @@
             "description": "Optional parameter to filter switchports by network."
           },
           {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "portProfileIds",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to the specified switchport profiles."
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "query",
+            "description": "Optional parameter to filter switchports belonging to switches by name. All returned switches will have a name that contains the search term or is an exact match."
+          },
+          {
             "type": "string",
             "name": "mac",
             "in": "query",
-            "description": "Optional parameter to filter switchports belonging to switches by name. All returned switches will have a name that contains the search term or is an exact match."
+            "description": "Optional parameter to filter switchports belonging to switches by MAC address. All returned switches will have a MAC address that contains the search term or is an exact match."
           },
           {
             "type": "array",
@@ -72946,7 +73816,7 @@
             "type": "string",
             "name": "serial",
             "in": "query",
-            "description": "Optional parameter to filter switchports belonging to switches by serial number.  All returned switches will have a serial number that contains the search term or is an exact match."
+            "description": "Optional parameter to filter switchports belonging to switches by serial number. All returned switches will have a serial number that contains the search term or is an exact match."
           },
           {
             "type": "array",
@@ -72956,6 +73826,12 @@
             "name": "serials",
             "in": "query",
             "description": "Optional parameter to filter switchports belonging to switches with one or more serial numbers. All switchports returned belong to serial numbers of switches that are an exact match."
+          },
+          {
+            "type": "string",
+            "name": "configurationUpdatedAfter",
+            "in": "query",
+            "description": "Optional parameter to filter results by switches where the configuration has been updated after the given timestamp."
           }
         ],
         "responses": {
@@ -73688,6 +74564,209 @@
           "logs"
         ]
       }
+    },
+    "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
+      "get": {
+        "description": "Endpoint to see power status for wireless devices",
+        "operationId": "getOrganizationWirelessDevicesEthernetStatuses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "A list of Meraki network IDs to filter results to contain only specified networks. E.g.: networkIds[]=N_12345678&networkIds[]=L_3456"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "serial": {
+                    "type": "string",
+                    "description": "The serial number of the AP"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the AP"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The network ID the AP is associated to"
+                      }
+                    },
+                    "description": "Network details object"
+                  },
+                  "power": {
+                    "type": "object",
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "description": "The PoE power mode for the AP. Can be 'full' or 'low'"
+                      },
+                      "ac": {
+                        "type": "object",
+                        "properties": {
+                          "isConnected": {
+                            "type": "boolean",
+                            "description": "AC power connected"
+                          }
+                        },
+                        "description": "AC power details object"
+                      },
+                      "poe": {
+                        "type": "object",
+                        "properties": {
+                          "isConnected": {
+                            "type": "boolean",
+                            "description": "PoE power connected"
+                          }
+                        },
+                        "description": "PoE power details object"
+                      }
+                    },
+                    "description": "Power details object"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Label of the port"
+                        },
+                        "poe": {
+                          "type": "object",
+                          "properties": {
+                            "standard": {
+                              "type": "string",
+                              "description": "The PoE Standard for the port. Can be '802.3at', '802.3af', '802.3bt', or null"
+                            }
+                          },
+                          "description": "PoE details object for the port"
+                        },
+                        "linkNegotiation": {
+                          "type": "object",
+                          "properties": {
+                            "duplex": {
+                              "type": "string",
+                              "description": "The duplex mode of the port. Can be 'full' or 'half'"
+                            },
+                            "speed": {
+                              "type": "integer",
+                              "description": "The speed of the port"
+                            }
+                          },
+                          "description": "Link negotiation details object for the port"
+                        }
+                      }
+                    },
+                    "description": "List of port details"
+                  },
+                  "aggregation": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Link Aggregation enabled flag"
+                      },
+                      "speed": {
+                        "type": "integer",
+                        "description": "Link Aggregation speed"
+                      }
+                    },
+                    "description": "Aggregation details object"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "serial": "Q234-ABCD-5678",
+                  "name": "My appliance",
+                  "network": {
+                    "id": "N_24329156"
+                  },
+                  "power": {
+                    "mode": "full",
+                    "ac": {
+                      "isConnected": false
+                    },
+                    "poe": {
+                      "isConnected": true
+                    }
+                  },
+                  "ports": [
+                    {
+                      "name": "Ethernet 0",
+                      "poe": {
+                        "standard": "802.3at"
+                      },
+                      "linkNegotiation": {
+                        "duplex": "full",
+                        "speed": 5000
+                      }
+                    }
+                  ],
+                  "aggregation": {
+                    "enabled": true,
+                    "speed": 10000
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Endpoint to see power status for wireless devices",
+        "tags": [
+          "wireless",
+          "configure",
+          "devices",
+          "ethernet",
+          "statuses"
+        ]
+      }
     }
   },
   "tags": [
@@ -73939,6 +75018,9 @@
     },
     {
       "name": "earlyAccess"
+    },
+    {
+      "name": "ethernet"
     },
     {
       "name": "eventTypes"
