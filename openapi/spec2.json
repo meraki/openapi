@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.28.0-beta.0",
+    "version": "1.28.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 December, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 14 December, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -4527,6 +4527,10 @@
                   "flexibleStackingEnabled": {
                     "type": "boolean",
                     "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                  },
+                  "daiTrusted": {
+                    "type": "boolean",
+                    "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                   }
                 }
               }
@@ -4570,7 +4574,8 @@
                   "stormControlEnabled": true,
                   "adaptivePolicyGroupId": "123",
                   "peerSgtCapable": false,
-                  "flexibleStackingEnabled": true
+                  "flexibleStackingEnabled": true,
+                  "daiTrusted": false
                 }
               ]
             }
@@ -5016,6 +5021,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               }
             },
@@ -5057,7 +5066,8 @@
                 "stormControlEnabled": true,
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -5211,6 +5221,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               },
               "example": {
@@ -5245,7 +5259,8 @@
                 "stormControlEnabled": true,
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -5387,6 +5402,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               }
             },
@@ -5428,7 +5447,8 @@
                 "stormControlEnabled": true,
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -13928,18 +13948,311 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "activeActiveAutoVpnEnabled": {
+                  "type": "boolean",
+                  "description": "Whether active-active AutoVPN is enabled"
+                },
+                "defaultUplink": {
+                  "type": "string",
+                  "enum": [
+                    "wan1",
+                    "wan2"
+                  ],
+                  "description": "The default uplink. Must be one of: 'wan1' or 'wan2'"
+                },
+                "loadBalancingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether load balancing is enabled"
+                },
+                "failoverAndFailback": {
+                  "type": "object",
+                  "properties": {
+                    "immediate": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether immediate WAN failover and failback is enabled"
+                        }
+                      },
+                      "required": [
+                        "enabled"
+                      ],
+                      "description": "Immediate WAN failover and failback"
+                    }
+                  },
+                  "description": "WAN failover and failback"
+                },
+                "wanTrafficUplinkPreferences": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "trafficFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "custom"
+                              ],
+                              "description": "Traffic filter type. Must be \"custom\""
+                            },
+                            "value": {
+                              "type": "object",
+                              "properties": {
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "tcp",
+                                    "udp",
+                                    "icmp6",
+                                    "any"
+                                  ],
+                                  "description": "Protocol of 'custom' type traffic filter. Must be one of: 'tcp', 'udp', 'icmp6' or 'any'"
+                                },
+                                "source": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" property"
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    }
+                                  },
+                                  "description": "Source of 'custom' type traffic filter"
+                                },
+                                "destination": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\""
+                                    }
+                                  },
+                                  "description": "Destination of 'custom' type traffic filter"
+                                }
+                              },
+                              "required": [
+                                "source",
+                                "destination"
+                              ],
+                              "description": "Value of traffic filter"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "Traffic filters"
+                      },
+                      "preferredUplink": {
+                        "type": "string",
+                        "enum": [
+                          "wan1",
+                          "wan2"
+                        ],
+                        "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1' or 'wan2'"
+                      }
+                    },
+                    "required": [
+                      "trafficFilters",
+                      "preferredUplink"
+                    ]
+                  },
+                  "description": "Uplink preference rules for WAN traffic"
+                },
+                "vpnTrafficUplinkPreferences": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "trafficFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "applicationCategory",
+                                "application",
+                                "custom"
+                              ],
+                              "description": "Traffic filter type. Must be one of: 'applicationCategory', 'application' or 'custom'"
+                            },
+                            "value": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "ID of 'applicationCategory' or 'application' type traffic filter"
+                                },
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "tcp",
+                                    "udp",
+                                    "icmp",
+                                    "icmp6",
+                                    "any"
+                                  ],
+                                  "description": "Protocol of 'custom' type traffic filter. Must be one of: 'tcp', 'udp', 'icmp', 'icmp6' or 'any'"
+                                },
+                                "source": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" property"
+                                    },
+                                    "network": {
+                                      "type": "string",
+                                      "description": "Meraki network ID. Currently only available under a template network, and the value should be ID of either same template network, or another template network currently. E.g.: \"L_12345678\"."
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    }
+                                  },
+                                  "description": "Source of 'custom' type traffic filter"
+                                },
+                                "destination": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" or \"fqdn\" property"
+                                    },
+                                    "network": {
+                                      "type": "string",
+                                      "description": "Meraki network ID. Currently only available under a template network, and the value should be ID of either same template network, or another template network currently. E.g.: \"L_12345678\"."
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" or \"fqdn\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    },
+                                    "fqdn": {
+                                      "type": "string",
+                                      "description": "FQDN format address. Cannot be used in combination with the \"cidr\" or \"fqdn\" property and is currently only available in the \"destination\" object of the \"vpnTrafficUplinkPreference\" object. E.g.: \"www.google.com\""
+                                    }
+                                  },
+                                  "description": "Destination of 'custom' type traffic filter"
+                                }
+                              },
+                              "description": "Value of traffic filter"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "Traffic filters"
+                      },
+                      "preferredUplink": {
+                        "type": "string",
+                        "enum": [
+                          "wan1",
+                          "wan2",
+                          "bestForVoIP",
+                          "loadBalancing",
+                          "defaultUplink"
+                        ],
+                        "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1', 'wan2', 'bestForVoIP', 'loadBalancing' or 'defaultUplink'"
+                      },
+                      "failOverCriterion": {
+                        "type": "string",
+                        "enum": [
+                          "poorPerformance",
+                          "uplinkDown"
+                        ],
+                        "description": "Fail over criterion for uplink preference rule. Must be one of: 'poorPerformance' or 'uplinkDown'"
+                      },
+                      "performanceClass": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "builtin",
+                              "custom"
+                            ],
+                            "description": "Type of this performance class. Must be one of: 'builtin' or 'custom'"
+                          },
+                          "builtinPerformanceClassName": {
+                            "type": "string",
+                            "enum": [
+                              "VoIP"
+                            ],
+                            "description": "Name of builtin performance class. Must be present when performanceClass type is 'builtin' and value must be one of: 'VoIP'"
+                          },
+                          "customPerformanceClassId": {
+                            "type": "string",
+                            "description": "ID of created custom performance class, must be present when performanceClass type is \"custom\""
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "description": "Performance class setting for uplink preference rule"
+                      }
+                    },
+                    "required": [
+                      "trafficFilters",
+                      "preferredUplink"
+                    ]
+                  },
+                  "description": "Uplink preference rules for VPN traffic"
+                }
+              }
             },
             "examples": {
               "application/json": {
+                "activeActiveAutoVpnEnabled": true,
+                "defaultUplink": "wan1",
+                "loadBalancingEnabled": true,
                 "failoverAndFailback": {
                   "immediate": {
                     "enabled": true
                   }
                 },
-                "activeActiveAutoVpnEnabled": true,
-                "defaultUplink": "wan1",
-                "loadBalancingEnabled": true,
                 "wanTrafficUplinkPreferences": [
                   {
                     "trafficFilters": [
@@ -13948,26 +14261,8 @@
                         "value": {
                           "protocol": "tcp",
                           "source": {
-                            "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
                             "port": "1-1024",
+                            "cidr": "192.168.1.0/24",
                             "vlan": 10,
                             "host": 254
                           },
@@ -13987,148 +14282,31 @@
                       {
                         "type": "applicationCategory",
                         "value": {
-                          "id": "meraki:layer7/category/1"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/33"
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
+                          "id": "meraki:layer7/category/1",
                           "protocol": "tcp",
                           "source": {
                             "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
-                          },
-                          "destination": {
-                            "port": "any",
+                            "cidr": "192.168.1.0/24",
                             "network": "L_23456789",
                             "vlan": 20,
                             "host": 200
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
                           },
                           "destination": {
                             "port": "1-1024",
+                            "cidr": "any",
+                            "network": "L_12345678",
+                            "vlan": 10,
+                            "host": 254,
                             "fqdn": "www.google.com"
                           }
                         }
                       }
                     ],
-                    "preferredUplink": "wan2",
+                    "preferredUplink": "bestForVoIP",
                     "failOverCriterion": "poorPerformance",
                     "performanceClass": {
                       "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/9"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "defaultUplink"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/106"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "bestForVoIP"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/107"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/162"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/168"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/171"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "custom",
+                      "builtinPerformanceClassName": "VoIP",
                       "customPerformanceClassId": "123456"
                     }
                   }
@@ -14454,14 +14632,14 @@
                 }
               },
               "example": {
+                "activeActiveAutoVpnEnabled": true,
+                "defaultUplink": "wan1",
+                "loadBalancingEnabled": true,
                 "failoverAndFailback": {
                   "immediate": {
                     "enabled": true
                   }
                 },
-                "activeActiveAutoVpnEnabled": true,
-                "defaultUplink": "wan1",
-                "loadBalancingEnabled": true,
                 "wanTrafficUplinkPreferences": [
                   {
                     "trafficFilters": [
@@ -14470,26 +14648,8 @@
                         "value": {
                           "protocol": "tcp",
                           "source": {
-                            "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
                             "port": "1-1024",
+                            "cidr": "192.168.1.0/24",
                             "vlan": 10,
                             "host": 254
                           },
@@ -14509,148 +14669,31 @@
                       {
                         "type": "applicationCategory",
                         "value": {
-                          "id": "meraki:layer7/category/1"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/33"
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
+                          "id": "meraki:layer7/category/1",
                           "protocol": "tcp",
                           "source": {
                             "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
-                          },
-                          "destination": {
-                            "port": "any",
+                            "cidr": "192.168.1.0/24",
                             "network": "L_23456789",
                             "vlan": 20,
                             "host": 200
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
                           },
                           "destination": {
                             "port": "1-1024",
+                            "cidr": "any",
+                            "network": "L_12345678",
+                            "vlan": 10,
+                            "host": 254,
                             "fqdn": "www.google.com"
                           }
                         }
                       }
                     ],
-                    "preferredUplink": "wan2",
+                    "preferredUplink": "bestForVoIP",
                     "failOverCriterion": "poorPerformance",
                     "performanceClass": {
                       "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/9"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "defaultUplink"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/106"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "bestForVoIP"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/107"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/162"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/168"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/171"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "custom",
+                      "builtinPerformanceClassName": "VoIP",
                       "customPerformanceClassId": "123456"
                     }
                   }
@@ -14663,18 +14706,311 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "activeActiveAutoVpnEnabled": {
+                  "type": "boolean",
+                  "description": "Whether active-active AutoVPN is enabled"
+                },
+                "defaultUplink": {
+                  "type": "string",
+                  "enum": [
+                    "wan1",
+                    "wan2"
+                  ],
+                  "description": "The default uplink. Must be one of: 'wan1' or 'wan2'"
+                },
+                "loadBalancingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether load balancing is enabled"
+                },
+                "failoverAndFailback": {
+                  "type": "object",
+                  "properties": {
+                    "immediate": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether immediate WAN failover and failback is enabled"
+                        }
+                      },
+                      "required": [
+                        "enabled"
+                      ],
+                      "description": "Immediate WAN failover and failback"
+                    }
+                  },
+                  "description": "WAN failover and failback"
+                },
+                "wanTrafficUplinkPreferences": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "trafficFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "custom"
+                              ],
+                              "description": "Traffic filter type. Must be \"custom\""
+                            },
+                            "value": {
+                              "type": "object",
+                              "properties": {
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "tcp",
+                                    "udp",
+                                    "icmp6",
+                                    "any"
+                                  ],
+                                  "description": "Protocol of 'custom' type traffic filter. Must be one of: 'tcp', 'udp', 'icmp6' or 'any'"
+                                },
+                                "source": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" property"
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    }
+                                  },
+                                  "description": "Source of 'custom' type traffic filter"
+                                },
+                                "destination": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\""
+                                    }
+                                  },
+                                  "description": "Destination of 'custom' type traffic filter"
+                                }
+                              },
+                              "required": [
+                                "source",
+                                "destination"
+                              ],
+                              "description": "Value of traffic filter"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "Traffic filters"
+                      },
+                      "preferredUplink": {
+                        "type": "string",
+                        "enum": [
+                          "wan1",
+                          "wan2"
+                        ],
+                        "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1' or 'wan2'"
+                      }
+                    },
+                    "required": [
+                      "trafficFilters",
+                      "preferredUplink"
+                    ]
+                  },
+                  "description": "Uplink preference rules for WAN traffic"
+                },
+                "vpnTrafficUplinkPreferences": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "trafficFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "applicationCategory",
+                                "application",
+                                "custom"
+                              ],
+                              "description": "Traffic filter type. Must be one of: 'applicationCategory', 'application' or 'custom'"
+                            },
+                            "value": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "ID of 'applicationCategory' or 'application' type traffic filter"
+                                },
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "tcp",
+                                    "udp",
+                                    "icmp",
+                                    "icmp6",
+                                    "any"
+                                  ],
+                                  "description": "Protocol of 'custom' type traffic filter. Must be one of: 'tcp', 'udp', 'icmp', 'icmp6' or 'any'"
+                                },
+                                "source": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" property"
+                                    },
+                                    "network": {
+                                      "type": "string",
+                                      "description": "Meraki network ID. Currently only available under a template network, and the value should be ID of either same template network, or another template network currently. E.g.: \"L_12345678\"."
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    }
+                                  },
+                                  "description": "Source of 'custom' type traffic filter"
+                                },
+                                "destination": {
+                                  "type": "object",
+                                  "properties": {
+                                    "port": {
+                                      "type": "string",
+                                      "description": "E.g.: \"any\", \"0\" (also means \"any\"), \"8080\", \"1-1024\""
+                                    },
+                                    "cidr": {
+                                      "type": "string",
+                                      "description": "CIDR format address (e.g.\"192.168.10.1\", which is the same as \"192.168.10.1/32\"), or \"any\". Cannot be used in combination with the \"vlan\" or \"fqdn\" property"
+                                    },
+                                    "network": {
+                                      "type": "string",
+                                      "description": "Meraki network ID. Currently only available under a template network, and the value should be ID of either same template network, or another template network currently. E.g.: \"L_12345678\"."
+                                    },
+                                    "vlan": {
+                                      "type": "integer",
+                                      "description": "VLAN ID of the configured VLAN in the Meraki network. Cannot be used in combination with the \"cidr\" or \"fqdn\" property and is currently only available under a template network."
+                                    },
+                                    "host": {
+                                      "type": "integer",
+                                      "description": "Host ID in the VLAN. Should not exceed the VLAN subnet capacity. Must be used along with the \"vlan\" property and is currently only available under a template network."
+                                    },
+                                    "fqdn": {
+                                      "type": "string",
+                                      "description": "FQDN format address. Cannot be used in combination with the \"cidr\" or \"fqdn\" property and is currently only available in the \"destination\" object of the \"vpnTrafficUplinkPreference\" object. E.g.: \"www.google.com\""
+                                    }
+                                  },
+                                  "description": "Destination of 'custom' type traffic filter"
+                                }
+                              },
+                              "description": "Value of traffic filter"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "value"
+                          ]
+                        },
+                        "description": "Traffic filters"
+                      },
+                      "preferredUplink": {
+                        "type": "string",
+                        "enum": [
+                          "wan1",
+                          "wan2",
+                          "bestForVoIP",
+                          "loadBalancing",
+                          "defaultUplink"
+                        ],
+                        "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1', 'wan2', 'bestForVoIP', 'loadBalancing' or 'defaultUplink'"
+                      },
+                      "failOverCriterion": {
+                        "type": "string",
+                        "enum": [
+                          "poorPerformance",
+                          "uplinkDown"
+                        ],
+                        "description": "Fail over criterion for uplink preference rule. Must be one of: 'poorPerformance' or 'uplinkDown'"
+                      },
+                      "performanceClass": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "builtin",
+                              "custom"
+                            ],
+                            "description": "Type of this performance class. Must be one of: 'builtin' or 'custom'"
+                          },
+                          "builtinPerformanceClassName": {
+                            "type": "string",
+                            "enum": [
+                              "VoIP"
+                            ],
+                            "description": "Name of builtin performance class. Must be present when performanceClass type is 'builtin' and value must be one of: 'VoIP'"
+                          },
+                          "customPerformanceClassId": {
+                            "type": "string",
+                            "description": "ID of created custom performance class, must be present when performanceClass type is \"custom\""
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ],
+                        "description": "Performance class setting for uplink preference rule"
+                      }
+                    },
+                    "required": [
+                      "trafficFilters",
+                      "preferredUplink"
+                    ]
+                  },
+                  "description": "Uplink preference rules for VPN traffic"
+                }
+              }
             },
             "examples": {
               "application/json": {
+                "activeActiveAutoVpnEnabled": true,
+                "defaultUplink": "wan1",
+                "loadBalancingEnabled": true,
                 "failoverAndFailback": {
                   "immediate": {
                     "enabled": true
                   }
                 },
-                "activeActiveAutoVpnEnabled": true,
-                "defaultUplink": "wan1",
-                "loadBalancingEnabled": true,
                 "wanTrafficUplinkPreferences": [
                   {
                     "trafficFilters": [
@@ -14683,26 +15019,8 @@
                         "value": {
                           "protocol": "tcp",
                           "source": {
-                            "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
                             "port": "1-1024",
+                            "cidr": "192.168.1.0/24",
                             "vlan": 10,
                             "host": 254
                           },
@@ -14722,148 +15040,31 @@
                       {
                         "type": "applicationCategory",
                         "value": {
-                          "id": "meraki:layer7/category/1"
-                        }
-                      },
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/33"
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
+                          "id": "meraki:layer7/category/1",
                           "protocol": "tcp",
                           "source": {
                             "port": "any",
-                            "cidr": "192.168.1.0/24"
-                          },
-                          "destination": {
-                            "port": "any",
-                            "cidr": "any"
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
-                          },
-                          "destination": {
-                            "port": "any",
+                            "cidr": "192.168.1.0/24",
                             "network": "L_23456789",
                             "vlan": 20,
                             "host": 200
-                          }
-                        }
-                      },
-                      {
-                        "type": "custom",
-                        "value": {
-                          "protocol": "tcp",
-                          "source": {
-                            "port": "any",
-                            "cidr": "any"
                           },
                           "destination": {
                             "port": "1-1024",
+                            "cidr": "any",
+                            "network": "L_12345678",
+                            "vlan": 10,
+                            "host": 254,
                             "fqdn": "www.google.com"
                           }
                         }
                       }
                     ],
-                    "preferredUplink": "wan2",
+                    "preferredUplink": "bestForVoIP",
                     "failOverCriterion": "poorPerformance",
                     "performanceClass": {
                       "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/9"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "defaultUplink"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/106"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "bestForVoIP"
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/107"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/162"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "loadBalancing",
-                    "performanceClass": {
-                      "type": "custom",
-                      "customPerformanceClassId": "123456"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/168"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "builtin",
-                      "builtinPerformanceClassName": "VoIP"
-                    }
-                  },
-                  {
-                    "trafficFilters": [
-                      {
-                        "type": "application",
-                        "value": {
-                          "id": "meraki:layer7/application/171"
-                        }
-                      }
-                    ],
-                    "preferredUplink": "wan2",
-                    "failOverCriterion": "poorPerformance",
-                    "performanceClass": {
-                      "type": "custom",
+                      "builtinPerformanceClassName": "VoIP",
                       "customPerformanceClassId": "123456"
                     }
                   }
@@ -65856,6 +66057,10 @@
                   "flexibleStackingEnabled": {
                     "type": "boolean",
                     "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                  },
+                  "daiTrusted": {
+                    "type": "boolean",
+                    "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                   }
                 }
               }
@@ -65897,7 +66102,8 @@
                   ],
                   "stickyMacAllowListLimit": 5,
                   "stormControlEnabled": true,
-                  "flexibleStackingEnabled": true
+                  "flexibleStackingEnabled": true,
+                  "daiTrusted": false
                 }
               ]
             }
@@ -66072,6 +66278,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               }
             },
@@ -66111,7 +66321,8 @@
                 ],
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -66271,6 +66482,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               },
               "example": {
@@ -66303,7 +66518,8 @@
                 ],
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -66437,6 +66653,10 @@
                 "flexibleStackingEnabled": {
                   "type": "boolean",
                   "description": "For supported switches (e.g. MS420/MS425), whether or not the port has flexible stacking enabled."
+                },
+                "daiTrusted": {
+                  "type": "boolean",
+                  "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
                 }
               }
             },
@@ -66476,7 +66696,8 @@
                 ],
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
-                "flexibleStackingEnabled": true
+                "flexibleStackingEnabled": true,
+                "daiTrusted": false
               }
             }
           }
@@ -71224,6 +71445,526 @@
         "tags": [
           "organizations",
           "configure",
+          "licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licensing/coterm/licenses": {
+      "get": {
+        "description": "List the licenses in a coterm organization",
+        "operationId": "getOrganizationLicensingCotermLicenses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "boolean",
+            "name": "invalidated",
+            "in": "query",
+            "description": "Filter for licenses that are invalidated"
+          },
+          {
+            "type": "boolean",
+            "name": "expired",
+            "in": "query",
+            "description": "Filter for licenses that are expired"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "The key of the license"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "The ID of the organization that the license is claimed in"
+                  },
+                  "duration": {
+                    "type": "integer",
+                    "description": "The duration (term length) of the license, measured in days"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "addDevices",
+                      "renew"
+                    ],
+                    "description": "The operation mode of the license when it was claimed"
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the license's term began (approximately the date when the license was created)"
+                  },
+                  "claimedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the license was claimed into the organization"
+                  },
+                  "invalidated": {
+                    "type": "boolean",
+                    "description": "Flag to indicated that the license is invalidated"
+                  },
+                  "invalidatedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "When the license was invalidated. Will be null for active licenses"
+                  },
+                  "expired": {
+                    "type": "boolean",
+                    "description": "Flag to indicate if the license is expired"
+                  },
+                  "editions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "edition": {
+                          "type": "string",
+                          "description": "The name of the license edition"
+                        },
+                        "productType": {
+                          "type": "string",
+                          "description": "The product type of the license edition"
+                        }
+                      }
+                    },
+                    "description": "The editions of the license for each relevant product type"
+                  },
+                  "counts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "model": {
+                          "type": "string",
+                          "description": "The license model type"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "description": "The number of counts the license contains of this model"
+                        }
+                      }
+                    },
+                    "description": "The counts of the license by model type"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "key": "Z2AA-BBBB-CCCC",
+                  "organizationId": "123456",
+                  "duration": 365,
+                  "mode": "addDevices",
+                  "startedAt": "2022-05-02T10:52:00Z",
+                  "claimedAt": "2022-07-04T16:23:00Z",
+                  "invalidated": true,
+                  "invalidatedAt": "2022-07-04T16:23:00Z",
+                  "expired": false,
+                  "editions": [
+                    {
+                      "edition": "Enterprise",
+                      "productType": "appliance"
+                    }
+                  ],
+                  "counts": [
+                    {
+                      "model": "MR Enterprise",
+                      "count": 2
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the licenses in a coterm organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "licensing",
+          "coterm",
+          "licenses"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/licensing/coterm/licenses/move": {
+      "post": {
+        "description": "Moves a license to a different organization (coterm only)",
+        "operationId": "moveOrganizationLicensingCotermLicenses",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "moveOrganizationLicensingCotermLicenses",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "destination": {
+                  "type": "object",
+                  "properties": {
+                    "organizationId": {
+                      "type": "string",
+                      "description": "The organization to move the license to"
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "addDevices",
+                        "renew"
+                      ],
+                      "description": "The claim mode of the moved license"
+                    }
+                  },
+                  "description": "Destination data for the license move"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The license key to move counts from"
+                      },
+                      "counts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "model": {
+                              "type": "string",
+                              "description": "The license model type to move counts of"
+                            },
+                            "count": {
+                              "type": "integer",
+                              "description": "The number of counts to move"
+                            }
+                          },
+                          "required": [
+                            "model",
+                            "count"
+                          ]
+                        },
+                        "description": "The counts to move from the license by model type"
+                      }
+                    },
+                    "required": [
+                      "key",
+                      "counts"
+                    ]
+                  },
+                  "description": "The list of licenses to move"
+                }
+              },
+              "example": {
+                "destination": {
+                  "organizationId": "123",
+                  "mode": "addDevices"
+                },
+                "licenses": [
+                  {
+                    "key": "Z2AA-BBBB-CCCC",
+                    "counts": [
+                      {
+                        "model": "MR Enterprise",
+                        "count": 5
+                      }
+                    ]
+                  }
+                ]
+              },
+              "required": [
+                "destination",
+                "licenses"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "remainderLicenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "organizationId": {
+                        "type": "string",
+                        "description": "The ID of the organization that the license is claimed in"
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "description": "The duration (term length) of the license, measured in days"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "addDevices",
+                          "renew"
+                        ],
+                        "description": "The operation mode of the license when it was claimed"
+                      },
+                      "startedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license's term began (approximately the date when the license was created)"
+                      },
+                      "claimedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license was claimed into the organization"
+                      },
+                      "invalidated": {
+                        "type": "boolean",
+                        "description": "Flag to indicated that the license is invalidated"
+                      },
+                      "invalidatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license was invalidated. Will be null for active licenses"
+                      },
+                      "expired": {
+                        "type": "boolean",
+                        "description": "Flag to indicate if the license is expired"
+                      },
+                      "editions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "edition": {
+                              "type": "string",
+                              "description": "The name of the license edition"
+                            },
+                            "productType": {
+                              "type": "string",
+                              "description": "The product type of the license edition"
+                            }
+                          }
+                        },
+                        "description": "The editions of the license for each relevant product type"
+                      },
+                      "counts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "model": {
+                              "type": "string",
+                              "description": "The license model type"
+                            },
+                            "count": {
+                              "type": "integer",
+                              "description": "The number of counts the license contains of this model"
+                            }
+                          }
+                        },
+                        "description": "The counts of the license by model type"
+                      }
+                    }
+                  },
+                  "description": "Remainder licenses created in the source organization as a result of moving a subset of the counts of a license"
+                },
+                "movedLicenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "organizationId": {
+                        "type": "string",
+                        "description": "The ID of the organization that the license is claimed in"
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "description": "The duration (term length) of the license, measured in days"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "addDevices",
+                          "renew"
+                        ],
+                        "description": "The operation mode of the license when it was claimed"
+                      },
+                      "startedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license's term began (approximately the date when the license was created)"
+                      },
+                      "claimedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license was claimed into the organization"
+                      },
+                      "invalidated": {
+                        "type": "boolean",
+                        "description": "Flag to indicated that the license is invalidated"
+                      },
+                      "invalidatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "When the license was invalidated. Will be null for active licenses"
+                      },
+                      "expired": {
+                        "type": "boolean",
+                        "description": "Flag to indicate if the license is expired"
+                      },
+                      "editions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "edition": {
+                              "type": "string",
+                              "description": "The name of the license edition"
+                            },
+                            "productType": {
+                              "type": "string",
+                              "description": "The product type of the license edition"
+                            }
+                          }
+                        },
+                        "description": "The editions of the license for each relevant product type"
+                      },
+                      "counts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "model": {
+                              "type": "string",
+                              "description": "The license model type"
+                            },
+                            "count": {
+                              "type": "integer",
+                              "description": "The number of counts the license contains of this model"
+                            }
+                          }
+                        },
+                        "description": "The counts of the license by model type"
+                      }
+                    }
+                  },
+                  "description": "Newly moved licenses created in the destination organization of the license move operation"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "remainderLicenses": [
+                  {
+                    "key": "Z2AA-BBBB-CCCC",
+                    "organizationId": "123456",
+                    "duration": 365,
+                    "mode": "addDevices",
+                    "startedAt": "2022-05-02T10:52:00Z",
+                    "claimedAt": "2022-07-04T16:23:00Z",
+                    "invalidated": true,
+                    "invalidatedAt": "2022-07-04T16:23:00Z",
+                    "expired": false,
+                    "editions": [
+                      {
+                        "edition": "Enterprise",
+                        "productType": "appliance"
+                      }
+                    ],
+                    "counts": [
+                      {
+                        "model": "MR Enterprise",
+                        "count": 2
+                      }
+                    ]
+                  }
+                ],
+                "movedLicenses": [
+                  {
+                    "key": "Z2AA-BBBB-CCCC",
+                    "organizationId": "123456",
+                    "duration": 365,
+                    "mode": "addDevices",
+                    "startedAt": "2022-05-02T10:52:00Z",
+                    "claimedAt": "2022-07-04T16:23:00Z",
+                    "invalidated": true,
+                    "invalidatedAt": "2022-07-04T16:23:00Z",
+                    "expired": false,
+                    "editions": [
+                      {
+                        "edition": "Enterprise",
+                        "productType": "appliance"
+                      }
+                    ],
+                    "counts": [
+                      {
+                        "model": "MR Enterprise",
+                        "count": 2
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Moves a license to a different organization (coterm only)",
+        "tags": [
+          "organizations",
+          "configure",
+          "licensing",
+          "coterm",
           "licenses"
         ]
       }
@@ -76452,6 +77193,37 @@
         ]
       }
     },
+    "/organizations/{organizationId}/users/{userId}": {
+      "delete": {
+        "description": "Delete a user and all of its authentication methods.",
+        "operationId": "deleteOrganizationUser",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a user and all of its authentication methods.",
+        "tags": [
+          "organizations",
+          "configure",
+          "users"
+        ]
+      }
+    },
     "/organizations/{organizationId}/webhookLogs": {
       "get": {
         "description": "Return the log of webhook POSTs sent",
@@ -79010,6 +79782,9 @@
       "name": "contentFiltering"
     },
     {
+      "name": "coterm"
+    },
+    {
       "name": "current"
     },
     {
@@ -79158,6 +79933,9 @@
     },
     {
       "name": "licenses"
+    },
+    {
+      "name": "licensing"
     },
     {
       "name": "linkAggregations"
@@ -79826,6 +80604,12 @@
       "summary": "Update the EAP overridden parameters for an SSID.",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/eapOverride",
       "operation": "update"
+    },
+    {
+      "group": "End user",
+      "summary": "Delete a user and all of its authentication methods.",
+      "resource": "/organizations/{organizationId}/users/{userId}",
+      "operation": "destroy"
     },
     {
       "group": "Feature opt in",
