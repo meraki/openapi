@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.28.0-beta.1",
+    "version": "1.28.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 14 December, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 December, 2022\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -16841,6 +16841,19 @@
                         "type": "string",
                         "description": "The IPv4 address of the neighbor"
                       },
+                      "ipv6": {
+                        "type": "object",
+                        "properties": {
+                          "address": {
+                            "type": "string",
+                            "description": "The IPv6 address of the neighbor."
+                          }
+                        },
+                        "required": [
+                          "address"
+                        ],
+                        "description": "Information regarding IPv6 address of the neighbor, Required if `ip` is not present."
+                      },
                       "remoteAsNumber": {
                         "type": "integer",
                         "description": "Remote ASN of the neighbor. The remote ASN must be an integer between 1 and 4294967295."
@@ -21538,7 +21551,104 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message regarding the events sent. Usually 'null' unless there are no events"
+                },
+                "pageStartAt": {
+                  "type": "string",
+                  "description": "An UTC ISO8601 string of the earliest occured at time of the listed events of the page."
+                },
+                "pageEndAt": {
+                  "type": "string",
+                  "description": "An UTC ISO8601 string of the latest occured at time of the listed events of the page."
+                },
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "occurredAt": {
+                        "type": "string",
+                        "description": "An UTC ISO8601 string of the time the event occurred at."
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "The ID of the network."
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The type of event being listed."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "A description of the event the happened."
+                      },
+                      "clientId": {
+                        "type": "string",
+                        "description": "A string identifying the client. This could be a client's MAC or IP address"
+                      },
+                      "clientDescription": {
+                        "type": "string",
+                        "description": "A description of the client. This is usually the client's device name."
+                      },
+                      "clientMac": {
+                        "type": "string",
+                        "description": "The client's MAC address."
+                      },
+                      "deviceSerial": {
+                        "type": "string",
+                        "description": "The serial number of the device. Only shown if the device is an access point."
+                      },
+                      "deviceName": {
+                        "type": "string",
+                        "description": "The name of the device. Only shown if the device is an access point."
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "The SSID number of the device."
+                      },
+                      "eventData": {
+                        "type": "object",
+                        "properties": {
+                          "radio": {
+                            "type": "string",
+                            "description": "The radio band number the client is trying to connect to."
+                          },
+                          "vap": {
+                            "type": "string",
+                            "description": "The virtual access point (VAP) number the client is connecting to."
+                          },
+                          "client_mac": {
+                            "type": "string",
+                            "description": "The client's MAC address"
+                          },
+                          "client_ip": {
+                            "type": "string",
+                            "description": "The client's IP address"
+                          },
+                          "channel": {
+                            "type": "string",
+                            "description": "The radio channel the client is connecting to."
+                          },
+                          "rssi": {
+                            "type": "string",
+                            "description": "The current received signal strength indication (RSSI) of the client connected to an AP."
+                          },
+                          "aid": {
+                            "type": "string",
+                            "description": "The association ID of the client."
+                          }
+                        },
+                        "description": "An object containing more data related to the event."
+                      }
+                    }
+                  },
+                  "description": "An array of events that took place in the network."
+                }
+              }
             },
             "headers": {
               "Link": {
@@ -21548,7 +21658,7 @@
             },
             "examples": {
               "application/json": {
-                "message": null,
+                "message": "Some error",
                 "pageStartAt": "2018-02-11T00:00:00.090210Z",
                 "pageEndAt": "2018-02-11T00:00:00.090210Z",
                 "events": [
@@ -21559,10 +21669,10 @@
                     "description": "802.11 association",
                     "clientId": "k74272e",
                     "clientDescription": "Miles's phone",
+                    "clientMac": "22:33:44:55:66:77",
                     "deviceSerial": "Q234-ABCD-5678",
                     "deviceName": "My AP",
                     "ssidNumber": 1,
-                    "ssidName": "My SSID",
                     "eventData": {
                       "radio": "1",
                       "vap": "1",
@@ -43606,7 +43716,39 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "vlan": {
+                  "type": "integer",
+                  "description": "Management VLAN"
+                },
+                "useCombinedPower": {
+                  "type": "boolean",
+                  "description": "The use Combined Power as the default behavior of secondary power supplies on supported devices."
+                },
+                "powerExceptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the switch"
+                      },
+                      "powerType": {
+                        "type": "string",
+                        "enum": [
+                          "combined",
+                          "redundant",
+                          "useNetworkSetting"
+                        ],
+                        "description": "Per switch exception (combined, redundant, useNetworkSetting)"
+                      }
+                    }
+                  },
+                  "description": "Exceptions on a per switch basis to \"useCombinedPower\""
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -43616,18 +43758,6 @@
                   {
                     "serial": "Q234-ABCD-0001",
                     "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0002",
-                    "powerType": "combined"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0003",
-                    "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0004",
-                    "powerType": "useNetworkSetting"
                   }
                 ]
               }
@@ -43693,26 +43823,7 @@
                 }
               },
               "example": {
-                "vlan": 100,
-                "useCombinedPower": false,
-                "powerExceptions": [
-                  {
-                    "serial": "Q234-ABCD-0001",
-                    "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0002",
-                    "powerType": "combined"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0003",
-                    "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0004",
-                    "powerType": "useNetworkSetting"
-                  }
-                ]
+
               }
             }
           }
@@ -43721,7 +43832,39 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "vlan": {
+                  "type": "integer",
+                  "description": "Management VLAN"
+                },
+                "useCombinedPower": {
+                  "type": "boolean",
+                  "description": "The use Combined Power as the default behavior of secondary power supplies on supported devices."
+                },
+                "powerExceptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the switch"
+                      },
+                      "powerType": {
+                        "type": "string",
+                        "enum": [
+                          "combined",
+                          "redundant",
+                          "useNetworkSetting"
+                        ],
+                        "description": "Per switch exception (combined, redundant, useNetworkSetting)"
+                      }
+                    }
+                  },
+                  "description": "Exceptions on a per switch basis to \"useCombinedPower\""
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -43731,18 +43874,6 @@
                   {
                     "serial": "Q234-ABCD-0001",
                     "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0002",
-                    "powerType": "combined"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0003",
-                    "powerType": "redundant"
-                  },
-                  {
-                    "serial": "Q234-ABCD-0004",
-                    "powerType": "useNetworkSetting"
                   }
                 ]
               }
@@ -54113,6 +54244,7 @@
                     "open-enhanced",
                     "psk",
                     "open-with-radius",
+                    "open-with-nac",
                     "8021x-meraki",
                     "8021x-nac",
                     "8021x-radius",
@@ -54121,7 +54253,7 @@
                     "ipsk-with-radius",
                     "ipsk-without-radius"
                   ],
-                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', 'open-with-nac', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -58733,21 +58865,11 @@
               },
               "example": {
                 "confirmed": true,
-                "synchronous": false,
+                "synchronous": true,
                 "actions": [
                   {
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
-                    "operation": "update",
-                    "body": {
-                      "enabled": false
-                    }
-                  },
-                  {
-                    "resource": "/networks/L_XXXXX/groupPolicies",
-                    "operation": "create",
-                    "body": {
-                      "name": "Group 1"
-                    }
+                    "operation": "create"
                   }
                 ]
               },
@@ -58762,11 +58884,94 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the action batch. Can be used to check the status of the action batch at /organizations/{organizationId}/actionBatches/{actionBatchId}"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "ID of the organization this action batch belongs to"
+                },
+                "confirmed": {
+                  "type": "boolean",
+                  "description": "Flag describing whether the action should be previewed before executing or not"
+                },
+                "synchronous": {
+                  "type": "boolean",
+                  "description": "Flag describing whether actions should run synchronously or asynchronously"
+                },
+                "status": {
+                  "type": "object",
+                  "properties": {
+                    "completed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether all actions in the action batch have completed"
+                    },
+                    "failed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether any actions in the action batch failed"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of errors encountered when running actions in the action batch"
+                    },
+                    "createdResources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the created resource"
+                          },
+                          "uri": {
+                            "type": "string",
+                            "description": "URI, not including base, of the created resource"
+                          }
+                        }
+                      },
+                      "description": "Resources created as a result of this action batch"
+                    }
+                  },
+                  "required": [
+                    "createdResources"
+                  ],
+                  "description": "Status of action batch"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "resource": {
+                        "type": "string",
+                        "description": "Unique identifier for the resource to be acted on"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "description": "The operation to be used by this action"
+                      }
+                    },
+                    "required": [
+                      "resource",
+                      "operation"
+                    ]
+                  },
+                  "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                }
+              },
+              "required": [
+                "actions"
+              ]
             },
             "examples": {
               "application/json": {
-                "id": "123",
+                "id": "1234",
                 "organizationId": "2930418",
                 "confirmed": true,
                 "synchronous": false,
@@ -58778,7 +58983,7 @@
                   ],
                   "createdResources": [
                     {
-                      "id": 100,
+                      "id": "1284392014819",
                       "uri": "/networks/L_XXXXX/groupPolicies/100"
                     }
                   ]
@@ -58786,17 +58991,7 @@
                 "actions": [
                   {
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
-                    "operation": "update",
-                    "body": {
-                      "enabled": false
-                    }
-                  },
-                  {
-                    "resource": "/networks/L_XXXXX/groupPolicies",
-                    "operation": "create",
-                    "body": {
-                      "name": "Group 1"
-                    }
+                    "operation": "update"
                   }
                 ]
               }
@@ -59028,11 +59223,94 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the action batch. Can be used to check the status of the action batch at /organizations/{organizationId}/actionBatches/{actionBatchId}"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "ID of the organization this action batch belongs to"
+                },
+                "confirmed": {
+                  "type": "boolean",
+                  "description": "Flag describing whether the action should be previewed before executing or not"
+                },
+                "synchronous": {
+                  "type": "boolean",
+                  "description": "Flag describing whether actions should run synchronously or asynchronously"
+                },
+                "status": {
+                  "type": "object",
+                  "properties": {
+                    "completed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether all actions in the action batch have completed"
+                    },
+                    "failed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether any actions in the action batch failed"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of errors encountered when running actions in the action batch"
+                    },
+                    "createdResources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the created resource"
+                          },
+                          "uri": {
+                            "type": "string",
+                            "description": "URI, not including base, of the created resource"
+                          }
+                        }
+                      },
+                      "description": "Resources created as a result of this action batch"
+                    }
+                  },
+                  "required": [
+                    "createdResources"
+                  ],
+                  "description": "Status of action batch"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "resource": {
+                        "type": "string",
+                        "description": "Unique identifier for the resource to be acted on"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "description": "The operation to be used by this action"
+                      }
+                    },
+                    "required": [
+                      "resource",
+                      "operation"
+                    ]
+                  },
+                  "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                }
+              },
+              "required": [
+                "actions"
+              ]
             },
             "examples": {
               "application/json": {
-                "id": "123",
+                "id": "1234",
                 "organizationId": "2930418",
                 "confirmed": true,
                 "synchronous": false,
@@ -59044,7 +59322,7 @@
                   ],
                   "createdResources": [
                     {
-                      "id": 100,
+                      "id": "1284392014819",
                       "uri": "/networks/L_XXXXX/groupPolicies/100"
                     }
                   ]
@@ -59052,17 +59330,7 @@
                 "actions": [
                   {
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
-                    "operation": "update",
-                    "body": {
-                      "enabled": false
-                    }
-                  },
-                  {
-                    "resource": "/networks/L_XXXXX/groupPolicies",
-                    "operation": "create",
-                    "body": {
-                      "name": "Group 1"
-                    }
+                    "operation": "update"
                   }
                 ]
               }
@@ -60632,12 +60900,6 @@
                       },
                       "access": {
                         "type": "string",
-                        "enum": [
-                          "full",
-                          "read-only",
-                          "guest-ambassador",
-                          "monitor-only"
-                        ],
                         "description": "The privilege of the dashboard administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador' or 'monitor-only'"
                       }
                     },
@@ -81240,6 +81502,12 @@
       "summary": "Update the storm control configuration for a switch network",
       "resource": "/networks/{networkId}/switch/stormControl",
       "operation": "update"
+    },
+    {
+      "group": "Switch",
+      "summary": "Update switch network settings",
+      "resource": "/networks/{networkId}/switch/settings",
+      "operation": "settings/update"
     },
     {
       "group": "Switch",
