@@ -1,4 +1,4 @@
-name: Publish beta OAS with monthly pre-release minor version update
+name: Publish GA OAS with minor version update
 
 on:
   workflow_dispatch:
@@ -11,24 +11,24 @@ jobs:
     steps:
     - uses: actions/checkout@master
       with:
-        ref: "v1-beta"
+        ref: "master"
     - name: Read from AWS bucket
       run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region ${{ secrets.AWS_REGION }}
-          aws s3 sync ${{ secrets.AWS_S3_BUCKET }} ./openapi
-          mv openapi/oas2_beta.json openapi/spec2.json
-          mv openapi/oas3_beta.json openapi/spec3.json
-          rm openapi/oas*_ga.json
-    - name: Get latest pre-release version
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set region ${{ secrets.AWS_REGION }}
+        aws s3 sync ${{ secrets.AWS_S3_BUCKET }} ./openapi
+        mv openapi/oas2_ga.json openapi/spec2.json
+        rm openapi/oas*_beta.json
+        rm openapi/oas3_ga.json
+    - name: Get latest GA version
       id: current-version
       uses: cardinalby/git-get-release-action@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         latest: true
-        prerelease: true
+        prerelease: false
     - name: Strip v prefix from version
       id: sanitized-prefix
       run: |
@@ -43,7 +43,7 @@ jobs:
         next-version-increment-minor: true
     - name: Set new version
       id: new-version
-      run: echo "NEW_VERSION=v${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0-beta.0" >> $GITHUB_ENV
+      run: echo "NEW_VERSION=v${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0" >> $GITHUB_ENV
     - name: Update OAS docs with new version
       uses: jacobtomlinson/gha-find-replace@v2
       with:
@@ -55,14 +55,14 @@ jobs:
       uses: EndBug/add-and-commit@v9
       with:
         add: openapi/*
-        new_branch: "v1-beta"
+        new_branch: "master"
         tag: "${{ env.NEW_VERSION }}"
         message: "API version ${{ env.NEW_VERSION }}"
     - name: Create release
       uses: ncipollo/release-action@v1
       with:
         tag: "${{ env.NEW_VERSION }}"
-        prerelease: true
+        prerelease: false
         artifacts: "${{ env.NEW_VERSION }}.tar.gz,${{ env.NEW_VERSION }}.zip"
         skipIfReleaseExists: true
         body: "API version ${{ env.NEW_VERSION }}"
