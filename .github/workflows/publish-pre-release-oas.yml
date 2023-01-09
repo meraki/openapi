@@ -1,0 +1,74 @@
+name: Publish beta OAS with weekly pre-release version update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 3'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        IS_FIRST_WED_OF_MONTH = if [ `date +'%d' | sed 's/^0*//'` -le 7 ]; then echo "true"; else echo "false"; fi
+        echo "IS_FIRST_WED_OF_MONTH" >> $GITHUB_OUTPUT
+  publish:
+    if: env.IS_FIRST_WED_OF_MONTH == "false"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        ref: "v1-beta"
+    - name: Read from AWS bucket
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set region ${{ secrets.AWS_REGION }}
+        aws s3 sync ${{ secrets.AWS_S3_BUCKET }} ./openapi
+        mv openapi/oas2_beta.json openapi/spec2.json
+        mv openapi/oas3_beta.json openapi/spec3.json
+        rm openapi/oas*_ga.json
+    - name: Get latest pre-release version
+      id: current-version
+      uses: cardinalby/git-get-release-action@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        latest: true
+        prerelease: true
+    - name: Strip v prefix from version
+      id: sanitized-prefix
+      run: |
+        CURRENT_VERSION=${{ steps.current-version.outputs.tag_name }}
+        VERSION_WITHOUT_V=$(echo $CURRENT_VERSION | sed -e "s/v//gI")
+        echo "SANITIZED_PREFIX=$VERSION_WITHOUT_V" >> $GITHUB_OUTPUT
+    - name: Generate next version
+      id: next-version
+      uses: HardNorth/github-version-generate@v1.3.0
+      with:
+        version: ${{ steps.sanitized-prefix.outputs.SANITIZED_PREFIX }}
+    - name: Set new version
+      id: new-version
+      run: echo "NEW_VERSION=v${{ env.CURRENT_VERSION_MAJOR }}.${{ env.CURRENT_VERSION_MINOR }}.${{ env.CURRENT_VERSION_PATCH }}-${{ env.NEXT_VERSION_PRERELEASE }}" >> $GITHUB_ENV
+    - name: Update OAS docs with new version
+      uses: jacobtomlinson/gha-find-replace@v2
+      with:
+        find: '"version": "0.0.0"'
+        replace: '"version": "${{ env.NEW_VERSION }}"'
+        regex: false
+        include: openapi/*
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v9
+      with:
+        add: openapi/*
+        new_branch: "v1-beta"
+        tag: "${{ env.NEW_VERSION }}"
+        message: "API version ${{ env.NEW_VERSION }}"
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: "${{ env.NEW_VERSION }}"
+        prerelease: true
+        artifacts: "${{ env.NEW_VERSION }}.tar.gz,${{ env.NEW_VERSION }}.zip"
+        skipIfReleaseExists: true
+        body: "API version ${{ env.NEW_VERSION }}"
