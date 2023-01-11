@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v1.29.0-beta.0",
+    "version": "v1.29.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 January, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 11 January, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -4531,6 +4531,14 @@
                   "daiTrusted": {
                     "type": "boolean",
                     "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                  },
+                  "staticSwitchportProfileEnabled": {
+                    "type": "boolean",
+                    "description": "If true, enable switchport profile management of fields on this switchport."
+                  },
+                  "staticSwitchportProfileId": {
+                    "type": "string",
+                    "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                   }
                 }
               }
@@ -4575,7 +4583,9 @@
                   "adaptivePolicyGroupId": "123",
                   "peerSgtCapable": false,
                   "flexibleStackingEnabled": true,
-                  "daiTrusted": false
+                  "daiTrusted": false,
+                  "staticSwitchportProfileEnabled": false,
+                  "staticSwitchportProfileId": "1284392014819"
                 }
               ]
             }
@@ -4686,7 +4696,257 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "portId": {
+                    "type": "string",
+                    "description": "The string identifier of this port on the switch. This is commonly just the port number but may contain additional identifying information such as the slot and module-type if the port is located on a port module."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the port is configured to be enabled."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "Connected",
+                      "Disconnected",
+                      "Disabled"
+                    ],
+                    "description": "The current connection status of the port."
+                  },
+                  "isUplink": {
+                    "type": "boolean",
+                    "description": "Whether the port is the switch's uplink."
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "All errors present on the port."
+                  },
+                  "warnings": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "All warnings present on the port."
+                  },
+                  "speed": {
+                    "type": "string",
+                    "enum": [
+                      "10 Mbps",
+                      "100 Mbps",
+                      "1 Gbps",
+                      "2.5 Gbps",
+                      "5 Gbps",
+                      "10 Gbps",
+                      "20 Gbps",
+                      "40 Gbps",
+                      "100 Gbps",
+                      ""
+                    ],
+                    "description": "The current data transfer rate which the port is operating at."
+                  },
+                  "duplex": {
+                    "type": "string",
+                    "enum": [
+                      "full",
+                      "half",
+                      ""
+                    ],
+                    "description": "The current duplex of a connected port."
+                  },
+                  "usageInKb": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "integer",
+                        "description": "The total amount of data sent and received (in kilobytes)."
+                      },
+                      "sent": {
+                        "type": "integer",
+                        "description": "The amount of data sent (in kilobytes)."
+                      },
+                      "recv": {
+                        "type": "integer",
+                        "description": "The amount of data received (in kilobytes)."
+                      }
+                    },
+                    "description": "A breakdown of how many kilobytes have passed through this port during the timespan."
+                  },
+                  "cdp": {
+                    "type": "object",
+                    "properties": {
+                      "systemName": {
+                        "type": "string",
+                        "description": "The system name."
+                      },
+                      "platform": {
+                        "type": "string",
+                        "description": "Identifies the hardware platform of the device."
+                      },
+                      "deviceId": {
+                        "type": "string",
+                        "description": "Identifies the device name."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Identifies the port from which the CDP packet was sent."
+                      },
+                      "nativeVlan": {
+                        "type": "integer",
+                        "description": "Indicates, per interface, the assumed VLAN for untagged packets on the interface."
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Contains network addresses of both receiving and sending devices."
+                      },
+                      "managementAddress": {
+                        "type": "string",
+                        "description": "The device's management IP."
+                      },
+                      "version": {
+                        "type": "string",
+                        "description": "Contains the device software release information."
+                      },
+                      "vtpManagementDomain": {
+                        "type": "string",
+                        "description": "Advertises the configured VLAN Trunking Protocl (VTP)-management-domain name of the system."
+                      },
+                      "capabilities": {
+                        "type": "string",
+                        "description": "Identifies the device type, which indicates the functional capabilities of the device."
+                      }
+                    },
+                    "description": "The Cisco Discovery Protocol (CDP) information of the connected device."
+                  },
+                  "lldp": {
+                    "type": "object",
+                    "properties": {
+                      "systemName": {
+                        "type": "string",
+                        "description": "The device's system name."
+                      },
+                      "systemDescription": {
+                        "type": "string",
+                        "description": "The device's system description."
+                      },
+                      "chassisId": {
+                        "type": "string",
+                        "description": "The device's chassis ID."
+                      },
+                      "portId": {
+                        "type": "string",
+                        "description": "Identifies the port from which the LLDP packet was sent"
+                      },
+                      "managementVlan": {
+                        "type": "integer",
+                        "description": "The device's management VLAN."
+                      },
+                      "portVlan": {
+                        "type": "integer",
+                        "description": "The port's VLAN."
+                      },
+                      "managementAddress": {
+                        "type": "string",
+                        "description": "The device's management IP."
+                      },
+                      "portDescription": {
+                        "type": "string",
+                        "description": "Description of the port from which the LLDP packet was sent."
+                      },
+                      "systemCapabilities": {
+                        "type": "string",
+                        "description": "Identifies the device type, which indicates the functional capabilities of the device."
+                      }
+                    },
+                    "description": "The Link Layer Discovery Protocol (LLDP) information of the connected device."
+                  },
+                  "clientCount": {
+                    "type": "integer",
+                    "description": "The number of clients connected through this port."
+                  },
+                  "powerUsageInWh": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "How much power (in watt-hours) has been delivered by this port during the timespan."
+                  },
+                  "trafficInKbps": {
+                    "type": "object",
+                    "properties": {
+                      "total": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The average speed of the data sent and received (in kilobits-per-second)."
+                      },
+                      "sent": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The average speed of the data sent (in kilobits-per-second)."
+                      },
+                      "recv": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The average speed of the data received (in kilobits-per-second)."
+                      }
+                    },
+                    "description": "A breakdown of the average speed of data that has passed through this port during the timespan."
+                  },
+                  "securePort": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether Secure Port is turned on for this port."
+                      },
+                      "active": {
+                        "type": "boolean",
+                        "description": "Whether Secure Port is currently active for this port."
+                      },
+                      "authenticationStatus": {
+                        "type": "string",
+                        "enum": [
+                          "Disabled",
+                          "Enabled",
+                          "Authentication in progress",
+                          "Authentication successful",
+                          "Authentication failure",
+                          "Authentication timed out"
+                        ],
+                        "description": "The current Secure Port status."
+                      },
+                      "configOverrides": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "trunk",
+                              "access"
+                            ],
+                            "description": "The type of the  ('trunk' or 'access')."
+                          },
+                          "vlan": {
+                            "type": "integer",
+                            "description": "The VLAN of the . A null value will clear the value set for trunk ports."
+                          },
+                          "voiceVlan": {
+                            "type": "integer",
+                            "description": "The voice VLAN of the . Only applicable to access ports."
+                          },
+                          "allowedVlans": {
+                            "type": "string",
+                            "description": "The VLANs allowed on the . Only applicable to trunk ports."
+                          }
+                        },
+                        "description": "The configuration overrides applied to this port when Secure Port is active."
+                      }
+                    },
+                    "description": "The Secure Port status of the port."
+                  }
+                }
               }
             },
             "examples": {
@@ -4727,12 +4987,12 @@
                   "lldp": {
                     "systemName": "MS350-24X - Test",
                     "systemDescription": "MS350-24X Cloud Managed PoE Switch",
-                    "portId": "20",
-                    "portDescription": "Port 20",
                     "chassisId": "0c:8d:db:dd:ee:ff",
+                    "portId": "20",
                     "managementVlan": 1,
                     "portVlan": 1,
                     "managementAddress": "10.0.0.100",
+                    "portDescription": "Port 20",
                     "systemCapabilities": "switch"
                   },
                   "clientCount": 10,
@@ -4748,9 +5008,9 @@
                     "authenticationStatus": "Authentication in progress",
                     "configOverrides": {
                       "type": "trunk",
-                      "allowedVlans": "all",
                       "vlan": 12,
-                      "voiceVlan": null
+                      "voiceVlan": 34,
+                      "allowedVlans": "all"
                     }
                   }
                 }
@@ -5025,6 +5285,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               }
             },
@@ -5067,7 +5335,9 @@
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -5225,6 +5495,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               },
               "example": {
@@ -5260,7 +5538,9 @@
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -5406,6 +5686,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               }
             },
@@ -5448,7 +5736,9 @@
                 "adaptivePolicyGroupId": "123",
                 "peerSgtCapable": false,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -50751,7 +51041,8 @@
                   },
                   "transmission": {
                     "enabled": true
-                  }
+                  },
+                  "afcEnabled": true
                 }
               ]
             }
@@ -53661,7 +53952,8 @@
                 },
                 "transmission": {
                   "enabled": true
-                }
+                },
+                "afcEnabled": true
               }
             }
           }
@@ -56172,6 +56464,10 @@
                   "email": {
                     "type": "string",
                     "description": "The email associated with the System's Manager User"
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "description": "Optional timestamp for when the Identity PSK expires."
                   }
                 }
               }
@@ -56184,7 +56480,8 @@
                   "groupPolicyId": "1284392014819",
                   "passphrase": "secret",
                   "wifiPersonalNetworkId": "1284392014819",
-                  "email": "miles@meraki.com"
+                  "email": "miles@meraki.com",
+                  "expiresAt": ""
                 }
               ]
             }
@@ -56237,7 +56534,8 @@
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
                 "passphrase": "NIalareK",
-                "groupPolicyId": "101"
+                "groupPolicyId": "101",
+                "expiresAt": "2018-02-11T00:00:00Z"
               },
               "required": [
                 "name",
@@ -56258,7 +56556,8 @@
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
                 "passphrase": "NIalareK",
-                "groupPolicyId": "101"
+                "groupPolicyId": "101",
+                "expiresAt": "2018-02-11T00:00:00Z"
               }
             }
           }
@@ -56325,6 +56624,10 @@
                 "email": {
                   "type": "string",
                   "description": "The email associated with the System's Manager User"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "description": "Optional timestamp for when the Identity PSK expires."
                 }
               }
             },
@@ -56335,7 +56638,8 @@
                 "groupPolicyId": "1284392014819",
                 "passphrase": "secret",
                 "wifiPersonalNetworkId": "1284392014819",
-                "email": "miles@meraki.com"
+                "email": "miles@meraki.com",
+                "expiresAt": ""
               }
             }
           }
@@ -56393,7 +56697,8 @@
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
                 "passphrase": "NIalareK",
-                "groupPolicyId": "101"
+                "groupPolicyId": "101",
+                "expiresAt": "2018-02-11T00:00:00Z"
               }
             }
           }
@@ -56409,7 +56714,8 @@
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
                 "passphrase": "NIalareK",
-                "groupPolicyId": "101"
+                "groupPolicyId": "101",
+                "expiresAt": "2018-02-11T00:00:00Z"
               }
             }
           }
@@ -63734,13 +64040,206 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the Dashboard branding policy."
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Boolean indicating whether this policy is enabled."
+                  },
+                  "adminSettings": {
+                    "type": "object",
+                    "properties": {
+                      "appliesTo": {
+                        "type": "string",
+                        "enum": [
+                          "All organization admins",
+                          "All enterprise admins",
+                          "All network admins",
+                          "All admins of networks...",
+                          "All admins of networks tagged...",
+                          "Specific admins...",
+                          "All admins",
+                          "All SAML admins"
+                        ],
+                        "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                      },
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
+                      }
+                    },
+                    "description": "Settings for describing which kinds of admins this policy applies to."
+                  },
+                  "helpSettings": {
+                    "type": "object",
+                    "properties": {
+                      "helpTab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "getHelpSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "communitySubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "casesSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "dataProtectionRequestsSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "getHelpSubtabKnowledgeBaseSearch": {
+                        "type": "string",
+                        "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      },
+                      "universalSearchKnowledgeBaseSearch": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "ciscoMerakiProductDocumentation": {
+                        "type": "string",
+                        "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      },
+                      "supportContactInfo": {
+                        "type": "string",
+                        "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      },
+                      "newFeaturesSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "firewallInfoSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "apiDocsSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "hardwareReplacementsSubtab": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "smForums": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      },
+                      "helpWidget": {
+                        "type": "string",
+                        "enum": [
+                          "default or inherit",
+                          "hide",
+                          "show"
+                        ],
+                        "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      }
+                    },
+                    "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n"
+                  },
+                  "customLogo": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether or not there is a custom logo enabled."
+                      },
+                      "image": {
+                        "type": "object",
+                        "properties": {
+                          "preview": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string",
+                                "description": "Url of the preview image"
+                              },
+                              "expiresAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Timestamp of the preview image"
+                              }
+                            },
+                            "description": "Preview of the image"
+                          }
+                        },
+                        "description": "Properties of the image."
+                      }
+                    },
+                    "description": "Properties describing the custom logo attached to the branding policy."
+                  }
+                }
               }
             },
             "examples": {
               "application/json": [
                 {
-                  "brandingPolicyId": "456",
                   "name": "My Branding Policy",
                   "enabled": true,
                   "adminSettings": {
@@ -63764,7 +64263,8 @@
                     "firewallInfoSubtab": "hide",
                     "apiDocsSubtab": "default or inherit",
                     "hardwareReplacementsSubtab": "hide",
-                    "smForums": "hide"
+                    "smForums": "hide",
+                    "helpWidget": "hide"
                   },
                   "customLogo": {
                     "enabled": true,
@@ -63833,7 +64333,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "    If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n    entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n    networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n    specify an array of tag names.\n"
+                      "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
                     }
                   },
                   "description": "Settings for describing which kinds of admins this policy applies to."
@@ -63848,7 +64348,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n    customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "getHelpSubtab": {
                       "type": "string",
@@ -63857,7 +64357,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n    that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n    and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "communitySubtab": {
                       "type": "string",
@@ -63866,7 +64366,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "casesSubtab": {
                       "type": "string",
@@ -63875,7 +64375,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n    of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "dataProtectionRequestsSubtab": {
                       "type": "string",
@@ -63884,11 +64384,11 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n    be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "getHelpSubtabKnowledgeBaseSearch": {
                       "type": "string",
-                      "description": "    The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "universalSearchKnowledgeBaseSearch": {
                       "type": "string",
@@ -63897,15 +64397,15 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n    whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "ciscoMerakiProductDocumentation": {
                       "type": "string",
-                      "description": "    The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "supportContactInfo": {
                       "type": "string",
-                      "description": "    The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "newFeaturesSubtab": {
                       "type": "string",
@@ -63914,7 +64414,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "firewallInfoSubtab": {
                       "type": "string",
@@ -63923,7 +64423,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n    listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "apiDocsSubtab": {
                       "type": "string",
@@ -63932,7 +64432,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
                     },
                     "hardwareReplacementsSubtab": {
                       "type": "string",
@@ -63941,7 +64441,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
                     },
                     "smForums": {
                       "type": "string",
@@ -63950,10 +64450,19 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n    organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "helpWidget": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     }
                   },
-                  "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n Each property defaults to 'default or inherit' when not provided."
+                  "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n Each property defaults to 'default or inherit' when not provided."
                 },
                 "customLogo": {
                   "type": "object",
@@ -63977,7 +64486,7 @@
                             "png",
                             "jpg"
                           ],
-                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'."
                         }
                       },
                       "description": "Properties for setting the image."
@@ -63987,7 +64496,6 @@
                 }
               },
               "example": {
-                "brandingPolicyId": "456",
                 "name": "My Branding Policy",
                 "enabled": true,
                 "adminSettings": {
@@ -64011,36 +64519,222 @@
                   "firewallInfoSubtab": "hide",
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
-                  "smForums": "hide"
+                  "smForums": "hide",
+                  "helpWidget": "hide"
                 },
                 "customLogo": {
                   "enabled": true,
                   "image": {
-                    "preview": {
-                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
-                      "expiresAt": "2022-04-06T06:19:27-07:00"
-                    }
+                    "contents": "Hyperg26C8F4h8CvcoUqpA==",
+                    "format": "jpg"
                   }
                 }
-              },
-              "required": [
-                "name",
-                "enabled",
-                "adminSettings"
-              ]
-            },
-            "required": true
+              }
+            }
           }
         ],
         "responses": {
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Dashboard branding policy."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether this policy is enabled."
+                },
+                "adminSettings": {
+                  "type": "object",
+                  "properties": {
+                    "appliesTo": {
+                      "type": "string",
+                      "enum": [
+                        "All organization admins",
+                        "All enterprise admins",
+                        "All network admins",
+                        "All admins of networks...",
+                        "All admins of networks tagged...",
+                        "Specific admins...",
+                        "All admins",
+                        "All SAML admins"
+                      ],
+                      "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
+                    }
+                  },
+                  "description": "Settings for describing which kinds of admins this policy applies to."
+                },
+                "helpSettings": {
+                  "type": "object",
+                  "properties": {
+                    "helpTab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "communitySubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "casesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "dataProtectionRequestsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtabKnowledgeBaseSearch": {
+                      "type": "string",
+                      "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "universalSearchKnowledgeBaseSearch": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "ciscoMerakiProductDocumentation": {
+                      "type": "string",
+                      "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "supportContactInfo": {
+                      "type": "string",
+                      "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "newFeaturesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "firewallInfoSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "apiDocsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "hardwareReplacementsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "smForums": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "helpWidget": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    }
+                  },
+                  "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n Each property defaults to 'default or inherit' when not provided."
+                },
+                "customLogo": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether or not there is a custom logo enabled."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "preview": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "Url of the preview image"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of the preview image"
+                            }
+                          },
+                          "description": "Preview of the image"
+                        }
+                      },
+                      "description": "Properties of the image."
+                    }
+                  },
+                  "description": "Properties describing the custom logo attached to the branding policy."
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "brandingPolicyId": "456",
                 "name": "My Branding Policy",
                 "enabled": true,
                 "adminSettings": {
@@ -64064,7 +64758,8 @@
                   "firewallInfoSubtab": "hide",
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
-                  "smForums": "hide"
+                  "smForums": "hide",
+                  "helpWidget": "hide"
                 },
                 "customLogo": {
                   "enabled": true,
@@ -64103,7 +64798,16 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "brandingPolicyIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "      An ordered list of branding policy IDs that determines the priority order of how to apply the policies\n"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -64145,7 +64849,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "A list of branding policy IDs arranged in ascending priority order (IDs later in the array have higher priority)."
+                  "description": "      An ordered list of branding policy IDs that determines the priority order of how to apply the policies\n"
                 }
               },
               "example": {
@@ -64154,19 +64858,24 @@
                   "456",
                   "789"
                 ]
-              },
-              "required": [
-                "brandingPolicyIds"
-              ]
-            },
-            "required": true
+              }
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "brandingPolicyIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "      An ordered list of branding policy IDs that determines the priority order of how to apply the policies\n"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -64210,11 +64919,204 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Dashboard branding policy."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether this policy is enabled."
+                },
+                "adminSettings": {
+                  "type": "object",
+                  "properties": {
+                    "appliesTo": {
+                      "type": "string",
+                      "enum": [
+                        "All organization admins",
+                        "All enterprise admins",
+                        "All network admins",
+                        "All admins of networks...",
+                        "All admins of networks tagged...",
+                        "Specific admins...",
+                        "All admins",
+                        "All SAML admins"
+                      ],
+                      "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
+                    }
+                  },
+                  "description": "Settings for describing which kinds of admins this policy applies to."
+                },
+                "helpSettings": {
+                  "type": "object",
+                  "properties": {
+                    "helpTab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "communitySubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "casesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "dataProtectionRequestsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtabKnowledgeBaseSearch": {
+                      "type": "string",
+                      "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "universalSearchKnowledgeBaseSearch": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "ciscoMerakiProductDocumentation": {
+                      "type": "string",
+                      "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "supportContactInfo": {
+                      "type": "string",
+                      "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "newFeaturesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "firewallInfoSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "apiDocsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "hardwareReplacementsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "smForums": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "helpWidget": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    }
+                  },
+                  "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n"
+                },
+                "customLogo": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether or not there is a custom logo enabled."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "preview": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "Url of the preview image"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of the preview image"
+                            }
+                          },
+                          "description": "Preview of the image"
+                        }
+                      },
+                      "description": "Properties of the image."
+                    }
+                  },
+                  "description": "Properties describing the custom logo attached to the branding policy."
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "brandingPolicyId": "456",
                 "name": "My Branding Policy",
                 "enabled": true,
                 "adminSettings": {
@@ -64238,7 +65140,8 @@
                   "firewallInfoSubtab": "hide",
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
-                  "smForums": "hide"
+                  "smForums": "hide",
+                  "helpWidget": "hide"
                 },
                 "customLogo": {
                   "enabled": true,
@@ -64312,7 +65215,7 @@
                       "items": {
                         "type": "string"
                       },
-                      "description": "    If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n    entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n    networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n    specify an array of tag names.\n"
+                      "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
                     }
                   },
                   "description": "Settings for describing which kinds of admins this policy applies to."
@@ -64327,7 +65230,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n    customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "getHelpSubtab": {
                       "type": "string",
@@ -64336,7 +65239,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n    that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n    and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "communitySubtab": {
                       "type": "string",
@@ -64345,7 +65248,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "casesSubtab": {
                       "type": "string",
@@ -64354,7 +65257,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n    of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "dataProtectionRequestsSubtab": {
                       "type": "string",
@@ -64363,11 +65266,11 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n    be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "getHelpSubtabKnowledgeBaseSearch": {
                       "type": "string",
-                      "description": "    The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "universalSearchKnowledgeBaseSearch": {
                       "type": "string",
@@ -64376,15 +65279,15 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n    whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "ciscoMerakiProductDocumentation": {
                       "type": "string",
-                      "description": "    The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "supportContactInfo": {
                       "type": "string",
-                      "description": "    The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                      "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
                     },
                     "newFeaturesSubtab": {
                       "type": "string",
@@ -64393,7 +65296,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "firewallInfoSubtab": {
                       "type": "string",
@@ -64402,7 +65305,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n    listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     },
                     "apiDocsSubtab": {
                       "type": "string",
@@ -64411,7 +65314,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
                     },
                     "hardwareReplacementsSubtab": {
                       "type": "string",
@@ -64420,7 +65323,7 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n    'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
                     },
                     "smForums": {
                       "type": "string",
@@ -64429,10 +65332,19 @@
                         "hide",
                         "show"
                       ],
-                      "description": "    The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n    organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                      "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "helpWidget": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
                     }
                   },
-                  "description": "    Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n    'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n    the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n    Dashboard; see the documentation for each property to see the allowed values.\n"
+                  "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n"
                 },
                 "customLogo": {
                   "type": "object",
@@ -64456,7 +65368,7 @@
                             "png",
                             "jpg"
                           ],
-                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'. Note that all images are saved as PNG files, regardless of the format they are uploaded in."
+                          "description": "The format of the encoded contents.  Supported formats are 'png', 'gif', and jpg'."
                         }
                       },
                       "description": "Properties for setting the image."
@@ -64466,7 +65378,6 @@
                 }
               },
               "example": {
-                "brandingPolicyId": "456",
                 "name": "My Branding Policy",
                 "enabled": true,
                 "adminSettings": {
@@ -64490,15 +65401,14 @@
                   "firewallInfoSubtab": "hide",
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
-                  "smForums": "hide"
+                  "smForums": "hide",
+                  "helpWidget": "hide"
                 },
                 "customLogo": {
                   "enabled": true,
                   "image": {
-                    "preview": {
-                      "url": "https://meraki-na.s3.amazonaws.com/org-assets/my-image.png",
-                      "expiresAt": "2022-04-06T06:19:27-07:00"
-                    }
+                    "contents": "Hyperg26C8F4h8CvcoUqpA==",
+                    "format": "jpg"
                   }
                 }
               }
@@ -64509,11 +65419,204 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the Dashboard branding policy."
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether this policy is enabled."
+                },
+                "adminSettings": {
+                  "type": "object",
+                  "properties": {
+                    "appliesTo": {
+                      "type": "string",
+                      "enum": [
+                        "All organization admins",
+                        "All enterprise admins",
+                        "All network admins",
+                        "All admins of networks...",
+                        "All admins of networks tagged...",
+                        "Specific admins...",
+                        "All admins",
+                        "All SAML admins"
+                      ],
+                      "description": "Which kinds of admins this policy applies to. Can be one of 'All organization admins', 'All enterprise admins', 'All network admins', 'All admins of networks...', 'All admins of networks tagged...', 'Specific admins...', 'All admins' or 'All SAML admins'."
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "      If 'appliesTo' is set to one of 'Specific admins...', 'All admins of networks...' or 'All admins of networks tagged...', then you must specify this 'values' property to provide the set of\n      entities to apply the branding policy to. For 'Specific admins...', specify an array of admin IDs. For 'All admins of\n      networks...', specify an array of network IDs and/or configuration template IDs. For 'All admins of networks tagged...',\n      specify an array of tag names.\n"
+                    }
+                  },
+                  "description": "Settings for describing which kinds of admins this policy applies to."
+                },
+                "helpSettings": {
+                  "type": "object",
+                  "properties": {
+                    "helpTab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The Help tab, under which all support information resides. If this tab is hidden, no other 'Help' branding\n      customizations will be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Get Help' subtab on which Cisco Meraki KB, Product Manuals, and Support/Case Information are displayed. Note\n      that if this subtab is hidden, branding customizations for the KB on 'Get help', Cisco Meraki product documentation,\n      and support contact info will not be visible. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "communitySubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Community' subtab which provides a link to Meraki Community. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "casesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Cases' Dashboard subtab on which Cisco Meraki support cases for this organization can be managed. Can be one\n      of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "dataProtectionRequestsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Data protection requests' Dashboard subtab on which requests to delete, restrict, or export end-user data can\n      be audited. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "getHelpSubtabKnowledgeBaseSearch": {
+                      "type": "string",
+                      "description": "      The KB search box which appears on the Help page. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "universalSearchKnowledgeBaseSearch": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The universal search box always visible on Dashboard will, by default, present results from the Meraki KB. This configures\n      whether these Meraki KB results should be returned. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "ciscoMerakiProductDocumentation": {
+                      "type": "string",
+                      "description": "      The 'Product Manuals' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "supportContactInfo": {
+                      "type": "string",
+                      "description": "      The 'Contact Meraki Support' section of the 'Help -> Get Help' subtab. Can be one of 'default or inherit', 'hide', 'show', or a replacement custom HTML string.\n"
+                    },
+                    "newFeaturesSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> New features' subtab where new Dashboard features are detailed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "firewallInfoSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Firewall info' subtab where necessary upstream firewall rules for communication to the Cisco Meraki cloud are\n      listed. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "apiDocsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> API docs' subtab where a detailed description of the Dashboard API is listed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "hardwareReplacementsSubtab": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help -> Replacement info' subtab where important information regarding device replacements is detailed. Can be one of\n      'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "smForums": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'SM Forums' subtab which links to community-based support for Cisco Meraki Systems Manager. Only configurable for\n      organizations that contain Systems Manager networks. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    },
+                    "helpWidget": {
+                      "type": "string",
+                      "enum": [
+                        "default or inherit",
+                        "hide",
+                        "show"
+                      ],
+                      "description": "      The 'Help Widget' is a support widget which provides access to live chat, documentation links, Sales contact info,\n      and other contact avenues to reach Meraki Support. Can be one of 'default or inherit', 'hide' or 'show'.\n"
+                    }
+                  },
+                  "description": "      Settings for describing the modifications to various Help page features. Each property in this object accepts one of\n      'default or inherit' (do not modify functionality), 'hide' (remove the section from Dashboard), or 'show' (always show\n      the section on Dashboard). Some properties in this object also accept custom HTML used to replace the section on\n      Dashboard; see the documentation for each property to see the allowed values.\n"
+                },
+                "customLogo": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether or not there is a custom logo enabled."
+                    },
+                    "image": {
+                      "type": "object",
+                      "properties": {
+                        "preview": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "description": "Url of the preview image"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp of the preview image"
+                            }
+                          },
+                          "description": "Preview of the image"
+                        }
+                      },
+                      "description": "Properties of the image."
+                    }
+                  },
+                  "description": "Properties describing the custom logo attached to the branding policy."
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "brandingPolicyId": "456",
                 "name": "My Branding Policy",
                 "enabled": true,
                 "adminSettings": {
@@ -64537,7 +65640,8 @@
                   "firewallInfoSubtab": "hide",
                   "apiDocsSubtab": "default or inherit",
                   "hardwareReplacementsSubtab": "hide",
-                  "smForums": "hide"
+                  "smForums": "hide",
+                  "helpWidget": "hide"
                 },
                 "customLogo": {
                   "enabled": true,
@@ -66305,6 +67409,14 @@
                   "daiTrusted": {
                     "type": "boolean",
                     "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                  },
+                  "staticSwitchportProfileEnabled": {
+                    "type": "boolean",
+                    "description": "If true, enable switchport profile management of fields on this switchport."
+                  },
+                  "staticSwitchportProfileId": {
+                    "type": "string",
+                    "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                   }
                 }
               }
@@ -66347,7 +67459,9 @@
                   "stickyMacAllowListLimit": 5,
                   "stormControlEnabled": true,
                   "flexibleStackingEnabled": true,
-                  "daiTrusted": false
+                  "daiTrusted": false,
+                  "staticSwitchportProfileEnabled": false,
+                  "staticSwitchportProfileId": "1284392014819"
                 }
               ]
             }
@@ -66526,6 +67640,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               }
             },
@@ -66566,7 +67688,9 @@
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -66730,6 +67854,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               },
               "example": {
@@ -66763,7 +67895,9 @@
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -66901,6 +68035,14 @@
                 "daiTrusted": {
                   "type": "boolean",
                   "description": "If true, ARP packets for this port will be considered trusted, and Dynamic ARP Inspection will allow the traffic."
+                },
+                "staticSwitchportProfileEnabled": {
+                  "type": "boolean",
+                  "description": "If true, enable switchport profile management of fields on this switchport."
+                },
+                "staticSwitchportProfileId": {
+                  "type": "string",
+                  "description": "The ID of the switchport profile that should be used to manage this port's configuration."
                 }
               }
             },
@@ -66941,7 +68083,9 @@
                 "stickyMacAllowListLimit": 5,
                 "stormControlEnabled": true,
                 "flexibleStackingEnabled": true,
-                "daiTrusted": false
+                "daiTrusted": false,
+                "staticSwitchportProfileEnabled": false,
+                "staticSwitchportProfileId": "1284392014819"
               }
             }
           }
@@ -80811,6 +81955,30 @@
       "group": "Dai trusted server",
       "summary": "Update a server that is trusted by Dynamic ARP Inspection on this network",
       "resource": "/networks/{networkId}/switch/dhcpServerPolicy/arpInspection/trustedServers/{trustedServerId}",
+      "operation": "update"
+    },
+    {
+      "group": "Dash xl/dashboard branding policy",
+      "summary": "Add a new branding policy to an organization",
+      "resource": "/organizations/{organizationId}/brandingPolicies",
+      "operation": "create"
+    },
+    {
+      "group": "Dash xl/dashboard branding policy",
+      "summary": "Delete a branding policy",
+      "resource": "/organizations/{organizationId}/brandingPolicies/{brandingPolicyId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Dash xl/dashboard branding policy",
+      "summary": "Update a branding policy",
+      "resource": "/organizations/{organizationId}/brandingPolicies/{brandingPolicyId}",
+      "operation": "update"
+    },
+    {
+      "group": "Dash xl/dashboard branding policy priorities",
+      "summary": "Update the priority ordering of an organization's branding policies.",
+      "resource": "/organizations/{organizationId}/brandingPolicies/priorities",
       "operation": "update"
     },
     {
