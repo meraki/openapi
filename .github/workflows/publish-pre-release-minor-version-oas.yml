@@ -2,6 +2,12 @@ name: Publish beta OAS with monthly pre-release minor version update
 
 on:
   workflow_dispatch:
+    inputs:
+      override_schedule:
+        description: "Override the release schedule?"
+        required: true
+        type: boolean
+        default: false
   schedule:
     - cron: '0 12 1-7 * 3'
 
@@ -22,7 +28,7 @@ jobs:
           fi
   publish:
     needs: check
-    if: needs.check.outputs.should-continue == 'yes'
+    if: inputs.override_schedule || needs.check.outputs.should-continue == 'yes'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
