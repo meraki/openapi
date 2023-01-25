@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v1.29.0-beta.2",
+    "version": "v1.29.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 January, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 25 January, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -4259,7 +4259,7 @@
     },
     "/devices/{serial}/sensor/relationships": {
       "get": {
-        "description": "List the sensor roles for a given device.",
+        "description": "List the sensor roles for a given sensor or camera device.",
         "operationId": "getDeviceSensorRelationships",
         "parameters": [
           {
@@ -4275,7 +4275,36 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "livestream": {
+                    "type": "object",
+                    "properties": {
+                      "relatedDevices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "serial": {
+                              "type": "string",
+                              "description": "The serial of the related device"
+                            },
+                            "productType": {
+                              "type": "string",
+                              "enum": [
+                                "camera",
+                                "sensor"
+                              ],
+                              "description": "The product type of the related device"
+                            }
+                          }
+                        },
+                        "description": "An array of the related devices for the role"
+                      }
+                    },
+                    "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
+                  }
+                }
               }
             },
             "examples": {
@@ -4284,7 +4313,7 @@
                   "livestream": {
                     "relatedDevices": [
                       {
-                        "serial": "1234-ABCD-5678",
+                        "serial": "Q234-ABCD-5678",
                         "productType": "camera"
                       }
                     ]
@@ -4294,7 +4323,7 @@
             }
           }
         },
-        "summary": "List the sensor roles for a given device.",
+        "summary": "List the sensor roles for a given sensor or camera device.",
         "tags": [
           "sensor",
           "configure",
@@ -4303,7 +4332,7 @@
         "x-release-stage": "beta"
       },
       "put": {
-        "description": "Assign one or more sensor roles to a given device.",
+        "description": "Assign one or more sensor roles to a given sensor or camera device.",
         "operationId": "updateDeviceSensorRelationships",
         "parameters": [
           {
@@ -4338,7 +4367,7 @@
                       "description": "An array of the related devices for the role"
                     }
                   },
-                  "description": "The camera assigned to a given sensor. Also supports the inverse when scoped to a given camera."
+                  "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
                 }
               },
               "example": {
@@ -4351,14 +4380,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "livestream": {
+                  "type": "object",
+                  "properties": {
+                    "relatedDevices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "serial": {
+                            "type": "string",
+                            "description": "The serial of the related device"
+                          },
+                          "productType": {
+                            "type": "string",
+                            "enum": [
+                              "camera",
+                              "sensor"
+                            ],
+                            "description": "The product type of the related device"
+                          }
+                        }
+                      },
+                      "description": "An array of the related devices for the role"
+                    }
+                  },
+                  "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "livestream": {
                   "relatedDevices": [
                     {
-                      "serial": "1234-ABCD-5678",
+                      "serial": "Q234-ABCD-5678",
                       "productType": "camera"
                     }
                   ]
@@ -4367,7 +4425,7 @@
             }
           }
         },
-        "summary": "Assign one or more sensor roles to a given device.",
+        "summary": "Assign one or more sensor roles to a given sensor or camera device.",
         "tags": [
           "sensor",
           "configure",
@@ -18073,6 +18131,33 @@
                       ],
                       "description": "Quality and resolution for MV32 camera models."
                     },
+                    "MV33": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Enhanced",
+                            "High",
+                            "Standard"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV33 camera models."
+                    },
                     "MV12WE": {
                       "type": "object",
                       "properties": {
@@ -18099,6 +18184,33 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV12WE camera models."
+                    },
+                    "MV13": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Enhanced",
+                            "High",
+                            "Standard"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV13 camera models."
                     },
                     "MV22X/MV72X": {
                       "type": "object",
@@ -18531,6 +18643,33 @@
                       ],
                       "description": "Quality and resolution for MV32 camera models."
                     },
+                    "MV33": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Enhanced",
+                            "High",
+                            "Standard"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2112x2112"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV33 camera models."
+                    },
                     "MV12WE": {
                       "type": "object",
                       "properties": {
@@ -18557,6 +18696,33 @@
                         "resolution"
                       ],
                       "description": "Quality and resolution for MV12WE camera models."
+                    },
+                    "MV13": {
+                      "type": "object",
+                      "properties": {
+                        "quality": {
+                          "type": "string",
+                          "enum": [
+                            "Enhanced",
+                            "High",
+                            "Standard"
+                          ],
+                          "description": "Quality of the camera. Can be one of 'Standard', 'Enhanced' or 'High'."
+                        },
+                        "resolution": {
+                          "type": "string",
+                          "enum": [
+                            "1080x1080",
+                            "2688x1512"
+                          ],
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2688x1512'."
+                        }
+                      },
+                      "required": [
+                        "quality",
+                        "resolution"
+                      ],
+                      "description": "Quality and resolution for MV13 camera models."
                     },
                     "MV22X/MV72X": {
                       "type": "object",
@@ -34934,7 +35100,64 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the device"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "The serial of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "enum": [
+                          "camera",
+                          "sensor"
+                        ],
+                        "description": "The product type of the device"
+                      }
+                    },
+                    "description": "A sensor or gateway device in the network"
+                  },
+                  "relationships": {
+                    "type": "object",
+                    "properties": {
+                      "livestream": {
+                        "type": "object",
+                        "properties": {
+                          "relatedDevices": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "serial": {
+                                  "type": "string",
+                                  "description": "The serial of the related device"
+                                },
+                                "productType": {
+                                  "type": "string",
+                                  "enum": [
+                                    "camera",
+                                    "sensor"
+                                  ],
+                                  "description": "The product type of the related device"
+                                }
+                              }
+                            },
+                            "description": "An array of the related devices for the role"
+                          }
+                        },
+                        "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
+                      }
+                    },
+                    "description": "An object describing the relationships defined between the device and other devices"
+                  }
+                }
               }
             },
             "examples": {
@@ -34942,14 +35165,14 @@
                 {
                   "device": {
                     "name": "My sensor",
-                    "serial": "Q234-ABCD-5678",
+                    "serial": "Q234-ABCD-0001",
                     "productType": "sensor"
                   },
                   "relationships": {
                     "livestream": {
                       "relatedDevices": [
                         {
-                          "serial": "1234-ABCD-5678",
+                          "serial": "Q234-ABCD-5678",
                           "productType": "camera"
                         }
                       ]
@@ -45820,7 +46043,21 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "broadcastThreshold": {
+                  "type": "integer",
+                  "description": "Broadcast threshold."
+                },
+                "multicastThreshold": {
+                  "type": "integer",
+                  "description": "Multicast threshold."
+                },
+                "unknownUnicastThreshold": {
+                  "type": "integer",
+                  "description": "Unknown Unicast threshold."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -59035,6 +59272,28 @@
           "configure"
         ]
       },
+      "delete": {
+        "description": "Delete an organization",
+        "operationId": "deleteOrganization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an organization",
+        "tags": [
+          "organizations",
+          "configure"
+        ]
+      },
       "put": {
         "description": "Update an organization",
         "operationId": "updateOrganization",
@@ -59219,28 +59478,6 @@
           }
         },
         "summary": "Update an organization",
-        "tags": [
-          "organizations",
-          "configure"
-        ]
-      },
-      "delete": {
-        "description": "Delete an organization",
-        "operationId": "deleteOrganization",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete an organization",
         "tags": [
           "organizations",
           "configure"
@@ -67372,19 +67609,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
+              "type": "object",
+              "properties": {
+                "switchProfileId": {
+                  "type": "string",
+                  "description": "Switch profile id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Switch profile name"
+                },
+                "model": {
+                  "type": "string",
+                  "description": "Switch model"
+                }
               }
             },
             "examples": {
-              "application/json": [
-                {
-                  "switchProfileId": "1234",
-                  "name": "A Simple Switch Profile",
-                  "model": "MS450-24"
-                }
-              ]
+              "application/json": {
+                "switchProfileId": "1234",
+                "name": "A Simple Switch Profile",
+                "model": "MS450-24"
+              }
             }
           }
         },
@@ -73560,7 +73806,7 @@
                 },
                 "enforceTwoFactorAuth": {
                   "type": "boolean",
-                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the authenticator application."
                 },
                 "enforceLoginIpRanges": {
                   "type": "boolean",
@@ -73689,7 +73935,7 @@
                 },
                 "enforceTwoFactorAuth": {
                   "type": "boolean",
-                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the authenticator application."
                 },
                 "enforceLoginIpRanges": {
                   "type": "boolean",
@@ -73799,7 +74045,7 @@
                 },
                 "enforceTwoFactorAuth": {
                   "type": "boolean",
-                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the Google Authenticator application."
+                  "description": "Boolean indicating whether users in this organization will be required to use an extra verification code when logging in to Dashboard. This code will be sent to their mobile phone via SMS, or can be generated by the authenticator application."
                 },
                 "enforceLoginIpRanges": {
                   "type": "boolean",
@@ -79565,6 +79811,14 @@
                   "type": "string",
                   "format": "byte",
                   "description": "A file containing the liquid template used with the webhook headers."
+                },
+                "allNetworks": {
+                  "type": "boolean",
+                  "description": "Indicates whether all networks have access to this template. Defaults to false."
+                },
+                "allowNetworkModify": {
+                  "type": "boolean",
+                  "description": "Indicates whether network admins may modify this template. Defaults to false."
                 }
               },
               "example": {
@@ -79577,7 +79831,9 @@
                   }
                 ],
                 "bodyFile": "Qm9keSBGaWxl",
-                "headersFile": "SGVhZGVycyBGaWxl"
+                "headersFile": "SGVhZGVycyBGaWxl",
+                "allNetworks": true,
+                "allowNetworkModify": true
               },
               "required": [
                 "name"
@@ -79624,6 +79880,21 @@
                 "body": {
                   "type": "string",
                   "description": "The body of the payload template, in liquid template"
+                },
+                "allNetworks": {
+                  "type": "boolean",
+                  "description": "Indicates that all networks within the organization have access to the template"
+                },
+                "allowNetworkModify": {
+                  "type": "boolean",
+                  "description": "Indicates whether network admins have permission to modify the template"
+                },
+                "allowedNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The set of network IDs whose networks have access to the template"
                 }
               }
             },
@@ -79638,7 +79909,13 @@
                     "template": "Bearer {{sharedSecret}}"
                   }
                 ],
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "allNetworks": true,
+                "allowNetworkModify": true,
+                "allowedNetworks": [
+                  "N_1234",
+                  "L_5678"
+                ]
               }
             }
           }
@@ -79845,6 +80122,14 @@
                   "type": "string",
                   "format": "byte",
                   "description": "A file containing the liquid template used with the webhook headers."
+                },
+                "allNetworks": {
+                  "type": "boolean",
+                  "description": "Indicates whether all networks have access to this template. Defaults to false."
+                },
+                "allowNetworkModify": {
+                  "type": "boolean",
+                  "description": "Indicates whether network admins may modify this template. Defaults to false."
                 }
               },
               "example": {
@@ -79857,7 +80142,9 @@
                   }
                 ],
                 "bodyFile": "Qm9keSBGaWxl",
-                "headersFile": "SGVhZGVycyBGaWxl"
+                "headersFile": "SGVhZGVycyBGaWxl",
+                "allNetworks": true,
+                "allowNetworkModify": true
               }
             }
           }
@@ -79900,6 +80187,21 @@
                 "body": {
                   "type": "string",
                   "description": "The body of the payload template, in liquid template"
+                },
+                "allNetworks": {
+                  "type": "boolean",
+                  "description": "Indicates that all networks within the organization have access to the template"
+                },
+                "allowNetworkModify": {
+                  "type": "boolean",
+                  "description": "Indicates whether network admins have permission to modify the template"
+                },
+                "allowedNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The set of network IDs whose networks have access to the template"
                 }
               }
             },
@@ -79914,7 +80216,13 @@
                     "template": "Bearer {{sharedSecret}}"
                   }
                 ],
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "allNetworks": true,
+                "allowNetworkModify": true,
+                "allowedNetworks": [
+                  "N_1234",
+                  "L_5678"
+                ]
               }
             }
           }
@@ -82657,7 +82965,7 @@
     },
     {
       "group": "Sensor gateway role",
-      "summary": "Assign one or more sensor roles to a given device.",
+      "summary": "Assign one or more sensor roles to a given sensor or camera device.",
       "resource": "/devices/{serial}/sensor/relationships",
       "operation": "update"
     },
