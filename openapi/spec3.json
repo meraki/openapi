@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 01 February, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 07 February, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "v1.30.0-beta.0"
+    "version": "v1.30.0-beta.1"
   },
   "servers": [
     {
@@ -14759,6 +14759,81 @@
       }
     },
     "/networks/{networkId}/appliance/trafficShaping/rules": {
+      "get": {
+        "description": "Display the traffic shaping settings rules for an MX network",
+        "operationId": "getNetworkApplianceTrafficShapingRules",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "defaultRulesEnabled": true,
+                  "rules": [
+                    {
+                      "definitions": [
+                        {
+                          "type": "host",
+                          "value": "google.com"
+                        },
+                        {
+                          "type": "port",
+                          "value": "9090"
+                        },
+                        {
+                          "type": "ipRange",
+                          "value": "192.1.0.0"
+                        },
+                        {
+                          "type": "ipRange",
+                          "value": "192.1.0.0/16"
+                        },
+                        {
+                          "type": "ipRange",
+                          "value": "10.1.0.0/16:80"
+                        },
+                        {
+                          "type": "localNet",
+                          "value": "192.168.0.0/16"
+                        }
+                      ],
+                      "perClientBandwidthLimits": {
+                        "settings": "custom",
+                        "bandwidthLimits": {
+                          "limitUp": 1000000,
+                          "limitDown": 1000000
+                        }
+                      },
+                      "dscpTagValue": 0,
+                      "priority": "normal"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Display the traffic shaping settings rules for an MX network",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping",
+          "rules"
+        ]
+      },
       "put": {
         "description": "Update the traffic shaping settings rules for an MX network",
         "operationId": "updateNetworkApplianceTrafficShapingRules",
@@ -14958,81 +15033,6 @@
           }
         },
         "summary": "Update the traffic shaping settings rules for an MX network",
-        "tags": [
-          "appliance",
-          "configure",
-          "trafficShaping",
-          "rules"
-        ]
-      },
-      "get": {
-        "description": "Display the traffic shaping settings rules for an MX network",
-        "operationId": "getNetworkApplianceTrafficShapingRules",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "defaultRulesEnabled": true,
-                  "rules": [
-                    {
-                      "definitions": [
-                        {
-                          "type": "host",
-                          "value": "google.com"
-                        },
-                        {
-                          "type": "port",
-                          "value": "9090"
-                        },
-                        {
-                          "type": "ipRange",
-                          "value": "192.1.0.0"
-                        },
-                        {
-                          "type": "ipRange",
-                          "value": "192.1.0.0/16"
-                        },
-                        {
-                          "type": "ipRange",
-                          "value": "10.1.0.0/16:80"
-                        },
-                        {
-                          "type": "localNet",
-                          "value": "192.168.0.0/16"
-                        }
-                      ],
-                      "perClientBandwidthLimits": {
-                        "settings": "custom",
-                        "bandwidthLimits": {
-                          "limitUp": 1000000,
-                          "limitDown": 1000000
-                        }
-                      },
-                      "dscpTagValue": 0,
-                      "priority": "normal"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "summary": "Display the traffic shaping settings rules for an MX network",
         "tags": [
           "appliance",
           "configure",
@@ -39742,7 +39742,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all the profiles in the network",
+        "description": "List all profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -39760,35 +39760,53 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "profiles": [
-                    {
-                      "id": "1234",
-                      "payload_display_name": "API Profile",
-                      "payload_identifier": "com.meraki.sm.1",
-                      "payload_description": "API docs test",
-                      "scope": "some",
-                      "tags": [
-                        "tag1",
-                        "tag2"
-                      ],
-                      "wifis": [
-
-                      ],
-                      "payload_types": [
-                        "Privacy",
-                        "Document"
-                      ]
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of a profile."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of a profile."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of a profile."
+                      },
+                      "scope": {
+                        "type": "string",
+                        "description": "Scope of a profile."
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Tags of a profile."
+                      }
                     }
-                  ]
-                }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "1284392014819",
+                    "name": "My profile",
+                    "description": "Some profile description",
+                    "scope": "withAny",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                ]
               }
             }
           }
         },
-        "summary": "List all the profiles in the network",
+        "summary": "List all profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -41183,7 +41201,68 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "comment": {
+                            "type": "string",
+                            "description": "Description of the rule (optional)"
+                          },
+                          "policy": {
+                            "type": "string",
+                            "enum": [
+                              "allow",
+                              "deny"
+                            ],
+                            "description": "'allow' or 'deny' traffic specified by this rule"
+                          },
+                          "ipVersion": {
+                            "type": "string",
+                            "enum": [
+                              "any",
+                              "ipv4",
+                              "ipv6"
+                            ],
+                            "description": "IP address version"
+                          },
+                          "protocol": {
+                            "type": "string",
+                            "enum": [
+                              "any",
+                              "tcp",
+                              "udp"
+                            ],
+                            "description": "The type of protocol"
+                          },
+                          "srcCidr": {
+                            "type": "string",
+                            "description": "Source IP address (in IP or CIDR notation)"
+                          },
+                          "srcPort": {
+                            "type": "string",
+                            "description": "Source port"
+                          },
+                          "dstCidr": {
+                            "type": "string",
+                            "description": "Destination IP address (in IP or CIDR notation)"
+                          },
+                          "dstPort": {
+                            "type": "string",
+                            "description": "Destination port"
+                          },
+                          "vlan": {
+                            "type": "string",
+                            "description": "ncoming traffic VLAN"
+                          }
+                        }
+                      },
+                      "description": "An ordered array of the access control list rules"
+                    }
+                  }
                 },
                 "example": {
                   "rules": [
@@ -41195,19 +41274,8 @@
                       "srcCidr": "10.1.10.0/24",
                       "srcPort": "any",
                       "dstCidr": "172.16.30/24",
-                      "dstPort": 22,
-                      "vlan": 10
-                    },
-                    {
-                      "comment": "Default rule",
-                      "policy": "allow",
-                      "ipVersion": "any",
-                      "protocol": "any",
-                      "srcCidr": "any",
-                      "srcPort": "any",
-                      "dstCidr": "any",
-                      "dstPort": "any",
-                      "vlan": "any"
+                      "dstPort": "22",
+                      "vlan": "10"
                     }
                   ]
                 }
@@ -41336,7 +41404,68 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "comment": {
+                            "type": "string",
+                            "description": "Description of the rule (optional)"
+                          },
+                          "policy": {
+                            "type": "string",
+                            "enum": [
+                              "allow",
+                              "deny"
+                            ],
+                            "description": "'allow' or 'deny' traffic specified by this rule"
+                          },
+                          "ipVersion": {
+                            "type": "string",
+                            "enum": [
+                              "any",
+                              "ipv4",
+                              "ipv6"
+                            ],
+                            "description": "IP address version"
+                          },
+                          "protocol": {
+                            "type": "string",
+                            "enum": [
+                              "any",
+                              "tcp",
+                              "udp"
+                            ],
+                            "description": "The type of protocol"
+                          },
+                          "srcCidr": {
+                            "type": "string",
+                            "description": "Source IP address (in IP or CIDR notation)"
+                          },
+                          "srcPort": {
+                            "type": "string",
+                            "description": "Source port"
+                          },
+                          "dstCidr": {
+                            "type": "string",
+                            "description": "Destination IP address (in IP or CIDR notation)"
+                          },
+                          "dstPort": {
+                            "type": "string",
+                            "description": "Destination port"
+                          },
+                          "vlan": {
+                            "type": "string",
+                            "description": "ncoming traffic VLAN"
+                          }
+                        }
+                      },
+                      "description": "An ordered array of the access control list rules"
+                    }
+                  }
                 },
                 "example": {
                   "rules": [
@@ -41348,19 +41477,8 @@
                       "srcCidr": "10.1.10.0/24",
                       "srcPort": "any",
                       "dstCidr": "172.16.30/24",
-                      "dstPort": 22,
-                      "vlan": 10
-                    },
-                    {
-                      "comment": "Default rule",
-                      "policy": "allow",
-                      "ipVersion": "any",
-                      "protocol": "any",
-                      "srcCidr": "any",
-                      "srcPort": "any",
-                      "dstCidr": "any",
-                      "dstPort": "any",
-                      "vlan": "any"
+                      "dstPort": "22",
+                      "vlan": "10"
                     }
                   ]
                 }
@@ -59086,21 +59204,57 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "timeout": {
+                      "type": "integer",
+                      "description": "General EAP timeout in seconds."
+                    },
+                    "maxRetries": {
+                      "type": "integer",
+                      "description": "Maximum number of general EAP retries."
+                    },
+                    "identity": {
+                      "type": "object",
+                      "properties": {
+                        "timeout": {
+                          "type": "integer",
+                          "description": "EAP timeout in seconds."
+                        },
+                        "retries": {
+                          "type": "integer",
+                          "description": "Maximum number of EAP retries."
+                        }
+                      },
+                      "description": "EAPOL Key settings."
+                    },
+                    "eapolKey": {
+                      "type": "object",
+                      "properties": {
+                        "timeoutInMs": {
+                          "type": "integer",
+                          "description": "EAPOL Key timeout in milliseconds."
+                        },
+                        "retries": {
+                          "type": "integer",
+                          "description": "Maximum number of EAPOL key retries."
+                        }
+                      },
+                      "description": "EAPOL Key settings."
+                    }
+                  }
                 },
                 "example": {
-                  "eap_timeout_override": false,
-                  "eap_initial_timeout": 5,
-                  "eap_max_retries_override": false,
-                  "eap_max_retries": 5,
-                  "eap_identity_timeout_override": false,
-                  "eap_identity_timeout": 5,
-                  "eap_identity_retries_override": false,
-                  "eap_identity_retries": 5,
-                  "eapol_key_timeout_override": false,
-                  "eapol_key_timeout": 500,
-                  "eapol_key_retries_override": false,
-                  "eapol_key_retries": 4
+                  "timeout": 500,
+                  "maxRetries": 5,
+                  "identity": {
+                    "timeout": 500,
+                    "retries": 5
+                  },
+                  "eapolKey": {
+                    "timeoutInMs": 5000,
+                    "retries": 5
+                  }
                 }
               }
             }
@@ -74305,7 +74459,8 @@
                       "long": "New Feature Beta long description. consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
                     },
                     "topic": "Dashboard",
-                    "isOrgScopedOnly": true
+                    "isOrgScopedOnly": true,
+                    "documentationLink": null
                   }
                 ]
               }
@@ -76693,9 +76848,8 @@
         },
         "summary": "List the licenses for an organization",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -76894,9 +77048,8 @@
         },
         "summary": "Assign SM seats to a network",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -76982,9 +77135,8 @@
         },
         "summary": "Move licenses to another organization",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -77069,9 +77221,8 @@
         },
         "summary": "Move SM seats to another organization",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -77110,9 +77261,8 @@
         },
         "summary": "Return an overview of the license state for an organization",
         "tags": [
-          "organizations",
-          "monitor",
           "licenses",
+          "monitor",
           "overview"
         ]
       }
@@ -77306,9 +77456,8 @@
         },
         "summary": "Renew SM seats of a license",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -77468,9 +77617,8 @@
         },
         "summary": "Display a license",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       },
       "put": {
@@ -77647,9 +77795,8 @@
         },
         "summary": "Update a license",
         "tags": [
-          "organizations",
-          "configure",
-          "licenses"
+          "licenses",
+          "configure"
         ]
       }
     },
@@ -77836,11 +77983,10 @@
         },
         "summary": "List the licenses in a coterm organization",
         "tags": [
-          "organizations",
+          "licenses",
           "configure",
           "licensing",
-          "coterm",
-          "licenses"
+          "coterm"
         ]
       }
     },
@@ -78187,11 +78333,10 @@
         },
         "summary": "Moves a license to a different organization (coterm only)",
         "tags": [
-          "organizations",
+          "licenses",
           "configure",
           "licensing",
-          "coterm",
-          "licenses"
+          "coterm"
         ]
       }
     },
@@ -84627,15 +84772,28 @@
                         "type": "string",
                         "description": "The body of the payload template, in liquid template"
                       },
-                      "allNetworks": {
+                      "sharing": {
+                        "type": "object",
+                        "properties": {
+                          "byNetwork": {
+                            "type": "object",
+                            "properties": {
+
+                            },
+                            "description": "Information on network access to the template"
+                          }
+                        },
+                        "description": "Information on which entities have access to the template"
+                      },
+                      "withAll": {
                         "type": "boolean",
                         "description": "Indicates that all networks within the organization have access to the template"
                       },
-                      "allowNetworkModify": {
+                      "adminsCanModify": {
                         "type": "boolean",
                         "description": "Indicates whether network admins have permission to modify the template"
                       },
-                      "allowedNetworks": {
+                      "ids": {
                         "type": "array",
                         "items": {
                           "type": "string"
@@ -84657,9 +84815,12 @@
                       }
                     ],
                     "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
-                    "allNetworks": true,
-                    "allowNetworkModify": true,
-                    "allowedNetworks": [
+                    "sharing": {
+
+                    },
+                    "withAll": true,
+                    "adminsCanModify": true,
+                    "ids": [
                       "N_1234",
                       "L_5678"
                     ]
@@ -84732,20 +84893,32 @@
                     "format": "byte",
                     "description": "A file containing the liquid template used with the webhook headers."
                   },
-                  "allNetworks": {
-                    "type": "boolean",
-                    "description": "Indicates whether all networks have access to this template. Defaults to false."
-                  },
-                  "allowNetworkModify": {
-                    "type": "boolean",
-                    "description": "Indicates whether network admins may modify this template. Defaults to false."
-                  },
-                  "allowedNetworks": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "sharing": {
+                    "type": "object",
+                    "properties": {
+                      "byNetwork": {
+                        "type": "object",
+                        "properties": {
+                          "withAll": {
+                            "type": "boolean",
+                            "description": "Indicates whether all networks have access to this template. Defaults to false."
+                          },
+                          "adminsCanModify": {
+                            "type": "boolean",
+                            "description": "Indicates whether network admins may modify this template. Defaults to false."
+                          },
+                          "ids": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "List of network ids which will be allowed access to the new template."
+                          }
+                        },
+                        "description": "Information on network access to the template"
+                      }
                     },
-                    "description": "List of network ids which will be allowed access to the new template."
+                    "description": "Information on which entities have access to the template"
                   }
                 },
                 "example": {
@@ -84759,11 +84932,15 @@
                   ],
                   "bodyFile": "Qm9keSBGaWxl",
                   "headersFile": "SGVhZGVycyBGaWxl",
-                  "allNetworks": true,
-                  "allowNetworkModify": true,
-                  "allowedNetworks": [
-                    "N_1234"
-                  ]
+                  "sharing": {
+                    "byNetwork": {
+                      "withAll": true,
+                      "adminsCanModify": true,
+                      "ids": [
+                        "N_1234"
+                      ]
+                    }
+                  }
                 },
                 "required": [
                   "name"
@@ -84814,15 +84991,28 @@
                       "type": "string",
                       "description": "The body of the payload template, in liquid template"
                     },
-                    "allNetworks": {
+                    "sharing": {
+                      "type": "object",
+                      "properties": {
+                        "byNetwork": {
+                          "type": "object",
+                          "properties": {
+
+                          },
+                          "description": "Information on network access to the template"
+                        }
+                      },
+                      "description": "Information on which entities have access to the template"
+                    },
+                    "withAll": {
                       "type": "boolean",
                       "description": "Indicates that all networks within the organization have access to the template"
                     },
-                    "allowNetworkModify": {
+                    "adminsCanModify": {
                       "type": "boolean",
                       "description": "Indicates whether network admins have permission to modify the template"
                     },
-                    "allowedNetworks": {
+                    "ids": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -84842,9 +85032,12 @@
                     }
                   ],
                   "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
-                  "allNetworks": true,
-                  "allowNetworkModify": true,
-                  "allowedNetworks": [
+                  "sharing": {
+
+                  },
+                  "withAll": true,
+                  "adminsCanModify": true,
+                  "ids": [
                     "N_1234",
                     "L_5678"
                   ]
@@ -84926,15 +85119,28 @@
                       "type": "string",
                       "description": "The body of the payload template, in liquid template"
                     },
-                    "allNetworks": {
+                    "sharing": {
+                      "type": "object",
+                      "properties": {
+                        "byNetwork": {
+                          "type": "object",
+                          "properties": {
+
+                          },
+                          "description": "Information on network access to the template"
+                        }
+                      },
+                      "description": "Information on which entities have access to the template"
+                    },
+                    "withAll": {
                       "type": "boolean",
                       "description": "Indicates that all networks within the organization have access to the template"
                     },
-                    "allowNetworkModify": {
+                    "adminsCanModify": {
                       "type": "boolean",
                       "description": "Indicates whether network admins have permission to modify the template"
                     },
-                    "allowedNetworks": {
+                    "ids": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -84954,9 +85160,12 @@
                     }
                   ],
                   "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
-                  "allNetworks": true,
-                  "allowNetworkModify": true,
-                  "allowedNetworks": [
+                  "sharing": {
+
+                  },
+                  "withAll": true,
+                  "adminsCanModify": true,
+                  "ids": [
                     "N_1234",
                     "L_5678"
                   ]
@@ -85071,20 +85280,32 @@
                     "format": "byte",
                     "description": "A file containing the liquid template used with the webhook headers."
                   },
-                  "allNetworks": {
-                    "type": "boolean",
-                    "description": "Indicates whether all networks have access to this template. Defaults to false."
-                  },
-                  "allowNetworkModify": {
-                    "type": "boolean",
-                    "description": "Indicates whether network admins may modify this template. Defaults to false."
-                  },
-                  "allowedNetworks": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
+                  "sharing": {
+                    "type": "object",
+                    "properties": {
+                      "byNetwork": {
+                        "type": "object",
+                        "properties": {
+                          "withAll": {
+                            "type": "boolean",
+                            "description": "Indicates whether all networks have access to this template. Defaults to false."
+                          },
+                          "adminsCanModify": {
+                            "type": "boolean",
+                            "description": "Indicates whether network admins may modify this template. Defaults to false."
+                          },
+                          "ids": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "List of network ids which will be allowed access to the new template."
+                          }
+                        },
+                        "description": "Information on network access to the template"
+                      }
                     },
-                    "description": "List of network ids which will be allowed access to the new template."
+                    "description": "Information on which entities have access to the template"
                   }
                 },
                 "example": {
@@ -85098,11 +85319,15 @@
                   ],
                   "bodyFile": "Qm9keSBGaWxl",
                   "headersFile": "SGVhZGVycyBGaWxl",
-                  "allNetworks": true,
-                  "allowNetworkModify": true,
-                  "allowedNetworks": [
-                    "N_1234"
-                  ]
+                  "sharing": {
+                    "byNetwork": {
+                      "withAll": true,
+                      "adminsCanModify": true,
+                      "ids": [
+                        "N_1234"
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -85150,15 +85375,28 @@
                       "type": "string",
                       "description": "The body of the payload template, in liquid template"
                     },
-                    "allNetworks": {
+                    "sharing": {
+                      "type": "object",
+                      "properties": {
+                        "byNetwork": {
+                          "type": "object",
+                          "properties": {
+
+                          },
+                          "description": "Information on network access to the template"
+                        }
+                      },
+                      "description": "Information on which entities have access to the template"
+                    },
+                    "withAll": {
                       "type": "boolean",
                       "description": "Indicates that all networks within the organization have access to the template"
                     },
-                    "allowNetworkModify": {
+                    "adminsCanModify": {
                       "type": "boolean",
                       "description": "Indicates whether network admins have permission to modify the template"
                     },
-                    "allowedNetworks": {
+                    "ids": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -85178,9 +85416,12 @@
                     }
                   ],
                   "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
-                  "allNetworks": true,
-                  "allowNetworkModify": true,
-                  "allowedNetworks": [
+                  "sharing": {
+
+                  },
+                  "withAll": true,
+                  "adminsCanModify": true,
+                  "ids": [
                     "N_1234",
                     "L_5678"
                   ]
