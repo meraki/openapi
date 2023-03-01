@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v1.30.0",
+    "version": "v1.31.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 February, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 February, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -8294,7 +8294,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 30."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
           },
           {
             "type": "string",
@@ -8319,7 +8319,7 @@
                 "properties": {
                   "occurredAt": {
                     "type": "string",
-                    "description": "time when the event that caused the alert occurred"
+                    "description": "time when the event occurred"
                   },
                   "alertTypeId": {
                     "type": "string",
@@ -14107,24 +14107,115 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "bandwidthLimits": {
+                  "type": "object",
+                  "properties": {
+                    "wan1": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        }
+                      },
+                      "description": "uplink wan1 configued limits [optional]"
+                    },
+                    "wan2": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        }
+                      },
+                      "description": "uplink wan2 configued limits [optional]"
+                    },
+                    "cellular": {
+                      "type": "object",
+                      "properties": {
+                        "limitUp": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        },
+                        "limitDown": {
+                          "type": "integer",
+                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                        }
+                      },
+                      "description": "uplink cellular configued limits [optional]"
+                    }
+                  },
+                  "description": "A hash uplink keys and their configured settings for the Appliance"
+                },
+                "capabilities": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "model": {
+                        "type": "string",
+                        "description": "model number of appliance"
+                      },
+                      "bandwidths": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "interface": {
+                              "type": "string",
+                              "description": "name of uplink"
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "description": "limit in bytes (null indicates unlimited)"
+                            }
+                          }
+                        },
+                        "description": "array of uplink limits"
+                      }
+                    }
+                  },
+                  "description": "Array of appliances"
+                }
+              }
             },
             "examples": {
               "application/json": {
                 "bandwidthLimits": {
                   "wan1": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
+                    "limitUp": 600000,
+                    "limitDown": 600000
                   },
                   "wan2": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
+                    "limitUp": 600000,
+                    "limitDown": 600000
                   },
                   "cellular": {
                     "limitUp": 51200,
                     "limitDown": 51200
                   }
-                }
+                },
+                "capabilities": [
+                  {
+                    "model": "MX68",
+                    "bandwidths": [
+                      {
+                        "interface": "wan1",
+                        "limit": 629145600
+                      }
+                    ]
+                  }
+                ]
               }
             }
           }
@@ -37358,7 +37449,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all the profiles in the network",
+        "description": "List all profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -37372,35 +37463,53 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "ID of a profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of a profile."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of a profile."
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "Scope of a profile."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tags of a profile."
+                  }
+                }
+              }
             },
             "examples": {
-              "application/json": {
-                "profiles": [
-                  {
-                    "id": "1234",
-                    "payload_display_name": "API Profile",
-                    "payload_identifier": "com.meraki.sm.1",
-                    "payload_description": "API docs test",
-                    "scope": "some",
-                    "tags": [
-                      "tag1",
-                      "tag2"
-                    ],
-                    "wifis": [
-
-                    ],
-                    "payload_types": [
-                      "Privacy",
-                      "Document"
-                    ]
-                  }
-                ]
-              }
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "My profile",
+                  "description": "Some profile description",
+                  "scope": "withAny",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ]
+                }
+              ]
             }
           }
         },
-        "summary": "List all the profiles in the network",
+        "summary": "List all profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -38680,7 +38789,68 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule"
+                      },
+                      "ipVersion": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "description": "IP address version"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "The type of protocol"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Source IP address (in IP or CIDR notation)"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Source port"
+                      },
+                      "dstCidr": {
+                        "type": "string",
+                        "description": "Destination IP address (in IP or CIDR notation)"
+                      },
+                      "dstPort": {
+                        "type": "string",
+                        "description": "Destination port"
+                      },
+                      "vlan": {
+                        "type": "string",
+                        "description": "ncoming traffic VLAN"
+                      }
+                    }
+                  },
+                  "description": "An ordered array of the access control list rules"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -38693,19 +38863,8 @@
                     "srcCidr": "10.1.10.0/24",
                     "srcPort": "any",
                     "dstCidr": "172.16.30/24",
-                    "dstPort": 22,
-                    "vlan": 10
-                  },
-                  {
-                    "comment": "Default rule",
-                    "policy": "allow",
-                    "ipVersion": "any",
-                    "protocol": "any",
-                    "srcCidr": "any",
-                    "srcPort": "any",
-                    "dstCidr": "any",
-                    "dstPort": "any",
-                    "vlan": "any"
+                    "dstPort": "22",
+                    "vlan": "10"
                   }
                 ]
               }
@@ -38827,7 +38986,68 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule (optional)"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "enum": [
+                          "allow",
+                          "deny"
+                        ],
+                        "description": "'allow' or 'deny' traffic specified by this rule"
+                      },
+                      "ipVersion": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "description": "IP address version"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "The type of protocol"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "Source IP address (in IP or CIDR notation)"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "Source port"
+                      },
+                      "dstCidr": {
+                        "type": "string",
+                        "description": "Destination IP address (in IP or CIDR notation)"
+                      },
+                      "dstPort": {
+                        "type": "string",
+                        "description": "Destination port"
+                      },
+                      "vlan": {
+                        "type": "string",
+                        "description": "ncoming traffic VLAN"
+                      }
+                    }
+                  },
+                  "description": "An ordered array of the access control list rules"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -38840,19 +39060,8 @@
                     "srcCidr": "10.1.10.0/24",
                     "srcPort": "any",
                     "dstCidr": "172.16.30/24",
-                    "dstPort": 22,
-                    "vlan": 10
-                  },
-                  {
-                    "comment": "Default rule",
-                    "policy": "allow",
-                    "ipVersion": "any",
-                    "protocol": "any",
-                    "srcCidr": "any",
-                    "srcPort": "any",
-                    "dstCidr": "any",
-                    "dstPort": "any",
-                    "vlan": "any"
+                    "dstPort": "22",
+                    "vlan": "10"
                   }
                 ]
               }
@@ -44258,7 +44467,24 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Switch stacks id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Switch stacks name"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Serials of the switches in the switch stack"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -55050,22 +55276,58 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "timeout": {
+                  "type": "integer",
+                  "description": "General EAP timeout in seconds."
+                },
+                "maxRetries": {
+                  "type": "integer",
+                  "description": "Maximum number of general EAP retries."
+                },
+                "identity": {
+                  "type": "object",
+                  "properties": {
+                    "timeout": {
+                      "type": "integer",
+                      "description": "EAP timeout in seconds."
+                    },
+                    "retries": {
+                      "type": "integer",
+                      "description": "Maximum number of EAP retries."
+                    }
+                  },
+                  "description": "EAPOL Key settings."
+                },
+                "eapolKey": {
+                  "type": "object",
+                  "properties": {
+                    "timeoutInMs": {
+                      "type": "integer",
+                      "description": "EAPOL Key timeout in milliseconds."
+                    },
+                    "retries": {
+                      "type": "integer",
+                      "description": "Maximum number of EAPOL key retries."
+                    }
+                  },
+                  "description": "EAPOL Key settings."
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "eap_timeout_override": false,
-                "eap_initial_timeout": 5,
-                "eap_max_retries_override": false,
-                "eap_max_retries": 5,
-                "eap_identity_timeout_override": false,
-                "eap_identity_timeout": 5,
-                "eap_identity_retries_override": false,
-                "eap_identity_retries": 5,
-                "eapol_key_timeout_override": false,
-                "eapol_key_timeout": 500,
-                "eapol_key_retries_override": false,
-                "eapol_key_retries": 4
+                "timeout": 500,
+                "maxRetries": 5,
+                "identity": {
+                  "timeout": 500,
+                  "retries": 5
+                },
+                "eapolKey": {
+                  "timeoutInMs": 5000,
+                  "retries": 5
+                }
               }
             }
           }
@@ -58419,28 +58681,6 @@
           "configure"
         ]
       },
-      "delete": {
-        "description": "Delete an organization",
-        "operationId": "deleteOrganization",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete an organization",
-        "tags": [
-          "organizations",
-          "configure"
-        ]
-      },
       "put": {
         "description": "Update an organization",
         "operationId": "updateOrganization",
@@ -58625,6 +58865,28 @@
           }
         },
         "summary": "Update an organization",
+        "tags": [
+          "organizations",
+          "configure"
+        ]
+      },
+      "delete": {
+        "description": "Delete an organization",
+        "operationId": "deleteOrganization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an organization",
         "tags": [
           "organizations",
           "configure"
@@ -68823,7 +69085,8 @@
                     "long": "New Feature Beta long description. consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
                   },
                   "topic": "Dashboard",
-                  "isOrgScopedOnly": true
+                  "isOrgScopedOnly": true,
+                  "documentationLink": null
                 }
               ]
             }
@@ -70042,6 +70305,15 @@
             "items": {
               "type": "string"
             },
+            "name": "orderNumbers",
+            "in": "query",
+            "description": "Search for devices in inventory based on order numbers."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "name": "tags",
             "in": "query",
             "description": "Filter devices by tags. The filtering is case-sensitive. If tags are included, 'tagsFilterType' should also be included (see below)."
@@ -70266,6 +70538,81 @@
         ]
       }
     },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/exportEvents": {
+      "post": {
+        "description": "Imports event logs related to the onboarding app into elastisearch",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringExportEvent",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringExportEvent",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "logEvent": {
+                  "type": "string",
+                  "description": "The type of log event this is recording, e.g. download or opening a banner"
+                },
+                "timestamp": {
+                  "type": "integer",
+                  "description": "A JavaScript UTC datetime stamp for when the even occurred"
+                },
+                "targetOS": {
+                  "type": "string",
+                  "description": "The name of the onboarding distro being downloaded"
+                },
+                "request": {
+                  "type": "string",
+                  "description": "Used to describe if this event was the result of a redirect. E.g. a query param if an info banner is being used"
+                }
+              },
+              "example": {
+                "logEvent": "download",
+                "timestamp": 1526087474,
+                "targetOS": "mac",
+                "request": "r=cb"
+              },
+              "required": [
+                "logEvent",
+                "timestamp"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+
+              }
+            },
+            "examples": {
+              "application/json": {
+
+              }
+            }
+          }
+        },
+        "summary": "Imports event logs related to the onboarding app into elastisearch",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "exportEvents"
+        ]
+      }
+    },
     "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/imports": {
       "post": {
         "description": "Commits the import operation to complete the onboarding of a device into Dashboard for monitoring.",
@@ -70449,10 +70796,10 @@
         ]
       }
     },
-    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/prepare": {
-      "post": {
-        "description": "Initiates or updates an import session. An import ID will be generated and used when you are ready to commit the import.",
-        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/networks": {
+      "get": {
+        "description": "Returns list of networks eligible for adding cloud monitored device",
+        "operationId": "getOrganizationInventoryOnboardingCloudMonitoringNetworks",
         "parameters": [
           {
             "name": "organizationId",
@@ -70461,319 +70808,131 @@
             "required": true
           },
           {
-            "name": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "devices": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "sudi": {
-                        "type": "string",
-                        "description": "Device SUDI certificate"
-                      },
-                      "tunnel": {
-                        "type": "object",
-                        "properties": {
-                          "certificateName": {
-                            "type": "string",
-                            "description": "Name of the configured TLS certificate"
-                          },
-                          "name": {
-                            "type": "string",
-                            "description": "Name of the configured TLS tunnel"
-                          },
-                          "loopbackNumber": {
-                            "type": "integer",
-                            "description": "Number of the configured Loopback Interface used for TLS overlay"
-                          },
-                          "localInterface": {
-                            "type": "integer",
-                            "description": "Number of the vlan expected to be used to connect to the cloud"
-                          }
-                        },
-                        "description": "TLS Related Parameters"
-                      },
-                      "user": {
-                        "type": "object",
-                        "properties": {
-                          "username": {
-                            "type": "string",
-                            "description": "The name of the device user for Meraki monitoring"
-                          }
-                        },
-                        "description": "User parameters"
-                      },
-                      "vty": {
-                        "type": "object",
-                        "properties": {
-                          "startLineNumber": {
-                            "type": "integer",
-                            "description": "Starting line VTY number"
-                          },
-                          "endLineNumber": {
-                            "type": "integer",
-                            "description": "Ending line VTY number"
-                          },
-                          "authentication": {
-                            "type": "object",
-                            "properties": {
-                              "group": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string",
-                                    "description": "Group Name"
-                                  }
-                                },
-                                "description": "Group Details"
-                              }
-                            },
-                            "description": "VTY AAA authentication"
-                          },
-                          "authorization": {
-                            "type": "object",
-                            "properties": {
-                              "group": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string",
-                                    "description": "Group Name"
-                                  }
-                                },
-                                "description": "Group Details"
-                              }
-                            },
-                            "description": "VTY AAA authorization"
-                          },
-                          "accessList": {
-                            "type": "object",
-                            "properties": {
-                              "vtyIn": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string",
-                                    "description": "Name"
-                                  }
-                                },
-                                "description": "VTY in ACL"
-                              },
-                              "vtyOut": {
-                                "type": "object",
-                                "properties": {
-                                  "name": {
-                                    "type": "string",
-                                    "description": "Name"
-                                  }
-                                },
-                                "description": "VTY out ACL"
-                              }
-                            },
-                            "description": "AccessList details"
-                          },
-                          "rotaryNumber": {
-                            "type": "integer",
-                            "description": "SSH rotary number"
-                          }
-                        },
-                        "description": "VTY Related Parameters"
-                      }
-                    },
-                    "required": [
-                      "sudi"
-                    ]
-                  },
-                  "description": "A set of devices to import (or update)"
-                }
-              },
-              "example": {
-                "devices": [
-                  {
-                    "sudi": "-----BEGIN CERTIFICATE-----\n        MIIDyTCCArGgAwIBAgIKBBNXOVCGU1YztjANBgkqhkiG9w0BAQsFADAnMQ4wDAYD\n        VQQKEwVDaXNjbzEVMBMGA1UEAxMMQUNUMiBTVURJIENBMB4XDTIxMDUzMTEzNTUx\n        NVoXDTI5MDUxNDIwMjU0MVowbTEpMCcGA1UEBRMgUElEOkM5MjAwTC0yNFAtNEcg\n        U046SkFFMjUyMjBSMksxDjAMBgNVBAoTBUNpc2NvMRgwFgYDVQQLEw9BQ1QtMiBM\n        aXRlIFNVREkxFjAUBgNVBAMTDUM5MjAwTC0yNFAtNEcwggEiMA0GCSqGSIb3DQEB\n        AQUAA4IBDwAwggEKAoIBAQDaUPxW76gT5MdoEAt+UrDFiYA9RYh2iHicDViBEyow\n        TR1TuP36bHh13X3vtGiDsCD88Ci2TZIqd/EDkkc7v9ipUUYVVH+YDrPt2Aukb1PH\n        D6K0R+KhgEzRo5x54TlU6oWvjUpwNZUwwdhMWIQaUVkMyZBYNy0jGPLO8jwZhyBg\n        1Fneybr9pwedGbLrAaz+gdEikB8B4a/fvPjVfL5Ngb4QRjFqWuE+X3nLc0kHedep\n        6nfgpUNXMlStVm5nIXKP6OjmzfCHPYh9L2Ehs1TrSk1ser9Ofx0ZMVL/jBZR2EIj\n        OZ8tH6KlX2/B2pbSPIO6kD5c4UA8Cf1SbDJCwJ/kI9ihAgMBAAGjgbAwga0wDgYD\n        VR0PAQH/BAQDAgXgMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUSNjx8cJw1Vu7\n        fHMJk6+4uDAD+H8wTQYDVR0RBEYwRKBCBgkrBgEEAQkVAgOgNRMzQ2hpcElEPVVV\n        VUNNaElGcUVFMklFUUVBQWNBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE9MB0GA1Ud\n        DgQWBBRdhMkFD/z5hokaQeLbaRsp4hkvbzANBgkqhkiG9w0BAQsFAAOCAQEAMtuh\n        YpBz4xEZ7YdJsLpw67Q0TTJGnTBRpzAeY1urYDoDz8TSx556XG7z3IRzuED5KVSp\n        OwmH/iZ+tDfYQ3W3ElWTW93871DkuW4WQIfbnoHg/F7bF0DKYVkD3rpZjyz3NhzH\n        d7cjTdJXQ85bTAOXDuxKH3qewrXxxOGXgh3I6NUq0UwMTWh84lND7Jl+ZAQkYNS2\n        iHanTZFQBk3ML0NUb7fKDYGRTZRqwQ/upIO4S6LV1cxH/6V0qbMy3sCSHZoMLrW3\n        0m3M6yKpe5+VZzHZwmWdUf3Ot+zKjhveK5/YNsMIASdvtvymxUizq2Hr1hvR/kPc\n        p1vuyWxipU8JfzOh/A==\n        -----END CERTIFICATE-----\n        ",
-                    "tunnel": {
-                      "certificateName": "DeviceSUDI",
-                      "name": "MERAKI",
-                      "loopbackNumber": 1000,
-                      "localInterface": 1
-                    },
-                    "user": {
-                      "username": "Meraki"
-                    },
-                    "vty": {
-                      "startLineNumber": 16,
-                      "endLineNumber": 17,
-                      "authentication": {
-                        "group": {
-                          "name": ""
-                        }
-                      },
-                      "authorization": {
-                        "group": {
-                          "name": "MERAKI"
-                        }
-                      },
-                      "accessList": {
-                        "vtyIn": {
-                          "name": "MERAKI_IN"
-                        },
-                        "vtyOut": {
-                          "name": "MERAKI_OUT"
-                        }
-                      },
-                      "rotaryNumber": 50
-                    }
-                  }
-                ]
-              },
-              "required": [
-                "devices"
-              ]
-            },
-            "required": true
+            "type": "string",
+            "enum": [
+              "switch",
+              "wireless_controller"
+            ],
+            "name": "deviceType",
+            "in": "query",
+            "required": true,
+            "description": "Device Type switch or wireless controller"
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           }
         ],
         "responses": {
-          "201": {
+          "202": {
             "description": "Successful operation",
             "schema": {
               "type": "array",
               "items": {
                 "type": "object",
                 "properties": {
-                  "message": {
+                  "id": {
                     "type": "string",
-                    "description": "Message related to whether or not the device was found and can be imported."
+                    "description": "Network ID"
                   },
-                  "udi": {
+                  "organizationId": {
                     "type": "string",
-                    "description": "Device UDI certificate"
+                    "description": "Organization ID"
                   },
-                  "deviceId": {
+                  "name": {
                     "type": "string",
-                    "description": "Import ID from the Import operation"
+                    "description": "Network name"
                   },
-                  "status": {
-                    "type": "string",
-                    "description": "The import status of the device"
-                  },
-                  "configParams": {
-                    "type": "object",
-                    "properties": {
-                      "tunnel": {
-                        "type": "object",
-                        "properties": {
-                          "mode": {
-                            "type": "string",
-                            "description": ""
-                          },
-                          "port": {
-                            "type": "string",
-                            "description": "The port used for the ssh tunnel."
-                          },
-                          "host": {
-                            "type": "string",
-                            "description": "SSH tunnel URL used to connect to the device"
-                          },
-                          "name": {
-                            "type": "string",
-                            "description": "The name of the tunnel we are attempting to connect to"
-                          },
-                          "rootCertificate": {
-                            "type": "object",
-                            "properties": {
-                              "content": {
-                                "type": "string",
-                                "description": "Public certificate value"
-                              },
-                              "name": {
-                                "type": "string",
-                                "description": "The name of the server protected by the certificate"
-                              }
-                            },
-                            "description": "Root certificate information"
-                          }
-                        },
-                        "description": "Configuration options used to connect to the device"
-                      },
-                      "cloudStaticIp": {
-                        "type": "string",
-                        "description": "Static IP Address used to connect to the device"
-                      },
-                      "user": {
-                        "type": "object",
-                        "properties": {
-                          "publicKey": {
-                            "type": "string",
-                            "description": "The public key for the registered user"
-                          },
-                          "username": {
-                            "type": "string",
-                            "description": "The username added to Catalyst device"
-                          },
-                          "secret": {
-                            "type": "object",
-                            "properties": {
-                              "hash": {
-                                "type": "string",
-                                "description": "The hashed secret"
-                              }
-                            },
-                            "description": "Stores the user secret hash"
-                          }
-                        },
-                        "description": "User credentials used to connect to the device"
-                      }
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
                     },
-                    "description": "Params used in order to connect to the device"
+                    "description": "List of the product types that the network supports"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "Timezone of the network"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Network tags"
+                  },
+                  "enrollmentString": {
+                    "type": "string",
+                    "description": "Enrollment string for the network"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "URL to the network Dashboard UI"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes for the network"
+                  },
+                  "isBoundToConfigTemplate": {
+                    "type": "boolean",
+                    "description": "If the network is bound to a config template"
                   }
                 }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
             },
             "examples": {
               "application/json": [
                 {
-                  "message": "Existing import found",
-                  "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
-                  "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
-                  "status": "SUCCESS",
-                  "configParams": {
-                    "tunnel": {
-                      "mode": "443",
-                      "port": "443",
-                      "host": "secgw-int3.ciscocloudoffer.com",
-                      "name": "MERAKI-PRIMARY",
-                      "rootCertificate": {
-                        "content": "",
-                        "name": "MERAKI_TLSGW_CA"
-                      }
-                    },
-                    "cloudStaticIp": "1.2.3.4",
-                    "user": {
-                      "publicKey": "",
-                      "username": "MERAKI_USER",
-                      "secret": {
-                        "hash": ""
-                      }
-                    }
-                  }
+                  "id": "N_24329156",
+                  "organizationId": "2930418",
+                  "name": "Main Office",
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ],
+                  "timeZone": "America/Los_Angeles",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "enrollmentString": "my-enrollment-string",
+                  "url": "https://n1.meraki.com//n//manage/nodes/list",
+                  "notes": "Additional description of the network",
+                  "isBoundToConfigTemplate": false
                 }
               ]
             }
           }
         },
-        "summary": "Initiates or updates an import session",
+        "summary": "Returns list of networks eligible for adding cloud monitored device",
         "tags": [
           "organizations",
           "configure",
           "inventory",
           "onboarding",
           "cloudMonitoring",
-          "prepare"
+          "networks"
         ]
       }
     },
@@ -74546,9 +74705,9 @@
                           "guest-ambassador",
                           "monitor-only",
                           "read-only",
-                          "ssid-admins"
+                          "ssid-admin"
                         ],
-                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admins'"
+                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admin'"
                       }
                     },
                     "required": [
@@ -74749,9 +74908,9 @@
                           "guest-ambassador",
                           "monitor-only",
                           "read-only",
-                          "ssid-admins"
+                          "ssid-admin"
                         ],
-                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admins'"
+                        "description": "The privilege of the SAML administrator on the network. Can be one of 'full', 'read-only', 'guest-ambassador', 'monitor-only' or 'ssid-admin'"
                       }
                     },
                     "required": [
@@ -77894,6 +78053,9 @@
       "name": "events"
     },
     {
+      "name": "exportEvents"
+    },
+    {
       "name": "failedConnections"
     },
     {
@@ -78132,9 +78294,6 @@
     },
     {
       "name": "prefixes"
-    },
-    {
-      "name": "prepare"
     },
     {
       "name": "priorities"
@@ -78919,6 +79078,12 @@
       "operation": "update"
     },
     {
+      "group": "Ms/actions/switch",
+      "summary": "Update switch network settings",
+      "resource": "/networks/{networkId}/switch/settings",
+      "operation": "settings/update"
+    },
+    {
       "group": "Multicast",
       "summary": "Update multicast settings for a network",
       "resource": "/networks/{networkId}/switch/routing/multicast",
@@ -79271,12 +79436,6 @@
       "summary": "Update the storm control configuration for a switch network",
       "resource": "/networks/{networkId}/switch/stormControl",
       "operation": "update"
-    },
-    {
-      "group": "Switch",
-      "summary": "Update switch network settings",
-      "resource": "/networks/{networkId}/switch/settings",
-      "operation": "settings/update"
     },
     {
       "group": "Switch",
