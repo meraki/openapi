@@ -65,14 +65,12 @@ jobs:
           next-version-increment-minor: true
       - name: Set new version
         id: new-version
-        run: |
-          echo "NEW_VERSION=v${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0-beta.0" >> $GITHUB_ENV
-          echo "NEW_VERSION_WITHOUT_V"=${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0" >> $GITHUB_ENV
+        run: echo "NEW_VERSION=v${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0-beta.0" >> $GITHUB_ENV
       - name: Update OAS docs with new version
         uses: jacobtomlinson/gha-find-replace@v2
         with:
           find: '"version": "0.0.0"'
-          replace: '"version": "${{ env.NEW_VERSION_WITHOUT_V }}"'
+          replace: '"version": "${{ env.CURRENT_VERSION_MAJOR }}.${{ env.NEXT_VERSION_MINOR }}.0-beta.0"'
           regex: false
           include: openapi/*
       - name: Commit changes
