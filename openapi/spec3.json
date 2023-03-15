@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 08 March, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 15 March, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "v1.31.0-beta.1"
+    "version": "1.31.0-beta.2"
   },
   "servers": [
     {
@@ -58236,10 +58236,11 @@
                       "WPA1 and WPA2",
                       "WPA1 only",
                       "WPA2 only",
+                      "WPA3 192-bit Security",
                       "WPA3 Transition Mode",
                       "WPA3 only"
                     ],
-                    "description": "The types of WPA encryption. ('WPA1 only', 'WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode' or 'WPA3 only')"
+                    "description": "The types of WPA encryption. ('WPA1 only', 'WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode', 'WPA3 only' or 'WPA3 192-bit Security')"
                   },
                   "dot11w": {
                     "type": "object",
@@ -81283,6 +81284,1038 @@
         ]
       }
     },
+    "/organizations/{organizationId}/secureConnect/privateApplications": {
+      "get": {
+        "description": "Provides a list of private applications for an Organization.",
+        "operationId": "getOrganizationSecureConnectPrivateApplications",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "integer"
+            },
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "name",
+            "in": "query",
+            "description": "Optional parameter to filter the private applications list by application name, case is ignored"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "description",
+            "in": "query",
+            "description": "Optional parameter to filter the private applications list by application description, case is ignored"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "applicationGroupId",
+            "in": "query",
+            "description": "Optional parameter for filtering the list of private applications belonging to the application group identified by the given ID."
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "browser",
+                "network"
+              ]
+            },
+            "name": "accessType",
+            "in": "query",
+            "description": "Optional parameter for filtering the list of private applications by applications that contain at least one destination with the specified accessType value."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "externalFQDN",
+            "in": "query",
+            "description": "Optional parameter for filtering the list of private applications by external FQDN equals the given value"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "applicationId",
+                "createdAt",
+                "modifiedAt",
+                "name",
+                "organizationId"
+              ]
+            },
+            "name": "sortBy",
+            "in": "query",
+            "description": "Optional parameter to specify the field used to sort objects."
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            },
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Optional parameter to specify the sort order. Default value is asc."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "applicationId": {
+                            "type": "string",
+                            "description": "Private Application resource ID, use this ID as reference for subsequent requests"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Optional Text description for Application"
+                          },
+                          "destinations": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "destinationAddr": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                                },
+                                "protocolPorts": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "protocol": {
+                                        "type": "string",
+                                        "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                                      },
+                                      "ports": {
+                                        "type": "string",
+                                        "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                                      }
+                                    }
+                                  },
+                                  "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                                },
+                                "accessType": {
+                                  "type": "string",
+                                  "description": "Browser Based Access or Network Based Access."
+                                }
+                              }
+                            },
+                            "description": "Destination targets for Private Applications."
+                          },
+                          "appProtocol": {
+                            "type": "string",
+                            "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                          },
+                          "sni": {
+                            "type": "string",
+                            "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                          },
+                          "externalFQDN": {
+                            "type": "string",
+                            "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                          },
+                          "sslVerificationEnabled": {
+                            "type": "boolean",
+                            "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                          },
+                          "applicationGroupIds": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "List of application group ids attached to this Private Application"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Creation time of the private app"
+                          },
+                          "modifiedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Last modified time of the private app"
+                          }
+                        }
+                      },
+                      "description": "List of Private Applications"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total count of private Applications"
+                        }
+                      },
+                      "description": "Meta data details about result"
+                    }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "items": [
+                    {
+                      "applicationId": "183456",
+                      "name": "Jira",
+                      "description": "Jira App For My Org",
+                      "destinations": [
+                        {
+                          "destinationAddr": [
+                            "172.6.0.0/32",
+                            "255.100.100.0/24"
+                          ],
+                          "protocolPorts": [
+                            {
+                              "protocol": "TCP",
+                              "ports": "80-82"
+                            }
+                          ],
+                          "accessType": "network"
+                        }
+                      ],
+                      "appProtocol": "https",
+                      "sni": "xyz123.jira.com",
+                      "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                      "sslVerificationEnabled": true,
+                      "applicationGroupIds": [
+                        "12345"
+                      ],
+                      "createdAt": "2021-12-13T16:07:07.222Z",
+                      "modifiedAt": "2021-12-13T16:07:07.222Z"
+                    }
+                  ],
+                  "meta": {
+                    "total": 1
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "summary": "Provides a list of private applications for an Organization.",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Adds a new private application to the Organization. A maximum of 300 private applications are allowed for an organization.",
+        "operationId": "createOrganizationSecureConnectPrivateApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional Text description for Application"
+                  },
+                  "destinations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "destinationAddr": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                        },
+                        "protocolPorts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "protocol": {
+                                "type": "string",
+                                "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                              },
+                              "ports": {
+                                "type": "string",
+                                "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                              }
+                            },
+                            "required": [
+                              "protocol",
+                              "ports"
+                            ]
+                          },
+                          "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                        },
+                        "accessType": {
+                          "type": "string",
+                          "enum": [
+                            "browser",
+                            "network"
+                          ],
+                          "description": "Browser Based Access or Network Based Access."
+                        }
+                      },
+                      "required": [
+                        "destinationAddr",
+                        "protocolPorts",
+                        "accessType"
+                      ]
+                    },
+                    "description": "List of IP address destinations."
+                  },
+                  "appProtocol": {
+                    "type": "string",
+                    "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                  },
+                  "sni": {
+                    "type": "string",
+                    "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                  },
+                  "externalFQDN": {
+                    "type": "string",
+                    "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                  },
+                  "sslVerificationEnabled": {
+                    "type": "boolean",
+                    "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                  },
+                  "applicationGroupIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of application group ids attached to this Private Application"
+                  }
+                },
+                "example": {
+                  "name": "Jira",
+                  "description": "Jira App For My Org",
+                  "destinations": [
+                    {
+                      "destinationAddr": [
+                        "172.6.0.0/32",
+                        "255.100.100.0/24"
+                      ],
+                      "protocolPorts": [
+                        {
+                          "protocol": "TCP",
+                          "ports": "80-82"
+                        }
+                      ],
+                      "accessType": "network"
+                    }
+                  ],
+                  "appProtocol": "https",
+                  "sni": "xyz123.jira.com",
+                  "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                  "sslVerificationEnabled": true,
+                  "applicationGroupIds": [
+                    "12345"
+                  ]
+                },
+                "required": [
+                  "name",
+                  "destinations"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "applicationId": {
+                      "type": "string",
+                      "description": "Private Application resource ID, use this ID as reference for subsequent requests"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Optional Text description for Application"
+                    },
+                    "destinations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "destinationAddr": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                          },
+                          "protocolPorts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "protocol": {
+                                  "type": "string",
+                                  "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                                },
+                                "ports": {
+                                  "type": "string",
+                                  "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                                }
+                              }
+                            },
+                            "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                          },
+                          "accessType": {
+                            "type": "string",
+                            "description": "Browser Based Access or Network Based Access."
+                          }
+                        }
+                      },
+                      "description": "Destination targets for Private Applications."
+                    },
+                    "appProtocol": {
+                      "type": "string",
+                      "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                    },
+                    "sni": {
+                      "type": "string",
+                      "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                    },
+                    "externalFQDN": {
+                      "type": "string",
+                      "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                    },
+                    "sslVerificationEnabled": {
+                      "type": "boolean",
+                      "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                    },
+                    "applicationGroupIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of application group ids attached to this Private Application"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Creation time of the private app"
+                    },
+                    "modifiedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Last modified time of the private app"
+                    }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "applicationId": "183456",
+                  "name": "Jira",
+                  "description": "Jira App For My Org",
+                  "destinations": [
+                    {
+                      "destinationAddr": [
+                        "172.6.0.0/32",
+                        "255.100.100.0/24"
+                      ],
+                      "protocolPorts": [
+                        {
+                          "protocol": "TCP",
+                          "ports": "80-82"
+                        }
+                      ],
+                      "accessType": "network"
+                    }
+                  ],
+                  "appProtocol": "https",
+                  "sni": "xyz123.jira.com",
+                  "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                  "sslVerificationEnabled": true,
+                  "applicationGroupIds": [
+                    "12345"
+                  ],
+                  "createdAt": "2021-12-13T16:07:07.222Z",
+                  "modifiedAt": "2021-12-13T16:07:07.222Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Adds a new private application to the Organization",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/secureConnect/privateApplications/{id}": {
+      "put": {
+        "description": "Updates a specific private application. Updates can be made to Name, Description, Destinations, App Protocol, SNI and SSL verification. Application groups can be added or removed.",
+        "operationId": "updateOrganizationSecureConnectPrivateApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional Text description for Application"
+                  },
+                  "destinations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "destinationAddr": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                        },
+                        "protocolPorts": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "protocol": {
+                                "type": "string",
+                                "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                              },
+                              "ports": {
+                                "type": "string",
+                                "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                              }
+                            },
+                            "required": [
+                              "protocol",
+                              "ports"
+                            ]
+                          },
+                          "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                        },
+                        "accessType": {
+                          "type": "string",
+                          "enum": [
+                            "browser",
+                            "network"
+                          ],
+                          "description": "Browser Based Access or Network Based Access."
+                        }
+                      },
+                      "required": [
+                        "destinationAddr",
+                        "protocolPorts",
+                        "accessType"
+                      ]
+                    },
+                    "description": "List of IP address destinations."
+                  },
+                  "appProtocol": {
+                    "type": "string",
+                    "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                  },
+                  "sni": {
+                    "type": "string",
+                    "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                  },
+                  "externalFQDN": {
+                    "type": "string",
+                    "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                  },
+                  "sslVerificationEnabled": {
+                    "type": "boolean",
+                    "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                  },
+                  "applicationGroupIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of application group ids attached to this Private Application"
+                  }
+                },
+                "example": {
+                  "name": "Jira",
+                  "description": "Jira App For My Org",
+                  "destinations": [
+                    {
+                      "destinationAddr": [
+                        "172.6.0.0/32",
+                        "255.100.100.0/24"
+                      ],
+                      "protocolPorts": [
+                        {
+                          "protocol": "TCP",
+                          "ports": "80-82"
+                        }
+                      ],
+                      "accessType": "network"
+                    }
+                  ],
+                  "appProtocol": "https",
+                  "sni": "xyz123.jira.com",
+                  "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                  "sslVerificationEnabled": true,
+                  "applicationGroupIds": [
+                    "12345"
+                  ]
+                },
+                "required": [
+                  "name",
+                  "destinations"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "applicationId": {
+                      "type": "string",
+                      "description": "Private Application resource ID, use this ID as reference for subsequent requests"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Optional Text description for Application"
+                    },
+                    "destinations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "destinationAddr": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                          },
+                          "protocolPorts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "protocol": {
+                                  "type": "string",
+                                  "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                                },
+                                "ports": {
+                                  "type": "string",
+                                  "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                                }
+                              }
+                            },
+                            "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                          },
+                          "accessType": {
+                            "type": "string",
+                            "description": "Browser Based Access or Network Based Access."
+                          }
+                        }
+                      },
+                      "description": "Destination targets for Private Applications."
+                    },
+                    "appProtocol": {
+                      "type": "string",
+                      "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                    },
+                    "sni": {
+                      "type": "string",
+                      "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                    },
+                    "externalFQDN": {
+                      "type": "string",
+                      "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                    },
+                    "sslVerificationEnabled": {
+                      "type": "boolean",
+                      "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                    },
+                    "applicationGroupIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of application group ids attached to this Private Application"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Creation time of the private app"
+                    },
+                    "modifiedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Last modified time of the private app"
+                    }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "applicationId": "183456",
+                  "name": "Jira",
+                  "description": "Jira App For My Org",
+                  "destinations": [
+                    {
+                      "destinationAddr": [
+                        "172.6.0.0/32",
+                        "255.100.100.0/24"
+                      ],
+                      "protocolPorts": [
+                        {
+                          "protocol": "TCP",
+                          "ports": "80-82"
+                        }
+                      ],
+                      "accessType": "network"
+                    }
+                  ],
+                  "appProtocol": "https",
+                  "sni": "xyz123.jira.com",
+                  "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                  "sslVerificationEnabled": true,
+                  "applicationGroupIds": [
+                    "12345"
+                  ],
+                  "createdAt": "2021-12-13T16:07:07.222Z",
+                  "modifiedAt": "2021-12-13T16:07:07.222Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Updates a specific private application",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      },
+      "delete": {
+        "description": "Deletes a specific private application. Delink the application from any application groups before deleting the app. Cascade delete application group if this is the only application in the group.",
+        "operationId": "deleteOrganizationSecureConnectPrivateApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "force": {
+                    "type": "boolean",
+                    "description": "Boolean flag to force delete application, even if application is in use by one or more rules."
+                  }
+                },
+                "example": {
+                  "force": false
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Deletes a specific private application",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      },
+      "get": {
+        "description": "Return the details of a specific private application",
+        "operationId": "getOrganizationSecureConnectPrivateApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "applicationId": {
+                      "type": "string",
+                      "description": "Private Application resource ID, use this ID as reference for subsequent requests"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of Application. This is required and should be unique across all applications for a given organization. Name cannot have any special characters other than spaces and hyphens."
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Optional Text description for Application"
+                    },
+                    "destinations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "destinationAddr": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "IPv4 address and CIDR are allowed for Network Access Policy (accessType = network).Only /32 addresses are allowed for Browser Access Policy (accessType = browser).CIDR ranges are unsupported. IPv6 is unsupported."
+                          },
+                          "protocolPorts": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "protocol": {
+                                  "type": "string",
+                                  "description": "Protocol for connecting with Application Upstream. Only TCP protocol is allowed for Browser Based Access."
+                                },
+                                "ports": {
+                                  "type": "string",
+                                  "description": "Port for connecting with Application Upstream. Comma separated ports and port ranges are allowed. Port number must be in between 1-65535."
+                                }
+                              }
+                            },
+                            "description": "List of protocols and ports for IP address destinations. Protocols must be unique in this list."
+                          },
+                          "accessType": {
+                            "type": "string",
+                            "description": "Browser Based Access or Network Based Access."
+                          }
+                        }
+                      },
+                      "description": "Destination targets for Private Applications."
+                    },
+                    "appProtocol": {
+                      "type": "string",
+                      "description": "Protocol for communication between proxy to private application. Applicable for Browser Based Access only."
+                    },
+                    "sni": {
+                      "type": "string",
+                      "description": "Optional SNI. Applicable for Browser Based Access only. SNI should be a valid domain."
+                    },
+                    "externalFQDN": {
+                      "type": "string",
+                      "description": "Cisco or Customer Managed URL for Application. Applicable for Browser Based Access only. This field is system generated based on the application name and organization ID and overrides user input in payload. This value must be unique across all applications for a given organization."
+                    },
+                    "sslVerificationEnabled": {
+                      "type": "boolean",
+                      "description": "Enable Upstream SSL verification for the internally hosted URL by the customer. Applicable for Browser Based Access only. Default is true."
+                    },
+                    "applicationGroupIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of application group ids attached to this Private Application"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Creation time of the private app"
+                    },
+                    "modifiedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Last modified time of the private app"
+                    }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "applicationId": "183456",
+                  "name": "Jira",
+                  "description": "Jira App For My Org",
+                  "destinations": [
+                    {
+                      "destinationAddr": [
+                        "172.6.0.0/32",
+                        "255.100.100.0/24"
+                      ],
+                      "protocolPorts": [
+                        {
+                          "protocol": "TCP",
+                          "ports": "80-82"
+                        }
+                      ],
+                      "accessType": "network"
+                    }
+                  ],
+                  "appProtocol": "https",
+                  "sni": "xyz123.jira.com",
+                  "externalFQDN": "https://jira-5001.ztna.ciscoplus.com",
+                  "sslVerificationEnabled": true,
+                  "applicationGroupIds": [
+                    "12345"
+                  ],
+                  "createdAt": "2021-12-13T16:07:07.222Z",
+                  "modifiedAt": "2021-12-13T16:07:07.222Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the details of a specific private application",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/sensor/readings/history": {
       "get": {
         "description": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
@@ -87542,6 +88575,9 @@
       "name": "priorities"
     },
     {
+      "name": "privateApplications"
+    },
+    {
       "name": "profiles"
     },
     {
@@ -87603,6 +88639,9 @@
     },
     {
       "name": "search"
+    },
+    {
+      "name": "secureConnect"
     },
     {
       "name": "security"
