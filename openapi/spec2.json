@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.31.0-beta.4",
+    "version": "1.32.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 29 March, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -22292,6 +22292,10 @@
                         "type": "string",
                         "description": "A description of the event the happened."
                       },
+                      "category": {
+                        "type": "string",
+                        "description": "The category that the event type belongs to"
+                      },
                       "clientId": {
                         "type": "string",
                         "description": "A string identifying the client. This could be a client's MAC or IP address"
@@ -22373,6 +22377,7 @@
                     "networkId": "N_24329156",
                     "type": "association",
                     "description": "802.11 association",
+                    "category": "80211",
                     "clientId": "k74272e",
                     "clientDescription": "Miles's phone",
                     "clientMac": "22:33:44:55:66:77",
@@ -26011,16 +26016,16 @@
                               "required": [
                                 "id"
                               ],
-                              "description": "The version to be updated to"
+                              "description": "The version to be updated to for switch devices"
                             }
                           },
-                          "description": "The pending firmware upgrade if it exists"
+                          "description": "The next upgrade version for the switch network"
                         }
                       },
-                      "description": "The network device to be updated"
+                      "description": "Version information for the switch network being upgraded"
                     }
                   },
-                  "description": "Contains information about the network to update"
+                  "description": "Contains firmware upgrade version information"
                 },
                 "stages": {
                   "type": "array",
@@ -42684,7 +42689,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "defaultMtuSize": {
+                  "type": "integer",
+                  "description": "MTU size for the entire network. Default value is 9578."
+                },
+                "overrides": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch serials. Applicable only for switch network."
+                      },
+                      "switchProfiles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch profile IDs. Applicable only for template network."
+                      },
+                      "mtuSize": {
+                        "type": "integer",
+                        "description": "MTU size for the switches or switch profiles."
+                      }
+                    },
+                    "required": [
+                      "mtuSize"
+                    ]
+                  },
+                  "description": "Override MTU size for individual switches or switch profiles.\n      An empty array will clear overrides."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -42696,14 +42737,11 @@
                       "Q234-ABCD-0002",
                       "Q234-ABCD-0003"
                     ],
-                    "mtuSize": 1500
-                  },
-                  {
                     "switchProfiles": [
                       "1284392014819",
                       "2983092129865"
                     ],
-                    "mtuSize": 1600
+                    "mtuSize": 1500
                   }
                 ]
               }
@@ -69159,7 +69197,66 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the device"
+                  },
+                  "lat": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Latitude of the device"
+                  },
+                  "lng": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Longitude of the device"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Physical address of the device"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes for the device, limited to 255 characters"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of tags assigned to the device"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "ID of the network the device belongs to"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the device"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the device"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of the device"
+                  },
+                  "lanIp": {
+                    "type": "string",
+                    "description": "LAN IP address of the device"
+                  },
+                  "firmware": {
+                    "type": "string",
+                    "description": "Firmware version of the device"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product type of the device"
+                  }
+                }
               }
             },
             "headers": {
