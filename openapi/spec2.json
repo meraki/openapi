@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v1.31.0",
+    "version": "1.32.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 February, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -7180,7 +7180,37 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "staticRouteId": {
+                  "type": "string",
+                  "description": "The identifier of a layer 3 static route"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name or description of the layer 3 static route"
+                },
+                "subnet": {
+                  "type": "string",
+                  "description": "The IP address of the subnetwork specified in CIDR notation (ex. 1.2.3.0/24)"
+                },
+                "nextHopIp": {
+                  "type": "string",
+                  "description": " The IP address of the router to which traffic for this destination network should be sent"
+                },
+                "advertiseViaOspfEnabled": {
+                  "type": "boolean",
+                  "description": "Option to advertise static routes via OSPF"
+                },
+                "preferOverOspfRoutesEnabled": {
+                  "type": "boolean",
+                  "description": "Option to prefer static routes over OSPF routes"
+                }
+              },
+              "required": [
+                "subnet",
+                "nextHopIp"
+              ]
             },
             "examples": {
               "application/json": {
@@ -14093,7 +14123,7 @@
     },
     "/networks/{networkId}/appliance/trafficShaping/uplinkBandwidth": {
       "get": {
-        "description": "Returns the uplink bandwidth settings for your MX network.",
+        "description": "Returns the uplink bandwidth limits for your MX network. This may not reflect the affected device's hardware capabilities.  For more information on your device's hardware capabilities, please consult our MX Family Datasheet - [https://meraki.cisco.com/product-collateral/mx-family-datasheet/?file]",
         "operationId": "getNetworkApplianceTrafficShapingUplinkBandwidth",
         "parameters": [
           {
@@ -14121,10 +14151,10 @@
                         },
                         "limitDown": {
                           "type": "integer",
-                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                          "description": "configured DOWN limit for the uplink (in Kbps).  Null indicated unlimited"
                         }
                       },
-                      "description": "uplink wan1 configued limits [optional]"
+                      "description": "uplink wan1 configured limits [optional]"
                     },
                     "wan2": {
                       "type": "object",
@@ -14135,10 +14165,10 @@
                         },
                         "limitDown": {
                           "type": "integer",
-                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                          "description": "configured DOWN limit for the uplink (in Kbps).  Null indicated unlimited"
                         }
                       },
-                      "description": "uplink wan2 configued limits [optional]"
+                      "description": "uplink wan2 configured limits [optional]"
                     },
                     "cellular": {
                       "type": "object",
@@ -14149,43 +14179,13 @@
                         },
                         "limitDown": {
                           "type": "integer",
-                          "description": "configured UP limit for the uplink (in Kbps).  Null indicated unlimited"
+                          "description": "configured DOWN limit for the uplink (in Kbps).  Null indicated unlimited"
                         }
                       },
-                      "description": "uplink cellular configued limits [optional]"
+                      "description": "uplink cellular configured limits [optional]"
                     }
                   },
                   "description": "A hash uplink keys and their configured settings for the Appliance"
-                },
-                "capabilities": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "model": {
-                        "type": "string",
-                        "description": "model number of appliance"
-                      },
-                      "bandwidths": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "interface": {
-                              "type": "string",
-                              "description": "name of uplink"
-                            },
-                            "limit": {
-                              "type": "integer",
-                              "description": "limit in bytes (null indicates unlimited)"
-                            }
-                          }
-                        },
-                        "description": "array of uplink limits"
-                      }
-                    }
-                  },
-                  "description": "Array of appliances"
                 }
               }
             },
@@ -14193,34 +14193,23 @@
               "application/json": {
                 "bandwidthLimits": {
                   "wan1": {
-                    "limitUp": 600000,
-                    "limitDown": 600000
+                    "limitUp": 1000000,
+                    "limitDown": 1000000
                   },
                   "wan2": {
-                    "limitUp": 600000,
-                    "limitDown": 600000
+                    "limitUp": 1000000,
+                    "limitDown": 1000000
                   },
                   "cellular": {
                     "limitUp": 51200,
                     "limitDown": 51200
                   }
-                },
-                "capabilities": [
-                  {
-                    "model": "MX68",
-                    "bandwidths": [
-                      {
-                        "interface": "wan1",
-                        "limit": 629145600
-                      }
-                    ]
-                  }
-                ]
+                }
               }
             }
           }
         },
-        "summary": "Returns the uplink bandwidth settings for your MX network.",
+        "summary": "Returns the uplink bandwidth limits for your MX network",
         "tags": [
           "appliance",
           "configure",
@@ -22229,6 +22218,10 @@
                         "type": "string",
                         "description": "A description of the event the happened."
                       },
+                      "category": {
+                        "type": "string",
+                        "description": "The category that the event type belongs to"
+                      },
                       "clientId": {
                         "type": "string",
                         "description": "A string identifying the client. This could be a client's MAC or IP address"
@@ -22310,6 +22303,7 @@
                     "networkId": "N_24329156",
                     "type": "association",
                     "description": "802.11 association",
+                    "category": "80211",
                     "clientId": "k74272e",
                     "clientDescription": "Miles's phone",
                     "clientMac": "22:33:44:55:66:77",
@@ -25948,16 +25942,16 @@
                               "required": [
                                 "id"
                               ],
-                              "description": "The version to be updated to"
+                              "description": "The version to be updated to for switch devices"
                             }
                           },
-                          "description": "The pending firmware upgrade if it exists"
+                          "description": "The next upgrade version for the switch network"
                         }
                       },
-                      "description": "The network device to be updated"
+                      "description": "Version information for the switch network being upgraded"
                     }
                   },
-                  "description": "Contains information about the network to update"
+                  "description": "Contains firmware upgrade version information"
                 },
                 "stages": {
                   "type": "array",
@@ -39149,6 +39143,10 @@
                     },
                     "description": "Object for RADIUS Settings"
                   },
+                  "guestPortBouncing": {
+                    "type": "boolean",
+                    "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
+                  },
                   "radiusTestingEnabled": {
                     "type": "boolean",
                     "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
@@ -39260,6 +39258,7 @@
                     "failedAuthVlanId": 100,
                     "reAuthenticationInterval": 120
                   },
+                  "guestPortBouncing": false,
                   "radiusTestingEnabled": false,
                   "radiusCoaSupportEnabled": false,
                   "radiusAccountingEnabled": true,
@@ -39371,6 +39370,10 @@
                     }
                   },
                   "description": "Object for RADIUS Settings"
+                },
+                "guestPortBouncing": {
+                  "type": "boolean",
+                  "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
                 },
                 "radiusTestingEnabled": {
                   "type": "boolean",
@@ -39489,6 +39492,7 @@
                   "failedAuthVlanId": 100,
                   "reAuthenticationInterval": 120
                 },
+                "guestPortBouncing": false,
                 "radiusTestingEnabled": false,
                 "radiusCoaSupportEnabled": false,
                 "radiusAccountingEnabled": true,
@@ -39584,6 +39588,10 @@
                     }
                   },
                   "description": "Object for RADIUS Settings"
+                },
+                "guestPortBouncing": {
+                  "type": "boolean",
+                  "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
                 },
                 "radiusTestingEnabled": {
                   "type": "boolean",
@@ -39694,6 +39702,7 @@
                   "failedAuthVlanId": 100,
                   "reAuthenticationInterval": 120
                 },
+                "guestPortBouncing": false,
                 "radiusTestingEnabled": false,
                 "radiusCoaSupportEnabled": false,
                 "radiusAccountingEnabled": true,
@@ -39805,6 +39814,10 @@
                   },
                   "description": "Object for RADIUS Settings"
                 },
+                "guestPortBouncing": {
+                  "type": "boolean",
+                  "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
+                },
                 "radiusTestingEnabled": {
                   "type": "boolean",
                   "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
@@ -39914,6 +39927,7 @@
                   "failedAuthVlanId": 100,
                   "reAuthenticationInterval": 120
                 },
+                "guestPortBouncing": false,
                 "radiusTestingEnabled": false,
                 "radiusCoaSupportEnabled": false,
                 "radiusAccountingEnabled": true,
@@ -40031,6 +40045,10 @@
                   },
                   "description": "Object for RADIUS Settings"
                 },
+                "guestPortBouncing": {
+                  "type": "boolean",
+                  "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
+                },
                 "radiusTestingEnabled": {
                   "type": "boolean",
                   "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
@@ -40148,6 +40166,7 @@
                   "failedAuthVlanId": 100,
                   "reAuthenticationInterval": 120
                 },
+                "guestPortBouncing": false,
                 "radiusTestingEnabled": false,
                 "radiusCoaSupportEnabled": false,
                 "radiusAccountingEnabled": true,
@@ -40233,6 +40252,10 @@
                     }
                   },
                   "description": "Object for RADIUS Settings"
+                },
+                "guestPortBouncing": {
+                  "type": "boolean",
+                  "description": "If enabled, Meraki devices will periodically send access-request messages to these RADIUS servers"
                 },
                 "radiusTestingEnabled": {
                   "type": "boolean",
@@ -40343,6 +40366,7 @@
                   "failedAuthVlanId": 100,
                   "reAuthenticationInterval": 120
                 },
+                "guestPortBouncing": false,
                 "radiusTestingEnabled": false,
                 "radiusCoaSupportEnabled": false,
                 "radiusAccountingEnabled": true,
@@ -42233,7 +42257,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "defaultMtuSize": {
+                  "type": "integer",
+                  "description": "MTU size for the entire network. Default value is 9578."
+                },
+                "overrides": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "switches": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch serials. Applicable only for switch network."
+                      },
+                      "switchProfiles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of switch profile IDs. Applicable only for template network."
+                      },
+                      "mtuSize": {
+                        "type": "integer",
+                        "description": "MTU size for the switches or switch profiles."
+                      }
+                    },
+                    "required": [
+                      "mtuSize"
+                    ]
+                  },
+                  "description": "Override MTU size for individual switches or switch profiles.\n      An empty array will clear overrides."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -42245,14 +42305,11 @@
                       "Q234-ABCD-0002",
                       "Q234-ABCD-0003"
                     ],
-                    "mtuSize": 1500
-                  },
-                  {
                     "switchProfiles": [
                       "1284392014819",
                       "2983092129865"
                     ],
-                    "mtuSize": 1600
+                    "mtuSize": 1500
                   }
                 ]
               }
@@ -54318,10 +54375,11 @@
                     "WPA1 and WPA2",
                     "WPA1 only",
                     "WPA2 only",
+                    "WPA3 192-bit Security",
                     "WPA3 Transition Mode",
                     "WPA3 only"
                   ],
-                  "description": "The types of WPA encryption. ('WPA1 only', 'WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode' or 'WPA3 only')"
+                  "description": "The types of WPA encryption. ('WPA1 only', 'WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode', 'WPA3 only' or 'WPA3 192-bit Security')"
                 },
                 "dot11w": {
                   "type": "object",
@@ -55289,27 +55347,27 @@
                 "identity": {
                   "type": "object",
                   "properties": {
-                    "timeout": {
-                      "type": "integer",
-                      "description": "EAP timeout in seconds."
-                    },
                     "retries": {
                       "type": "integer",
                       "description": "Maximum number of EAP retries."
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "description": "EAP timeout in seconds."
                     }
                   },
-                  "description": "EAPOL Key settings."
+                  "description": "EAP settings for identity requests."
                 },
                 "eapolKey": {
                   "type": "object",
                   "properties": {
-                    "timeoutInMs": {
-                      "type": "integer",
-                      "description": "EAPOL Key timeout in milliseconds."
-                    },
                     "retries": {
                       "type": "integer",
                       "description": "Maximum number of EAPOL key retries."
+                    },
+                    "timeoutInMs": {
+                      "type": "integer",
+                      "description": "EAPOL Key timeout in milliseconds."
                     }
                   },
                   "description": "EAPOL Key settings."
@@ -55318,15 +55376,15 @@
             },
             "examples": {
               "application/json": {
-                "timeout": 500,
+                "timeout": 50,
                 "maxRetries": 5,
                 "identity": {
-                  "timeout": 500,
-                  "retries": 5
+                  "retries": 5,
+                  "timeout": 50
                 },
                 "eapolKey": {
-                  "timeoutInMs": 5000,
-                  "retries": 5
+                  "retries": 50,
+                  "timeoutInMs": 5000
                 }
               }
             }
@@ -55400,7 +55458,16 @@
                 }
               },
               "example": {
-
+                "timeout": 5,
+                "identity": {
+                  "retries": 5,
+                  "timeout": 5
+                },
+                "maxRetries": 5,
+                "eapolKey": {
+                  "retries": 5,
+                  "timeoutInMs": 5000
+                }
               }
             }
           }
@@ -55409,22 +55476,58 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "timeout": {
+                  "type": "integer",
+                  "description": "General EAP timeout in seconds."
+                },
+                "maxRetries": {
+                  "type": "integer",
+                  "description": "Maximum number of general EAP retries."
+                },
+                "identity": {
+                  "type": "object",
+                  "properties": {
+                    "retries": {
+                      "type": "integer",
+                      "description": "Maximum number of EAP retries."
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "description": "EAP timeout in seconds."
+                    }
+                  },
+                  "description": "EAP settings for identity requests."
+                },
+                "eapolKey": {
+                  "type": "object",
+                  "properties": {
+                    "retries": {
+                      "type": "integer",
+                      "description": "Maximum number of EAPOL key retries."
+                    },
+                    "timeoutInMs": {
+                      "type": "integer",
+                      "description": "EAPOL Key timeout in milliseconds."
+                    }
+                  },
+                  "description": "EAPOL Key settings."
+                }
+              }
             },
             "examples": {
               "application/json": {
-                "eap_timeout_override": false,
-                "eap_initial_timeout": 5,
-                "eap_max_retries_override": false,
-                "eap_max_retries": 5,
-                "eap_identity_timeout_override": false,
-                "eap_identity_timeout": 5,
-                "eap_identity_retries_override": false,
-                "eap_identity_retries": 5,
-                "eapol_key_timeout_override": false,
-                "eapol_key_timeout": 500,
-                "eapol_key_retries_override": false,
-                "eapol_key_retries": 4
+                "timeout": 50,
+                "maxRetries": 5,
+                "identity": {
+                  "retries": 5,
+                  "timeout": 50
+                },
+                "eapolKey": {
+                  "retries": 50,
+                  "timeoutInMs": 5000
+                }
               }
             }
           }
@@ -56266,7 +56369,7 @@
                   },
                   "expiresAt": {
                     "type": "string",
-                    "description": "Optional timestamp for when the Identity PSK expires."
+                    "description": "Timestamp for when the Identity PSK expires, or 'null' to never expire"
                   }
                 }
               }
@@ -56426,7 +56529,7 @@
                 },
                 "expiresAt": {
                   "type": "string",
-                  "description": "Optional timestamp for when the Identity PSK expires."
+                  "description": "Timestamp for when the Identity PSK expires, or 'null' to never expire"
                 }
               }
             },
@@ -60407,7 +60510,7 @@
                       "description": "The SGT of the source adaptive policy group"
                     }
                   },
-                  "description": "The source adaptive policy group (requires one unique attribute)\n"
+                  "description": "The source adaptive policy group (requires one unique attribute)"
                 },
                 "destinationGroup": {
                   "type": "object",
@@ -60425,7 +60528,7 @@
                       "description": "The SGT of the destination adaptive policy group"
                     }
                   },
-                  "description": "The destination adaptive policy group (requires one unique attribute)\n"
+                  "description": "The destination adaptive policy group (requires one unique attribute)"
                 },
                 "acls": {
                   "type": "array",
@@ -60442,7 +60545,7 @@
                       }
                     }
                   },
-                  "description": "An ordered array of adaptive policy ACLs (each requires one unique attribute) that apply to this policy (default: [])\n"
+                  "description": "An ordered array of adaptive policy ACLs (each requires one unique attribute) that apply to this policy (default: [])"
                 },
                 "lastEntryRule": {
                   "type": "string",
@@ -60451,7 +60554,7 @@
                     "default",
                     "deny"
                   ],
-                  "description": "The rule to apply if there is no matching ACL (default: \"default\")\n"
+                  "description": "The rule to apply if there is no matching ACL (default: \"default\")"
                 }
               },
               "example": {
@@ -60618,7 +60721,7 @@
                       "description": "The SGT of the source adaptive policy group"
                     }
                   },
-                  "description": "The source adaptive policy group (requires one unique attribute)\n"
+                  "description": "The source adaptive policy group (requires one unique attribute)"
                 },
                 "destinationGroup": {
                   "type": "object",
@@ -60636,7 +60739,7 @@
                       "description": "The SGT of the destination adaptive policy group"
                     }
                   },
-                  "description": "The destination adaptive policy group (requires one unique attribute)\n"
+                  "description": "The destination adaptive policy group (requires one unique attribute)"
                 },
                 "acls": {
                   "type": "array",
@@ -60653,7 +60756,7 @@
                       }
                     }
                   },
-                  "description": "An ordered array of adaptive policy ACLs (each requires one unique attribute) that apply to this policy\n"
+                  "description": "An ordered array of adaptive policy ACLs (each requires one unique attribute) that apply to this policy"
                 },
                 "lastEntryRule": {
                   "type": "string",
@@ -60662,7 +60765,7 @@
                     "default",
                     "deny"
                   ],
-                  "description": "The rule to apply if there is no matching ACL\n"
+                  "description": "The rule to apply if there is no matching ACL"
                 }
               },
               "example": {
@@ -67924,7 +68027,66 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the device"
+                  },
+                  "lat": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Latitude of the device"
+                  },
+                  "lng": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "Longitude of the device"
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Physical address of the device"
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Notes for the device, limited to 255 characters"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of tags assigned to the device"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "ID of the network the device belongs to"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial number of the device"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model of the device"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of the device"
+                  },
+                  "lanIp": {
+                    "type": "string",
+                    "description": "LAN IP address of the device"
+                  },
+                  "firmware": {
+                    "type": "string",
+                    "description": "Firmware version of the device"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product type of the device"
+                  }
+                }
               }
             },
             "headers": {
@@ -70936,6 +71098,334 @@
         ]
       }
     },
+    "/organizations/{organizationId}/inventory/onboarding/cloudMonitoring/prepare": {
+      "post": {
+        "description": "Initiates or updates an import session. An import ID will be generated and used when you are ready to commit the import.",
+        "operationId": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInventoryOnboardingCloudMonitoringPrepare",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sudi": {
+                        "type": "string",
+                        "description": "Device SUDI certificate"
+                      },
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "certificateName": {
+                            "type": "string",
+                            "description": "Name of the configured TLS certificate"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the configured TLS tunnel"
+                          },
+                          "loopbackNumber": {
+                            "type": "integer",
+                            "description": "Number of the configured Loopback Interface used for TLS overlay"
+                          },
+                          "localInterface": {
+                            "type": "integer",
+                            "description": "Number of the vlan expected to be used to connect to the cloud"
+                          }
+                        },
+                        "description": "TLS Related Parameters"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string",
+                            "description": "The name of the device user for Meraki monitoring"
+                          }
+                        },
+                        "description": "User parameters"
+                      },
+                      "vty": {
+                        "type": "object",
+                        "properties": {
+                          "startLineNumber": {
+                            "type": "integer",
+                            "description": "Starting line VTY number"
+                          },
+                          "endLineNumber": {
+                            "type": "integer",
+                            "description": "Ending line VTY number"
+                          },
+                          "authentication": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authentication"
+                          },
+                          "authorization": {
+                            "type": "object",
+                            "properties": {
+                              "group": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Group Name"
+                                  }
+                                },
+                                "description": "Group Details"
+                              }
+                            },
+                            "description": "VTY AAA authorization"
+                          },
+                          "accessList": {
+                            "type": "object",
+                            "properties": {
+                              "vtyIn": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY in ACL"
+                              },
+                              "vtyOut": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Name"
+                                  }
+                                },
+                                "description": "VTY out ACL"
+                              }
+                            },
+                            "description": "AccessList details"
+                          },
+                          "rotaryNumber": {
+                            "type": "integer",
+                            "description": "SSH rotary number"
+                          }
+                        },
+                        "description": "VTY Related Parameters"
+                      }
+                    },
+                    "required": [
+                      "sudi"
+                    ]
+                  },
+                  "description": "A set of devices to import (or update)"
+                }
+              },
+              "example": {
+                "devices": [
+                  {
+                    "sudi": "-----BEGIN CERTIFICATE-----\n        MIIDyTCCArGgAwIBAgIKBBNXOVCGU1YztjANBgkqhkiG9w0BAQsFADAnMQ4wDAYD\n        VQQKEwVDaXNjbzEVMBMGA1UEAxMMQUNUMiBTVURJIENBMB4XDTIxMDUzMTEzNTUx\n        NVoXDTI5MDUxNDIwMjU0MVowbTEpMCcGA1UEBRMgUElEOkM5MjAwTC0yNFAtNEcg\n        U046SkFFMjUyMjBSMksxDjAMBgNVBAoTBUNpc2NvMRgwFgYDVQQLEw9BQ1QtMiBM\n        aXRlIFNVREkxFjAUBgNVBAMTDUM5MjAwTC0yNFAtNEcwggEiMA0GCSqGSIb3DQEB\n        AQUAA4IBDwAwggEKAoIBAQDaUPxW76gT5MdoEAt+UrDFiYA9RYh2iHicDViBEyow\n        TR1TuP36bHh13X3vtGiDsCD88Ci2TZIqd/EDkkc7v9ipUUYVVH+YDrPt2Aukb1PH\n        D6K0R+KhgEzRo5x54TlU6oWvjUpwNZUwwdhMWIQaUVkMyZBYNy0jGPLO8jwZhyBg\n        1Fneybr9pwedGbLrAaz+gdEikB8B4a/fvPjVfL5Ngb4QRjFqWuE+X3nLc0kHedep\n        6nfgpUNXMlStVm5nIXKP6OjmzfCHPYh9L2Ehs1TrSk1ser9Ofx0ZMVL/jBZR2EIj\n        OZ8tH6KlX2/B2pbSPIO6kD5c4UA8Cf1SbDJCwJ/kI9ihAgMBAAGjgbAwga0wDgYD\n        VR0PAQH/BAQDAgXgMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUSNjx8cJw1Vu7\n        fHMJk6+4uDAD+H8wTQYDVR0RBEYwRKBCBgkrBgEEAQkVAgOgNRMzQ2hpcElEPVVV\n        VUNNaElGcUVFMklFUUVBQWNBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE9MB0GA1Ud\n        DgQWBBRdhMkFD/z5hokaQeLbaRsp4hkvbzANBgkqhkiG9w0BAQsFAAOCAQEAMtuh\n        YpBz4xEZ7YdJsLpw67Q0TTJGnTBRpzAeY1urYDoDz8TSx556XG7z3IRzuED5KVSp\n        OwmH/iZ+tDfYQ3W3ElWTW93871DkuW4WQIfbnoHg/F7bF0DKYVkD3rpZjyz3NhzH\n        d7cjTdJXQ85bTAOXDuxKH3qewrXxxOGXgh3I6NUq0UwMTWh84lND7Jl+ZAQkYNS2\n        iHanTZFQBk3ML0NUb7fKDYGRTZRqwQ/upIO4S6LV1cxH/6V0qbMy3sCSHZoMLrW3\n        0m3M6yKpe5+VZzHZwmWdUf3Ot+zKjhveK5/YNsMIASdvtvymxUizq2Hr1hvR/kPc\n        p1vuyWxipU8JfzOh/A==\n        -----END CERTIFICATE-----\n        ",
+                    "tunnel": {
+                      "certificateName": "DeviceSUDI",
+                      "name": "MERAKI",
+                      "loopbackNumber": 1000,
+                      "localInterface": 1
+                    },
+                    "user": {
+                      "username": "Meraki"
+                    },
+                    "vty": {
+                      "startLineNumber": 16,
+                      "endLineNumber": 17,
+                      "authentication": {
+                        "group": {
+                          "name": ""
+                        }
+                      },
+                      "authorization": {
+                        "group": {
+                          "name": "MERAKI"
+                        }
+                      },
+                      "accessList": {
+                        "vtyIn": {
+                          "name": "MERAKI_IN"
+                        },
+                        "vtyOut": {
+                          "name": "MERAKI_OUT"
+                        }
+                      },
+                      "rotaryNumber": 50
+                    }
+                  }
+                ]
+              },
+              "required": [
+                "devices"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Message related to whether or not the device was found and can be imported."
+                  },
+                  "udi": {
+                    "type": "string",
+                    "description": "Device UDI certificate"
+                  },
+                  "deviceId": {
+                    "type": "string",
+                    "description": "Import ID from the Import operation"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "The import status of the device"
+                  },
+                  "configParams": {
+                    "type": "object",
+                    "properties": {
+                      "tunnel": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "description": ""
+                          },
+                          "port": {
+                            "type": "string",
+                            "description": "The port used for the ssh tunnel."
+                          },
+                          "host": {
+                            "type": "string",
+                            "description": "SSH tunnel URL used to connect to the device"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The name of the tunnel we are attempting to connect to"
+                          },
+                          "rootCertificate": {
+                            "type": "object",
+                            "properties": {
+                              "content": {
+                                "type": "string",
+                                "description": "Public certificate value"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "The name of the server protected by the certificate"
+                              }
+                            },
+                            "description": "Root certificate information"
+                          }
+                        },
+                        "description": "Configuration options used to connect to the device"
+                      },
+                      "cloudStaticIp": {
+                        "type": "string",
+                        "description": "Static IP Address used to connect to the device"
+                      },
+                      "user": {
+                        "type": "object",
+                        "properties": {
+                          "publicKey": {
+                            "type": "string",
+                            "description": "The public key for the registered user"
+                          },
+                          "username": {
+                            "type": "string",
+                            "description": "The username added to Catalyst device"
+                          },
+                          "secret": {
+                            "type": "object",
+                            "properties": {
+                              "hash": {
+                                "type": "string",
+                                "description": "The hashed secret"
+                              }
+                            },
+                            "description": "Stores the user secret hash"
+                          }
+                        },
+                        "description": "User credentials used to connect to the device"
+                      }
+                    },
+                    "description": "Params used in order to connect to the device"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "message": "Existing import found",
+                  "udi": "PID:C9200L-24P-4G SN:JAE25220R2K",
+                  "deviceId": "161b2602-a713-4aac-b1eb-d9b55205353d",
+                  "status": "SUCCESS",
+                  "configParams": {
+                    "tunnel": {
+                      "mode": "443",
+                      "port": "443",
+                      "host": "secgw-int3.ciscocloudoffer.com",
+                      "name": "MERAKI-PRIMARY",
+                      "rootCertificate": {
+                        "content": "",
+                        "name": "MERAKI_TLSGW_CA"
+                      }
+                    },
+                    "cloudStaticIp": "1.2.3.4",
+                    "user": {
+                      "publicKey": "",
+                      "username": "MERAKI_USER",
+                      "secret": {
+                        "hash": ""
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Initiates or updates an import session",
+        "tags": [
+          "organizations",
+          "configure",
+          "inventory",
+          "onboarding",
+          "cloudMonitoring",
+          "prepare"
+        ]
+      }
+    },
     "/organizations/{organizationId}/inventory/release": {
       "post": {
         "description": "Release a list of claimed devices from an organization.",
@@ -72275,9 +72765,8 @@
         },
         "summary": "List the licenses in a coterm organization",
         "tags": [
-          "organizations",
-          "configure",
           "licensing",
+          "configure",
           "coterm",
           "licenses"
         ]
@@ -72620,9 +73109,8 @@
         },
         "summary": "Moves a license to a different organization (coterm only)",
         "tags": [
-          "organizations",
-          "configure",
           "licensing",
+          "configure",
           "coterm",
           "licenses"
         ]
@@ -78294,6 +78782,9 @@
     },
     {
       "name": "prefixes"
+    },
+    {
+      "name": "prepare"
     },
     {
       "name": "priorities"
