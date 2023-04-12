@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.32.0-beta.0",
+    "version": "1.32.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -16079,7 +16079,29 @@
                 "name": "My VLAN",
                 "subnet": "192.168.1.0/24",
                 "applianceIp": "192.168.1.2",
-                "groupPolicyId": "101"
+                "groupPolicyId": "101",
+                "templateVlanType": "same",
+                "cidr": "192.168.1.0/24",
+                "mask": 28,
+                "ipv6": {
+                  "enabled": true,
+                  "prefixAssignments": [
+                    {
+                      "autonomous": false,
+                      "staticPrefix": "2001:db8:3c4d:15::/64",
+                      "staticApplianceIp6": "2001:db8:3c4d:15::1",
+                      "origin": {
+                        "type": "internet",
+                        "interfaces": [
+                          "wan0"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                "mandatoryDhcp": {
+                  "enabled": true
+                }
               },
               "required": [
                 "id",
@@ -45066,7 +45088,24 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Switch stacks id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Switch stacks name"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Serials of the switches in the switch stack"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -47962,6 +48001,22 @@
                   "body": {
                     "type": "string",
                     "description": "The body of the payload template, in liquid template"
+                  },
+                  "sharing": {
+                    "type": "object",
+                    "properties": {
+                      "byNetwork": {
+                        "type": "object",
+                        "properties": {
+                          "adminsCanModify": {
+                            "type": "boolean",
+                            "description": "Indicates whether network admins may modify this template"
+                          }
+                        },
+                        "description": "Information on network access to the template"
+                      }
+                    },
+                    "description": "Information on which entities have access to the template"
                   }
                 }
               }
@@ -47971,14 +48026,19 @@
                 {
                   "payloadTemplateId": "wpt_343",
                   "type": "custom",
-                  "name": "Weeb Hooks",
+                  "name": "Custom Template",
                   "headers": [
                     {
                       "name": "Authorization",
                       "template": "Bearer {{sharedSecret}}"
                     }
                   ],
-                  "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                  "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                  "sharing": {
+                    "byNetwork": {
+                      "adminsCanModify": false
+                    }
+                  }
                 }
               ]
             }
@@ -48045,7 +48105,7 @@
                 }
               },
               "example": {
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
@@ -48101,6 +48161,22 @@
                 "body": {
                   "type": "string",
                   "description": "The body of the payload template, in liquid template"
+                },
+                "sharing": {
+                  "type": "object",
+                  "properties": {
+                    "byNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "adminsCanModify": {
+                          "type": "boolean",
+                          "description": "Indicates whether network admins may modify this template"
+                        }
+                      },
+                      "description": "Information on network access to the template"
+                    }
+                  },
+                  "description": "Information on which entities have access to the template"
                 }
               }
             },
@@ -48108,14 +48184,19 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
                 ],
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "sharing": {
+                  "byNetwork": {
+                    "adminsCanModify": false
+                  }
+                }
               }
             }
           }
@@ -48185,6 +48266,22 @@
                 "body": {
                   "type": "string",
                   "description": "The body of the payload template, in liquid template"
+                },
+                "sharing": {
+                  "type": "object",
+                  "properties": {
+                    "byNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "adminsCanModify": {
+                          "type": "boolean",
+                          "description": "Indicates whether network admins may modify this template"
+                        }
+                      },
+                      "description": "Information on network access to the template"
+                    }
+                  },
+                  "description": "Information on which entities have access to the template"
                 }
               }
             },
@@ -48192,14 +48289,19 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
                 ],
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "sharing": {
+                  "byNetwork": {
+                    "adminsCanModify": false
+                  }
+                }
               }
             }
           }
@@ -48301,7 +48403,7 @@
                 }
               },
               "example": {
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
@@ -48353,6 +48455,22 @@
                 "body": {
                   "type": "string",
                   "description": "The body of the payload template, in liquid template"
+                },
+                "sharing": {
+                  "type": "object",
+                  "properties": {
+                    "byNetwork": {
+                      "type": "object",
+                      "properties": {
+                        "adminsCanModify": {
+                          "type": "boolean",
+                          "description": "Indicates whether network admins may modify this template"
+                        }
+                      },
+                      "description": "Information on network access to the template"
+                    }
+                  },
+                  "description": "Information on which entities have access to the template"
                 }
               }
             },
@@ -48360,14 +48478,19 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
                     "template": "Bearer {{sharedSecret}}"
                   }
                 ],
-                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}"
+                "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
+                "sharing": {
+                  "byNetwork": {
+                    "adminsCanModify": false
+                  }
+                }
               }
             }
           }
@@ -57253,6 +57376,7 @@
                   },
                   "expiresAt": {
                     "type": "string",
+                    "format": "date-time",
                     "description": "Timestamp for when the Identity PSK expires, or 'null' to never expire"
                   }
                 }
@@ -57261,13 +57385,13 @@
             "examples": {
               "application/json": [
                 {
-                  "name": "Identity PSK Name",
+                  "name": "Sample Identity PSK",
                   "id": "1284392014819",
-                  "groupPolicyId": "1284392014819",
+                  "groupPolicyId": "101",
                   "passphrase": "secret",
                   "wifiPersonalNetworkId": "1284392014819",
                   "email": "miles@meraki.com",
-                  "expiresAt": ""
+                  "expiresAt": "2018-02-11T00:00:00.090210Z"
                 }
               ]
             }
@@ -57314,14 +57438,19 @@
                 "groupPolicyId": {
                   "type": "string",
                   "description": "The group policy to be applied to clients"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp for when the Identity PSK expires. Will not expire if left blank."
                 }
               },
               "example": {
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
-                "passphrase": "NIalareK",
+                "passphrase": "secret",
                 "groupPolicyId": "101",
-                "expiresAt": "2018-02-11T00:00:00Z"
+                "expiresAt": "2018-02-11T00:00:00.090210Z"
               },
               "required": [
                 "name",
@@ -57341,9 +57470,9 @@
               "application/json": {
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
-                "passphrase": "NIalareK",
+                "passphrase": "secret",
                 "groupPolicyId": "101",
-                "expiresAt": "2018-02-11T00:00:00Z"
+                "expiresAt": "2018-02-11T00:00:00.090210Z"
               }
             }
           }
@@ -57413,19 +57542,20 @@
                 },
                 "expiresAt": {
                   "type": "string",
+                  "format": "date-time",
                   "description": "Timestamp for when the Identity PSK expires, or 'null' to never expire"
                 }
               }
             },
             "examples": {
               "application/json": {
-                "name": "Identity PSK Name",
+                "name": "Sample Identity PSK",
                 "id": "1284392014819",
-                "groupPolicyId": "1284392014819",
+                "groupPolicyId": "101",
                 "passphrase": "secret",
                 "wifiPersonalNetworkId": "1284392014819",
                 "email": "miles@meraki.com",
-                "expiresAt": ""
+                "expiresAt": "2018-02-11T00:00:00.090210Z"
               }
             }
           }
@@ -57477,14 +57607,19 @@
                 "groupPolicyId": {
                   "type": "string",
                   "description": "The group policy to be applied to clients"
+                },
+                "expiresAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp for when the Identity PSK expires, or 'null' to never expire"
                 }
               },
               "example": {
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
-                "passphrase": "NIalareK",
+                "passphrase": "secret",
                 "groupPolicyId": "101",
-                "expiresAt": "2018-02-11T00:00:00Z"
+                "expiresAt": "2018-02-11T00:00:00.090210Z"
               }
             }
           }
@@ -57499,9 +57634,9 @@
               "application/json": {
                 "id": "1284392014819",
                 "name": "Sample Identity PSK",
-                "passphrase": "NIalareK",
+                "passphrase": "secret",
                 "groupPolicyId": "101",
-                "expiresAt": "2018-02-11T00:00:00Z"
+                "expiresAt": "2018-02-11T00:00:00.090210Z"
               }
             }
           }
@@ -80275,33 +80410,33 @@
                 "properties": {
                   "name": {
                     "type": "string",
-                    "description": "Name of the switch"
+                    "description": "The name of the switch."
                   },
                   "serial": {
                     "type": "string",
-                    "description": "Serial of the switch"
+                    "description": "The serial number of the switch."
                   },
                   "mac": {
                     "type": "string",
-                    "description": "MAC address of the switch"
-                  },
-                  "model": {
-                    "type": "string",
-                    "description": "Model of the switch"
+                    "description": "The MAC address of the switch."
                   },
                   "network": {
                     "type": "object",
                     "properties": {
                       "name": {
                         "type": "string",
-                        "description": "Name of the network"
+                        "description": "The name of the network."
                       },
                       "id": {
                         "type": "string",
-                        "description": "ID of the network"
+                        "description": "The ID of the network."
                       }
                     },
-                    "description": "The network that the switch belongs to"
+                    "description": "Identifying information of the switch's network."
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "The model of the switch."
                   },
                   "ports": {
                     "type": "array",
@@ -80406,14 +80541,14 @@
             "examples": {
               "application/json": [
                 {
-                  "name": "My switch",
-                  "serial": "Q234-ABCD-5678",
-                  "mac": "00:11:22:33:44:55",
-                  "model": "MS",
+                  "name": "Example Switch",
+                  "serial": "Q555-5555-5555",
+                  "mac": "01:23:45:67",
                   "network": {
-                    "name": "Main Office",
-                    "id": "N_24329156"
+                    "name": "Example Network",
+                    "id": "N_12345"
                   },
+                  "model": "MS120-8",
                   "ports": [
                     {
                       "portId": "1",
@@ -81455,7 +81590,7 @@
                 {
                   "payloadTemplateId": "wpt_343",
                   "type": "custom",
-                  "name": "Weeb Hooks",
+                  "name": "Custom Template",
                   "headers": [
                     {
                       "name": "Authorization",
@@ -81566,7 +81701,7 @@
                 }
               },
               "example": {
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
@@ -81666,7 +81801,7 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
@@ -81788,7 +81923,7 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
@@ -81935,7 +82070,7 @@
                 }
               },
               "example": {
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "body": "{\"event_type\":\"{{alertTypeId}}\",\"client_payload\":{\"text\":\"{{alertData}}\"}}",
                 "headers": [
                   {
@@ -82031,7 +82166,7 @@
               "application/json": {
                 "payloadTemplateId": "wpt_343",
                 "type": "custom",
-                "name": "Weeb Hooks",
+                "name": "Custom Template",
                 "headers": [
                   {
                     "name": "Authorization",
