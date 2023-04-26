@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 19 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 26 April, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.32.0-beta.2"
+    "version": "1.32.0-beta.3"
   },
   "servers": [
     {
@@ -8992,7 +8992,7 @@
                     "alertTypeId": "settings_changed",
                     "alertType": "Settings changed",
                     "device": {
-                      "serial": "Q2KN-6CN7-EC4X"
+                      "serial": "Q3CG-G6W8-BEVR"
                     },
                     "destinations": {
                       "email": {
@@ -18330,6 +18330,34 @@
                         "ebgpMultihop": {
                           "type": "integer",
                           "description": "Configure this if the neighbor is not adjacent. The EBGP multi-hop must be an integer between 1 and 255."
+                        },
+                        "sourceInterface": {
+                          "type": "string",
+                          "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wired0', 'wired1' or 'vlan{VLAN ID}'(e.g. 'vlan123')."
+                        },
+                        "nextHopIp": {
+                          "type": "string",
+                          "description": "The IPv4 address of the remote BGP peer that will establish a TCP session with the local MX."
+                        },
+                        "ttlSecurity": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Boolean value to enable or disable BGP TTL security."
+                            }
+                          },
+                          "description": "Settings for BGP TTL security to protect BGP peering sessions from forged IP attacks."
+                        },
+                        "authentication": {
+                          "type": "object",
+                          "properties": {
+                            "password": {
+                              "type": "string",
+                              "description": "Password to configure MD5 authentication between BGP peers."
+                            }
+                          },
+                          "description": "Authentication settings between BGP peers."
                         }
                       },
                       "required": [
@@ -73916,7 +73944,7 @@
             },
             "name": "status",
             "in": "query",
-            "description": "An optional parameter to filter devices by the provisioning status."
+            "description": "An optional parameter to filter devices by the provisioning status. Accepted statuses: unprovisioned, incomplete, complete."
           },
           {
             "schema": {
@@ -73994,7 +74022,7 @@
                           "incomplete",
                           "unprovisioned"
                         ],
-                        "description": "The device provisioning status"
+                        "description": "The device provisioning status. Possible statuses: unprovisioned, incomplete, complete."
                       },
                       "tags": {
                         "type": "array",
@@ -74041,8 +74069,7 @@
           "devices",
           "provisioning",
           "statuses"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/devices/statuses": {
@@ -74855,7 +74882,43 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "type": "object",
+                    "properties": {
+                      "shortName": {
+                        "type": "string",
+                        "description": "Short name of the early access feature"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the early access feature"
+                      },
+                      "descriptions": {
+                        "type": "object",
+                        "properties": {
+                          "short": {
+                            "type": "string",
+                            "description": "Short description"
+                          },
+                          "long": {
+                            "type": "string",
+                            "description": "Long description"
+                          }
+                        },
+                        "description": "Descriptions of the early access feature"
+                      },
+                      "topic": {
+                        "type": "string",
+                        "description": "Topic of the early access feature"
+                      },
+                      "isOrgScopedOnly": {
+                        "type": "boolean",
+                        "description": "If this early access feature can only be opted in for the entire organization"
+                      },
+                      "documentationLink": {
+                        "type": "string",
+                        "description": "Link to the documentation of this early access feature"
+                      }
+                    }
                   }
                 },
                 "example": [
@@ -74868,7 +74931,7 @@
                     },
                     "topic": "Dashboard",
                     "isOrgScopedOnly": true,
-                    "documentationLink": null
+                    "documentationLink": "https://documentation.meraki.com/"
                   }
                 ]
               }
@@ -85170,7 +85233,7 @@
             },
             "name": "portProfileIds",
             "in": "query",
-            "description": "Optional parameter to filter switchports belonging to the specified switchport profiles."
+            "description": "Optional parameter to filter switchports belonging to the specified port profiles."
           },
           {
             "schema": {
@@ -89742,6 +89805,24 @@
       "operation": "settings/update"
     },
     {
+      "group": "Mt/api/actions/alert profiles",
+      "summary": "Creates a sensor alert profile for a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Mt/api/actions/alert profiles",
+      "summary": "Deletes a sensor alert profile from a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Mt/api/actions/alert profiles",
+      "summary": "Updates a sensor alert profile for a network.",
+      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
+      "operation": "update"
+    },
+    {
       "group": "Multicast",
       "summary": "Update multicast settings for a network",
       "resource": "/networks/{networkId}/switch/routing/multicast",
@@ -90003,24 +90084,6 @@
       "group": "Sense setting",
       "summary": "Update sense settings for the given camera",
       "resource": "/devices/{serial}/camera/sense",
-      "operation": "update"
-    },
-    {
-      "group": "Sensor alert profiles",
-      "summary": "Creates a sensor alert profile for a network.",
-      "resource": "/networks/{networkId}/sensor/alerts/profiles",
-      "operation": "create"
-    },
-    {
-      "group": "Sensor alert profiles",
-      "summary": "Deletes a sensor alert profile from a network.",
-      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
-      "operation": "destroy"
-    },
-    {
-      "group": "Sensor alert profiles",
-      "summary": "Updates a sensor alert profile for a network.",
-      "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
       "operation": "update"
     },
     {
