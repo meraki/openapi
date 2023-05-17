@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.33.0-beta.1",
+    "version": "1.33.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 10 May, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 17 May, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -3994,11 +3994,12 @@
             "enum": [
               "cellular",
               "wan1",
-              "wan2"
+              "wan2",
+              "wan3"
             ],
             "name": "uplink",
             "in": "query",
-            "description": "The WAN uplink used to obtain the requested stats. Valid uplinks are wan1, wan2, cellular. The default is wan1."
+            "description": "The WAN uplink used to obtain the requested stats. Valid uplinks are wan1, wan2, wan3, cellular. The default is wan1."
           },
           {
             "type": "string",
@@ -10445,7 +10446,43 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "applicationCategories": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The id of the category"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the category"
+                      },
+                      "applications": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The id of the application"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "The name of the application"
+                            }
+                          }
+                        },
+                        "description": "Details of the associated applications"
+                      }
+                    }
+                  },
+                  "description": " The L7 firewall application categories and their associated applications for an MX network"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -10457,14 +10494,6 @@
                       {
                         "id": "meraki:layer7/application/5",
                         "name": "Advertising.com"
-                      },
-                      {
-                        "id": "meraki:layer7/application/0",
-                        "name": "AppNexus"
-                      },
-                      {
-                        "id": "meraki:layer7/application/1",
-                        "name": "Brightroll"
                       }
                     ]
                   }
@@ -52560,6 +52589,75 @@
                     ],
                     "channelWidth": "auto"
                   },
+                  "sixGhzSettings": {
+                    "maxPower": 30,
+                    "minPower": 8,
+                    "minBitrate": 12,
+                    "rxsop": null,
+                    "validAutoChannels": [
+                      1,
+                      5,
+                      9,
+                      13,
+                      17,
+                      21,
+                      25,
+                      29,
+                      33,
+                      37,
+                      41,
+                      45,
+                      49,
+                      53,
+                      57,
+                      61,
+                      65,
+                      69,
+                      73,
+                      77,
+                      81,
+                      85,
+                      89,
+                      93,
+                      97,
+                      101,
+                      105,
+                      109,
+                      113,
+                      117,
+                      121,
+                      125,
+                      129,
+                      133,
+                      137,
+                      141,
+                      145,
+                      149,
+                      153,
+                      157,
+                      161,
+                      165,
+                      169,
+                      173,
+                      177,
+                      181,
+                      185,
+                      189,
+                      193,
+                      197,
+                      201,
+                      205,
+                      209,
+                      213,
+                      217,
+                      221,
+                      225,
+                      229,
+                      233
+                    ],
+                    "channelWidth": "auto",
+                    "afcEnabled": false
+                  },
                   "perSsidSettings": {
                     "0": {
                       "name": "SSID 0",
@@ -52654,8 +52752,7 @@
                   },
                   "transmission": {
                     "enabled": true
-                  },
-                  "afcEnabled": true
+                  }
                 }
               ]
             }
@@ -52794,6 +52891,39 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "sixGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "maxPower": {
+                      "type": "integer",
+                      "description": "Sets max power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 30."
+                    },
+                    "minPower": {
+                      "type": "integer",
+                      "description": "Sets min power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 8."
+                    },
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 6Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'. Defaults to 12."
+                    },
+                    "validAutoChannels": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Sets valid auto channels for 6Ghz band. Can be one of '1', '5', '9', '13', '17', '21', '25', '29', '33', '37', '41', '45', '49', '53', '57', '61', '65', '69', '73', '77', '81', '85', '89', '93', '97', '101', '105', '109', '113', '117', '121', '125', '129', '133', '137', '141', '145', '149', '153', '157', '161', '165', '169', '173', '177', '181', '185', '189', '193', '197', '201', '205', '209', '213', '217', '221', '225', '229' or '233'.Defaults to [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97, 101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 169, 173, 177, 181, 185, 189, 193, 197, 201, 205, 209, 213, 217, 221, 225, 229, 233]."
+                    },
+                    "channelWidth": {
+                      "type": "string",
+                      "description": "Sets channel width (MHz) for 6Ghz band. Can be one of '0', '20', '40', '80' or '160'. Defaults to 0."
+                    },
+                    "rxsop": {
+                      "type": "integer",
+                      "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default."
+                    }
+                  },
+                  "description": "Settings related to 6Ghz band. Only applicable to networks with 6Ghz capable APs"
                 },
                 "transmission": {
                   "type": "object",
@@ -53227,6 +53357,74 @@
                   "channelWidth": "auto",
                   "rxsop": -95
                 },
+                "sixGhzSettings": {
+                  "maxPower": 30,
+                  "minPower": 8,
+                  "minBitrate": 12,
+                  "validAutoChannels": [
+                    1,
+                    5,
+                    9,
+                    13,
+                    17,
+                    21,
+                    25,
+                    29,
+                    33,
+                    37,
+                    41,
+                    45,
+                    49,
+                    53,
+                    57,
+                    61,
+                    65,
+                    69,
+                    73,
+                    77,
+                    81,
+                    85,
+                    89,
+                    93,
+                    97,
+                    101,
+                    105,
+                    109,
+                    113,
+                    117,
+                    121,
+                    125,
+                    129,
+                    133,
+                    137,
+                    141,
+                    145,
+                    149,
+                    153,
+                    157,
+                    161,
+                    165,
+                    169,
+                    173,
+                    177,
+                    181,
+                    185,
+                    189,
+                    193,
+                    197,
+                    201,
+                    205,
+                    209,
+                    213,
+                    217,
+                    221,
+                    225,
+                    229,
+                    233
+                  ],
+                  "channelWidth": "auto",
+                  "rxsop": -95
+                },
                 "transmission": {
                   "enabled": true
                 },
@@ -53426,6 +53624,39 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "sixGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "maxPower": {
+                      "type": "integer",
+                      "description": "Sets max power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 30."
+                    },
+                    "minPower": {
+                      "type": "integer",
+                      "description": "Sets min power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 8."
+                    },
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 6Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'. Defaults to 12."
+                    },
+                    "validAutoChannels": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Sets valid auto channels for 6Ghz band. Can be one of '1', '5', '9', '13', '17', '21', '25', '29', '33', '37', '41', '45', '49', '53', '57', '61', '65', '69', '73', '77', '81', '85', '89', '93', '97', '101', '105', '109', '113', '117', '121', '125', '129', '133', '137', '141', '145', '149', '153', '157', '161', '165', '169', '173', '177', '181', '185', '189', '193', '197', '201', '205', '209', '213', '217', '221', '225', '229' or '233'. Defaults to auto."
+                    },
+                    "channelWidth": {
+                      "type": "string",
+                      "description": "Sets channel width (MHz) for 6Ghz band. Can be one of '0', '20', '40', '80' or '160'. Defaults to auto."
+                    },
+                    "rxsop": {
+                      "type": "integer",
+                      "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default."
+                    }
+                  },
+                  "description": "Settings related to 6Ghz band. Only applicable to networks with 6Ghz capable APs"
                 },
                 "transmission": {
                   "type": "object",
@@ -53908,6 +54139,74 @@
                   "channelWidth": "auto",
                   "rxsop": -95
                 },
+                "sixGhzSettings": {
+                  "maxPower": 30,
+                  "minPower": 8,
+                  "minBitrate": 12,
+                  "validAutoChannels": [
+                    1,
+                    5,
+                    9,
+                    13,
+                    17,
+                    21,
+                    25,
+                    29,
+                    33,
+                    37,
+                    41,
+                    45,
+                    49,
+                    53,
+                    57,
+                    61,
+                    65,
+                    69,
+                    73,
+                    77,
+                    81,
+                    85,
+                    89,
+                    93,
+                    97,
+                    101,
+                    105,
+                    109,
+                    113,
+                    117,
+                    121,
+                    125,
+                    129,
+                    133,
+                    137,
+                    141,
+                    145,
+                    149,
+                    153,
+                    157,
+                    161,
+                    165,
+                    169,
+                    173,
+                    177,
+                    181,
+                    185,
+                    189,
+                    193,
+                    197,
+                    201,
+                    205,
+                    209,
+                    213,
+                    217,
+                    221,
+                    225,
+                    229,
+                    233
+                  ],
+                  "channelWidth": "auto",
+                  "rxsop": -95
+                },
                 "transmission": {
                   "enabled": true
                 },
@@ -54149,6 +54448,39 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "sixGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "maxPower": {
+                      "type": "integer",
+                      "description": "Sets max power (dBm) of 6Ghz band. Can be integer between 2 and 30."
+                    },
+                    "minPower": {
+                      "type": "integer",
+                      "description": "Sets min power (dBm) of 6Ghz band. Can be integer between 2 and 30."
+                    },
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 6Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'."
+                    },
+                    "validAutoChannels": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Sets valid auto channels for 6Ghz band. Can be one of '1', '5', '9', '13', '17', '21', '25', '29', '33', '37', '41', '45', '49', '53', '57', '61', '65', '69', '73', '77', '81', '85', '89', '93', '97', '101', '105', '109', '113', '117', '121', '125', '129', '133', '137', '141', '145', '149', '153', '157', '161', '165', '169', '173', '177', '181', '185', '189', '193', '197', '201', '205', '209', '213', '217', '221', '225', '229' or '233'."
+                    },
+                    "channelWidth": {
+                      "type": "string",
+                      "description": "Sets channel width (MHz) for 6Ghz band. Can be one of '0', '20', '40', '80' or '160'."
+                    },
+                    "rxsop": {
+                      "type": "integer",
+                      "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default."
+                    }
+                  },
+                  "description": "Settings related to 6Ghz band. Only applicable to networks with 6Ghz capable APs"
                 },
                 "transmission": {
                   "type": "object",
@@ -54582,6 +54914,74 @@
                   "channelWidth": "auto",
                   "rxsop": -95
                 },
+                "sixGhzSettings": {
+                  "maxPower": 30,
+                  "minPower": 8,
+                  "minBitrate": 12,
+                  "validAutoChannels": [
+                    1,
+                    5,
+                    9,
+                    13,
+                    17,
+                    21,
+                    25,
+                    29,
+                    33,
+                    37,
+                    41,
+                    45,
+                    49,
+                    53,
+                    57,
+                    61,
+                    65,
+                    69,
+                    73,
+                    77,
+                    81,
+                    85,
+                    89,
+                    93,
+                    97,
+                    101,
+                    105,
+                    109,
+                    113,
+                    117,
+                    121,
+                    125,
+                    129,
+                    133,
+                    137,
+                    141,
+                    145,
+                    149,
+                    153,
+                    157,
+                    161,
+                    165,
+                    169,
+                    173,
+                    177,
+                    181,
+                    185,
+                    189,
+                    193,
+                    197,
+                    201,
+                    205,
+                    209,
+                    213,
+                    217,
+                    221,
+                    225,
+                    229,
+                    233
+                  ],
+                  "channelWidth": "auto",
+                  "rxsop": -95
+                },
                 "transmission": {
                   "enabled": true
                 },
@@ -54776,6 +55176,39 @@
                     }
                   },
                   "description": "Settings related to 5Ghz band"
+                },
+                "sixGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "maxPower": {
+                      "type": "integer",
+                      "description": "Sets max power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 30."
+                    },
+                    "minPower": {
+                      "type": "integer",
+                      "description": "Sets min power (dBm) of 6Ghz band. Can be integer between 2 and 30. Defaults to 8."
+                    },
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 6Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'. Defaults to 12."
+                    },
+                    "validAutoChannels": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Sets valid auto channels for 6Ghz band. Can be one of '1', '5', '9', '13', '17', '21', '25', '29', '33', '37', '41', '45', '49', '53', '57', '61', '65', '69', '73', '77', '81', '85', '89', '93', '97', '101', '105', '109', '113', '117', '121', '125', '129', '133', '137', '141', '145', '149', '153', '157', '161', '165', '169', '173', '177', '181', '185', '189', '193', '197', '201', '205', '209', '213', '217', '221', '225', '229' or '233'. Defaults to auto."
+                    },
+                    "channelWidth": {
+                      "type": "string",
+                      "description": "Sets channel width (MHz) for 6Ghz band. Can be one of '0', '20', '40', '80' or '160'. Defaults to auto."
+                    },
+                    "rxsop": {
+                      "type": "integer",
+                      "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default."
+                    }
+                  },
+                  "description": "Settings related to 6Ghz band. Only applicable to networks with 6Ghz capable APs"
                 },
                 "transmission": {
                   "type": "object",
@@ -55258,6 +55691,74 @@
                   "channelWidth": "auto",
                   "rxsop": -95
                 },
+                "sixGhzSettings": {
+                  "maxPower": 30,
+                  "minPower": 8,
+                  "minBitrate": 12,
+                  "validAutoChannels": [
+                    1,
+                    5,
+                    9,
+                    13,
+                    17,
+                    21,
+                    25,
+                    29,
+                    33,
+                    37,
+                    41,
+                    45,
+                    49,
+                    53,
+                    57,
+                    61,
+                    65,
+                    69,
+                    73,
+                    77,
+                    81,
+                    85,
+                    89,
+                    93,
+                    97,
+                    101,
+                    105,
+                    109,
+                    113,
+                    117,
+                    121,
+                    125,
+                    129,
+                    133,
+                    137,
+                    141,
+                    145,
+                    149,
+                    153,
+                    157,
+                    161,
+                    165,
+                    169,
+                    173,
+                    177,
+                    181,
+                    185,
+                    189,
+                    193,
+                    197,
+                    201,
+                    205,
+                    209,
+                    213,
+                    217,
+                    221,
+                    225,
+                    229,
+                    233
+                  ],
+                  "channelWidth": "auto",
+                  "rxsop": -95
+                },
                 "transmission": {
                   "enabled": true
                 },
@@ -55447,6 +55948,75 @@
                   ],
                   "channelWidth": "auto"
                 },
+                "sixGhzSettings": {
+                  "maxPower": 30,
+                  "minPower": 8,
+                  "minBitrate": 12,
+                  "rxsop": null,
+                  "validAutoChannels": [
+                    1,
+                    5,
+                    9,
+                    13,
+                    17,
+                    21,
+                    25,
+                    29,
+                    33,
+                    37,
+                    41,
+                    45,
+                    49,
+                    53,
+                    57,
+                    61,
+                    65,
+                    69,
+                    73,
+                    77,
+                    81,
+                    85,
+                    89,
+                    93,
+                    97,
+                    101,
+                    105,
+                    109,
+                    113,
+                    117,
+                    121,
+                    125,
+                    129,
+                    133,
+                    137,
+                    141,
+                    145,
+                    149,
+                    153,
+                    157,
+                    161,
+                    165,
+                    169,
+                    173,
+                    177,
+                    181,
+                    185,
+                    189,
+                    193,
+                    197,
+                    201,
+                    205,
+                    209,
+                    213,
+                    217,
+                    221,
+                    225,
+                    229,
+                    233
+                  ],
+                  "channelWidth": "auto",
+                  "afcEnabled": false
+                },
                 "perSsidSettings": {
                   "0": {
                     "name": "SSID 0",
@@ -55541,8 +56111,7 @@
                 },
                 "transmission": {
                   "enabled": true
-                },
-                "afcEnabled": true
+                }
               }
             }
           }
@@ -63842,9 +64411,10 @@
                       "enum": [
                         "cellular",
                         "wan1",
-                        "wan2"
+                        "wan2",
+                        "wan3"
                       ],
-                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, cellular"
+                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, wan3, cellular"
                     }
                   },
                   "description": "The conditions that determine if the alert triggers"
@@ -64038,9 +64608,10 @@
                       "enum": [
                         "cellular",
                         "wan1",
-                        "wan2"
+                        "wan2",
+                        "wan3"
                       ],
-                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, cellular"
+                      "description": "The uplink observed for the alert.  interface must be one of the following: wan1, wan2, wan3, cellular"
                     }
                   },
                   "description": "The conditions that determine if the alert triggers"
@@ -72392,11 +72963,12 @@
             "enum": [
               "cellular",
               "wan1",
-              "wan2"
+              "wan2",
+              "wan3"
             ],
             "name": "uplink",
             "in": "query",
-            "description": "Optional filter for a specific WAN uplink. Valid uplinks are wan1, wan2, cellular. Default will return all uplinks."
+            "description": "Optional filter for a specific WAN uplink. Valid uplinks are wan1, wan2, wan3, cellular. Default will return all uplinks."
           },
           {
             "type": "string",
