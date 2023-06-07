@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.33.0-beta.4",
+    "version": "1.34.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 31 May, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -484,6 +484,394 @@
           "prefixes",
           "delegated",
           "vlanAssignments"
+        ]
+      }
+    },
+    "/devices/{serial}/appliance/radio/settings": {
+      "get": {
+        "description": "Return the radio settings of an appliance",
+        "operationId": "getDeviceApplianceRadioSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serial": {
+                  "type": "string",
+                  "description": "The device serial"
+                },
+                "rfProfileId": {
+                  "type": "string",
+                  "description": "RF Profile ID"
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14
+                      ],
+                      "description": "Manual channel for 2.4 GHz"
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Manual target power for 2.4 GHz"
+                    }
+                  },
+                  "description": "Manual radio settings for 2.4 GHz"
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        36,
+                        40,
+                        44,
+                        48,
+                        52,
+                        56,
+                        60,
+                        64,
+                        100,
+                        104,
+                        108,
+                        112,
+                        116,
+                        120,
+                        124,
+                        128,
+                        132,
+                        136,
+                        140,
+                        144,
+                        149,
+                        153,
+                        157,
+                        161,
+                        165,
+                        169,
+                        173,
+                        177
+                      ],
+                      "description": "Manual channel for 5 GHz"
+                    },
+                    "channelWidth": {
+                      "type": "integer",
+                      "enum": [
+                        0,
+                        20,
+                        40,
+                        80,
+                        160
+                      ],
+                      "description": "Manual channel width for 5 GHz"
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Manual target power for 5 GHz"
+                    }
+                  },
+                  "description": "Manual radio settings for 5 GHz"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serial": "Q234-ABCD-5678",
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the radio settings of an appliance",
+        "tags": [
+          "appliance",
+          "configure",
+          "radio",
+          "settings"
+        ]
+      },
+      "put": {
+        "description": "Update the radio settings of an appliance",
+        "operationId": "updateDeviceApplianceRadioSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceApplianceRadioSettings",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rfProfileId": {
+                  "type": "string",
+                  "description": "The ID of an RF profile to assign to the device. If the value of this parameter is null, the appropriate basic RF profile (indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides on the device (channel width, channel, power)."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14
+                      ],
+                      "description": "Sets a manual channel for 2.4 GHz. Can be '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13' or '14' or null for using auto channel."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 2.4 GHz. Can be between '5' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 2.4 GHz."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        36,
+                        40,
+                        44,
+                        48,
+                        52,
+                        56,
+                        60,
+                        64,
+                        100,
+                        104,
+                        108,
+                        112,
+                        116,
+                        120,
+                        124,
+                        128,
+                        132,
+                        136,
+                        140,
+                        144,
+                        149,
+                        153,
+                        157,
+                        161,
+                        165,
+                        169,
+                        173,
+                        177
+                      ],
+                      "description": "Sets a manual channel for 5 GHz. Can be '36', '40', '44', '48', '52', '56', '60', '64', '100', '104', '108', '112', '116', '120', '124', '128', '132', '136', '140', '144', '149', '153', '157', '161', '165', '169', '173' or '177' or null for using auto channel."
+                    },
+                    "channelWidth": {
+                      "type": "integer",
+                      "enum": [
+                        0,
+                        20,
+                        40,
+                        80,
+                        160
+                      ],
+                      "description": "Sets a manual channel width for 5 GHz. Can be '0', '20', '40', '80' or '160' or null for using auto channel width."
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Set a manual target power for 5 GHz. Can be between '8' or '30' or null for using auto power range."
+                    }
+                  },
+                  "description": "Manual radio settings for 5 GHz."
+                }
+              },
+              "example": {
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serial": {
+                  "type": "string",
+                  "description": "The device serial"
+                },
+                "rfProfileId": {
+                  "type": "string",
+                  "description": "RF Profile ID"
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14
+                      ],
+                      "description": "Manual channel for 2.4 GHz"
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Manual target power for 2.4 GHz"
+                    }
+                  },
+                  "description": "Manual radio settings for 2.4 GHz"
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "channel": {
+                      "type": "integer",
+                      "enum": [
+                        36,
+                        40,
+                        44,
+                        48,
+                        52,
+                        56,
+                        60,
+                        64,
+                        100,
+                        104,
+                        108,
+                        112,
+                        116,
+                        120,
+                        124,
+                        128,
+                        132,
+                        136,
+                        140,
+                        144,
+                        149,
+                        153,
+                        157,
+                        161,
+                        165,
+                        169,
+                        173,
+                        177
+                      ],
+                      "description": "Manual channel for 5 GHz"
+                    },
+                    "channelWidth": {
+                      "type": "integer",
+                      "enum": [
+                        0,
+                        20,
+                        40,
+                        80,
+                        160
+                      ],
+                      "description": "Manual channel width for 5 GHz"
+                    },
+                    "targetPower": {
+                      "type": "integer",
+                      "description": "Manual target power for 5 GHz"
+                    }
+                  },
+                  "description": "Manual radio settings for 5 GHz"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serial": "Q234-ABCD-5678",
+                "rfProfileId": "1234",
+                "twoFourGhzSettings": {
+                  "channel": 11,
+                  "targetPower": 21
+                },
+                "fiveGhzSettings": {
+                  "channel": 149,
+                  "channelWidth": 20,
+                  "targetPower": 15
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update the radio settings of an appliance",
+        "tags": [
+          "appliance",
+          "configure",
+          "radio",
+          "settings"
         ]
       }
     },
@@ -11953,6 +12341,1038 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/rfProfiles": {
+      "get": {
+        "description": "List the RF profiles for this network",
+        "operationId": "getNetworkApplianceRfProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "assigned": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the RF Profile."
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of network this RF Profile belongs in."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the profile."
+                      },
+                      "twoFourGhzSettings": {
+                        "type": "object",
+                        "properties": {
+                          "minBitrate": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                          },
+                          "axEnabled": {
+                            "type": "boolean",
+                            "description": "Whether ax radio on 2.4Ghz band is on or off."
+                          }
+                        },
+                        "description": "Settings related to 2.4Ghz band."
+                      },
+                      "fiveGhzSettings": {
+                        "type": "object",
+                        "properties": {
+                          "minBitrate": {
+                            "type": "integer",
+                            "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                          },
+                          "axEnabled": {
+                            "type": "boolean",
+                            "description": "Whether ax radio on 5Ghz band is on or off."
+                          }
+                        },
+                        "description": "Settings related to 5Ghz band."
+                      },
+                      "perSsidSettings": {
+                        "type": "object",
+                        "properties": {
+                          "1": {
+                            "type": "object",
+                            "properties": {
+                              "bandOperationMode": {
+                                "type": "string",
+                                "description": "Band mode of this SSID"
+                              },
+                              "bandSteeringEnabled": {
+                                "type": "boolean",
+                                "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                              }
+                            },
+                            "description": "Settings for SSID 1."
+                          },
+                          "2": {
+                            "type": "object",
+                            "properties": {
+                              "bandOperationMode": {
+                                "type": "string",
+                                "description": "Band mode of this SSID"
+                              },
+                              "bandSteeringEnabled": {
+                                "type": "boolean",
+                                "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                              }
+                            },
+                            "description": "Settings for SSID 2."
+                          },
+                          "3": {
+                            "type": "object",
+                            "properties": {
+                              "bandOperationMode": {
+                                "type": "string",
+                                "description": "Band mode of this SSID"
+                              },
+                              "bandSteeringEnabled": {
+                                "type": "boolean",
+                                "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                              }
+                            },
+                            "description": "Settings for SSID 3."
+                          },
+                          "4": {
+                            "type": "object",
+                            "properties": {
+                              "bandOperationMode": {
+                                "type": "string",
+                                "description": "Band mode of this SSID"
+                              },
+                              "bandSteeringEnabled": {
+                                "type": "boolean",
+                                "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                              }
+                            },
+                            "description": "Settings for SSID 4."
+                          }
+                        },
+                        "description": "Per-SSID radio settings by number."
+                      }
+                    }
+                  },
+                  "description": "RF Profiles"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "assigned": [
+                  {
+                    "id": "1234",
+                    "networkId": "N_24329156",
+                    "name": "Some Custom RF Profile",
+                    "twoFourGhzSettings": {
+                      "minBitrate": 11.0,
+                      "axEnabled": true
+                    },
+                    "fiveGhzSettings": {
+                      "minBitrate": 12,
+                      "axEnabled": true
+                    },
+                    "perSsidSettings": {
+                      "1": {
+                        "bandOperationMode": "dual",
+                        "bandSteeringEnabled": true
+                      },
+                      "2": {
+                        "bandOperationMode": "dual",
+                        "bandSteeringEnabled": true
+                      },
+                      "3": {
+                        "bandOperationMode": "dual",
+                        "bandSteeringEnabled": true
+                      },
+                      "4": {
+                        "bandOperationMode": "dual",
+                        "bandSteeringEnabled": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "List the RF profiles for this network",
+        "tags": [
+          "appliance",
+          "configure",
+          "rfProfiles"
+        ]
+      },
+      "post": {
+        "description": "Creates new RF profile for this network",
+        "operationId": "createNetworkApplianceRfProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkApplianceRfProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new profile. Must be unique. This param is required on creation."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Sets min bitrate (Mbps) of 2.4Ghz band. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'. Defaults to 11."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                    }
+                  },
+                  "description": "Settings related to 2.4Ghz band"
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 5Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'. Defaults to 12."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Determines whether ax radio on 5Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                    }
+                  },
+                  "description": "Settings related to 5Ghz band"
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 1"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 2"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 3"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 4"
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
+                }
+              },
+              "example": {
+                "name": "MX RF Profile",
+                "twoFourGhzSettings": {
+                  "minBitrate": 12.0,
+                  "axEnabled": true
+                },
+                "fiveGhzSettings": {
+                  "minBitrate": 48,
+                  "axEnabled": true
+                },
+                "perSsidSettings": {
+                  "1": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "2": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "3": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "4": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  }
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the RF Profile."
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "ID of network this RF Profile belongs in."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the profile."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 2.4Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 2.4Ghz band."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 5Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 5Ghz band."
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 1."
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 2."
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 3."
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 4."
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Some Custom RF Profile",
+                "twoFourGhzSettings": {
+                  "minBitrate": 11.0,
+                  "axEnabled": true
+                },
+                "fiveGhzSettings": {
+                  "minBitrate": 12,
+                  "axEnabled": true
+                },
+                "perSsidSettings": {
+                  "1": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "2": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "3": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "4": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Creates new RF profile for this network",
+        "tags": [
+          "appliance",
+          "configure",
+          "rfProfiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/appliance/rfProfiles/{rfProfileId}": {
+      "put": {
+        "description": "Updates specified RF profile for this network",
+        "operationId": "updateNetworkApplianceRfProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rfProfileId",
+            "in": "path",
+            "description": "Rf profile ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceRfProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new profile. Must be unique."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Sets min bitrate (Mbps) of 2.4Ghz band. Can be one of '1', '2', '5.5', '6', '9', '11', '12', '18', '24', '36', '48' or '54'."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering."
+                    }
+                  },
+                  "description": "Settings related to 2.4Ghz band"
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Sets min bitrate (Mbps) of 5Ghz band. Can be one of '6', '9', '12', '18', '24', '36', '48' or '54'."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Determines whether ax radio on 5Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering."
+                    }
+                  },
+                  "description": "Settings related to 5Ghz band"
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 1"
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 2"
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 3"
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "enum": [
+                            "2.4ghz",
+                            "5ghz",
+                            "dual"
+                          ],
+                          "description": "Choice between 'dual', '2.4ghz' or '5ghz'."
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Steers client to most open band between 2.4 GHz and 5 GHz. Can be either true or false."
+                        }
+                      },
+                      "description": "Settings for SSID 4"
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
+                }
+              },
+              "example": {
+                "name": "MX RF Profile",
+                "twoFourGhzSettings": {
+                  "minBitrate": 12.0,
+                  "axEnabled": true
+                },
+                "fiveGhzSettings": {
+                  "minBitrate": 48,
+                  "axEnabled": true
+                },
+                "perSsidSettings": {
+                  "1": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "2": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "3": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "4": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the RF Profile."
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "ID of network this RF Profile belongs in."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the profile."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 2.4Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 2.4Ghz band."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 5Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 5Ghz band."
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 1."
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 2."
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 3."
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 4."
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Some Custom RF Profile",
+                "twoFourGhzSettings": {
+                  "minBitrate": 11.0,
+                  "axEnabled": true
+                },
+                "fiveGhzSettings": {
+                  "minBitrate": 12,
+                  "axEnabled": true
+                },
+                "perSsidSettings": {
+                  "1": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "2": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "3": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "4": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Updates specified RF profile for this network",
+        "tags": [
+          "appliance",
+          "configure",
+          "rfProfiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete a RF Profile",
+        "operationId": "deleteNetworkApplianceRfProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rfProfileId",
+            "in": "path",
+            "description": "Rf profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a RF Profile",
+        "tags": [
+          "appliance",
+          "configure",
+          "rfProfiles"
+        ]
+      },
+      "get": {
+        "description": "Return a RF profile",
+        "operationId": "getNetworkApplianceRfProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rfProfileId",
+            "in": "path",
+            "description": "Rf profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the RF Profile."
+                },
+                "networkId": {
+                  "type": "string",
+                  "description": "ID of network this RF Profile belongs in."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the profile."
+                },
+                "twoFourGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 2.4Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 2.4Ghz band."
+                },
+                "fiveGhzSettings": {
+                  "type": "object",
+                  "properties": {
+                    "minBitrate": {
+                      "type": "integer",
+                      "description": "Min bitrate (Mbps) of 2.4Ghz band."
+                    },
+                    "axEnabled": {
+                      "type": "boolean",
+                      "description": "Whether ax radio on 5Ghz band is on or off."
+                    }
+                  },
+                  "description": "Settings related to 5Ghz band."
+                },
+                "perSsidSettings": {
+                  "type": "object",
+                  "properties": {
+                    "1": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 1."
+                    },
+                    "2": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 2."
+                    },
+                    "3": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 3."
+                    },
+                    "4": {
+                      "type": "object",
+                      "properties": {
+                        "bandOperationMode": {
+                          "type": "string",
+                          "description": "Band mode of this SSID"
+                        },
+                        "bandSteeringEnabled": {
+                          "type": "boolean",
+                          "description": "Whether this SSID steers clients to the most open band between 2.4 GHz and 5 GHz."
+                        }
+                      },
+                      "description": "Settings for SSID 4."
+                    }
+                  },
+                  "description": "Per-SSID radio settings by number."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "networkId": "N_24329156",
+                "name": "Some Custom RF Profile",
+                "twoFourGhzSettings": {
+                  "minBitrate": 11.0,
+                  "axEnabled": true
+                },
+                "fiveGhzSettings": {
+                  "minBitrate": 12,
+                  "axEnabled": true
+                },
+                "perSsidSettings": {
+                  "1": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "2": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "3": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  },
+                  "4": {
+                    "bandOperationMode": "dual",
+                    "bandSteeringEnabled": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return a RF profile",
+        "tags": [
+          "appliance",
+          "configure",
+          "rfProfiles"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/security/events": {
       "get": {
         "description": "List the security events for a network",
@@ -13283,6 +14703,20 @@
                     }
                   },
                   "description": "DHCP Enforced Deauthentication enables the disassociation of wireless clients in addition to Mandatory DHCP. This param is only valid on firmware versions >= MX 17.0 where the associated LAN has Mandatory DHCP Enabled "
+                },
+                "dot11w": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether 802.11w is enabled or not."
+                    },
+                    "required": {
+                      "type": "boolean",
+                      "description": "(Optional) Whether 802.11w is required or not."
+                    }
+                  },
+                  "description": "The current setting for Protected Management Frames (802.11w)."
                 }
               },
               "example": {
@@ -13303,6 +14737,10 @@
                 "visible": true,
                 "dhcpEnforcedDeauthentication": {
                   "enabled": true
+                },
+                "dot11w": {
+                  "enabled": true,
+                  "required": true
                 }
               }
             }
@@ -24719,6 +26157,36 @@
                         }
                       },
                       "description": "The network device to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "time": {
+                              "type": "string",
+                              "description": "The time of the last successful upgrade"
+                            },
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "The version ID"
+                                }
+                              },
+                              "description": "The version to be updated to"
+                            }
+                          },
+                          "description": "The pending firmware upgrade if it exists"
+                        },
+                        "participateInNextBetaRelease": {
+                          "type": "boolean",
+                          "description": "Whether or not the network wants beta firmware"
+                        }
+                      },
+                      "description": "The network device to be updated"
                     }
                   },
                   "description": "Contains information about the network to update"
@@ -24790,6 +26258,15 @@
                       "time": "2019-03-17T17:22:52Z",
                       "toVersion": {
                         "id": "1006"
+                      }
+                    },
+                    "participateInNextBetaRelease": false
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "time": "2019-03-17T17:22:52Z",
+                      "toVersion": {
+                        "id": "1234"
                       }
                     },
                     "participateInNextBetaRelease": false
@@ -26432,6 +27909,7 @@
                     "cellularGateway",
                     "cloudGateway",
                     "switch",
+                    "switchCatalyst",
                     "wireless"
                   ],
                   "description": "Product type to rollback (if the network is a combined network)"
@@ -26515,6 +27993,7 @@
                     "cellularGateway",
                     "cloudGateway",
                     "switch",
+                    "switchCatalyst",
                     "wireless"
                   ],
                   "description": "Product type to rollback (if the network is a combined network)"
@@ -26850,6 +28329,31 @@
                         }
                       },
                       "description": "Version information for the switch network being upgraded"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "The version ID"
+                                }
+                              },
+                              "required": [
+                                "id"
+                              ],
+                              "description": "The version to be updated to for switch catalyst devices"
+                            }
+                          },
+                          "description": "The next upgrade version for the switch network"
+                        }
+                      },
+                      "description": "Version information for the switch network being upgraded"
                     }
                   },
                   "description": "Contains firmware upgrade version information"
@@ -26896,6 +28400,13 @@
                     "nextUpgrade": {
                       "toVersion": {
                         "id": "1234"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321"
                       }
                     }
                   }
@@ -50549,122 +52060,6 @@
         ]
       }
     },
-    "/networks/{networkId}/wireless/alternateManagementInterface/v6": {
-      "put": {
-        "description": "Update alternate management interface IPv6 address",
-        "operationId": "updateNetworkWirelessAlternateManagementInterfaceV6",
-        "parameters": [
-          {
-            "name": "networkId",
-            "in": "path",
-            "description": "Network ID",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateNetworkWirelessAlternateManagementInterfaceV6",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "enbaleStaticIp6": {
-                  "type": "boolean",
-                  "description": "Boolean value to enable or disable static alternate management interface for IPv6"
-                },
-                "serial": {
-                  "type": "string",
-                  "description": "Serial number of the node to be configured with the alternate management IPv6"
-                },
-                "alternateManagementIp6": {
-                  "type": "string",
-                  "description": "Wireless alternate management interface device IPv6"
-                },
-                "gateway": {
-                  "type": "string",
-                  "description": "Gateway for the alternate management interface in IPv6. Gateway must be in IPv6 format"
-                },
-                "dns1": {
-                  "type": "string",
-                  "description": "DNS server for the alternate management interface in IPv6. DNS must be in IPv6 format"
-                },
-                "dns2": {
-                  "type": "string",
-                  "description": "DNS server for the alternate management interface in IPv6. DNS must be in IPv6 format"
-                }
-              },
-              "example": {
-                "enableStaticIp6": true,
-                "serial": "Q234-ABCD-5678",
-                "alternateManagementIp6": "2001:db8:3c4d:15::1",
-                "gateway": "fe80:db8:c15:c0:d0c::10ca:1d02",
-                "dns1": "2001:db8:3c4d:15::1",
-                "dns2": "2001:db8:3c4d:15::1"
-              },
-              "required": [
-                "serial",
-                "alternateManagementIp6"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "enableStaticIp6": {
-                  "type": "boolean",
-                  "description": "Boolean value to enable or disable IPV6 alternate management interface"
-                },
-                "serial": {
-                  "type": "string",
-                  "description": "Serial number of the node to be configured with the alternate management IPv6"
-                },
-                "alternateManagementIp6": {
-                  "type": "string",
-                  "description": "Wireless alternate management interface device IP6"
-                },
-                "gateway": {
-                  "type": "string",
-                  "description": "Gateway for the alternate management interface in IPv6. Gateway must be in IPv6 format"
-                },
-                "dns1": {
-                  "type": "string",
-                  "description": "DNS server for the alternate management interface in IPv6. DNS must be in IPv6 format"
-                },
-                "dns2": {
-                  "type": "string",
-                  "description": "DNS server for the alternate management interface in IPv6. DNS must be in IPv6 format"
-                }
-              },
-              "required": [
-                "serial",
-                "alternateManagementIp6"
-              ]
-            },
-            "examples": {
-              "application/json": {
-                "enableStaticIp6": true,
-                "serial": "Q234-ABCD-5678",
-                "alternateManagementIp6": "2001:db8:3c4d:15::1",
-                "gateway": "fe80:db8:c15:c0:d0c::10ca:1d02",
-                "dns1": "2001:db8:3c4d:15::1",
-                "dns2": "2001:db8:3c4d:15::1"
-              }
-            }
-          }
-        },
-        "summary": "Update alternate management interface IPv6 address",
-        "tags": [
-          "wireless",
-          "configure",
-          "alternateManagementInterface",
-          "v6"
-        ]
-      }
-    },
     "/networks/{networkId}/wireless/billing": {
       "get": {
         "description": "Return the billing settings of this network",
@@ -53007,6 +54402,987 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles": {
+      "get": {
+        "description": "List the AP port profiles for this network",
+        "operationId": "getNetworkWirelessEthernetPortsProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Ap port profile ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Ap port profile name"
+                  },
+                  "isDefault": {
+                    "type": "boolean",
+                    "description": "Is default profile"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name"
+                        },
+                        "portNumber": {
+                          "type": "integer",
+                          "description": "Number"
+                        },
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enabled"
+                        },
+                        "ssidNumber": {
+                          "type": "integer",
+                          "description": "Ssid number"
+                        }
+                      }
+                    },
+                    "description": "Ports config"
+                  },
+                  "usbPorts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name"
+                        },
+                        "portNumber": {
+                          "type": "integer",
+                          "description": "Number"
+                        },
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enabled"
+                        },
+                        "ssidNumber": {
+                          "type": "integer",
+                          "description": "Ssid number"
+                        }
+                      }
+                    },
+                    "description": "Usb ports config"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "123",
+                  "name": "Ap Port Profile Name",
+                  "isDefault": false,
+                  "ports": [
+                    {
+                      "name": "port 1",
+                      "portNumber": 1,
+                      "enabled": true,
+                      "ssidNumber": 1
+                    }
+                  ],
+                  "usbPorts": [
+                    {
+                      "name": "usb port",
+                      "portNumber": 5,
+                      "enabled": true,
+                      "ssidNumber": 5
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the AP port profiles for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Create an AP port profile",
+        "operationId": "createNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkWirelessEthernetPortsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Ap port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Ap port enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ap port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "Ap ports configuration"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Ap usb port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Ap usb port enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ap usb port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "Ap usb ports configuration"
+                }
+              },
+              "example": {
+                "name": "name",
+                "ports": [
+                  {
+                    "name": "port",
+                    "enabled": true,
+                    "ssidNumber": 1
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "enabled": true,
+                    "ssidNumber": 2
+                  }
+                ]
+              },
+              "required": [
+                "name",
+                "ports"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ap port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "portNumber": 1,
+                    "enabled": true,
+                    "ssidNumber": 1
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "portNumber": 5,
+                    "enabled": true,
+                    "ssidNumber": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create an AP port profile",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/unassignAps": {
+      "post": {
+        "description": "Unassign AP port profile from APs or template child networks",
+        "operationId": "unassignNetworkWirelessEthernetPortsProfilesAps",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "unassignNetworkWirelessEthernetPortsProfilesAps",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of AP ids"
+                },
+                "childNodeGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of child network ids"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "updatedNodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "Node list"
+                },
+                "childNodeGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Node list"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "updatedNodes": [
+                  100,
+                  101,
+                  102
+                ],
+                "childNodeGroups": [
+                  "1",
+                  "2",
+                  "3"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Unassign AP port profile from APs or template child networks",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/{id}/assignAps": {
+      "post": {
+        "description": "Assign AP port profile to APs or template child networks",
+        "operationId": "assignNetworkWirelessEthernetPortsProfileAps",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "assignNetworkWirelessEthernetPortsProfileAps",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of AP ids"
+                },
+                "childNodeGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of child network ids"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "updatedNodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "Node list"
+                },
+                "childNodeGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Node list"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "updatedNodes": [
+                  100,
+                  101,
+                  102
+                ],
+                "childNodeGroups": [
+                  "1",
+                  "2",
+                  "3"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Assign AP port profile to APs or template child networks",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/{id}/setDefault": {
+      "post": {
+        "description": "Set the AP port profile to be default for this network",
+        "operationId": "setNetworkWirelessEthernetPortsProfileDefault",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ap port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "portNumber": 1,
+                    "enabled": true,
+                    "ssidNumber": 1
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "portNumber": 5,
+                    "enabled": true,
+                    "ssidNumber": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Set the AP port profile to be default for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}": {
+      "get": {
+        "description": "Show the AP port profile by ID for this network",
+        "operationId": "getNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ap port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "portNumber": 1,
+                    "enabled": true,
+                    "ssidNumber": 1
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "portNumber": 5,
+                    "enabled": true,
+                    "ssidNumber": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Show the AP port profile by ID for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update the AP port profile by ID for this network",
+        "operationId": "updateNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessEthernetPortsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Ap port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Ap port enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ap port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "Ap ports configuration"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Ap usb port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Ap usb port enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ap usb port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "Ap usb ports configuration"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Ap port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Ap port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "portNumber": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "portNumber": 1,
+                    "enabled": true,
+                    "ssidNumber": 1
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "portNumber": 5,
+                    "enabled": true,
+                    "ssidNumber": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the AP port profile by ID for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "delete": {
+        "description": "Delete an AP port profile",
+        "operationId": "deleteNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an AP port profile",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/networks/{networkId}/wireless/failedConnections": {
       "get": {
         "description": "List of all failed client connection events on this network in a given time range",
@@ -54037,6 +56413,16 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "isIndoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
+                },
+                "isOutdoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -54260,7 +56646,9 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
-                }
+                },
+                "isIndoorDefault": false,
+                "isOutdoorDefault": false
               }
             }
           }
@@ -55585,6 +57973,16 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "isIndoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
+                },
+                "isOutdoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -55808,7 +58206,9 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
-                }
+                },
+                "isIndoorDefault": false,
+                "isOutdoorDefault": false
               }
             }
           }
@@ -55849,6 +58249,16 @@
                 "name": {
                   "type": "string",
                   "description": "The name of the new profile. Must be unique."
+                },
+                "isIndoorDefault": {
+                  "type": "boolean",
+                  "x-release-stage": "beta",
+                  "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default"
+                },
+                "isOutdoorDefaut": {
+                  "type": "boolean",
+                  "x-release-stage": "beta",
+                  "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default"
                 },
                 "clientBalancingEnabled": {
                   "type": "boolean",
@@ -56368,6 +58778,8 @@
               },
               "example": {
                 "name": "1234",
+                "isIndoorDefault": true,
+                "isOutdoorDefaut": true,
                 "clientBalancingEnabled": true,
                 "minBitrateType": "band",
                 "bandSelectionType": "ap",
@@ -57137,6 +59549,16 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "isIndoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
+                },
+                "isOutdoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -57360,7 +59782,9 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
-                }
+                },
+                "isIndoorDefault": false,
+                "isOutdoorDefault": false
               }
             }
           }
@@ -57986,6 +60410,16 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "isIndoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
+                },
+                "isOutdoorDefault": {
+                  "type": "boolean",
+                  "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -58209,7 +60643,9 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
-                }
+                },
+                "isIndoorDefault": false,
+                "isOutdoorDefault": false
               }
             }
           }
@@ -71592,6 +74028,1165 @@
         ]
       }
     },
+    "/organizations/{organizationId}/certificates": {
+      "get": {
+        "description": "Gets all or specific certificates for an organization",
+        "operationId": "getOrganizationCertificates",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "certificateIds",
+            "in": "query",
+            "description": "List of ids for specific certificate retrieval"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "cloud_nac",
+                "mr",
+                "system_manager"
+              ]
+            },
+            "name": "certManagedBy",
+            "in": "query",
+            "description": "List of cert managed by types"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "certificateId": {
+                  "type": "string",
+                  "description": "ID of certificate in trusted_certificates ID table"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of Certificate"
+                },
+                "parentCertificateId": {
+                  "type": "string",
+                  "description": "ID of certificate's parent in trusted_certificates ID table"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "NAC",
+                    "Systems Manager"
+                  ],
+                  "description": "Certificate Manager"
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "validity": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": "string",
+                          "description": "Start date of Certificate Validity"
+                        },
+                        "end": {
+                          "type": "string",
+                          "description": "End date of Certificate Validity"
+                        }
+                      },
+                      "description": "Validity dates of Certificate"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organizational Unit of Certificate"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State Or Province Name of Certificate"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate"
+                        }
+                      },
+                      "description": "Components of Certificate"
+                    },
+                    "subjectAlternativeName": {
+                      "type": "string",
+                      "description": "Alternative name of Certificate"
+                    },
+                    "issuer": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate's Issuer"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate's Issuer"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State or Province Name of Certificate's Issuer"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate's Issuer"
+                        }
+                      },
+                      "description": "Components of Certificate's Issuer"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "description": "Certificate Serial Number"
+                    },
+                    "policy": {
+                      "type": "string",
+                      "description": "Certificate Policy String"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Certificate Version"
+                    },
+                    "hashes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "algorithm": {
+                            "type": "string",
+                            "description": "Hash Algorithm of one of Certificate's hashes"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "Certificate's Hash Details"
+                          }
+                        }
+                      },
+                      "description": "Certificate Hash Information"
+                    }
+                  },
+                  "description": "Components of Certificate"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "certificateId": "1284392014819",
+                "description": "friendly description",
+                "parentCertificateId": "1284392014818",
+                "source": "NAC",
+                "fields": {
+                  "validity": {
+                    "start": "2022-09-01T12:00:00Z",
+                    "end": "2022-10-01T12:00:00Z"
+                  },
+                  "subject": {
+                    "commonName": "subjectRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "subjectAlternativeName": "AAA Certificate Services Hidden Certificate",
+                  "issuer": {
+                    "commonName": "issuerRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "serial": "7C 08 29 E8 CC",
+                  "policy": "policy string here",
+                  "version": "1.2.3.4",
+                  "hashes": [
+                    {
+                      "algorithm": "SHA1",
+                      "hash": "hash text here"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Gets all or specific certificates for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/import": {
+      "post": {
+        "description": "Import certificate for this organization",
+        "operationId": "createOrganizationCertificatesImport",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationCertificatesImport",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "managedBy": {
+                  "type": "string",
+                  "enum": [
+                    "mr",
+                    "system_manager"
+                  ],
+                  "description": "Certificate managed by type [system_manager, mr]"
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "Certificate content in Base64 encoded string format"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Certificate description"
+                }
+              },
+              "example": {
+                "managedBy": "mr",
+                "contents": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS",
+                "description": "create certificate description"
+              },
+              "required": [
+                "managedBy",
+                "contents",
+                "description"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "certificateId": {
+                  "type": "string",
+                  "description": "ID of certificate in trusted_certificates ID table"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of Certificate"
+                },
+                "parentCertificateId": {
+                  "type": "string",
+                  "description": "ID of certificate's parent in trusted_certificates ID table"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "NAC",
+                    "Systems Manager"
+                  ],
+                  "description": "Certificate Manager"
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "validity": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": "string",
+                          "description": "Start date of Certificate Validity"
+                        },
+                        "end": {
+                          "type": "string",
+                          "description": "End date of Certificate Validity"
+                        }
+                      },
+                      "description": "Validity dates of Certificate"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organizational Unit of Certificate"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State Or Province Name of Certificate"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate"
+                        }
+                      },
+                      "description": "Components of Certificate"
+                    },
+                    "subjectAlternativeName": {
+                      "type": "string",
+                      "description": "Alternative name of Certificate"
+                    },
+                    "issuer": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate's Issuer"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate's Issuer"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State or Province Name of Certificate's Issuer"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate's Issuer"
+                        }
+                      },
+                      "description": "Components of Certificate's Issuer"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "description": "Certificate Serial Number"
+                    },
+                    "policy": {
+                      "type": "string",
+                      "description": "Certificate Policy String"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Certificate Version"
+                    },
+                    "hashes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "algorithm": {
+                            "type": "string",
+                            "description": "Hash Algorithm of one of Certificate's hashes"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "Certificate's Hash Details"
+                          }
+                        }
+                      },
+                      "description": "Certificate Hash Information"
+                    }
+                  },
+                  "description": "Components of Certificate"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "certificateId": "1284392014819",
+                "description": "friendly description",
+                "parentCertificateId": "1284392014818",
+                "source": "NAC",
+                "fields": {
+                  "validity": {
+                    "start": "2022-09-01T12:00:00Z",
+                    "end": "2022-10-01T12:00:00Z"
+                  },
+                  "subject": {
+                    "commonName": "subjectRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "subjectAlternativeName": "AAA Certificate Services Hidden Certificate",
+                  "issuer": {
+                    "commonName": "issuerRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "serial": "7C 08 29 E8 CC",
+                  "policy": "policy string here",
+                  "version": "1.2.3.4",
+                  "hashes": [
+                    {
+                      "algorithm": "SHA1",
+                      "hash": "hash text here"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Import certificate for this organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "import"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/radSec/deviceCertificateAuthorities": {
+      "get": {
+        "description": "Query for details on the organization's RADSEC device Certificate Authority certificates (CAs). The primary CA signs all the certificates that devices present when establishing a secure connection to RADIUS servers via RADSEC protocol. This API returns an array of the status of all of the CAs as well as their contents, if they've been generated. An organization will have at most one CA unless the CA is being rotated.",
+        "operationId": "getOrganizationCertificatesRadSecDeviceCertificateAuthorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "authorityId": {
+                    "type": "string",
+                    "description": "A unique identifier for a CA which can be used to fetch the status, update the status, and read the CRL for that CA. The id of a CA will be provided as part of the response once a CA is generated."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "generating",
+                      "trusted",
+                      "untrusted"
+                    ],
+                    "description": "The status of the Certificate Authority - one of \"generating\", \"untrusted\" or \"trusted\"."
+                  },
+                  "contents": {
+                    "type": "string",
+                    "description": "The PEM encoded contents of the Certificate Authority - with newlines as \"\n\". Contents can be null, if the cert has not yet been generated."
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "authorityId": "1234",
+                  "status": "trusted",
+                  "contents": "-----BEGIN CERTIFICATE-----\nMIIDzDCCAragAwIBAgIUOd0ukLcjH43TfTHFG9qE0FtlMVgwCwYJKoZIhvcNAQEL\n...\numkqeYeO30g1uYvDuWLXVA==\n-----END CERTIFICATE-----\n"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Query for details on the organization's RADSEC device Certificate Authority certificates (CAs)",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Create an organization's RADSEC device Certificate Authority (CA). Call this endpoint when turning on RADSEC in the firmware for the first time. Calling this endpoint starts an asynchronous process to generate the CA; call GET afterwards to retrieve the contents of the CA. Note this CA is generated and controlled by Meraki. Subsequent calls will not generate a new CA.",
+        "operationId": "createOrganizationCertificatesRadSecDeviceCertificateAuthority",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "A unique identifier for a CA which can be used to fetch the status, update the status, and read the CRL for that CA. The id of a CA will be provided as part of the response once a CA is generated."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "generating",
+                    "trusted",
+                    "untrusted"
+                  ],
+                  "description": "The status of the Certificate Authority - one of \"generating\", \"untrusted\" or \"trusted\"."
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "The PEM encoded contents of the Certificate Authority - with newlines as \"\n\". Contents can be null, if the cert has not yet been generated."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authorityId": "1234",
+                "status": "generating",
+                "contents": ""
+              }
+            }
+          }
+        },
+        "summary": "Create an organization's RADSEC device Certificate Authority (CA)",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/radSec/deviceCertificateAuthorities/{id}": {
+      "get": {
+        "description": "Query for details on an organization's RADSEC device Certificate Authority (CA) with the given id. This API returns the status of the CA as well as the contents of the CA, if it's been generated.",
+        "operationId": "getOrganizationCertificatesRadSecDeviceCertificateAuthority",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "A unique identifier for a CA which can be used to fetch the status, update the status, and read the CRL for that CA. The id of a CA will be provided as part of the response once a CA is generated."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "generating",
+                    "trusted",
+                    "untrusted"
+                  ],
+                  "description": "The status of the Certificate Authority - one of \"generating\", \"untrusted\" or \"trusted\"."
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "The PEM encoded contents of the Certificate Authority - with newlines as \"\n\". Contents can be null, if the cert has not yet been generated."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authorityId": "1234",
+                "status": "trusted",
+                "contents": "-----BEGIN CERTIFICATE-----\nMIIDzDCCAragAwIBAgIUOd0ukLcjH43TfTHFG9qE0FtlMVgwCwYJKoZIhvcNAQEL\n...\numkqeYeO30g1uYvDuWLXVA==\n-----END CERTIFICATE-----\n"
+              }
+            }
+          }
+        },
+        "summary": "Query for details on an organization's RADSEC device Certificate Authority (CA) with the given id",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update an organization's RADSEC device Certificate Authority (CA) state. Note this CA is generated and controlled by Meraki. Call this endpoint to update the state to \"trusted\", at which point Meraki will generate device certificates. \"trusted\" means the CA is placed on your RADSEC server(s) and devices establishing a secure connection using certs signed by this CA will pass verification.",
+        "operationId": "updateOrganizationCertificatesRadSecDeviceCertificateAuthority",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationCertificatesRadSecDeviceCertificateAuthority",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "The \"status\" to update the Certificate Authority to. Only valid option is \"trusted\"."
+                }
+              },
+              "example": {
+                "status": "trusted"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "A unique identifier for a CA which can be used to fetch the status, update the status, and read the CRL for that CA. The id of a CA will be provided as part of the response once a CA is generated."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "generating",
+                    "trusted",
+                    "untrusted"
+                  ],
+                  "description": "The status of the Certificate Authority - one of \"generating\", \"untrusted\" or \"trusted\"."
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "The PEM encoded contents of the Certificate Authority - with newlines as \"\n\". Contents can be null, if the cert has not yet been generated."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authorityId": "1234",
+                "status": "trusted",
+                "contents": "-----BEGIN CERTIFICATE-----\nMIIDzDCCAragAwIBAgIUOd0ukLcjH43TfTHFG9qE0FtlMVgwCwYJKoZIhvcNAQEL\n...\numkqeYeO30g1uYvDuWLXVA==\n-----END CERTIFICATE-----\n"
+              }
+            }
+          }
+        },
+        "summary": "Update an organization's RADSEC device Certificate Authority (CA) state",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/radSec/deviceCertificateAuthorities/{id}/revocationList": {
+      "get": {
+        "description": "Query for certificate revocation list (CRL) for the organization's RADSEC device Certificate Authority (CA) with the given id.",
+        "operationId": "getOrganizationCertificatesRadSecDeviceCertificateAuthorityRevocationList",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "crl": {
+                  "type": "string",
+                  "description": "The PEM encoded contents of the CA's certificate revocation list (full CRL) - with newlines as \"\n\"."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "crl": "-----BEGIN X509 CRL-----\nMIICVjCCAj8CAQEwQQD\n...\n-----END X509 CRL-----\n"
+              }
+            }
+          }
+        },
+        "summary": "Query for certificate revocation list (CRL) for the organization's RADSEC device Certificate Authority (CA) with the given id.",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities",
+          "revocationList"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/radSec/deviceCertificateAuthorities/{id}/revocationList/deltas": {
+      "get": {
+        "description": "Query for all delta certificate revocation list (CRL) for the organization's RADSEC device Certificate Authority (CA) with the given id.",
+        "operationId": "getOrganizationCertificatesRadSecDeviceCertificateAuthorityRevocationListDeltas",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "deltaCrls": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "An array containing the PEM encoded contents of a CA's delta certificate revocation list (CRL) - with newlines as \"\n\". This array delta CRLs only"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "deltaCrls": [
+                  "-----BEGIN X509 CRL-----\nMIICVjCCAj8CAQEwQQD\n...\n-----END X509 CRL-----\n",
+                  "-----BEGIN X509 CRL-----\nPil0f9yaXcNbMUmaGlV\n...\n-----END X509 CRL-----\n",
+                  "-----BEGIN X509 CRL-----\n8G2kAJf816ARjULLwz1\n...\n-----END X509 CRL-----\n",
+                  "-----BEGIN X509 CRL-----\nnUxCohSdUMzAKBgNVHR\n...\n-----END X509 CRL-----\n"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Query for all delta certificate revocation list (CRL) for the organization's RADSEC device Certificate Authority (CA) with the given id.",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "radSec",
+          "deviceCertificateAuthorities",
+          "revocationList",
+          "deltas"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/{certificateId}": {
+      "delete": {
+        "description": "Delete a certificate for an organization",
+        "operationId": "deleteOrganizationCertificate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "certificateId",
+            "in": "path",
+            "description": "Certificate ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a certificate for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update a certificate's description for an organization",
+        "operationId": "updateOrganizationCertificate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "certificateId",
+            "in": "path",
+            "description": "Certificate ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationCertificate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "Description of a certificate that already exist in your org"
+                }
+              },
+              "example": {
+                "description": "This is a certificate use for authentication."
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "certificateId": {
+                  "type": "string",
+                  "description": "ID of certificate in trusted_certificates ID table"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of Certificate"
+                },
+                "parentCertificateId": {
+                  "type": "string",
+                  "description": "ID of certificate's parent in trusted_certificates ID table"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "NAC",
+                    "Systems Manager"
+                  ],
+                  "description": "Certificate Manager"
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "validity": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "type": "string",
+                          "description": "Start date of Certificate Validity"
+                        },
+                        "end": {
+                          "type": "string",
+                          "description": "End date of Certificate Validity"
+                        }
+                      },
+                      "description": "Validity dates of Certificate"
+                    },
+                    "subject": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organizational Unit of Certificate"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State Or Province Name of Certificate"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate"
+                        }
+                      },
+                      "description": "Components of Certificate"
+                    },
+                    "subjectAlternativeName": {
+                      "type": "string",
+                      "description": "Alternative name of Certificate"
+                    },
+                    "issuer": {
+                      "type": "object",
+                      "properties": {
+                        "commonName": {
+                          "type": "string",
+                          "description": "Common Name of Certificate's Issuer"
+                        },
+                        "organizationalUnit": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "organization": {
+                          "type": "string",
+                          "description": "Organization of Certificate's Issuer"
+                        },
+                        "locality": {
+                          "type": "string",
+                          "description": "Locality of Certificate's Issuer"
+                        },
+                        "state": {
+                          "type": "string",
+                          "description": "State or Province Name of Certificate's Issuer"
+                        },
+                        "country": {
+                          "type": "string",
+                          "description": "Country Name of Certificate's Issuer"
+                        }
+                      },
+                      "description": "Components of Certificate's Issuer"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "description": "Certificate Serial Number"
+                    },
+                    "policy": {
+                      "type": "string",
+                      "description": "Certificate Policy String"
+                    },
+                    "version": {
+                      "type": "string",
+                      "description": "Certificate Version"
+                    },
+                    "hashes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "algorithm": {
+                            "type": "string",
+                            "description": "Hash Algorithm of one of Certificate's hashes"
+                          },
+                          "hash": {
+                            "type": "string",
+                            "description": "Certificate's Hash Details"
+                          }
+                        }
+                      },
+                      "description": "Certificate Hash Information"
+                    }
+                  },
+                  "description": "Components of Certificate"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "certificateId": "1284392014819",
+                "description": "friendly description",
+                "parentCertificateId": "1284392014818",
+                "source": "NAC",
+                "fields": {
+                  "validity": {
+                    "start": "2022-09-01T12:00:00Z",
+                    "end": "2022-10-01T12:00:00Z"
+                  },
+                  "subject": {
+                    "commonName": "subjectRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "subjectAlternativeName": "AAA Certificate Services Hidden Certificate",
+                  "issuer": {
+                    "commonName": "issuerRoot",
+                    "organizationalUnit": "CloudNAC",
+                    "organization": "Cisco Systems",
+                    "locality": "Bangalore",
+                    "state": "KA",
+                    "country": "IN"
+                  },
+                  "serial": "7C 08 29 E8 CC",
+                  "policy": "policy string here",
+                  "version": "1.2.3.4",
+                  "hashes": [
+                    {
+                      "algorithm": "SHA1",
+                      "hash": "hash text here"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a certificate's description for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/certificates/{certificateId}/contents": {
+      "get": {
+        "description": "Download the trusted certificate by certificate id.",
+        "operationId": "getOrganizationCertificateContents",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "certificateId",
+            "in": "path",
+            "description": "Certificate ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "chainId",
+            "in": "query",
+            "description": "chainId that represent which certificate chain is being requested"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "contents": {
+                  "type": "string",
+                  "description": "Base 64 cert(s)"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "contents": "-----BEGIN CERTIFICATE-----MIIHvjCCBqagAwIBAgIQB4CbtQD3es3UQ988CCKGPjANBgkqhkiG9w0BAQsFADBPMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMSkwJwYDVQQDEyBEaWdpQ2VydCBUTFMgUlNBIFNIQTI1NiAyMDIwIENBMTAeFw0yMjA4MTAwMDAwMDBaFw0yMzA4MDkyMzU5NTlaMG4xCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMRMwEQYDVQQKEwpNZXJha2kgTExDMR0wGwYDVQQDExRyYWRpdXMuZGV2LmlrYXJlbS5pbzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANSxcK8g9J3nRwDqNurYbXDieo5vHw5wWO4m3uJSvWtQ+zDMZzjEhA6ix3VfftGLLE+0C99a9B2oOubZgO/sAIJmLD6Oz25bUinAtzuEmOQiqZ8OZjYZd//emPOty7POZSU5C3rGUX0ESzrStL20iJoGzyA0U9clI+14yZCyXY1+Th3VSQCvGs/DmOMPn+MdBoMXIgzVk7+wjMr53fN6H8Q26y52NlLTmAxum2L7ag4owTecURzC6-----END CERTIFICATE-----"
+              }
+            }
+          }
+        },
+        "summary": "Download the trusted certificate by certificate id.",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "contents"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/claim": {
       "post": {
         "description": "Claim a list of devices, licenses, and/or orders into an organization. When claiming by order, all devices and licenses in the order will be claimed; licenses will be added to the organization and devices will be placed in the organization's inventory.",
@@ -74127,6 +77722,226 @@
           "devices",
           "availabilities"
         ]
+      }
+    },
+    "/organizations/{organizationId}/devices/availabilities/history": {
+      "get": {
+        "description": "List the availability history information for devices in an organization.",
+        "operationId": "getOrganizationDevicesAvailabilitiesHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 14 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities history by device serial numbers"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities history by device product types"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities history by network IDs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp, in iso8601 format, at which the event happened"
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "reboot",
+                      "status",
+                      "upgrade"
+                    ],
+                    "description": "Category of event: status, reboot, or upgrade"
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Device serial number"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Device name"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "enum": [
+                          "appliance",
+                          "camera",
+                          "cellularGateway",
+                          "cloudGateway",
+                          "sensor",
+                          "switch",
+                          "systemsManager",
+                          "wireless"
+                        ],
+                        "description": "Device product type."
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Device model"
+                      }
+                    },
+                    "description": "Device information"
+                  },
+                  "details": {
+                    "type": "object",
+                    "properties": {
+                      "old": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the detail"
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "Value of the detail"
+                            }
+                          }
+                        },
+                        "description": "Details about the old status"
+                      },
+                      "new": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the detail"
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "Value of the detail"
+                            }
+                          }
+                        },
+                        "description": "Details about the new status"
+                      }
+                    },
+                    "description": "Details about the status changes"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "Network dashboard url"
+                      }
+                    },
+                    "description": "Network information"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2018-02-11T00:00:00.090210Z",
+                  "category": "status",
+                  "device": {
+                    "serial": "Q234-ABCD-5678",
+                    "name": "My AP",
+                    "productType": "wireless",
+                    "model": "MR34"
+                  },
+                  "details": {
+                    "old": [
+                      {
+                        "name": "status",
+                        "value": "online"
+                      }
+                    ],
+                    "new": [
+                      {
+                        "name": "status",
+                        "value": "offline"
+                      }
+                    ]
+                  },
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office",
+                    "url": "https://n1.meraki.com//n//manage/nodes/list"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the availability history information for devices in an organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "devices",
+          "availabilities",
+          "history"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/organizations/{organizationId}/devices/powerModules/statuses/byDevice": {
@@ -80141,6 +83956,191 @@
           "monitor",
           "openapiSpec"
         ]
+      }
+    },
+    "/organizations/{organizationId}/policies/assignments/byClient": {
+      "get": {
+        "description": "Get policies for all clients with policies",
+        "operationId": "getOrganizationPoliciesAssignmentsByClient",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "boolean",
+            "name": "includeUndetectedClients",
+            "in": "query",
+            "description": "Include provisioned clients that have not associated to the network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "required": true,
+            "description": "Network Ids"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of client"
+                  },
+                  "clientId": {
+                    "type": "string",
+                    "description": "ID of client"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of client"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "NetworkID"
+                  },
+                  "assigned": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "name of policy"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "Allowed",
+                            "Blocked",
+                            "Group"
+                          ],
+                          "description": "type of policy"
+                        },
+                        "id": {
+                          "type": "string",
+                          "description": "id of policy"
+                        },
+                        "limitTo": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "appliance": {
+                                "type": "boolean",
+                                "description": "true if policy is applied to the appliance"
+                              },
+                              "ssids": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "number": {
+                                      "type": "integer",
+                                      "description": "ssid number"
+                                    }
+                                  }
+                                },
+                                "description": "ssids"
+                              }
+                            }
+                          },
+                          "description": "policy limits"
+                        }
+                      }
+                    },
+                    "description": "Assigned policies"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Miles's phone",
+                  "clientId": "k74272e",
+                  "mac": "22:33:44:55:66:77",
+                  "networkId": "N_24329156",
+                  "assigned": [
+                    {
+                      "name": "My group policy",
+                      "type": "Group",
+                      "id": "102",
+                      "limitTo": [
+                        {
+                          "appliance": false,
+                          "ssids": [
+                            {
+                              "number": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get policies for all clients with policies",
+        "tags": [
+          "organizations",
+          "configure",
+          "policies",
+          "assignments",
+          "byClient"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/organizations/{organizationId}/policyObjects": {
@@ -88546,7 +92546,7 @@
                       "type": "object",
                       "properties": {
                         "band": {
-                          "type": "integer",
+                          "type": "string",
                           "description": "The band for the given metrics."
                         },
                         "wifi": {
@@ -88605,7 +92605,7 @@
                   },
                   "byBand": [
                     {
-                      "band": 5,
+                      "band": "5",
                       "wifi": {
                         "percentage": 33.84
                       },
@@ -88629,8 +92629,7 @@
           "devices",
           "channelUtilization",
           "byDevice"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/wireless/devices/channelUtilization/byNetwork": {
@@ -88731,7 +92730,7 @@
                       "type": "object",
                       "properties": {
                         "band": {
-                          "type": "integer",
+                          "type": "string",
                           "description": "The band for the given metrics."
                         },
                         "wifi": {
@@ -88788,7 +92787,7 @@
                   },
                   "byBand": [
                     {
-                      "band": 5,
+                      "band": "5",
                       "wifi": {
                         "percentage": 33.84
                       },
@@ -88812,8 +92811,7 @@
           "devices",
           "channelUtilization",
           "byNetwork"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/wireless/devices/channelUtilization/history/byDevice/byInterval": {
@@ -88932,7 +92930,7 @@
                       "type": "object",
                       "properties": {
                         "band": {
-                          "type": "integer",
+                          "type": "string",
                           "description": "The band for the given metrics."
                         },
                         "wifi": {
@@ -88993,7 +92991,7 @@
                   },
                   "byBand": [
                     {
-                      "band": 5,
+                      "band": "5",
                       "wifi": {
                         "percentage": 33.84
                       },
@@ -89019,8 +93017,7 @@
           "history",
           "byDevice",
           "byInterval"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/wireless/devices/channelUtilization/history/byNetwork/byInterval": {
@@ -89131,7 +93128,7 @@
                       "type": "object",
                       "properties": {
                         "band": {
-                          "type": "integer",
+                          "type": "string",
                           "description": "The band for the given metrics."
                         },
                         "wifi": {
@@ -89190,7 +93187,7 @@
                   },
                   "byBand": [
                     {
-                      "band": 5,
+                      "band": "5",
                       "wifi": {
                         "percentage": 33.84
                       },
@@ -89216,8 +93213,7 @@
           "history",
           "byNetwork",
           "byInterval"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
@@ -89523,6 +93519,9 @@
       "name": "artifacts"
     },
     {
+      "name": "assignments"
+    },
+    {
       "name": "authenticationToken"
     },
     {
@@ -89592,6 +93591,9 @@
       "name": "cellularUsageHistory"
     },
     {
+      "name": "certificates"
+    },
+    {
       "name": "certs"
     },
     {
@@ -89640,6 +93642,9 @@
       "name": "contentFiltering"
     },
     {
+      "name": "contents"
+    },
+    {
       "name": "coterm"
     },
     {
@@ -89658,7 +93663,13 @@
       "name": "delegated"
     },
     {
+      "name": "deltas"
+    },
+    {
       "name": "desktopLogs"
+    },
+    {
+      "name": "deviceCertificateAuthorities"
     },
     {
       "name": "deviceCommandLogs"
@@ -89755,6 +93766,9 @@
     },
     {
       "name": "idps"
+    },
+    {
+      "name": "import"
     },
     {
       "name": "imports"
@@ -89976,6 +93990,9 @@
       "name": "qualityRetentionProfiles"
     },
     {
+      "name": "radSec"
+    },
+    {
       "name": "radio"
     },
     {
@@ -90004,6 +94021,9 @@
     },
     {
       "name": "restrictions"
+    },
+    {
+      "name": "revocationList"
     },
     {
       "name": "rfProfiles"
@@ -90198,9 +94218,6 @@
       "name": "v4"
     },
     {
-      "name": "v6"
-    },
-    {
       "name": "video"
     },
     {
@@ -90299,6 +94316,12 @@
       "operation": "update"
     },
     {
+      "group": "Appliance radio settings",
+      "summary": "Update the radio settings of an appliance",
+      "resource": "/devices/{serial}/appliance/radio/settings",
+      "operation": "update"
+    },
+    {
       "group": "Appliance ssid",
       "summary": "Update the attributes of an MX SSID",
       "resource": "/networks/{networkId}/appliance/ssids/{number}",
@@ -90375,6 +94398,12 @@
       "summary": "Updates the uplink settings for your MG network.",
       "resource": "/networks/{networkId}/cellularGateway/uplink",
       "operation": "update"
+    },
+    {
+      "group": "Certificate",
+      "summary": "Import certificate for this organization",
+      "resource": "/organizations/{organizationId}/certificates/import",
+      "operation": "create"
     },
     {
       "group": "Client",
@@ -90755,10 +94784,40 @@
       "operation": "update"
     },
     {
-      "group": "Mr/actions/wireless alternate management interface v6",
-      "summary": "Update alternate management interface IPv6 address",
-      "resource": "/networks/{networkId}/wireless/alternateManagementInterface/v6",
+      "group": "Mr/actions/ap port profile",
+      "summary": "Create an AP port profile",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Mr/actions/ap port profile",
+      "summary": "Delete an AP port profile",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Mr/actions/ap port profile",
+      "summary": "Update the AP port profile by ID for this network",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}",
       "operation": "update"
+    },
+    {
+      "group": "Mr/actions/ap port profile assign",
+      "summary": "Assign AP port profile to APs or template child networks",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{id}",
+      "operation": "aps"
+    },
+    {
+      "group": "Mr/actions/ap port profile set",
+      "summary": "Set the AP port profile to be default for this network",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{id}",
+      "operation": "default"
+    },
+    {
+      "group": "Mr/actions/ap port profile unassign",
+      "summary": "Unassign AP port profile from APs or template child networks",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles",
+      "operation": "aps"
     },
     {
       "group": "Ms/actions/switch",
@@ -91340,6 +95399,24 @@
       "group": "Webhook template",
       "summary": "Update a webhook payload template for a network",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/appliance RF profile",
+      "summary": "Creates new RF profile for this network",
+      "resource": "/networks/{networkId}/appliance/rfProfiles",
+      "operation": "create"
+    },
+    {
+      "group": "Wired/appliance RF profile",
+      "summary": "Delete a RF Profile",
+      "resource": "/networks/{networkId}/appliance/rfProfiles/{rfProfileId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Wired/appliance RF profile",
+      "summary": "Updates specified RF profile for this network",
+      "resource": "/networks/{networkId}/appliance/rfProfiles/{rfProfileId}",
       "operation": "update"
     },
     {
