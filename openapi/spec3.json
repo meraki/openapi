@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 07 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 14 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.34.0-beta.0"
+    "version": "1.34.0-beta.1"
   },
   "servers": [
     {
@@ -16931,16 +16931,16 @@
                 "example": {
                   "bandwidthLimits": {
                     "wan1": {
-                      "limitUp": 1000000,
-                      "limitDown": 1000000
+                      "limitUp": 1000,
+                      "limitDown": 1000
                     },
                     "wan2": {
-                      "limitUp": 1000000,
-                      "limitDown": 1000000
+                      "limitUp": 1000,
+                      "limitDown": 1000
                     },
                     "cellular": {
-                      "limitUp": 51200,
-                      "limitDown": 51200
+                      "limitUp": 1000,
+                      "limitDown": 1000
                     }
                   }
                 }
@@ -22901,7 +22901,10 @@
                   }
                 },
                 "example": {
-
+                  "bandwidthLimits": {
+                    "limitUp": 1000,
+                    "limitDown": 1000
+                  }
                 }
               }
             }
@@ -52529,7 +52532,7 @@
     },
     "/networks/{networkId}/topology/linkLayer": {
       "get": {
-        "description": "List the LLDP and CDP information for all discovered devices and connections in a network.",
+        "description": "List the LLDP and CDP information for all discovered devices and connections in a network. At least one MX or MS device must be in the network in order to build the topology.",
         "operationId": "getNetworkTopologyLinkLayer",
         "parameters": [
           {
@@ -52721,7 +52724,7 @@
             }
           }
         },
-        "summary": "List the LLDP and CDP information for all discovered devices and connections in a network.",
+        "summary": "List the LLDP and CDP information for all discovered devices and connections in a network",
         "tags": [
           "networks",
           "monitor",
@@ -54790,6 +54793,48 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "description": "The currency code of this node group's billing plans"
+                    },
+                    "plans": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The id of the pricing plan to update."
+                          },
+                          "price": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The price of the billing plan."
+                          },
+                          "bandwidthLimits": {
+                            "type": "object",
+                            "properties": {
+                              "limitUp": {
+                                "type": "integer",
+                                "description": "The maximum upload limit (integer, in Kbps)."
+                              },
+                              "limitDown": {
+                                "type": "integer",
+                                "description": "The maximum download limit (integer, in Kbps)."
+                              }
+                            },
+                            "description": "The uplink bandwidth settings for the pricing plan."
+                          },
+                          "timeLimit": {
+                            "type": "string",
+                            "description": "The time limit of the pricing plan in minutes."
+                          }
+                        }
+                      },
+                      "description": "Array of billing plans in the node group. (Can configure a maximum of 5)"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -54797,7 +54842,7 @@
                   "plans": [
                     {
                       "id": "1",
-                      "price": 5,
+                      "price": 5.0,
                       "bandwidthLimits": {
                         "limitUp": 1000,
                         "limitDown": 1000
@@ -54894,7 +54939,7 @@
                   "plans": [
                     {
                       "id": "1",
-                      "price": 5,
+                      "price": 5.0,
                       "bandwidthLimits": {
                         "limitUp": 1000,
                         "limitDown": 1000
@@ -54914,6 +54959,48 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "description": "The currency code of this node group's billing plans"
+                    },
+                    "plans": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The id of the pricing plan to update."
+                          },
+                          "price": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The price of the billing plan."
+                          },
+                          "bandwidthLimits": {
+                            "type": "object",
+                            "properties": {
+                              "limitUp": {
+                                "type": "integer",
+                                "description": "The maximum upload limit (integer, in Kbps)."
+                              },
+                              "limitDown": {
+                                "type": "integer",
+                                "description": "The maximum download limit (integer, in Kbps)."
+                              }
+                            },
+                            "description": "The uplink bandwidth settings for the pricing plan."
+                          },
+                          "timeLimit": {
+                            "type": "string",
+                            "description": "The time limit of the pricing plan in minutes."
+                          }
+                        }
+                      },
+                      "description": "Array of billing plans in the node group. (Can configure a maximum of 5)"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -54921,7 +55008,7 @@
                   "plans": [
                     {
                       "id": "1",
-                      "price": 5,
+                      "price": 5.0,
                       "bandwidthLimits": {
                         "limitUp": 1000,
                         "limitDown": 1000
@@ -60346,6 +60433,37 @@
                       }
                     },
                     "description": "Per-SSID radio settings by number."
+                  },
+                  "flexRadios": {
+                    "type": "object",
+                    "properties": {
+                      "byModel": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "model": {
+                              "type": "string",
+                              "description": "Model of the AP"
+                            },
+                            "bands": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "2.4",
+                                  "5",
+                                  "6"
+                                ]
+                              },
+                              "description": "Band to use for each flex radio. For example, ['6'] will set the AP's first flex radio to 6 GHz"
+                            }
+                          }
+                        },
+                        "description": "Flex radios by model."
+                      }
+                    },
+                    "description": "Flex radio settings."
                   }
                 },
                 "example": {
@@ -60550,6 +60668,16 @@
                       "bandOperationMode": "dual",
                       "bandSteeringEnabled": true
                     }
+                  },
+                  "flexRadios": {
+                    "byModel": [
+                      {
+                        "model": "MR34",
+                        "bands": [
+                          "5"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -61933,6 +62061,37 @@
                       }
                     },
                     "description": "Per-SSID radio settings by number."
+                  },
+                  "flexRadios": {
+                    "type": "object",
+                    "properties": {
+                      "byModel": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "model": {
+                              "type": "string",
+                              "description": "Model of the AP"
+                            },
+                            "bands": {
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "enum": [
+                                  "2.4",
+                                  "5",
+                                  "6"
+                                ]
+                              },
+                              "description": "Band to use for each flex radio. For example, ['6'] will set the AP's first flex radio to 6 GHz"
+                            }
+                          }
+                        },
+                        "description": "Flex radios by model."
+                      }
+                    },
+                    "description": "Flex radio settings."
                   }
                 },
                 "example": {
@@ -62139,6 +62298,16 @@
                       "bandOperationMode": "dual",
                       "bandSteeringEnabled": true
                     }
+                  },
+                  "flexRadios": {
+                    "byModel": [
+                      {
+                        "model": "MR34",
+                        "bands": [
+                          "5"
+                        ]
+                      }
+                    ]
                   }
                 }
               }
@@ -64442,6 +64611,7 @@
                       "8021x-meraki",
                       "8021x-nac",
                       "8021x-radius",
+                      "ipsk-with-nac",
                       "ipsk-with-radius",
                       "ipsk-without-radius",
                       "open",
@@ -64450,7 +64620,7 @@
                       "open-with-radius",
                       "psk"
                     ],
-                    "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', 'open-with-nac', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                    "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', 'open-with-nac', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius', 'ipsk-without-radius' or 'ipsk-with-nac')"
                   },
                   "enterpriseAdminAccess": {
                     "type": "string",
@@ -65121,6 +65291,9 @@
                 },
                 "example": {
                   "enabled": true,
+                  "exception": {
+                    "enabled": true
+                  },
                   "rules": [
                     {
                       "description": "A simple bonjour rule",
@@ -65216,10 +65389,23 @@
                       ]
                     },
                     "description": "List of bonjour forwarding rules."
+                  },
+                  "exception": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "If true, Bonjour forwarding exception is enabled on this SSID. Exception is required to enable L2 isolation and Bonjour forwarding to work together."
+                      }
+                    },
+                    "description": "Bonjour forwarding exception"
                   }
                 },
                 "example": {
                   "enabled": true,
+                  "exception": {
+                    "enabled": true
+                  },
                   "rules": [
                     {
                       "description": "A simple bonjour rule",
@@ -65245,6 +65431,9 @@
                 },
                 "example": {
                   "enabled": true,
+                  "exception": {
+                    "enabled": true
+                  },
                   "rules": [
                     {
                       "description": "A simple bonjour rule",
@@ -73956,17 +74145,6 @@
               "type": "string"
             },
             "required": true
-          },
-          {
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "name": "networkIds",
-            "in": "query",
-            "description": "Optional parameter to filter VPN exclusion configurations by network ID."
           }
         ],
         "responses": {
@@ -74007,7 +74185,12 @@
                               "type": "string",
                               "description": "Destination port."
                             }
-                          }
+                          },
+                          "required": [
+                            "protocol",
+                            "destination",
+                            "port"
+                          ]
                         },
                         "description": "Custom VPN exclusion configurations."
                       },
@@ -74022,13 +74205,37 @@
                             },
                             "name": {
                               "type": "string",
+                              "enum": [
+                                "AWS",
+                                "Box",
+                                "Office 365 Sharepoint",
+                                "Office 365 Suite",
+                                "Oracle",
+                                "SAP",
+                                "Salesforce",
+                                "Skype & Teams",
+                                "Slack",
+                                "Webex",
+                                "Webex Calling",
+                                "Webex Meetings",
+                                "Zoom"
+                              ],
                               "description": "Application's name."
                             }
-                          }
+                          },
+                          "required": [
+                            "id",
+                            "name"
+                          ]
                         },
                         "description": "Preset VPN exclusion configurations."
                       }
-                    }
+                    },
+                    "required": [
+                      "networkId",
+                      "customFilters",
+                      "presetFilters"
+                    ]
                   }
                 },
                 "example": [
@@ -74044,7 +74251,7 @@
                     "presetFilters": [
                       {
                         "id": "meraki:vpnExclusion/application/2",
-                        "name": "O365 - Skype"
+                        "name": "Office 365 Sharepoint"
                       }
                     ]
                   }
@@ -74054,6 +74261,264 @@
           }
         },
         "summary": "Display VPN exclusion configurations for MX networks.",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping",
+          "vpnExclusions"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update VPN exclusion configurations for MX networks.",
+        "operationId": "updateOrganizationApplianceTrafficShapingVpnExclusions",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "trafficFilters": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "networkId": {
+                          "type": "string",
+                          "description": "ID of the network whose VPN exclusion configurations are returned."
+                        },
+                        "customFilters": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "protocol": {
+                                "type": "string",
+                                "enum": [
+                                  "any",
+                                  "dns",
+                                  "icmp",
+                                  "tcp",
+                                  "udp"
+                                ],
+                                "description": "Protocol."
+                              },
+                              "destination": {
+                                "type": "string",
+                                "description": "Destination IP address."
+                              },
+                              "port": {
+                                "type": "string",
+                                "description": "Destination port."
+                              }
+                            },
+                            "required": [
+                              "protocol",
+                              "destination",
+                              "port"
+                            ]
+                          },
+                          "description": "Custom VPN exclusion configurations."
+                        },
+                        "presetFilters": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Application's Meraki id."
+                              },
+                              "name": {
+                                "type": "string",
+                                "enum": [
+                                  "AWS",
+                                  "Box",
+                                  "Office 365 Sharepoint",
+                                  "Office 365 Suite",
+                                  "Oracle",
+                                  "SAP",
+                                  "Salesforce",
+                                  "Skype & Teams",
+                                  "Slack",
+                                  "Webex",
+                                  "Webex Calling",
+                                  "Webex Meetings",
+                                  "Zoom"
+                                ],
+                                "description": "Application's name."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ]
+                          },
+                          "description": "Preset VPN exclusion configurations."
+                        }
+                      },
+                      "required": [
+                        "networkId",
+                        "customFilters",
+                        "presetFilters"
+                      ]
+                    },
+                    "description": "VPN exclusion configurations."
+                  }
+                },
+                "example": {
+                  "trafficFilters": [
+                    {
+                      "networkId": "N_24329156",
+                      "customFilters": [
+                        {
+                          "protocol": "tcp",
+                          "destination": "192.168.3.0/24",
+                          "port": "8000"
+                        }
+                      ],
+                      "presetFilters": [
+                        {
+                          "id": "meraki:vpnExclusion/application/2",
+                          "name": "Office 365 Sharepoint"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "required": [
+                  "trafficFilters"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network whose VPN exclusion configurations are returned."
+                      },
+                      "customFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "protocol": {
+                              "type": "string",
+                              "enum": [
+                                "any",
+                                "dns",
+                                "icmp",
+                                "tcp",
+                                "udp"
+                              ],
+                              "description": "Protocol."
+                            },
+                            "destination": {
+                              "type": "string",
+                              "description": "Destination IP address."
+                            },
+                            "port": {
+                              "type": "string",
+                              "description": "Destination port."
+                            }
+                          },
+                          "required": [
+                            "protocol",
+                            "destination",
+                            "port"
+                          ]
+                        },
+                        "description": "Custom VPN exclusion configurations."
+                      },
+                      "presetFilters": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Application's Meraki id."
+                            },
+                            "name": {
+                              "type": "string",
+                              "enum": [
+                                "AWS",
+                                "Box",
+                                "Office 365 Sharepoint",
+                                "Office 365 Suite",
+                                "Oracle",
+                                "SAP",
+                                "Salesforce",
+                                "Skype & Teams",
+                                "Slack",
+                                "Webex",
+                                "Webex Calling",
+                                "Webex Meetings",
+                                "Zoom"
+                              ],
+                              "description": "Application's name."
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name"
+                          ]
+                        },
+                        "description": "Preset VPN exclusion configurations."
+                      }
+                    },
+                    "required": [
+                      "networkId",
+                      "customFilters",
+                      "presetFilters"
+                    ]
+                  }
+                },
+                "example": [
+                  {
+                    "networkId": "N_24329156",
+                    "customFilters": [
+                      {
+                        "protocol": "tcp",
+                        "destination": "192.168.3.0/24",
+                        "port": "8000"
+                      }
+                    ],
+                    "presetFilters": [
+                      {
+                        "id": "meraki:vpnExclusion/application/2",
+                        "name": "Office 365 Sharepoint"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update VPN exclusion configurations for MX networks.",
         "tags": [
           "appliance",
           "configure",
@@ -93982,6 +94447,90 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/switch/power/history": {
+      "get": {
+        "description": "Returns the power draw over time for all switches in the given organization. The interval size returned depends on the requested timespan with a 20 minute resolution used for timespans up to 1 day, a 4 hour resolution used for timespans up to 2 weeks, and a 1 day resolution for timespans larger than 2 weeks.",
+        "operationId": "getOrganizationSummarySwitchPowerHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ts": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp of the reading."
+                      },
+                      "draw": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The power draw in watts at time ts."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "ts": "2021-06-20T01:00:00.000Z",
+                    "draw": 5.4321
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Returns the power draw over time for all switches in the given organization",
+        "tags": [
+          "switch",
+          "monitor",
+          "summary",
+          "power",
+          "history"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/summary/top/appliances/byUtilization": {
       "get": {
         "description": "Return the top 10 appliances sorted by utilization over given time range.",
@@ -95276,6 +95825,277 @@
           "ports",
           "bySwitch"
         ]
+      }
+    },
+    "/organizations/{organizationId}/switch/ports/overview": {
+      "get": {
+        "description": "Returns the counts of all active ports for the requested timespan, grouped by speed.  The number of inactive ports, and the total number of ports is also provided.",
+        "operationId": "getOrganizationSwitchPortsOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "schema": {
+              "type": "number",
+              "format": "float"
+            },
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "The total number of ports"
+                        },
+                        "byStatus": {
+                          "type": "object",
+                          "properties": {
+                            "active": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "The total number of active ports"
+                                },
+                                "byMediaAndLinkSpeed": {
+                                  "type": "object",
+                                  "properties": {
+                                    "rj45": {
+                                      "type": "object",
+                                      "properties": {
+                                        "total": {
+                                          "type": "integer",
+                                          "description": "The total number of active RJ45 ports"
+                                        },
+                                        "10": {
+                                          "type": "integer",
+                                          "description": "The number of active 10 Mbps RJ45 ports"
+                                        },
+                                        "100": {
+                                          "type": "integer",
+                                          "description": "The number of active 100 Mbps RJ45 ports"
+                                        },
+                                        "1000": {
+                                          "type": "integer",
+                                          "description": "The number of active 1 Gbps RJ45 ports"
+                                        },
+                                        "2500": {
+                                          "type": "integer",
+                                          "description": "The number of active 2 Gbps RJ45 ports"
+                                        },
+                                        "5000": {
+                                          "type": "integer",
+                                          "description": "The number of active 5 Gbps RJ45 ports"
+                                        },
+                                        "10000": {
+                                          "type": "integer",
+                                          "description": "The number of active 10 Gbps RJ45 ports"
+                                        },
+                                        "20000": {
+                                          "type": "integer",
+                                          "description": "The number of active 20 Gbps RJ45 ports"
+                                        },
+                                        "40000": {
+                                          "type": "integer",
+                                          "description": "The number of active 40 Gbps RJ45 ports"
+                                        },
+                                        "100000": {
+                                          "type": "integer",
+                                          "description": "The number of active 100 Gbps RJ45 ports"
+                                        }
+                                      },
+                                      "description": "The count data for RJ45 ports, indexed by speed in Mb"
+                                    },
+                                    "sfp": {
+                                      "type": "object",
+                                      "properties": {
+                                        "total": {
+                                          "type": "integer",
+                                          "description": "The total number of active SFP ports"
+                                        },
+                                        "10": {
+                                          "type": "integer",
+                                          "description": "The number of active 10 Mbps SFP ports"
+                                        },
+                                        "100": {
+                                          "type": "integer",
+                                          "description": "The number of active 100 Mbps SFP ports"
+                                        },
+                                        "1000": {
+                                          "type": "integer",
+                                          "description": "The number of active 1 Gbps SFP ports"
+                                        },
+                                        "2500": {
+                                          "type": "integer",
+                                          "description": "The number of active 2 Gbps SFP ports"
+                                        },
+                                        "5000": {
+                                          "type": "integer",
+                                          "description": "The number of active 5 Gbps SFP ports"
+                                        },
+                                        "10000": {
+                                          "type": "integer",
+                                          "description": "The number of active 10 Gbps SFP ports"
+                                        },
+                                        "20000": {
+                                          "type": "integer",
+                                          "description": "The number of active 20 Gbps SFP ports"
+                                        },
+                                        "40000": {
+                                          "type": "integer",
+                                          "description": "The number of active 40 Gbps SFP ports"
+                                        },
+                                        "100000": {
+                                          "type": "integer",
+                                          "description": "The number of active 100 Gbps SFP ports"
+                                        }
+                                      },
+                                      "description": "The count data for SFP ports, indexed by speed in Mb"
+                                    }
+                                  },
+                                  "description": "The active count data, indexed by media type (RJ45 or SFP)"
+                                }
+                              },
+                              "description": "The count data for active ports"
+                            },
+                            "inactive": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "The total number of inactive ports"
+                                },
+                                "byMedia": {
+                                  "type": "object",
+                                  "properties": {
+                                    "rj45": {
+                                      "type": "object",
+                                      "properties": {
+                                        "total": {
+                                          "type": "integer",
+                                          "description": "The total number of inactive RJ45 ports"
+                                        }
+                                      },
+                                      "description": "The count data for inactive RJ45 ports"
+                                    },
+                                    "sfp": {
+                                      "type": "object",
+                                      "properties": {
+                                        "total": {
+                                          "type": "integer",
+                                          "description": "The total number of inactive SFP ports"
+                                        }
+                                      },
+                                      "description": "The count data for inactive SFP ports"
+                                    }
+                                  },
+                                  "description": "The inactive count data, indexed by media type (RJ45 or SFP)"
+                                }
+                              },
+                              "description": "The count data for inactive ports"
+                            }
+                          },
+                          "description": "The count data, indexed by active or inactive status"
+                        }
+                      },
+                      "description": "The count data of all ports"
+                    }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "counts": {
+                    "total": 120,
+                    "byStatus": {
+                      "active": {
+                        "total": 87,
+                        "byMediaAndLinkSpeed": {
+                          "rj45": {
+                            "total": 24,
+                            "10": 0,
+                            "100": 0,
+                            "1000": 24,
+                            "2500": 0,
+                            "5000": 0,
+                            "10000": 0,
+                            "20000": 0,
+                            "40000": 0,
+                            "100000": 0
+                          },
+                          "sfp": {
+                            "total": 63,
+                            "10": 2,
+                            "100": 6,
+                            "1000": 40,
+                            "2500": 0,
+                            "5000": 0,
+                            "10000": 10,
+                            "20000": 0,
+                            "40000": 1,
+                            "100000": 0
+                          }
+                        }
+                      },
+                      "inactive": {
+                        "total": 33,
+                        "byMedia": {
+                          "rj45": {
+                            "total": 16
+                          },
+                          "sfp": {
+                            "total": 17
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the counts of all active ports for the requested timespan, grouped by speed",
+        "tags": [
+          "switch",
+          "monitor",
+          "ports",
+          "overview"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/organizations/{organizationId}/switch/ports/statuses/bySwitch": {
@@ -99352,6 +100172,9 @@
       "name": "ports"
     },
     {
+      "name": "power"
+    },
+    {
       "name": "powerModules"
     },
     {
@@ -100794,6 +101617,12 @@
       "group": "Webhook template",
       "summary": "Update a webhook payload template for a network",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/actions/vpn exclusions",
+      "summary": "Update VPN exclusion configurations for MX networks.",
+      "resource": "/organizations/{organizationId}/appliance/trafficShaping/vpnExclusions",
       "operation": "update"
     },
     {
