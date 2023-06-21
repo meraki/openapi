@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.34.0-beta.1",
+    "version": "1.34.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 14 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -25,11 +25,21 @@
       "type": "apiKey",
       "name": "X-Cisco-Meraki-API-Key",
       "in": "header"
+    },
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   },
   "security": [
     {
       "meraki_api_key": [
+
+      ]
+    },
+    {
+      "bearerAuth": [
 
       ]
     }
@@ -241,7 +251,7 @@
                 },
                 "switchProfileId": {
                   "type": "string",
-                  "description": "The ID of a switch profile to bind to the device (for available switch profiles, see the 'Switch Profiles' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch profile, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template."
+                  "description": "The ID of a switch template to bind to the device (for available switch templates, see the 'Switch Templates' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch template, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template."
                 },
                 "floorPlanId": {
                   "type": "string",
@@ -2049,7 +2059,21 @@
           "202": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "duration": {
+                  "type": "integer",
+                  "description": "The duration in seconds. Will be between 5 and 120. Default is 20 seconds"
+                },
+                "period": {
+                  "type": "integer",
+                  "description": "The period in milliseconds. Will be between 100 and 1000. Default is 160 milliseconds"
+                },
+                "duty": {
+                  "type": "integer",
+                  "description": "The duty cycle as the percent active. Will be between 10 and 90. Default is 50"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -4677,7 +4701,13 @@
           "202": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Shows the success of the reboot"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -8560,7 +8590,58 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "basicServiceSets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ssidName": {
+                        "type": "string",
+                        "description": "Name of wireless network"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Unique identifier of wireless network"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Status of wireless network"
+                      },
+                      "band": {
+                        "type": "string",
+                        "description": "Frequency range used by wireless network"
+                      },
+                      "bssid": {
+                        "type": "string",
+                        "description": "Unique identifier of wireless access point"
+                      },
+                      "channel": {
+                        "type": "integer",
+                        "description": "Frequency channel used by wireless network"
+                      },
+                      "channelWidth": {
+                        "type": "string",
+                        "description": "Width of frequency channel used by wireless network"
+                      },
+                      "power": {
+                        "type": "string",
+                        "description": "Strength of wireless signal"
+                      },
+                      "visible": {
+                        "type": "boolean",
+                        "description": "Whether the SSID is advertised or hidden"
+                      },
+                      "broadcasting": {
+                        "type": "boolean",
+                        "description": "Whether the SSID is broadcasting based on an availability schedule"
+                      }
+                    }
+                  },
+                  "description": "SSID status list"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -8573,30 +8654,6 @@
                     "bssid": "8A:15:04:00:00:00",
                     "channel": 11,
                     "channelWidth": "20 MHz",
-                    "power": "18 dBm",
-                    "visible": true,
-                    "broadcasting": true
-                  },
-                  {
-                    "ssidName": "My SSID",
-                    "ssidNumber": 0,
-                    "enabled": true,
-                    "band": "5 GHz",
-                    "bssid": "8A:15:14:00:00:00",
-                    "channel": 64,
-                    "channelWidth": "40 MHz",
-                    "power": "18 dBm",
-                    "visible": true,
-                    "broadcasting": true
-                  },
-                  {
-                    "ssidName": "My SSID",
-                    "ssidNumber": 0,
-                    "enabled": true,
-                    "band": "6 GHz",
-                    "bssid": "8A:15:24:00:00:00",
-                    "channel": 145,
-                    "channelWidth": "80 MHz",
                     "power": "18 dBm",
                     "visible": true,
                     "broadcasting": true
@@ -45522,18 +45579,18 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs. Applicable only for template network."
+                        "description": "List of switch template IDs. Applicable only for template network."
                       },
                       "mtuSize": {
                         "type": "integer",
-                        "description": "MTU size for the switches or switch profiles."
+                        "description": "MTU size for the switches or switch templates."
                       }
                     },
                     "required": [
                       "mtuSize"
                     ]
                   },
-                  "description": "Override MTU size for individual switches or switch profiles.\n      An empty array will clear overrides."
+                  "description": "Override MTU size for individual switches or switch templates.\n      An empty array will clear overrides."
                 }
               }
             },
@@ -45603,18 +45660,18 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs. Applicable only for template network."
+                        "description": "List of switch template IDs. Applicable only for template network."
                       },
                       "mtuSize": {
                         "type": "integer",
-                        "description": "MTU size for the switches or switch profiles."
+                        "description": "MTU size for the switches or switch templates."
                       }
                     },
                     "required": [
                       "mtuSize"
                     ]
                   },
-                  "description": "Override MTU size for individual switches or switch profiles. An empty array will clear overrides."
+                  "description": "Override MTU size for individual switches or switch templates. An empty array will clear overrides."
                 }
               },
               "example": {
@@ -46819,15 +46876,15 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "(optional) List of switch profiles ids for template network"
+                        "description": "(optional) List of switch templates ids for template network"
                       },
                       "igmpSnoopingEnabled": {
                         "type": "boolean",
-                        "description": "IGMP snooping enabled for switches, switch stacks or switch profiles"
+                        "description": "IGMP snooping enabled for switches, switch stacks or switch templates"
                       },
                       "floodUnknownMulticastTrafficEnabled": {
                         "type": "boolean",
-                        "description": "Flood unknown multicast traffic enabled for switches, switch stacks or switch profiles"
+                        "description": "Flood unknown multicast traffic enabled for switches, switch stacks or switch templates"
                       }
                     }
                   },
@@ -46914,7 +46971,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profiles ids for template network"
+                        "description": "List of switch templates ids for template network"
                       },
                       "switches": {
                         "type": "array",
@@ -46932,11 +46989,11 @@
                       },
                       "igmpSnoopingEnabled": {
                         "type": "boolean",
-                        "description": "IGMP snooping setting for switches, switch stacks or switch profiles"
+                        "description": "IGMP snooping setting for switches, switch stacks or switch templates"
                       },
                       "floodUnknownMulticastTrafficEnabled": {
                         "type": "boolean",
-                        "description": "Flood unknown multicast traffic setting for switches, switch stacks or switch profiles"
+                        "description": "Flood unknown multicast traffic setting for switches, switch stacks or switch templates"
                       }
                     },
                     "required": [
@@ -49669,7 +49726,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs"
+                        "description": "List of switch template IDs"
                       },
                       "switches": {
                         "type": "array",
@@ -49687,14 +49744,14 @@
                       },
                       "stpPriority": {
                         "type": "integer",
-                        "description": "STP priority for switch, stacks, or switch profiles"
+                        "description": "STP priority for switch, stacks, or switch templates"
                       }
                     },
                     "required": [
                       "stpPriority"
                     ]
                   },
-                  "description": "STP bridge priority for switches/stacks or switch profiles. An empty array will clear the STP bridge priority settings."
+                  "description": "STP bridge priority for switches/stacks or switch templates. An empty array will clear the STP bridge priority settings."
                 }
               },
               "example": {
@@ -61192,7 +61249,247 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "description": "Unique identifier of the SSID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the SSID"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether or not the SSID is enabled"
+                  },
+                  "splashPage": {
+                    "type": "string",
+                    "enum": [
+                      "Billing",
+                      "Cisco ISE",
+                      "Click-through splash page",
+                      "Facebook Wi-Fi",
+                      "Google Apps domain",
+                      "Google OAuth",
+                      "None",
+                      "Password-protected with Active Directory",
+                      "Password-protected with LDAP",
+                      "Password-protected with Meraki RADIUS",
+                      "Password-protected with custom RADIUS",
+                      "SMS authentication",
+                      "Sponsored guest",
+                      "Systems Manager Sentry"
+                    ],
+                    "description": "The type of splash page for the SSID"
+                  },
+                  "ssidAdminAccessible": {
+                    "type": "boolean",
+                    "description": "SSID Administrator access status"
+                  },
+                  "authMode": {
+                    "type": "string",
+                    "enum": [
+                      "8021x-google",
+                      "8021x-localradius",
+                      "8021x-meraki",
+                      "8021x-nac",
+                      "8021x-radius",
+                      "ipsk-with-nac",
+                      "ipsk-with-radius",
+                      "ipsk-without-radius",
+                      "open",
+                      "open-enhanced",
+                      "open-with-nac",
+                      "open-with-radius",
+                      "psk"
+                    ],
+                    "description": "The association control method for the SSID"
+                  },
+                  "encryptionMode": {
+                    "type": "string",
+                    "enum": [
+                      "wep",
+                      "wpa"
+                    ],
+                    "description": "The psk encryption mode for the SSID"
+                  },
+                  "wpaEncryptionMode": {
+                    "type": "string",
+                    "enum": [
+                      "WPA1 and WPA2",
+                      "WPA1 only",
+                      "WPA2 only",
+                      "WPA3 192-bit Security",
+                      "WPA3 Transition Mode",
+                      "WPA3 only"
+                    ],
+                    "description": "The types of WPA encryption"
+                  },
+                  "radiusServers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "description": "IP address of your RADIUS server"
+                        },
+                        "port": {
+                          "type": "integer",
+                          "description": "UDP port the RADIUS server listens on for Access-requests"
+                        },
+                        "openRoamingCertificateId": {
+                          "type": "integer",
+                          "description": "The ID of the Openroaming Certificate attached to radius server"
+                        },
+                        "caCertificate": {
+                          "type": "string",
+                          "description": "Certificate used for authorization for the RADSEC Server"
+                        }
+                      }
+                    },
+                    "description": "List of RADIUS 802.1X servers to be used for authentication"
+                  },
+                  "radiusAccountingServers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "description": "IP address to which the APs will send RADIUS accounting messages"
+                        },
+                        "port": {
+                          "type": "integer",
+                          "description": "Port on the RADIUS server that is listening for accounting messages"
+                        },
+                        "openRoamingCertificateId": {
+                          "type": "integer",
+                          "description": "The ID of the Openroaming Certificate attached to radius server"
+                        },
+                        "caCertificate": {
+                          "type": "string",
+                          "description": "Certificate used for authorization for the RADSEC Server"
+                        }
+                      }
+                    },
+                    "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                  },
+                  "radiusAccountingEnabled": {
+                    "type": "boolean",
+                    "description": "Whether or not RADIUS accounting is enabled"
+                  },
+                  "radiusEnabled": {
+                    "type": "boolean",
+                    "description": "Whether RADIUS authentication is enabled"
+                  },
+                  "radiusAttributeForGroupPolicies": {
+                    "type": "string",
+                    "enum": [
+                      "Airespace-ACL-Name",
+                      "Aruba-User-Role",
+                      "Filter-Id",
+                      "Reply-Message"
+                    ],
+                    "description": "RADIUS attribute used to look up group policies"
+                  },
+                  "radiusFailoverPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Allow access",
+                      "Deny access"
+                    ],
+                    "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                  },
+                  "radiusLoadBalancingPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Round robin",
+                      "Strict priority order"
+                    ],
+                    "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                  },
+                  "ipAssignmentMode": {
+                    "type": "string",
+                    "enum": [
+                      "Bridge mode",
+                      "Ethernet over GRE",
+                      "Layer 3 roaming",
+                      "Layer 3 roaming with a concentrator",
+                      "NAT mode",
+                      "VPN"
+                    ],
+                    "description": "The client IP assignment mode"
+                  },
+                  "adminSplashUrl": {
+                    "type": "string",
+                    "description": "URL for the admin splash page"
+                  },
+                  "splashTimeout": {
+                    "type": "string",
+                    "description": "Splash page timeout"
+                  },
+                  "walledGardenEnabled": {
+                    "type": "boolean",
+                    "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                  },
+                  "walledGardenRanges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Domain names and IP address ranges available in Walled Garden mode"
+                  },
+                  "minBitrate": {
+                    "type": "integer",
+                    "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                  },
+                  "bandSelection": {
+                    "type": "string",
+                    "enum": [
+                      "5 GHz band only",
+                      "Dual band operation",
+                      "Dual band operation with Band Steering"
+                    ],
+                    "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                  },
+                  "perClientBandwidthLimitUp": {
+                    "type": "integer",
+                    "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                  },
+                  "perClientBandwidthLimitDown": {
+                    "type": "integer",
+                    "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                  },
+                  "visible": {
+                    "type": "boolean",
+                    "description": "Whether the SSID is advertised or hidden by the AP"
+                  },
+                  "availableOnAllAps": {
+                    "type": "boolean",
+                    "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                  },
+                  "availabilityTags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                  },
+                  "perSsidBandwidthLimitUp": {
+                    "type": "integer",
+                    "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                  },
+                  "perSsidBandwidthLimitDown": {
+                    "type": "integer",
+                    "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                  },
+                  "mandatoryDhcpEnabled": {
+                    "type": "boolean",
+                    "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                  }
+                }
               }
             },
             "examples": {
@@ -61204,9 +61501,17 @@
                   "splashPage": "Click-through splash page",
                   "ssidAdminAccessible": false,
                   "authMode": "8021x-radius",
-                  "encryptionMode": "wpa-eap",
+                  "encryptionMode": "wpa",
                   "wpaEncryptionMode": "WPA2 only",
                   "radiusServers": [
+                    {
+                      "host": "0.0.0.0",
+                      "port": 3000,
+                      "openRoamingCertificateId": 2,
+                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                    }
+                  ],
+                  "radiusAccountingServers": [
                     {
                       "host": "0.0.0.0",
                       "port": 3000,
@@ -61217,8 +61522,8 @@
                   "radiusAccountingEnabled": false,
                   "radiusEnabled": true,
                   "radiusAttributeForGroupPolicies": "Filter-Id",
-                  "radiusFailoverPolicy": "null",
-                  "radiusLoadBalancingPolicy": "null",
+                  "radiusFailoverPolicy": "Deny access",
+                  "radiusLoadBalancingPolicy": "Round robin",
                   "ipAssignmentMode": "NAT mode",
                   "adminSplashUrl": "http://example.com",
                   "splashTimeout": "30 minutes",
@@ -61234,19 +61539,12 @@
                   "visible": true,
                   "availableOnAllAps": false,
                   "availabilityTags": [
-                    "test-tag"
+                    "tag1",
+                    "tag2"
                   ],
                   "perSsidBandwidthLimitUp": 0,
                   "perSsidBandwidthLimitDown": 0,
-                  "mandatoryDhcpEnabled": false,
-                  "radiusAccountingServers": [
-                    {
-                      "host": "0.0.0.0",
-                      "port": 3000,
-                      "openRoamingCertificateId": 2,
-                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                    }
-                  ]
+                  "mandatoryDhcpEnabled": false
                 }
               ]
             }
@@ -61284,7 +61582,247 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "Unique identifier of the SSID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the SSID"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether or not the SSID is enabled"
+                },
+                "splashPage": {
+                  "type": "string",
+                  "enum": [
+                    "Billing",
+                    "Cisco ISE",
+                    "Click-through splash page",
+                    "Facebook Wi-Fi",
+                    "Google Apps domain",
+                    "Google OAuth",
+                    "None",
+                    "Password-protected with Active Directory",
+                    "Password-protected with LDAP",
+                    "Password-protected with Meraki RADIUS",
+                    "Password-protected with custom RADIUS",
+                    "SMS authentication",
+                    "Sponsored guest",
+                    "Systems Manager Sentry"
+                  ],
+                  "description": "The type of splash page for the SSID"
+                },
+                "ssidAdminAccessible": {
+                  "type": "boolean",
+                  "description": "SSID Administrator access status"
+                },
+                "authMode": {
+                  "type": "string",
+                  "enum": [
+                    "8021x-google",
+                    "8021x-localradius",
+                    "8021x-meraki",
+                    "8021x-nac",
+                    "8021x-radius",
+                    "ipsk-with-nac",
+                    "ipsk-with-radius",
+                    "ipsk-without-radius",
+                    "open",
+                    "open-enhanced",
+                    "open-with-nac",
+                    "open-with-radius",
+                    "psk"
+                  ],
+                  "description": "The association control method for the SSID"
+                },
+                "encryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "wep",
+                    "wpa"
+                  ],
+                  "description": "The psk encryption mode for the SSID"
+                },
+                "wpaEncryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "WPA1 and WPA2",
+                    "WPA1 only",
+                    "WPA2 only",
+                    "WPA3 192-bit Security",
+                    "WPA3 Transition Mode",
+                    "WPA3 only"
+                  ],
+                  "description": "The types of WPA encryption"
+                },
+                "radiusServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address of your RADIUS server"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "UDP port the RADIUS server listens on for Access-requests"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address to which the APs will send RADIUS accounting messages"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "Port on the RADIUS server that is listening for accounting messages"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not RADIUS accounting is enabled"
+                },
+                "radiusEnabled": {
+                  "type": "boolean",
+                  "description": "Whether RADIUS authentication is enabled"
+                },
+                "radiusAttributeForGroupPolicies": {
+                  "type": "string",
+                  "enum": [
+                    "Airespace-ACL-Name",
+                    "Aruba-User-Role",
+                    "Filter-Id",
+                    "Reply-Message"
+                  ],
+                  "description": "RADIUS attribute used to look up group policies"
+                },
+                "radiusFailoverPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Allow access",
+                    "Deny access"
+                  ],
+                  "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                },
+                "radiusLoadBalancingPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Round robin",
+                    "Strict priority order"
+                  ],
+                  "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                },
+                "ipAssignmentMode": {
+                  "type": "string",
+                  "enum": [
+                    "Bridge mode",
+                    "Ethernet over GRE",
+                    "Layer 3 roaming",
+                    "Layer 3 roaming with a concentrator",
+                    "NAT mode",
+                    "VPN"
+                  ],
+                  "description": "The client IP assignment mode"
+                },
+                "adminSplashUrl": {
+                  "type": "string",
+                  "description": "URL for the admin splash page"
+                },
+                "splashTimeout": {
+                  "type": "string",
+                  "description": "Splash page timeout"
+                },
+                "walledGardenEnabled": {
+                  "type": "boolean",
+                  "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                },
+                "walledGardenRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Domain names and IP address ranges available in Walled Garden mode"
+                },
+                "minBitrate": {
+                  "type": "integer",
+                  "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                },
+                "bandSelection": {
+                  "type": "string",
+                  "enum": [
+                    "5 GHz band only",
+                    "Dual band operation",
+                    "Dual band operation with Band Steering"
+                  ],
+                  "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                },
+                "perClientBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "perClientBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "Whether the SSID is advertised or hidden by the AP"
+                },
+                "availableOnAllAps": {
+                  "type": "boolean",
+                  "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                },
+                "availabilityTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                },
+                "perSsidBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "perSsidBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -61294,9 +61832,17 @@
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "authMode": "8021x-radius",
-                "encryptionMode": "wpa-eap",
+                "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
                 "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingServers": [
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
@@ -61307,8 +61853,8 @@
                 "radiusAccountingEnabled": false,
                 "radiusEnabled": true,
                 "radiusAttributeForGroupPolicies": "Filter-Id",
-                "radiusFailoverPolicy": "null",
-                "radiusLoadBalancingPolicy": "null",
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
                 "ipAssignmentMode": "NAT mode",
                 "adminSplashUrl": "http://example.com",
                 "splashTimeout": "30 minutes",
@@ -61324,19 +61870,12 @@
                 "visible": true,
                 "availableOnAllAps": false,
                 "availabilityTags": [
-                  "test-tag"
+                  "tag1",
+                  "tag2"
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "radiusAccountingServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000,
-                    "openRoamingCertificateId": 2,
-                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                  }
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -61956,7 +62495,159 @@
               },
               "example": {
                 "name": "My SSID",
-                "enabled": true
+                "enabled": true,
+                "authMode": "8021x-radius",
+                "enterpriseAdminAccess": "access enabled",
+                "encryptionMode": "wpa",
+                "psk": "deadbeef",
+                "wpaEncryptionMode": "WPA2 only",
+                "dot11w": {
+                  "enabled": true,
+                  "required": false
+                },
+                "dot11r": {
+                  "enabled": true,
+                  "adaptive": true
+                },
+                "splashPage": "Click-through splash page",
+                "splashGuestSponsorDomains": [
+                  "example.com"
+                ],
+                "oauth": {
+                  "allowedDomains": [
+                    "example.com"
+                  ]
+                },
+                "localRadius": {
+                  "cacheTimeout": 60,
+                  "passwordAuthentication": {
+                    "enabled": false
+                  },
+                  "certificateAuthentication": {
+                    "enabled": true,
+                    "useLdap": false,
+                    "useOcsp": true,
+                    "ocspResponderUrl": "http://ocsp-server.example.com",
+                    "clientRootCaCertificate": {
+                      "contents": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                    }
+                  }
+                },
+                "ldap": {
+                  "servers": [
+                    {
+                      "host": "127.0.0.1",
+                      "port": 389
+                    }
+                  ],
+                  "credentials": {
+                    "distinguishedName": "cn=user,dc=example,dc=com",
+                    "password": "password"
+                  },
+                  "baseDistinguishedName": "dc=example,dc=com",
+                  "serverCaCertificate": {
+                    "contents": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                },
+                "activeDirectory": {
+                  "servers": [
+                    {
+                      "host": "127.0.0.1",
+                      "port": 3268
+                    }
+                  ],
+                  "credentials": {
+                    "logonName": "user",
+                    "password": "password"
+                  }
+                },
+                "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "secret": "secret-string",
+                    "radsecEnabled": true,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusProxyEnabled": false,
+                "radiusTestingEnabled": true,
+                "radiusCalledStationId": "00-11-22-33-44-55:AP1",
+                "radiusAuthenticationNasId": "00-11-22-33-44-55:AP1",
+                "radiusServerTimeout": 5,
+                "radiusServerAttemptsLimit": 5,
+                "radiusFallbackEnabled": true,
+                "radiusCoaEnabled": true,
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
+                "radiusAccountingEnabled": true,
+                "radiusAccountingServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "secret": "secret-string",
+                    "radsecEnabled": true,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingInterimInterval": 5,
+                "radiusAttributeForGroupPolicies": "Filter-Id",
+                "ipAssignmentMode": "NAT mode",
+                "useVlanTagging": false,
+                "concentratorNetworkId": "N_24329156",
+                "secondaryConcentratorNetworkId": "disabled",
+                "disassociateClientsOnVpnFailover": false,
+                "vlanId": 10,
+                "defaultVlanId": 1,
+                "apTagsAndVlanIds": [
+                  {
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ],
+                    "vlanId": 100
+                  }
+                ],
+                "walledGardenEnabled": true,
+                "walledGardenRanges": [
+                  "example.com",
+                  "1.1.1.1/32"
+                ],
+                "gre": {
+                  "concentrator": {
+                    "host": "192.168.1.1"
+                  },
+                  "key": 5
+                },
+                "radiusOverride": false,
+                "radiusGuestVlanEnabled": true,
+                "radiusGuestVlanId": 1,
+                "minBitrate": 5.5,
+                "bandSelection": "5 GHz band only",
+                "perClientBandwidthLimitUp": 0,
+                "perClientBandwidthLimitDown": 0,
+                "perSsidBandwidthLimitUp": 0,
+                "perSsidBandwidthLimitDown": 0,
+                "lanIsolationEnabled": true,
+                "visible": true,
+                "availableOnAllAps": false,
+                "availabilityTags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "mandatoryDhcpEnabled": false,
+                "adultContentFilteringEnabled": false,
+                "dnsRewrite": {
+                  "enabled": true,
+                  "dnsCustomNameservers": [
+                    "8.8.8.8",
+                    "8.8.4.4"
+                  ]
+                },
+                "speedBurst": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -61965,7 +62656,247 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "Unique identifier of the SSID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the SSID"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether or not the SSID is enabled"
+                },
+                "splashPage": {
+                  "type": "string",
+                  "enum": [
+                    "Billing",
+                    "Cisco ISE",
+                    "Click-through splash page",
+                    "Facebook Wi-Fi",
+                    "Google Apps domain",
+                    "Google OAuth",
+                    "None",
+                    "Password-protected with Active Directory",
+                    "Password-protected with LDAP",
+                    "Password-protected with Meraki RADIUS",
+                    "Password-protected with custom RADIUS",
+                    "SMS authentication",
+                    "Sponsored guest",
+                    "Systems Manager Sentry"
+                  ],
+                  "description": "The type of splash page for the SSID"
+                },
+                "ssidAdminAccessible": {
+                  "type": "boolean",
+                  "description": "SSID Administrator access status"
+                },
+                "authMode": {
+                  "type": "string",
+                  "enum": [
+                    "8021x-google",
+                    "8021x-localradius",
+                    "8021x-meraki",
+                    "8021x-nac",
+                    "8021x-radius",
+                    "ipsk-with-nac",
+                    "ipsk-with-radius",
+                    "ipsk-without-radius",
+                    "open",
+                    "open-enhanced",
+                    "open-with-nac",
+                    "open-with-radius",
+                    "psk"
+                  ],
+                  "description": "The association control method for the SSID"
+                },
+                "encryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "wep",
+                    "wpa"
+                  ],
+                  "description": "The psk encryption mode for the SSID"
+                },
+                "wpaEncryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "WPA1 and WPA2",
+                    "WPA1 only",
+                    "WPA2 only",
+                    "WPA3 192-bit Security",
+                    "WPA3 Transition Mode",
+                    "WPA3 only"
+                  ],
+                  "description": "The types of WPA encryption"
+                },
+                "radiusServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address of your RADIUS server"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "UDP port the RADIUS server listens on for Access-requests"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address to which the APs will send RADIUS accounting messages"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "Port on the RADIUS server that is listening for accounting messages"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not RADIUS accounting is enabled"
+                },
+                "radiusEnabled": {
+                  "type": "boolean",
+                  "description": "Whether RADIUS authentication is enabled"
+                },
+                "radiusAttributeForGroupPolicies": {
+                  "type": "string",
+                  "enum": [
+                    "Airespace-ACL-Name",
+                    "Aruba-User-Role",
+                    "Filter-Id",
+                    "Reply-Message"
+                  ],
+                  "description": "RADIUS attribute used to look up group policies"
+                },
+                "radiusFailoverPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Allow access",
+                    "Deny access"
+                  ],
+                  "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                },
+                "radiusLoadBalancingPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Round robin",
+                    "Strict priority order"
+                  ],
+                  "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                },
+                "ipAssignmentMode": {
+                  "type": "string",
+                  "enum": [
+                    "Bridge mode",
+                    "Ethernet over GRE",
+                    "Layer 3 roaming",
+                    "Layer 3 roaming with a concentrator",
+                    "NAT mode",
+                    "VPN"
+                  ],
+                  "description": "The client IP assignment mode"
+                },
+                "adminSplashUrl": {
+                  "type": "string",
+                  "description": "URL for the admin splash page"
+                },
+                "splashTimeout": {
+                  "type": "string",
+                  "description": "Splash page timeout"
+                },
+                "walledGardenEnabled": {
+                  "type": "boolean",
+                  "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                },
+                "walledGardenRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Domain names and IP address ranges available in Walled Garden mode"
+                },
+                "minBitrate": {
+                  "type": "integer",
+                  "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                },
+                "bandSelection": {
+                  "type": "string",
+                  "enum": [
+                    "5 GHz band only",
+                    "Dual band operation",
+                    "Dual band operation with Band Steering"
+                  ],
+                  "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                },
+                "perClientBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "perClientBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "Whether the SSID is advertised or hidden by the AP"
+                },
+                "availableOnAllAps": {
+                  "type": "boolean",
+                  "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                },
+                "availabilityTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                },
+                "perSsidBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "perSsidBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -61975,9 +62906,17 @@
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "authMode": "8021x-radius",
-                "encryptionMode": "wpa-eap",
+                "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
                 "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingServers": [
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
@@ -61988,8 +62927,8 @@
                 "radiusAccountingEnabled": false,
                 "radiusEnabled": true,
                 "radiusAttributeForGroupPolicies": "Filter-Id",
-                "radiusFailoverPolicy": "null",
-                "radiusLoadBalancingPolicy": "null",
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
                 "ipAssignmentMode": "NAT mode",
                 "adminSplashUrl": "http://example.com",
                 "splashTimeout": "30 minutes",
@@ -62005,19 +62944,12 @@
                 "visible": true,
                 "availableOnAllAps": false,
                 "availabilityTags": [
-                  "test-tag"
+                  "tag1",
+                  "tag2"
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "radiusAccountingServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000,
-                    "openRoamingCertificateId": 2,
-                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                  }
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -71016,8 +71948,7 @@
           "uplinks",
           "usage",
           "byNetwork"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/appliance/vpn/stats": {
@@ -75726,7 +76657,40 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "orders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The numbers of the orders claimed"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the devices claimed"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "description": "The mode of the license"
+                      }
+                    }
+                  },
+                  "description": "The licenses claimed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -76433,7 +77397,28 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the network or config template to copy configuration from"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the configuration template"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The product types of the configuration template"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                  }
+                }
               }
             },
             "examples": {
@@ -76491,7 +77476,8 @@
               },
               "example": {
                 "name": "My config template",
-                "timeZone": "America/Los_Angeles"
+                "timeZone": "America/Los_Angeles",
+                "copyFromNetworkId": "N_24329156"
               },
               "required": [
                 "name"
@@ -76504,7 +77490,28 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -76573,7 +77580,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -76650,7 +77678,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -76676,7 +77725,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles": {
       "get": {
-        "description": "List the switch profiles for your switch template configuration",
+        "description": "List the switch templates for your switch template configuration",
         "operationId": "getOrganizationConfigTemplateSwitchProfiles",
         "parameters": [
           {
@@ -76704,11 +77753,11 @@
                 "properties": {
                   "switchProfileId": {
                     "type": "string",
-                    "description": "Switch profile id"
+                    "description": "Switch template id"
                   },
                   "name": {
                     "type": "string",
-                    "description": "Switch profile name"
+                    "description": "Switch template name"
                   },
                   "model": {
                     "type": "string",
@@ -76721,14 +77770,14 @@
               "application/json": [
                 {
                   "switchProfileId": "1234",
-                  "name": "A Simple Switch Profile",
+                  "name": "A Simple Switch Template",
                   "model": "MS450-24"
                 }
               ]
             }
           }
         },
-        "summary": "List the switch profiles for your switch template configuration",
+        "summary": "List the switch templates for your switch template configuration",
         "tags": [
           "switch",
           "configure",
@@ -76739,7 +77788,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports": {
       "get": {
-        "description": "Return all the ports of a switch profile",
+        "description": "Return all the ports of a switch template",
         "operationId": "getOrganizationConfigTemplateSwitchProfilePorts",
         "parameters": [
           {
@@ -76774,26 +77823,26 @@
                 "properties": {
                   "portId": {
                     "type": "string",
-                    "description": "The identifier of the switch profile port."
+                    "description": "The identifier of the switch template port."
                   },
                   "name": {
                     "type": "string",
-                    "description": "The name of the switch profile port."
+                    "description": "The name of the switch template port."
                   },
                   "tags": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "The list of tags of the switch profile port."
+                    "description": "The list of tags of the switch template port."
                   },
                   "enabled": {
                     "type": "boolean",
-                    "description": "The status of the switch profile port."
+                    "description": "The status of the switch template port."
                   },
                   "poeEnabled": {
                     "type": "boolean",
-                    "description": "The PoE status of the switch profile port."
+                    "description": "The PoE status of the switch template port."
                   },
                   "type": {
                     "type": "string",
@@ -76801,23 +77850,23 @@
                       "access",
                       "trunk"
                     ],
-                    "description": "The type of the switch profile port ('trunk' or 'access')."
+                    "description": "The type of the switch template port ('trunk' or 'access')."
                   },
                   "vlan": {
                     "type": "integer",
-                    "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                    "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                   },
                   "voiceVlan": {
                     "type": "integer",
-                    "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                    "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                   },
                   "allowedVlans": {
                     "type": "string",
-                    "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                    "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                   },
                   "isolationEnabled": {
                     "type": "boolean",
-                    "description": "The isolation status of the switch profile port."
+                    "description": "The isolation status of the switch template port."
                   },
                   "rstpEnabled": {
                     "type": "boolean",
@@ -76835,14 +77884,14 @@
                   },
                   "linkNegotiation": {
                     "type": "string",
-                    "description": "The link speed for the switch profile port."
+                    "description": "The link speed for the switch template port."
                   },
                   "linkNegotiationCapabilities": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "Available link speeds for the switch profile port."
+                    "description": "Available link speeds for the switch template port."
                   },
                   "portScheduleId": {
                     "type": "string",
@@ -76864,11 +77913,11 @@
                       "Open",
                       "Sticky MAC allow list"
                     ],
-                    "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                    "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                   },
                   "accessPolicyNumber": {
                     "type": "integer",
-                    "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                    "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                   },
                   "macAllowList": {
                     "type": "array",
@@ -76890,7 +77939,7 @@
                   },
                   "stormControlEnabled": {
                     "type": "boolean",
-                    "description": "The storm control status of the switch profile port."
+                    "description": "The storm control status of the switch template port."
                   },
                   "flexibleStackingEnabled": {
                     "type": "boolean",
@@ -76970,7 +78019,7 @@
             }
           }
         },
-        "summary": "Return all the ports of a switch profile",
+        "summary": "Return all the ports of a switch template",
         "tags": [
           "switch",
           "configure",
@@ -76982,7 +78031,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}": {
       "get": {
-        "description": "Return a switch profile port",
+        "description": "Return a switch template port",
         "operationId": "getOrganizationConfigTemplateSwitchProfilePort",
         "parameters": [
           {
@@ -77022,26 +78071,26 @@
               "properties": {
                 "portId": {
                   "type": "string",
-                  "description": "The identifier of the switch profile port."
+                  "description": "The identifier of the switch template port."
                 },
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -77049,23 +78098,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -77083,14 +78132,14 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "linkNegotiationCapabilities": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Available link speeds for the switch profile port."
+                  "description": "Available link speeds for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -77112,11 +78161,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -77138,7 +78187,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -77215,7 +78264,7 @@
             }
           }
         },
-        "summary": "Return a switch profile port",
+        "summary": "Return a switch template port",
         "tags": [
           "switch",
           "configure",
@@ -77225,7 +78274,7 @@
         ]
       },
       "put": {
-        "description": "Update a switch profile port",
+        "description": "Update a switch template port",
         "operationId": "updateOrganizationConfigTemplateSwitchProfilePort",
         "parameters": [
           {
@@ -77264,22 +78313,22 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -77287,23 +78336,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -77321,7 +78370,7 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -77343,11 +78392,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -77369,7 +78418,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -77447,26 +78496,26 @@
               "properties": {
                 "portId": {
                   "type": "string",
-                  "description": "The identifier of the switch profile port."
+                  "description": "The identifier of the switch template port."
                 },
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -77474,23 +78523,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -77508,14 +78557,14 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "linkNegotiationCapabilities": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Available link speeds for the switch profile port."
+                  "description": "Available link speeds for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -77537,11 +78586,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -77563,7 +78612,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -77640,7 +78689,7 @@
             }
           }
         },
-        "summary": "Update a switch profile port",
+        "summary": "Update a switch template port",
         "tags": [
           "switch",
           "configure",
@@ -78198,6 +79247,24 @@
             "required": true
           },
           {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
             "type": "string",
             "name": "t0",
             "in": "query",
@@ -78357,6 +79424,12 @@
                     "description": "Network information"
                   }
                 }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
             },
             "examples": {
@@ -78925,83 +79998,86 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Device Name"
-                },
-                "serial": {
-                  "type": "string",
-                  "description": "Device Serial Number"
-                },
-                "mac": {
-                  "type": "string",
-                  "description": "MAC Address"
-                },
-                "publicIp": {
-                  "type": "string",
-                  "description": "Public IP Address"
-                },
-                "networkId": {
-                  "type": "string",
-                  "description": "Network ID"
-                },
-                "status": {
-                  "type": "string",
-                  "description": "Device Status"
-                },
-                "lastReportedAt": {
-                  "type": "string",
-                  "description": "Device Last Reported Location"
-                },
-                "lanIp": {
-                  "type": "string",
-                  "description": "LAN IP Address"
-                },
-                "gateway": {
-                  "type": "string",
-                  "description": "IP Gateway"
-                },
-                "ipType": {
-                  "type": "string",
-                  "description": "IP Type"
-                },
-                "primaryDns": {
-                  "type": "string",
-                  "description": "Primary DNS"
-                },
-                "secondaryDns": {
-                  "type": "string",
-                  "description": "Secondary DNS"
-                },
-                "productType": {
-                  "type": "string",
-                  "description": "Product Type"
-                },
-                "components": {
-                  "type": "object",
-                  "properties": {
-                    "powerSupplies": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Power Supplies"
-                    }
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Device Name"
                   },
-                  "description": "Components"
-                },
-                "model": {
-                  "type": "string",
-                  "description": "Model"
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                  "serial": {
+                    "type": "string",
+                    "description": "Device Serial Number"
                   },
-                  "description": "Tags"
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC Address"
+                  },
+                  "publicIp": {
+                    "type": "string",
+                    "description": "Public IP Address"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network ID"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Device Status"
+                  },
+                  "lastReportedAt": {
+                    "type": "string",
+                    "description": "Device Last Reported Location"
+                  },
+                  "lanIp": {
+                    "type": "string",
+                    "description": "LAN IP Address"
+                  },
+                  "gateway": {
+                    "type": "string",
+                    "description": "IP Gateway"
+                  },
+                  "ipType": {
+                    "type": "string",
+                    "description": "IP Type"
+                  },
+                  "primaryDns": {
+                    "type": "string",
+                    "description": "Primary DNS"
+                  },
+                  "secondaryDns": {
+                    "type": "string",
+                    "description": "Secondary DNS"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product Type"
+                  },
+                  "components": {
+                    "type": "object",
+                    "properties": {
+                      "powerSupplies": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Power Supplies"
+                      }
+                    },
+                    "description": "Components"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tags"
+                  }
                 }
               }
             },
@@ -79012,31 +80088,33 @@
               }
             },
             "examples": {
-              "application/json": {
-                "name": "My AP",
-                "serial": "Q234-ABCD-5678",
-                "mac": "00:11:22:33:44:55",
-                "publicIp": "123.123.123.1",
-                "networkId": "N_24329156",
-                "status": "online",
-                "lastReportedAt": "2018-02-11T00:00:00.090210Z",
-                "lanIp": "1.2.3.4",
-                "gateway": "1.2.3.5",
-                "ipType": "dhcp",
-                "primaryDns": "8.8.8.8",
-                "secondaryDns": "8.8.4.4",
-                "productType": "wireless",
-                "components": {
-                  "powerSupplies": [
+              "application/json": [
+                {
+                  "name": "My AP",
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:33:44:55",
+                  "publicIp": "123.123.123.1",
+                  "networkId": "N_24329156",
+                  "status": "online",
+                  "lastReportedAt": "2018-02-11T00:00:00.090210Z",
+                  "lanIp": "1.2.3.4",
+                  "gateway": "1.2.3.5",
+                  "ipType": "dhcp",
+                  "primaryDns": "8.8.8.8",
+                  "secondaryDns": "8.8.4.4",
+                  "productType": "wireless",
+                  "components": {
+                    "powerSupplies": [
 
+                    ]
+                  },
+                  "model": "MR34",
+                  "tags": [
+                    "tag1",
+                    "tag2"
                   ]
-                },
-                "model": "MR34",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ]
-              }
+                }
+              ]
             }
           }
         },
@@ -80725,7 +81803,40 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "orders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The numbers of the orders claimed"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the devices claimed"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "description": "The mode of the license"
+                      }
+                    }
+                  },
+                  "description": "The licenses claimed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -84419,6 +85530,90 @@
         ]
       }
     },
+    "/organizations/{organizationId}/permissionScopes": {
+      "get": {
+        "description": "List the permissions scopes for this organization",
+        "operationId": "getOrganizationPermissionScopes",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "camera_video",
+                  "level": "view_live"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the permissions scopes for this organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "permissionScopes"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/permissionScopes/{permissionScopeId}": {
+      "get": {
+        "description": "Retrieve a single permission scope",
+        "operationId": "getOrganizationPermissionScope",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "permissionScopeId",
+            "in": "path",
+            "description": "Permission scope ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "camera_video",
+                "level": "view_live"
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single permission scope",
+        "tags": [
+          "organizations",
+          "configure",
+          "permissionScopes"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/policies/assignments/byClient": {
       "get": {
         "description": "Get policies for all clients with policies",
@@ -85268,6 +86463,519 @@
           "configure",
           "policyObjects"
         ]
+      }
+    },
+    "/organizations/{organizationId}/roles": {
+      "get": {
+        "description": "List all the roles in this organization",
+        "operationId": "getOrganizationRoles",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Security_Guard",
+                  "appliedOnDevices": [
+                    {
+                      "tag": "reception-desk",
+                      "id": "",
+                      "permissionScopeId": "1",
+                      "permissionScope": "camera-video",
+                      "permissionLevel": "view_and_export"
+                    }
+                  ],
+                  "appliedOnNetworks": [
+                    {
+                      "tag": "",
+                      "id": "2568",
+                      "permissionScopeId": "2",
+                      "permissionScope": "camera-video",
+                      "permissionLevel": "view"
+                    }
+                  ],
+                  "appliedOrgWide": [
+                    {
+                      "tag": "building-a",
+                      "permissionScopeId": "2",
+                      "permissionScope": "camera_video",
+                      "permissionLevel": "view_live"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all the roles in this organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "roles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Creates new role for this organization.",
+        "operationId": "createOrganizationRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new role. Must be unique. This parameter is required."
+                },
+                "appliedOnDevices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Device tag."
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Device id."
+                      },
+                      "inNetworksWithTag": {
+                        "type": "string",
+                        "description": "Network tag scope"
+                      },
+                      "inNetworksWithId": {
+                        "type": "string",
+                        "description": "Network id scope"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Device tag on which this specified permission is applied."
+                },
+                "appliedOnNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Network tag"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id."
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Network tag on which this specified permission is applied."
+                },
+                "appliedOrgWide": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Permissions to be applied org wide."
+                }
+              },
+              "example": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ]
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates new role for this organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "roles"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/roles/{roleId}": {
+      "get": {
+        "description": "Retrieve a single role",
+        "operationId": "getOrganizationRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single role",
+        "tags": [
+          "organizations",
+          "configure",
+          "roles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "delete": {
+        "description": "Delete an existing role for this organization.",
+        "operationId": "deleteOrganizationRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an existing role for this organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "roles"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update an existing role in this organization.",
+        "operationId": "updateOrganizationRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new role. Must be unique."
+                },
+                "appliedOnDevices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Device tag."
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Device id."
+                      },
+                      "inNetworksWithTag": {
+                        "type": "string",
+                        "description": "Network tag scope"
+                      },
+                      "inNetworksWithId": {
+                        "type": "string",
+                        "description": "Network id scope"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Device tag on which this specified permission is applied."
+                },
+                "appliedOnNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Network tag"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Network tag on which this specified permission is applied."
+                },
+                "appliedOrgWide": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Permissions to be applied org wide."
+                }
+              },
+              "example": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update an existing role in this organization.",
+        "tags": [
+          "organizations",
+          "configure",
+          "roles"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/organizations/{organizationId}/saml": {
@@ -94723,6 +96431,9 @@
       "name": "performanceHistory"
     },
     {
+      "name": "permissionScopes"
+    },
+    {
       "name": "pii"
     },
     {
@@ -94826,6 +96537,9 @@
     },
     {
       "name": "rfProfiles"
+    },
+    {
+      "name": "roles"
     },
     {
       "name": "rollbacks"
@@ -96046,7 +97760,7 @@
     },
     {
       "group": "Switch profile port",
-      "summary": "Update a switch profile port",
+      "summary": "Update a switch template port",
       "resource": "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}",
       "operation": "update"
     },
