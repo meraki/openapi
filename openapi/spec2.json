@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.34.0-beta.2",
+    "version": "1.34.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 21 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 28 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -9249,6 +9249,22 @@
                     ]
                   },
                   "description": "Alert-specific configuration for each type. Only alerts that pertain to the network can be updated."
+                },
+                "muting": {
+                  "type": "object",
+                  "properties": {
+                    "byPortSchedules": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "If true, then wireless unreachable alerts will be muted when caused by a port schedule"
+                        }
+                      },
+                      "description": "Mute wireless unreachable alerts based on switch port schedules"
+                    }
+                  },
+                  "description": "Mute alerts under certain conditions"
                 }
               },
               "example": {
@@ -17266,6 +17282,237 @@
           "trafficShaping",
           "uplinkSelection"
         ]
+      }
+    },
+    "/networks/{networkId}/appliance/trafficShaping/vpnExclusions": {
+      "put": {
+        "description": "Update VPN exclusion configurations for MX networks.",
+        "operationId": "updateNetworkApplianceTrafficShapingVpnExclusions",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceTrafficShapingVpnExclusions",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vpnExclusions": {
+                  "type": "object",
+                  "properties": {
+                    "custom": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "protocol": {
+                            "type": "string",
+                            "enum": [
+                              "any",
+                              "dns",
+                              "icmp",
+                              "tcp",
+                              "udp"
+                            ],
+                            "description": "Protocol."
+                          },
+                          "destination": {
+                            "type": "string",
+                            "description": "Destination address; hostname required for DNS, IPv4 otherwise."
+                          },
+                          "port": {
+                            "type": "string",
+                            "description": "Destination port."
+                          }
+                        },
+                        "required": [
+                          "protocol"
+                        ]
+                      },
+                      "description": "Custom VPN exclusion rules."
+                    },
+                    "majorApplications": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Application's Meraki ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "AWS",
+                              "Box",
+                              "Office 365 Sharepoint",
+                              "Office 365 Suite",
+                              "Oracle",
+                              "SAP",
+                              "Salesforce",
+                              "Skype & Teams",
+                              "Slack",
+                              "Webex",
+                              "Webex Calling",
+                              "Webex Meetings",
+                              "Zoom"
+                            ],
+                            "description": "Application's name."
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      },
+                      "description": "Major Application based VPN exclusion rules."
+                    }
+                  },
+                  "description": "VPN exclusion configurations."
+                }
+              },
+              "example": {
+                "vpnExclusions": {
+                  "custom": [
+                    {
+                      "protocol": "tcp",
+                      "destination": "192.168.3.0/24",
+                      "port": "8000"
+                    }
+                  ],
+                  "majorApplications": [
+                    {
+                      "id": "meraki:vpnExclusion/application/2",
+                      "name": "Office 365 Sharepoint"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "vpnExclusions"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "networkId": {
+                  "type": "string",
+                  "description": "ID of the network whose VPN exclusion rules are returned."
+                },
+                "custom": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "dns",
+                          "icmp",
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "Protocol."
+                      },
+                      "destination": {
+                        "type": "string",
+                        "description": "Destination address; hostname required for DNS, IPv4 otherwise."
+                      },
+                      "port": {
+                        "type": "string",
+                        "description": "Destination port."
+                      }
+                    },
+                    "required": [
+                      "protocol",
+                      "destination",
+                      "port"
+                    ]
+                  },
+                  "description": "Custom VPN exclusion rules."
+                },
+                "majorApplications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Application's Meraki ID."
+                      },
+                      "name": {
+                        "type": "string",
+                        "enum": [
+                          "AWS",
+                          "Box",
+                          "Office 365 Sharepoint",
+                          "Office 365 Suite",
+                          "Oracle",
+                          "SAP",
+                          "Salesforce",
+                          "Skype & Teams",
+                          "Slack",
+                          "Webex",
+                          "Webex Calling",
+                          "Webex Meetings",
+                          "Zoom"
+                        ],
+                        "description": "Application's name."
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ]
+                  },
+                  "description": "Major Application based VPN exclusion rules."
+                }
+              },
+              "required": [
+                "networkId",
+                "custom",
+                "majorApplications"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "networkId": "N_24329156",
+                "custom": [
+                  {
+                    "protocol": "tcp",
+                    "destination": "192.168.3.0/24",
+                    "port": "8000"
+                  }
+                ],
+                "majorApplications": [
+                  {
+                    "id": "meraki:vpnExclusion/application/2",
+                    "name": "Office 365 Sharepoint"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update VPN exclusion configurations for MX networks.",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping",
+          "vpnExclusions"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/networks/{networkId}/appliance/uplinks/usageHistory": {
@@ -30106,7 +30353,190 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "floorPlanId": {
+                    "type": "string",
+                    "description": "Floor plan ID"
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "description": "The url link for the floor plan image."
+                  },
+                  "imageUrlExpiresAt": {
+                    "type": "string",
+                    "description": "The time the image url link will expire."
+                  },
+                  "imageExtension": {
+                    "type": "string",
+                    "description": "The format type of the image."
+                  },
+                  "imageMd5": {
+                    "type": "string",
+                    "format": "byte",
+                    "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of your floor plan."
+                  },
+                  "devices": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the device"
+                        },
+                        "lat": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Latitude of the device"
+                        },
+                        "lng": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Longitude of the device"
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "Physical address of the device"
+                        },
+                        "notes": {
+                          "type": "string",
+                          "description": "Notes for the device, limited to 255 characters"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of tags assigned to the device"
+                        },
+                        "networkId": {
+                          "type": "string",
+                          "description": "ID of the network the device belongs to"
+                        },
+                        "serial": {
+                          "type": "string",
+                          "description": "Serial number of the device"
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Model of the device"
+                        },
+                        "mac": {
+                          "type": "string",
+                          "description": "MAC address of the device"
+                        },
+                        "lanIp": {
+                          "type": "string",
+                          "description": "LAN IP address of the device"
+                        },
+                        "firmware": {
+                          "type": "string",
+                          "description": "Firmware version of the device"
+                        },
+                        "productType": {
+                          "type": "string",
+                          "description": "Product type of the device"
+                        }
+                      }
+                    },
+                    "description": "List of devices for the floorplan"
+                  },
+                  "width": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The width of your floor plan."
+                  },
+                  "height": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The height of your floor plan."
+                  },
+                  "center": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                  },
+                  "bottomLeftCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                  },
+                  "bottomRightCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                  },
+                  "topLeftCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the top left corner of your floor plan."
+                  },
+                  "topRightCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the top right corner of your floor plan."
+                  }
+                }
               }
             },
             "examples": {
@@ -30123,23 +30553,18 @@
                       "name": "My AP",
                       "lat": 37.4180951010362,
                       "lng": -122.098531723022,
-                      "serial": "Q234-ABCD-5678",
-                      "mac": "00:11:22:33:44:55",
-                      "model": "MR34",
                       "address": "1600 Pennsylvania Ave",
                       "notes": "My AP's note",
-                      "lanIp": "1.2.3.4",
                       "tags": [
                         "recently-added"
                       ],
                       "networkId": "N_24329156",
-                      "beaconIdParams": {
-                        "uuid": "00000000-0000-0000-0000-000000000000",
-                        "major": 5,
-                        "minor": 3
-                      },
+                      "serial": "Q234-ABCD-5678",
+                      "model": "MR34",
+                      "mac": "00:11:22:33:44:55",
+                      "lanIp": "1.2.3.4",
                       "firmware": "wireless-25-14",
-                      "floorPlanId": "g_1234567"
+                      "productType": "wireless"
                     }
                   ],
                   "width": 100.0,
@@ -30285,7 +30710,27 @@
               },
               "example": {
                 "name": "HQ Floor Plan",
-                "imageContents": "Q2lzY28gTWVyYWtp"
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "imageContents": "2a9edd3f4ffd80130c647d13eacb59f3"
               },
               "required": [
                 "name",
@@ -30299,7 +30744,190 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30314,23 +30942,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30391,7 +31014,190 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30406,23 +31212,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30573,7 +31374,28 @@
                 }
               },
               "example": {
-
+                "name": "HQ Floor Plan",
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "imageContents": "2a9edd3f4ffd80130c647d13eacb59f3"
               }
             }
           }
@@ -30582,7 +31404,190 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30597,23 +31602,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30670,7 +31670,244 @@
         ],
         "responses": {
           "204": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "floorPlanId": "g_1234567",
+                "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                "imageExtension": "png",
+                "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                "name": "HQ Floor Plan",
+                "devices": [
+                  {
+                    "name": "My AP",
+                    "lat": 37.4180951010362,
+                    "lng": -122.098531723022,
+                    "address": "1600 Pennsylvania Ave",
+                    "notes": "My AP's note",
+                    "tags": [
+                      "recently-added"
+                    ],
+                    "networkId": "N_24329156",
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
+                    "firmware": "wireless-25-14",
+                    "productType": "wireless"
+                  }
+                ],
+                "width": 100.0,
+                "height": 150.1,
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.7696461495,
+                  "lng": -122.3880815506
+                },
+                "bottomRightCorner": {
+                  "lat": 37.771524649766654,
+                  "lng": -122.38795275055205
+                },
+                "topLeftCorner": {
+                  "lat": 37.769700101836364,
+                  "lng": -122.3888684251381
+                },
+                "topRightCorner": {
+                  "lat": 37.77157860210302,
+                  "lng": -122.38873962509012
+                }
+              }
+            }
           }
         },
         "summary": "Destroy a floor plan",
@@ -33446,7 +34683,7 @@
     },
     "/networks/{networkId}/merakiAuthUsers": {
       "get": {
-        "description": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a wired network)",
+        "description": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a MX network)",
         "operationId": "getNetworkMerakiAuthUsers",
         "parameters": [
           {
@@ -33546,7 +34783,7 @@
             }
           }
         },
-        "summary": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a wired network)",
+        "summary": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a MX network)",
         "tags": [
           "networks",
           "configure",
@@ -33589,7 +34826,7 @@
                     "Client VPN",
                     "Guest"
                   ],
-                  "description": "Authorization type for user. Can be 'Guest' or '802.1X' for wireless networks, or 'Client VPN' for wired networks. Defaults to '802.1X'.",
+                  "description": "Authorization type for user. Can be 'Guest' or '802.1X' for wireless networks, or 'Client VPN' for MX networks. Defaults to '802.1X'.",
                   "default": "802.1X"
                 },
                 "emailPasswordToUser": {
@@ -71355,9 +72592,9 @@
                 "properties": {
                   "networkId": {
                     "type": "string",
-                    "description": "ID of the network whose VPN exclusion configurations are returned."
+                    "description": "ID of the network whose VPN exclusion rules are returned."
                   },
-                  "customFilters": {
+                  "custom": {
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -71375,7 +72612,7 @@
                         },
                         "destination": {
                           "type": "string",
-                          "description": "Destination IP address."
+                          "description": "Destination address; hostname required for DNS, IPv4 otherwise."
                         },
                         "port": {
                           "type": "string",
@@ -71388,16 +72625,16 @@
                         "port"
                       ]
                     },
-                    "description": "Custom VPN exclusion configurations."
+                    "description": "Custom VPN exclusion rules."
                   },
-                  "presetFilters": {
+                  "majorApplications": {
                     "type": "array",
                     "items": {
                       "type": "object",
                       "properties": {
                         "id": {
                           "type": "string",
-                          "description": "Application's Meraki id."
+                          "description": "Application's Meraki ID."
                         },
                         "name": {
                           "type": "string",
@@ -71424,13 +72661,13 @@
                         "name"
                       ]
                     },
-                    "description": "Preset VPN exclusion configurations."
+                    "description": "Major Application based VPN exclusion rules."
                   }
                 },
                 "required": [
                   "networkId",
-                  "customFilters",
-                  "presetFilters"
+                  "custom",
+                  "majorApplications"
                 ]
               }
             },
@@ -71438,14 +72675,14 @@
               "application/json": [
                 {
                   "networkId": "N_24329156",
-                  "customFilters": [
+                  "custom": [
                     {
                       "protocol": "tcp",
                       "destination": "192.168.3.0/24",
                       "port": "8000"
                     }
                   ],
-                  "presetFilters": [
+                  "majorApplications": [
                     {
                       "id": "meraki:vpnExclusion/application/2",
                       "name": "Office 365 Sharepoint"
@@ -71457,258 +72694,6 @@
           }
         },
         "summary": "Display VPN exclusion configurations for MX networks.",
-        "tags": [
-          "appliance",
-          "configure",
-          "trafficShaping",
-          "vpnExclusions"
-        ],
-        "x-release-stage": "beta"
-      },
-      "put": {
-        "description": "Update VPN exclusion configurations for MX networks.",
-        "operationId": "updateOrganizationApplianceTrafficShapingVpnExclusions",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "description": "Organization ID",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "updateOrganizationApplianceTrafficShapingVpnExclusions",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "trafficFilters": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "networkId": {
-                        "type": "string",
-                        "description": "ID of the network whose VPN exclusion configurations are returned."
-                      },
-                      "customFilters": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "protocol": {
-                              "type": "string",
-                              "enum": [
-                                "any",
-                                "dns",
-                                "icmp",
-                                "tcp",
-                                "udp"
-                              ],
-                              "description": "Protocol."
-                            },
-                            "destination": {
-                              "type": "string",
-                              "description": "Destination IP address."
-                            },
-                            "port": {
-                              "type": "string",
-                              "description": "Destination port."
-                            }
-                          },
-                          "required": [
-                            "protocol",
-                            "destination",
-                            "port"
-                          ]
-                        },
-                        "description": "Custom VPN exclusion configurations."
-                      },
-                      "presetFilters": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string",
-                              "description": "Application's Meraki id."
-                            },
-                            "name": {
-                              "type": "string",
-                              "enum": [
-                                "AWS",
-                                "Box",
-                                "Office 365 Sharepoint",
-                                "Office 365 Suite",
-                                "Oracle",
-                                "SAP",
-                                "Salesforce",
-                                "Skype & Teams",
-                                "Slack",
-                                "Webex",
-                                "Webex Calling",
-                                "Webex Meetings",
-                                "Zoom"
-                              ],
-                              "description": "Application's name."
-                            }
-                          },
-                          "required": [
-                            "id",
-                            "name"
-                          ]
-                        },
-                        "description": "Preset VPN exclusion configurations."
-                      }
-                    },
-                    "required": [
-                      "networkId",
-                      "customFilters",
-                      "presetFilters"
-                    ]
-                  },
-                  "description": "VPN exclusion configurations."
-                }
-              },
-              "example": {
-                "trafficFilters": [
-                  {
-                    "networkId": "N_24329156",
-                    "customFilters": [
-                      {
-                        "protocol": "tcp",
-                        "destination": "192.168.3.0/24",
-                        "port": "8000"
-                      }
-                    ],
-                    "presetFilters": [
-                      {
-                        "id": "meraki:vpnExclusion/application/2",
-                        "name": "Office 365 Sharepoint"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "required": [
-                "trafficFilters"
-              ]
-            },
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "networkId": {
-                    "type": "string",
-                    "description": "ID of the network whose VPN exclusion configurations are returned."
-                  },
-                  "customFilters": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "protocol": {
-                          "type": "string",
-                          "enum": [
-                            "any",
-                            "dns",
-                            "icmp",
-                            "tcp",
-                            "udp"
-                          ],
-                          "description": "Protocol."
-                        },
-                        "destination": {
-                          "type": "string",
-                          "description": "Destination IP address."
-                        },
-                        "port": {
-                          "type": "string",
-                          "description": "Destination port."
-                        }
-                      },
-                      "required": [
-                        "protocol",
-                        "destination",
-                        "port"
-                      ]
-                    },
-                    "description": "Custom VPN exclusion configurations."
-                  },
-                  "presetFilters": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "Application's Meraki id."
-                        },
-                        "name": {
-                          "type": "string",
-                          "enum": [
-                            "AWS",
-                            "Box",
-                            "Office 365 Sharepoint",
-                            "Office 365 Suite",
-                            "Oracle",
-                            "SAP",
-                            "Salesforce",
-                            "Skype & Teams",
-                            "Slack",
-                            "Webex",
-                            "Webex Calling",
-                            "Webex Meetings",
-                            "Zoom"
-                          ],
-                          "description": "Application's name."
-                        }
-                      },
-                      "required": [
-                        "id",
-                        "name"
-                      ]
-                    },
-                    "description": "Preset VPN exclusion configurations."
-                  }
-                },
-                "required": [
-                  "networkId",
-                  "customFilters",
-                  "presetFilters"
-                ]
-              }
-            },
-            "examples": {
-              "application/json": [
-                {
-                  "networkId": "N_24329156",
-                  "customFilters": [
-                    {
-                      "protocol": "tcp",
-                      "destination": "192.168.3.0/24",
-                      "port": "8000"
-                    }
-                  ],
-                  "presetFilters": [
-                    {
-                      "id": "meraki:vpnExclusion/application/2",
-                      "name": "Office 365 Sharepoint"
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        },
-        "summary": "Update VPN exclusion configurations for MX networks.",
         "tags": [
           "appliance",
           "configure",
@@ -71849,7 +72834,7 @@
     },
     "/organizations/{organizationId}/appliance/uplinks/usage/byNetwork": {
       "get": {
-        "description": "Get the sent and received bytes for each uplink of all wired networks within an organization. If more than one MX was active during the specified timespan, then the sent and received bytes will be aggregated by interface.",
+        "description": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization. If more than one device was active during the specified timespan, then the sent and received bytes will be aggregated by interface.",
         "operationId": "getOrganizationApplianceUplinksUsageByNetwork",
         "parameters": [
           {
@@ -71941,7 +72926,7 @@
             }
           }
         },
-        "summary": "Get the sent and received bytes for each uplink of all wired networks within an organization",
+        "summary": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization",
         "tags": [
           "appliance",
           "monitor",
@@ -79470,7 +80455,7 @@
         "summary": "List the availability history information for devices in an organization.",
         "tags": [
           "organizations",
-          "configure",
+          "monitor",
           "devices",
           "availabilities",
           "history"
@@ -93378,39 +94363,6 @@
         ]
       }
     },
-    "/organizations/{organizationId}/users/{userId}": {
-      "delete": {
-        "description": "Delete a user and all of its authentication methods.",
-        "operationId": "deleteOrganizationUser",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "description": "Organization ID",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "User ID",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete a user and all of its authentication methods.",
-        "tags": [
-          "organizations",
-          "configure",
-          "users"
-        ]
-      }
-    },
     "/organizations/{organizationId}/webhooks/alertTypes": {
       "get": {
         "description": "Return a list of alert types to be used with managing webhook alerts",
@@ -97033,12 +97985,6 @@
       "operation": "update"
     },
     {
-      "group": "End user",
-      "summary": "Delete a user and all of its authentication methods.",
-      "resource": "/organizations/{organizationId}/users/{userId}",
-      "operation": "destroy"
-    },
-    {
       "group": "Feature opt in",
       "summary": "Update an early access feature opt-in for an organization",
       "resource": "/organizations/{organizationId}/earlyAccess/features/optIns/{optInId}",
@@ -97917,7 +98863,7 @@
     {
       "group": "Wired/actions/vpn exclusions",
       "summary": "Update VPN exclusion configurations for MX networks.",
-      "resource": "/organizations/{organizationId}/appliance/trafficShaping/vpnExclusions",
+      "resource": "/networks/{networkId}/appliance/trafficShaping/vpnExclusions",
       "operation": "update"
     },
     {
