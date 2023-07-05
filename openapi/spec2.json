@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.34.0",
+    "version": "1.35.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 June, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 05 July, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -25,11 +25,21 @@
       "type": "apiKey",
       "name": "X-Cisco-Meraki-API-Key",
       "in": "header"
+    },
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   },
   "security": [
     {
       "meraki_api_key": [
+
+      ]
+    },
+    {
+      "bearerAuth": [
 
       ]
     }
@@ -241,7 +251,7 @@
                 },
                 "switchProfileId": {
                   "type": "string",
-                  "description": "The ID of a switch profile to bind to the device (for available switch profiles, see the 'Switch Profiles' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch profile, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template."
+                  "description": "The ID of a switch template to bind to the device (for available switch templates, see the 'Switch Templates' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch template, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template."
                 },
                 "floorPlanId": {
                   "type": "string",
@@ -2049,7 +2059,21 @@
           "202": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "duration": {
+                  "type": "integer",
+                  "description": "The duration in seconds. Will be between 5 and 120. Default is 20 seconds"
+                },
+                "period": {
+                  "type": "integer",
+                  "description": "The period in milliseconds. Will be between 100 and 1000. Default is 160 milliseconds"
+                },
+                "duty": {
+                  "type": "integer",
+                  "description": "The duty cycle as the percent active. Will be between 10 and 90. Default is 50"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -4677,7 +4701,13 @@
           "202": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Shows the success of the reboot"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -8485,7 +8515,58 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "basicServiceSets": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ssidName": {
+                        "type": "string",
+                        "description": "Name of wireless network"
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "Unique identifier of wireless network"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Status of wireless network"
+                      },
+                      "band": {
+                        "type": "string",
+                        "description": "Frequency range used by wireless network"
+                      },
+                      "bssid": {
+                        "type": "string",
+                        "description": "Unique identifier of wireless access point"
+                      },
+                      "channel": {
+                        "type": "integer",
+                        "description": "Frequency channel used by wireless network"
+                      },
+                      "channelWidth": {
+                        "type": "string",
+                        "description": "Width of frequency channel used by wireless network"
+                      },
+                      "power": {
+                        "type": "string",
+                        "description": "Strength of wireless signal"
+                      },
+                      "visible": {
+                        "type": "boolean",
+                        "description": "Whether the SSID is advertised or hidden"
+                      },
+                      "broadcasting": {
+                        "type": "boolean",
+                        "description": "Whether the SSID is broadcasting based on an availability schedule"
+                      }
+                    }
+                  },
+                  "description": "SSID status list"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -8498,30 +8579,6 @@
                     "bssid": "8A:15:04:00:00:00",
                     "channel": 11,
                     "channelWidth": "20 MHz",
-                    "power": "18 dBm",
-                    "visible": true,
-                    "broadcasting": true
-                  },
-                  {
-                    "ssidName": "My SSID",
-                    "ssidNumber": 0,
-                    "enabled": true,
-                    "band": "5 GHz",
-                    "bssid": "8A:15:14:00:00:00",
-                    "channel": 64,
-                    "channelWidth": "40 MHz",
-                    "power": "18 dBm",
-                    "visible": true,
-                    "broadcasting": true
-                  },
-                  {
-                    "ssidName": "My SSID",
-                    "ssidNumber": 0,
-                    "enabled": true,
-                    "band": "6 GHz",
-                    "bssid": "8A:15:24:00:00:00",
-                    "channel": 145,
-                    "channelWidth": "80 MHz",
                     "power": "18 dBm",
                     "visible": true,
                     "broadcasting": true
@@ -9117,6 +9174,22 @@
                     ]
                   },
                   "description": "Alert-specific configuration for each type. Only alerts that pertain to the network can be updated."
+                },
+                "muting": {
+                  "type": "object",
+                  "properties": {
+                    "byPortSchedules": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "If true, then wireless unreachable alerts will be muted when caused by a port schedule"
+                        }
+                      },
+                      "description": "Mute wireless unreachable alerts based on switch port schedules"
+                    }
+                  },
+                  "description": "Mute alerts under certain conditions"
                 }
               },
               "example": {
@@ -15933,16 +16006,16 @@
               "example": {
                 "bandwidthLimits": {
                   "wan1": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
+                    "limitUp": 1000,
+                    "limitDown": 1000
                   },
                   "wan2": {
-                    "limitUp": 1000000,
-                    "limitDown": 1000000
+                    "limitUp": 1000,
+                    "limitDown": 1000
                   },
                   "cellular": {
-                    "limitUp": 51200,
-                    "limitDown": 51200
+                    "limitUp": 1000,
+                    "limitDown": 1000
                   }
                 }
               }
@@ -21666,7 +21739,10 @@
                 }
               },
               "example": {
-
+                "bandwidthLimits": {
+                  "limitUp": 1000,
+                  "limitDown": 1000
+                }
               }
             }
           }
@@ -29971,7 +30047,190 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "floorPlanId": {
+                    "type": "string",
+                    "description": "Floor plan ID"
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "description": "The url link for the floor plan image."
+                  },
+                  "imageUrlExpiresAt": {
+                    "type": "string",
+                    "description": "The time the image url link will expire."
+                  },
+                  "imageExtension": {
+                    "type": "string",
+                    "description": "The format type of the image."
+                  },
+                  "imageMd5": {
+                    "type": "string",
+                    "format": "byte",
+                    "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of your floor plan."
+                  },
+                  "devices": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the device"
+                        },
+                        "lat": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Latitude of the device"
+                        },
+                        "lng": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Longitude of the device"
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "Physical address of the device"
+                        },
+                        "notes": {
+                          "type": "string",
+                          "description": "Notes for the device, limited to 255 characters"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "List of tags assigned to the device"
+                        },
+                        "networkId": {
+                          "type": "string",
+                          "description": "ID of the network the device belongs to"
+                        },
+                        "serial": {
+                          "type": "string",
+                          "description": "Serial number of the device"
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Model of the device"
+                        },
+                        "mac": {
+                          "type": "string",
+                          "description": "MAC address of the device"
+                        },
+                        "lanIp": {
+                          "type": "string",
+                          "description": "LAN IP address of the device"
+                        },
+                        "firmware": {
+                          "type": "string",
+                          "description": "Firmware version of the device"
+                        },
+                        "productType": {
+                          "type": "string",
+                          "description": "Product type of the device"
+                        }
+                      }
+                    },
+                    "description": "List of devices for the floorplan"
+                  },
+                  "width": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The width of your floor plan."
+                  },
+                  "height": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The height of your floor plan."
+                  },
+                  "center": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                  },
+                  "bottomLeftCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                  },
+                  "bottomRightCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                  },
+                  "topLeftCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the top left corner of your floor plan."
+                  },
+                  "topRightCorner": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude"
+                      }
+                    },
+                    "description": "The longitude and latitude of the top right corner of your floor plan."
+                  }
+                }
               }
             },
             "examples": {
@@ -29988,23 +30247,18 @@
                       "name": "My AP",
                       "lat": 37.4180951010362,
                       "lng": -122.098531723022,
-                      "serial": "Q234-ABCD-5678",
-                      "mac": "00:11:22:33:44:55",
-                      "model": "MR34",
                       "address": "1600 Pennsylvania Ave",
                       "notes": "My AP's note",
-                      "lanIp": "1.2.3.4",
                       "tags": [
                         "recently-added"
                       ],
                       "networkId": "N_24329156",
-                      "beaconIdParams": {
-                        "uuid": "00000000-0000-0000-0000-000000000000",
-                        "major": 5,
-                        "minor": 3
-                      },
+                      "serial": "Q234-ABCD-5678",
+                      "model": "MR34",
+                      "mac": "00:11:22:33:44:55",
+                      "lanIp": "1.2.3.4",
                       "firmware": "wireless-25-14",
-                      "floorPlanId": "g_1234567"
+                      "productType": "wireless"
                     }
                   ],
                   "width": 100.0,
@@ -30150,7 +30404,27 @@
               },
               "example": {
                 "name": "HQ Floor Plan",
-                "imageContents": "Q2lzY28gTWVyYWtp"
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "imageContents": "2a9edd3f4ffd80130c647d13eacb59f3"
               },
               "required": [
                 "name",
@@ -30164,7 +30438,190 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30179,23 +30636,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30256,7 +30708,190 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30271,23 +30906,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30438,7 +31068,28 @@
                 }
               },
               "example": {
-
+                "name": "HQ Floor Plan",
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topLeftCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "topRightCorner": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "imageContents": "2a9edd3f4ffd80130c647d13eacb59f3"
               }
             }
           }
@@ -30447,7 +31098,190 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -30462,23 +31296,18 @@
                     "name": "My AP",
                     "lat": 37.4180951010362,
                     "lng": -122.098531723022,
-                    "serial": "Q234-ABCD-5678",
-                    "mac": "00:11:22:33:44:55",
-                    "model": "MR34",
                     "address": "1600 Pennsylvania Ave",
                     "notes": "My AP's note",
-                    "lanIp": "1.2.3.4",
                     "tags": [
                       "recently-added"
                     ],
                     "networkId": "N_24329156",
-                    "beaconIdParams": {
-                      "uuid": "00000000-0000-0000-0000-000000000000",
-                      "major": 5,
-                      "minor": 3
-                    },
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
-                    "floorPlanId": "g_1234567"
+                    "productType": "wireless"
                   }
                 ],
                 "width": 100.0,
@@ -30535,7 +31364,244 @@
         ],
         "responses": {
           "204": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "floorPlanId": {
+                  "type": "string",
+                  "description": "Floor plan ID"
+                },
+                "imageUrl": {
+                  "type": "string",
+                  "description": "The url link for the floor plan image."
+                },
+                "imageUrlExpiresAt": {
+                  "type": "string",
+                  "description": "The time the image url link will expire."
+                },
+                "imageExtension": {
+                  "type": "string",
+                  "description": "The format type of the image."
+                },
+                "imageMd5": {
+                  "type": "string",
+                  "format": "byte",
+                  "description": "The file contents (a base 64 encoded string) of your new image. Supported formats are PNG, GIF, and JPG. Note that all images are saved as PNG files, regardless of the format they are uploaded in. If you upload a new image, and you do NOT specify any new geolocation fields ('center, 'topLeftCorner', etc), the floor plan will be recentered with no rotation in order to maintain the aspect ratio of your new image."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of your floor plan."
+                },
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Latitude of the device"
+                      },
+                      "lng": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Longitude of the device"
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "description": "Notes for the device, limited to 255 characters"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of tags assigned to the device"
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "ID of the network the device belongs to"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "lanIp": {
+                        "type": "string",
+                        "description": "LAN IP address of the device"
+                      },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware version of the device"
+                      },
+                      "productType": {
+                        "type": "string",
+                        "description": "Product type of the device"
+                      }
+                    }
+                  },
+                  "description": "List of devices for the floorplan"
+                },
+                "width": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The width of your floor plan."
+                },
+                "height": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "The height of your floor plan."
+                },
+                "center": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the center of your floor plan. The 'center' or two adjacent corners (e.g. 'topLeftCorner' and 'bottomLeftCorner') must be specified. If 'center' is specified, the floor plan is placed over that point with no rotation. If two adjacent corners are specified, the floor plan is rotated to line up with the two specified points. The aspect ratio of the floor plan's image is preserved regardless of which corners/center are specified. (This means if that more than two corners are specified, only two corners may be used to preserve the floor plan's aspect ratio.). No two points can have the same latitude, longitude pair."
+                },
+                "bottomLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom left corner of your floor plan."
+                },
+                "bottomRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the bottom right corner of your floor plan."
+                },
+                "topLeftCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top left corner of your floor plan."
+                },
+                "topRightCorner": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Latitude"
+                    },
+                    "lng": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "Longitude"
+                    }
+                  },
+                  "description": "The longitude and latitude of the top right corner of your floor plan."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "floorPlanId": "g_1234567",
+                "imageUrl": "https://meraki-na.s3.amazonaws.com/assets/...",
+                "imageUrlExpiresAt": "2019-06-11 16:04:54 +00:00",
+                "imageExtension": "png",
+                "imageMd5": "2a9edd3f4ffd80130c647d13eacb59f3",
+                "name": "HQ Floor Plan",
+                "devices": [
+                  {
+                    "name": "My AP",
+                    "lat": 37.4180951010362,
+                    "lng": -122.098531723022,
+                    "address": "1600 Pennsylvania Ave",
+                    "notes": "My AP's note",
+                    "tags": [
+                      "recently-added"
+                    ],
+                    "networkId": "N_24329156",
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MR34",
+                    "mac": "00:11:22:33:44:55",
+                    "lanIp": "1.2.3.4",
+                    "firmware": "wireless-25-14",
+                    "productType": "wireless"
+                  }
+                ],
+                "width": 100.0,
+                "height": 150.1,
+                "center": {
+                  "lat": 37.770040510499996,
+                  "lng": -122.38714009525
+                },
+                "bottomLeftCorner": {
+                  "lat": 37.7696461495,
+                  "lng": -122.3880815506
+                },
+                "bottomRightCorner": {
+                  "lat": 37.771524649766654,
+                  "lng": -122.38795275055205
+                },
+                "topLeftCorner": {
+                  "lat": 37.769700101836364,
+                  "lng": -122.3888684251381
+                },
+                "topRightCorner": {
+                  "lat": 37.77157860210302,
+                  "lng": -122.38873962509012
+                }
+              }
+            }
           }
         },
         "summary": "Destroy a floor plan",
@@ -33007,7 +34073,7 @@
     },
     "/networks/{networkId}/merakiAuthUsers": {
       "get": {
-        "description": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a wired network)",
+        "description": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a MX network)",
         "operationId": "getNetworkMerakiAuthUsers",
         "parameters": [
           {
@@ -33107,7 +34173,7 @@
             }
           }
         },
-        "summary": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a wired network)",
+        "summary": "List the users configured under Meraki Authentication for a network (splash guest or RADIUS users for a wireless network, or client VPN users for a MX network)",
         "tags": [
           "networks",
           "configure",
@@ -33150,7 +34216,7 @@
                     "Client VPN",
                     "Guest"
                   ],
-                  "description": "Authorization type for user. Can be 'Guest' or '802.1X' for wireless networks, or 'Client VPN' for wired networks. Defaults to '802.1X'.",
+                  "description": "Authorization type for user. Can be 'Guest' or '802.1X' for wireless networks, or 'Client VPN' for MX networks. Defaults to '802.1X'.",
                   "default": "802.1X"
                 },
                 "emailPasswordToUser": {
@@ -45081,18 +46147,18 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs. Applicable only for template network."
+                        "description": "List of switch template IDs. Applicable only for template network."
                       },
                       "mtuSize": {
                         "type": "integer",
-                        "description": "MTU size for the switches or switch profiles."
+                        "description": "MTU size for the switches or switch templates."
                       }
                     },
                     "required": [
                       "mtuSize"
                     ]
                   },
-                  "description": "Override MTU size for individual switches or switch profiles.\n      An empty array will clear overrides."
+                  "description": "Override MTU size for individual switches or switch templates.\n      An empty array will clear overrides."
                 }
               }
             },
@@ -45162,18 +46228,18 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs. Applicable only for template network."
+                        "description": "List of switch template IDs. Applicable only for template network."
                       },
                       "mtuSize": {
                         "type": "integer",
-                        "description": "MTU size for the switches or switch profiles."
+                        "description": "MTU size for the switches or switch templates."
                       }
                     },
                     "required": [
                       "mtuSize"
                     ]
                   },
-                  "description": "Override MTU size for individual switches or switch profiles. An empty array will clear overrides."
+                  "description": "Override MTU size for individual switches or switch templates. An empty array will clear overrides."
                 }
               },
               "example": {
@@ -46378,15 +47444,15 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "(optional) List of switch profiles ids for template network"
+                        "description": "(optional) List of switch templates ids for template network"
                       },
                       "igmpSnoopingEnabled": {
                         "type": "boolean",
-                        "description": "IGMP snooping enabled for switches, switch stacks or switch profiles"
+                        "description": "IGMP snooping enabled for switches, switch stacks or switch templates"
                       },
                       "floodUnknownMulticastTrafficEnabled": {
                         "type": "boolean",
-                        "description": "Flood unknown multicast traffic enabled for switches, switch stacks or switch profiles"
+                        "description": "Flood unknown multicast traffic enabled for switches, switch stacks or switch templates"
                       }
                     }
                   },
@@ -46473,7 +47539,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profiles ids for template network"
+                        "description": "List of switch templates ids for template network"
                       },
                       "switches": {
                         "type": "array",
@@ -46491,11 +47557,11 @@
                       },
                       "igmpSnoopingEnabled": {
                         "type": "boolean",
-                        "description": "IGMP snooping setting for switches, switch stacks or switch profiles"
+                        "description": "IGMP snooping setting for switches, switch stacks or switch templates"
                       },
                       "floodUnknownMulticastTrafficEnabled": {
                         "type": "boolean",
-                        "description": "Flood unknown multicast traffic setting for switches, switch stacks or switch profiles"
+                        "description": "Flood unknown multicast traffic setting for switches, switch stacks or switch templates"
                       }
                     },
                     "required": [
@@ -49190,7 +50256,7 @@
                         "items": {
                           "type": "string"
                         },
-                        "description": "List of switch profile IDs"
+                        "description": "List of switch template IDs"
                       },
                       "switches": {
                         "type": "array",
@@ -49208,14 +50274,14 @@
                       },
                       "stpPriority": {
                         "type": "integer",
-                        "description": "STP priority for switch, stacks, or switch profiles"
+                        "description": "STP priority for switch, stacks, or switch templates"
                       }
                     },
                     "required": [
                       "stpPriority"
                     ]
                   },
-                  "description": "STP bridge priority for switches/stacks or switch profiles. An empty array will clear the STP bridge priority settings."
+                  "description": "STP bridge priority for switches/stacks or switch templates. An empty array will clear the STP bridge priority settings."
                 }
               },
               "example": {
@@ -49473,7 +50539,7 @@
     },
     "/networks/{networkId}/topology/linkLayer": {
       "get": {
-        "description": "List the LLDP and CDP information for all discovered devices and connections in a network.",
+        "description": "List the LLDP and CDP information for all discovered devices and connections in a network. At least one MX or MS device must be in the network in order to build the topology.",
         "operationId": "getNetworkTopologyLinkLayer",
         "parameters": [
           {
@@ -49661,7 +50727,7 @@
             }
           }
         },
-        "summary": "List the LLDP and CDP information for all discovered devices and connections in a network.",
+        "summary": "List the LLDP and CDP information for all discovered devices and connections in a network",
         "tags": [
           "networks",
           "monitor",
@@ -51601,7 +52667,49 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "description": "The currency code of this node group's billing plans"
+                },
+                "plans": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The id of the pricing plan to update."
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The price of the billing plan."
+                      },
+                      "bandwidthLimits": {
+                        "type": "object",
+                        "properties": {
+                          "limitUp": {
+                            "type": "integer",
+                            "description": "The maximum upload limit (integer, in Kbps)."
+                          },
+                          "limitDown": {
+                            "type": "integer",
+                            "description": "The maximum download limit (integer, in Kbps)."
+                          }
+                        },
+                        "description": "The uplink bandwidth settings for the pricing plan."
+                      },
+                      "timeLimit": {
+                        "type": "string",
+                        "description": "The time limit of the pricing plan in minutes."
+                      }
+                    }
+                  },
+                  "description": "Array of billing plans in the node group. (Can configure a maximum of 5)"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -51609,7 +52717,7 @@
                 "plans": [
                   {
                     "id": "1",
-                    "price": 5,
+                    "price": 5.0,
                     "bandwidthLimits": {
                       "limitUp": 1000,
                       "limitDown": 1000
@@ -51702,7 +52810,7 @@
                 "plans": [
                   {
                     "id": "1",
-                    "price": 5,
+                    "price": 5.0,
                     "bandwidthLimits": {
                       "limitUp": 1000,
                       "limitDown": 1000
@@ -51718,7 +52826,49 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "description": "The currency code of this node group's billing plans"
+                },
+                "plans": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The id of the pricing plan to update."
+                      },
+                      "price": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "The price of the billing plan."
+                      },
+                      "bandwidthLimits": {
+                        "type": "object",
+                        "properties": {
+                          "limitUp": {
+                            "type": "integer",
+                            "description": "The maximum upload limit (integer, in Kbps)."
+                          },
+                          "limitDown": {
+                            "type": "integer",
+                            "description": "The maximum download limit (integer, in Kbps)."
+                          }
+                        },
+                        "description": "The uplink bandwidth settings for the pricing plan."
+                      },
+                      "timeLimit": {
+                        "type": "string",
+                        "description": "The time limit of the pricing plan in minutes."
+                      }
+                    }
+                  },
+                  "description": "Array of billing plans in the node group. (Can configure a maximum of 5)"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -51726,7 +52876,7 @@
                 "plans": [
                   {
                     "id": "1",
-                    "price": 5,
+                    "price": 5.0,
                     "bandwidthLimits": {
                       "limitUp": 1000,
                       "limitDown": 1000
@@ -55307,6 +56457,37 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "flexRadios": {
+                  "type": "object",
+                  "properties": {
+                    "byModel": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "model": {
+                            "type": "string",
+                            "description": "Model of the AP"
+                          },
+                          "bands": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "2.4",
+                                "5",
+                                "6"
+                              ]
+                            },
+                            "description": "Band to use for each flex radio. For example, ['6'] will set the AP's first flex radio to 6 GHz"
+                          }
+                        }
+                      },
+                      "description": "Flex radios by model."
+                    }
+                  },
+                  "description": "Flex radio settings."
                 }
               },
               "example": {
@@ -55511,6 +56692,16 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
+                },
+                "flexRadios": {
+                  "byModel": [
+                    {
+                      "model": "MR34",
+                      "bands": [
+                        "5"
+                      ]
+                    }
+                  ]
                 }
               },
               "required": [
@@ -56864,6 +58055,37 @@
                     }
                   },
                   "description": "Per-SSID radio settings by number."
+                },
+                "flexRadios": {
+                  "type": "object",
+                  "properties": {
+                    "byModel": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "model": {
+                            "type": "string",
+                            "description": "Model of the AP"
+                          },
+                          "bands": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "2.4",
+                                "5",
+                                "6"
+                              ]
+                            },
+                            "description": "Band to use for each flex radio. For example, ['6'] will set the AP's first flex radio to 6 GHz"
+                          }
+                        }
+                      },
+                      "description": "Flex radios by model."
+                    }
+                  },
+                  "description": "Flex radio settings."
                 }
               },
               "example": {
@@ -57068,6 +58290,16 @@
                     "bandOperationMode": "dual",
                     "bandSteeringEnabled": true
                   }
+                },
+                "flexRadios": {
+                  "byModel": [
+                    {
+                      "model": "MR34",
+                      "bands": [
+                        "5"
+                      ]
+                    }
+                  ]
                 }
               }
             }
@@ -59087,7 +60319,247 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "integer",
+                    "description": "Unique identifier of the SSID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the SSID"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether or not the SSID is enabled"
+                  },
+                  "splashPage": {
+                    "type": "string",
+                    "enum": [
+                      "Billing",
+                      "Cisco ISE",
+                      "Click-through splash page",
+                      "Facebook Wi-Fi",
+                      "Google Apps domain",
+                      "Google OAuth",
+                      "None",
+                      "Password-protected with Active Directory",
+                      "Password-protected with LDAP",
+                      "Password-protected with Meraki RADIUS",
+                      "Password-protected with custom RADIUS",
+                      "SMS authentication",
+                      "Sponsored guest",
+                      "Systems Manager Sentry"
+                    ],
+                    "description": "The type of splash page for the SSID"
+                  },
+                  "ssidAdminAccessible": {
+                    "type": "boolean",
+                    "description": "SSID Administrator access status"
+                  },
+                  "authMode": {
+                    "type": "string",
+                    "enum": [
+                      "8021x-google",
+                      "8021x-localradius",
+                      "8021x-meraki",
+                      "8021x-nac",
+                      "8021x-radius",
+                      "ipsk-with-nac",
+                      "ipsk-with-radius",
+                      "ipsk-without-radius",
+                      "open",
+                      "open-enhanced",
+                      "open-with-nac",
+                      "open-with-radius",
+                      "psk"
+                    ],
+                    "description": "The association control method for the SSID"
+                  },
+                  "encryptionMode": {
+                    "type": "string",
+                    "enum": [
+                      "wep",
+                      "wpa"
+                    ],
+                    "description": "The psk encryption mode for the SSID"
+                  },
+                  "wpaEncryptionMode": {
+                    "type": "string",
+                    "enum": [
+                      "WPA1 and WPA2",
+                      "WPA1 only",
+                      "WPA2 only",
+                      "WPA3 192-bit Security",
+                      "WPA3 Transition Mode",
+                      "WPA3 only"
+                    ],
+                    "description": "The types of WPA encryption"
+                  },
+                  "radiusServers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "description": "IP address (or FQDN) of your RADIUS server"
+                        },
+                        "port": {
+                          "type": "integer",
+                          "description": "UDP port the RADIUS server listens on for Access-requests"
+                        },
+                        "openRoamingCertificateId": {
+                          "type": "integer",
+                          "description": "The ID of the Openroaming Certificate attached to radius server"
+                        },
+                        "caCertificate": {
+                          "type": "string",
+                          "description": "Certificate used for authorization for the RADSEC Server"
+                        }
+                      }
+                    },
+                    "description": "List of RADIUS 802.1X servers to be used for authentication"
+                  },
+                  "radiusAccountingServers": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "description": "IP address (or FQDN) to which the APs will send RADIUS accounting messages"
+                        },
+                        "port": {
+                          "type": "integer",
+                          "description": "Port on the RADIUS server that is listening for accounting messages"
+                        },
+                        "openRoamingCertificateId": {
+                          "type": "integer",
+                          "description": "The ID of the Openroaming Certificate attached to radius server"
+                        },
+                        "caCertificate": {
+                          "type": "string",
+                          "description": "Certificate used for authorization for the RADSEC Server"
+                        }
+                      }
+                    },
+                    "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                  },
+                  "radiusAccountingEnabled": {
+                    "type": "boolean",
+                    "description": "Whether or not RADIUS accounting is enabled"
+                  },
+                  "radiusEnabled": {
+                    "type": "boolean",
+                    "description": "Whether RADIUS authentication is enabled"
+                  },
+                  "radiusAttributeForGroupPolicies": {
+                    "type": "string",
+                    "enum": [
+                      "Airespace-ACL-Name",
+                      "Aruba-User-Role",
+                      "Filter-Id",
+                      "Reply-Message"
+                    ],
+                    "description": "RADIUS attribute used to look up group policies"
+                  },
+                  "radiusFailoverPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Allow access",
+                      "Deny access"
+                    ],
+                    "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                  },
+                  "radiusLoadBalancingPolicy": {
+                    "type": "string",
+                    "enum": [
+                      "Round robin",
+                      "Strict priority order"
+                    ],
+                    "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                  },
+                  "ipAssignmentMode": {
+                    "type": "string",
+                    "enum": [
+                      "Bridge mode",
+                      "Ethernet over GRE",
+                      "Layer 3 roaming",
+                      "Layer 3 roaming with a concentrator",
+                      "NAT mode",
+                      "VPN"
+                    ],
+                    "description": "The client IP assignment mode"
+                  },
+                  "adminSplashUrl": {
+                    "type": "string",
+                    "description": "URL for the admin splash page"
+                  },
+                  "splashTimeout": {
+                    "type": "string",
+                    "description": "Splash page timeout"
+                  },
+                  "walledGardenEnabled": {
+                    "type": "boolean",
+                    "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                  },
+                  "walledGardenRanges": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Domain names and IP address ranges available in Walled Garden mode"
+                  },
+                  "minBitrate": {
+                    "type": "integer",
+                    "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                  },
+                  "bandSelection": {
+                    "type": "string",
+                    "enum": [
+                      "5 GHz band only",
+                      "Dual band operation",
+                      "Dual band operation with Band Steering"
+                    ],
+                    "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                  },
+                  "perClientBandwidthLimitUp": {
+                    "type": "integer",
+                    "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                  },
+                  "perClientBandwidthLimitDown": {
+                    "type": "integer",
+                    "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                  },
+                  "visible": {
+                    "type": "boolean",
+                    "description": "Whether the SSID is advertised or hidden by the AP"
+                  },
+                  "availableOnAllAps": {
+                    "type": "boolean",
+                    "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                  },
+                  "availabilityTags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                  },
+                  "perSsidBandwidthLimitUp": {
+                    "type": "integer",
+                    "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                  },
+                  "perSsidBandwidthLimitDown": {
+                    "type": "integer",
+                    "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                  },
+                  "mandatoryDhcpEnabled": {
+                    "type": "boolean",
+                    "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                  }
+                }
               }
             },
             "examples": {
@@ -59099,9 +60571,17 @@
                   "splashPage": "Click-through splash page",
                   "ssidAdminAccessible": false,
                   "authMode": "8021x-radius",
-                  "encryptionMode": "wpa-eap",
+                  "encryptionMode": "wpa",
                   "wpaEncryptionMode": "WPA2 only",
                   "radiusServers": [
+                    {
+                      "host": "0.0.0.0",
+                      "port": 3000,
+                      "openRoamingCertificateId": 2,
+                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                    }
+                  ],
+                  "radiusAccountingServers": [
                     {
                       "host": "0.0.0.0",
                       "port": 3000,
@@ -59112,8 +60592,8 @@
                   "radiusAccountingEnabled": false,
                   "radiusEnabled": true,
                   "radiusAttributeForGroupPolicies": "Filter-Id",
-                  "radiusFailoverPolicy": "null",
-                  "radiusLoadBalancingPolicy": "null",
+                  "radiusFailoverPolicy": "Deny access",
+                  "radiusLoadBalancingPolicy": "Round robin",
                   "ipAssignmentMode": "NAT mode",
                   "adminSplashUrl": "http://example.com",
                   "splashTimeout": "30 minutes",
@@ -59129,19 +60609,12 @@
                   "visible": true,
                   "availableOnAllAps": false,
                   "availabilityTags": [
-                    "test-tag"
+                    "tag1",
+                    "tag2"
                   ],
                   "perSsidBandwidthLimitUp": 0,
                   "perSsidBandwidthLimitDown": 0,
-                  "mandatoryDhcpEnabled": false,
-                  "radiusAccountingServers": [
-                    {
-                      "host": "0.0.0.0",
-                      "port": 3000,
-                      "openRoamingCertificateId": 2,
-                      "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                    }
-                  ]
+                  "mandatoryDhcpEnabled": false
                 }
               ]
             }
@@ -59179,7 +60652,247 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "Unique identifier of the SSID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the SSID"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether or not the SSID is enabled"
+                },
+                "splashPage": {
+                  "type": "string",
+                  "enum": [
+                    "Billing",
+                    "Cisco ISE",
+                    "Click-through splash page",
+                    "Facebook Wi-Fi",
+                    "Google Apps domain",
+                    "Google OAuth",
+                    "None",
+                    "Password-protected with Active Directory",
+                    "Password-protected with LDAP",
+                    "Password-protected with Meraki RADIUS",
+                    "Password-protected with custom RADIUS",
+                    "SMS authentication",
+                    "Sponsored guest",
+                    "Systems Manager Sentry"
+                  ],
+                  "description": "The type of splash page for the SSID"
+                },
+                "ssidAdminAccessible": {
+                  "type": "boolean",
+                  "description": "SSID Administrator access status"
+                },
+                "authMode": {
+                  "type": "string",
+                  "enum": [
+                    "8021x-google",
+                    "8021x-localradius",
+                    "8021x-meraki",
+                    "8021x-nac",
+                    "8021x-radius",
+                    "ipsk-with-nac",
+                    "ipsk-with-radius",
+                    "ipsk-without-radius",
+                    "open",
+                    "open-enhanced",
+                    "open-with-nac",
+                    "open-with-radius",
+                    "psk"
+                  ],
+                  "description": "The association control method for the SSID"
+                },
+                "encryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "wep",
+                    "wpa"
+                  ],
+                  "description": "The psk encryption mode for the SSID"
+                },
+                "wpaEncryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "WPA1 and WPA2",
+                    "WPA1 only",
+                    "WPA2 only",
+                    "WPA3 192-bit Security",
+                    "WPA3 Transition Mode",
+                    "WPA3 only"
+                  ],
+                  "description": "The types of WPA encryption"
+                },
+                "radiusServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address (or FQDN) of your RADIUS server"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "UDP port the RADIUS server listens on for Access-requests"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address (or FQDN) to which the APs will send RADIUS accounting messages"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "Port on the RADIUS server that is listening for accounting messages"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not RADIUS accounting is enabled"
+                },
+                "radiusEnabled": {
+                  "type": "boolean",
+                  "description": "Whether RADIUS authentication is enabled"
+                },
+                "radiusAttributeForGroupPolicies": {
+                  "type": "string",
+                  "enum": [
+                    "Airespace-ACL-Name",
+                    "Aruba-User-Role",
+                    "Filter-Id",
+                    "Reply-Message"
+                  ],
+                  "description": "RADIUS attribute used to look up group policies"
+                },
+                "radiusFailoverPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Allow access",
+                    "Deny access"
+                  ],
+                  "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                },
+                "radiusLoadBalancingPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Round robin",
+                    "Strict priority order"
+                  ],
+                  "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                },
+                "ipAssignmentMode": {
+                  "type": "string",
+                  "enum": [
+                    "Bridge mode",
+                    "Ethernet over GRE",
+                    "Layer 3 roaming",
+                    "Layer 3 roaming with a concentrator",
+                    "NAT mode",
+                    "VPN"
+                  ],
+                  "description": "The client IP assignment mode"
+                },
+                "adminSplashUrl": {
+                  "type": "string",
+                  "description": "URL for the admin splash page"
+                },
+                "splashTimeout": {
+                  "type": "string",
+                  "description": "Splash page timeout"
+                },
+                "walledGardenEnabled": {
+                  "type": "boolean",
+                  "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                },
+                "walledGardenRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Domain names and IP address ranges available in Walled Garden mode"
+                },
+                "minBitrate": {
+                  "type": "integer",
+                  "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                },
+                "bandSelection": {
+                  "type": "string",
+                  "enum": [
+                    "5 GHz band only",
+                    "Dual band operation",
+                    "Dual band operation with Band Steering"
+                  ],
+                  "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                },
+                "perClientBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "perClientBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "Whether the SSID is advertised or hidden by the AP"
+                },
+                "availableOnAllAps": {
+                  "type": "boolean",
+                  "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                },
+                "availabilityTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                },
+                "perSsidBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "perSsidBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -59189,9 +60902,17 @@
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "authMode": "8021x-radius",
-                "encryptionMode": "wpa-eap",
+                "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
                 "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingServers": [
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
@@ -59202,8 +60923,8 @@
                 "radiusAccountingEnabled": false,
                 "radiusEnabled": true,
                 "radiusAttributeForGroupPolicies": "Filter-Id",
-                "radiusFailoverPolicy": "null",
-                "radiusLoadBalancingPolicy": "null",
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
                 "ipAssignmentMode": "NAT mode",
                 "adminSplashUrl": "http://example.com",
                 "splashTimeout": "30 minutes",
@@ -59219,19 +60940,12 @@
                 "visible": true,
                 "availableOnAllAps": false,
                 "availabilityTags": [
-                  "test-tag"
+                  "tag1",
+                  "tag2"
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "radiusAccountingServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000,
-                    "openRoamingCertificateId": 2,
-                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                  }
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -59283,6 +60997,7 @@
                     "8021x-meraki",
                     "8021x-nac",
                     "8021x-radius",
+                    "ipsk-with-nac",
                     "ipsk-with-radius",
                     "ipsk-without-radius",
                     "open",
@@ -59291,7 +61006,7 @@
                     "open-with-radius",
                     "psk"
                   ],
-                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', 'open-with-nac', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius' or 'ipsk-without-radius')"
+                  "description": "The association control method for the SSID ('open', 'open-enhanced', 'psk', 'open-with-radius', 'open-with-nac', '8021x-meraki', '8021x-nac', '8021x-radius', '8021x-google', '8021x-localradius', 'ipsk-with-radius', 'ipsk-without-radius' or 'ipsk-with-nac')"
                 },
                 "enterpriseAdminAccess": {
                   "type": "string",
@@ -59547,7 +61262,7 @@
                     "properties": {
                       "host": {
                         "type": "string",
-                        "description": "IP address of your RADIUS server"
+                        "description": "IP address (or FQDN) of your RADIUS server"
                       },
                       "port": {
                         "type": "integer",
@@ -59635,7 +61350,7 @@
                     "properties": {
                       "host": {
                         "type": "string",
-                        "description": "IP address to which the APs will send RADIUS accounting messages"
+                        "description": "IP address (or FQDN) to which the APs will send RADIUS accounting messages"
                       },
                       "port": {
                         "type": "integer",
@@ -59850,7 +61565,159 @@
               },
               "example": {
                 "name": "My SSID",
-                "enabled": true
+                "enabled": true,
+                "authMode": "8021x-radius",
+                "enterpriseAdminAccess": "access enabled",
+                "encryptionMode": "wpa",
+                "psk": "deadbeef",
+                "wpaEncryptionMode": "WPA2 only",
+                "dot11w": {
+                  "enabled": true,
+                  "required": false
+                },
+                "dot11r": {
+                  "enabled": true,
+                  "adaptive": true
+                },
+                "splashPage": "Click-through splash page",
+                "splashGuestSponsorDomains": [
+                  "example.com"
+                ],
+                "oauth": {
+                  "allowedDomains": [
+                    "example.com"
+                  ]
+                },
+                "localRadius": {
+                  "cacheTimeout": 60,
+                  "passwordAuthentication": {
+                    "enabled": false
+                  },
+                  "certificateAuthentication": {
+                    "enabled": true,
+                    "useLdap": false,
+                    "useOcsp": true,
+                    "ocspResponderUrl": "http://ocsp-server.example.com",
+                    "clientRootCaCertificate": {
+                      "contents": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                    }
+                  }
+                },
+                "ldap": {
+                  "servers": [
+                    {
+                      "host": "127.0.0.1",
+                      "port": 389
+                    }
+                  ],
+                  "credentials": {
+                    "distinguishedName": "cn=user,dc=example,dc=com",
+                    "password": "password"
+                  },
+                  "baseDistinguishedName": "dc=example,dc=com",
+                  "serverCaCertificate": {
+                    "contents": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                },
+                "activeDirectory": {
+                  "servers": [
+                    {
+                      "host": "127.0.0.1",
+                      "port": 3268
+                    }
+                  ],
+                  "credentials": {
+                    "logonName": "user",
+                    "password": "password"
+                  }
+                },
+                "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "secret": "secret-string",
+                    "radsecEnabled": true,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusProxyEnabled": false,
+                "radiusTestingEnabled": true,
+                "radiusCalledStationId": "00-11-22-33-44-55:AP1",
+                "radiusAuthenticationNasId": "00-11-22-33-44-55:AP1",
+                "radiusServerTimeout": 5,
+                "radiusServerAttemptsLimit": 5,
+                "radiusFallbackEnabled": true,
+                "radiusCoaEnabled": true,
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
+                "radiusAccountingEnabled": true,
+                "radiusAccountingServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "secret": "secret-string",
+                    "radsecEnabled": true,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingInterimInterval": 5,
+                "radiusAttributeForGroupPolicies": "Filter-Id",
+                "ipAssignmentMode": "NAT mode",
+                "useVlanTagging": false,
+                "concentratorNetworkId": "N_24329156",
+                "secondaryConcentratorNetworkId": "disabled",
+                "disassociateClientsOnVpnFailover": false,
+                "vlanId": 10,
+                "defaultVlanId": 1,
+                "apTagsAndVlanIds": [
+                  {
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ],
+                    "vlanId": 100
+                  }
+                ],
+                "walledGardenEnabled": true,
+                "walledGardenRanges": [
+                  "example.com",
+                  "1.1.1.1/32"
+                ],
+                "gre": {
+                  "concentrator": {
+                    "host": "192.168.1.1"
+                  },
+                  "key": 5
+                },
+                "radiusOverride": false,
+                "radiusGuestVlanEnabled": true,
+                "radiusGuestVlanId": 1,
+                "minBitrate": 5.5,
+                "bandSelection": "5 GHz band only",
+                "perClientBandwidthLimitUp": 0,
+                "perClientBandwidthLimitDown": 0,
+                "perSsidBandwidthLimitUp": 0,
+                "perSsidBandwidthLimitDown": 0,
+                "lanIsolationEnabled": true,
+                "visible": true,
+                "availableOnAllAps": false,
+                "availabilityTags": [
+                  "tag1",
+                  "tag2"
+                ],
+                "mandatoryDhcpEnabled": false,
+                "adultContentFilteringEnabled": false,
+                "dnsRewrite": {
+                  "enabled": true,
+                  "dnsCustomNameservers": [
+                    "8.8.8.8",
+                    "8.8.4.4"
+                  ]
+                },
+                "speedBurst": {
+                  "enabled": true
+                }
               }
             }
           }
@@ -59859,7 +61726,247 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "Unique identifier of the SSID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the SSID"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether or not the SSID is enabled"
+                },
+                "splashPage": {
+                  "type": "string",
+                  "enum": [
+                    "Billing",
+                    "Cisco ISE",
+                    "Click-through splash page",
+                    "Facebook Wi-Fi",
+                    "Google Apps domain",
+                    "Google OAuth",
+                    "None",
+                    "Password-protected with Active Directory",
+                    "Password-protected with LDAP",
+                    "Password-protected with Meraki RADIUS",
+                    "Password-protected with custom RADIUS",
+                    "SMS authentication",
+                    "Sponsored guest",
+                    "Systems Manager Sentry"
+                  ],
+                  "description": "The type of splash page for the SSID"
+                },
+                "ssidAdminAccessible": {
+                  "type": "boolean",
+                  "description": "SSID Administrator access status"
+                },
+                "authMode": {
+                  "type": "string",
+                  "enum": [
+                    "8021x-google",
+                    "8021x-localradius",
+                    "8021x-meraki",
+                    "8021x-nac",
+                    "8021x-radius",
+                    "ipsk-with-nac",
+                    "ipsk-with-radius",
+                    "ipsk-without-radius",
+                    "open",
+                    "open-enhanced",
+                    "open-with-nac",
+                    "open-with-radius",
+                    "psk"
+                  ],
+                  "description": "The association control method for the SSID"
+                },
+                "encryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "wep",
+                    "wpa"
+                  ],
+                  "description": "The psk encryption mode for the SSID"
+                },
+                "wpaEncryptionMode": {
+                  "type": "string",
+                  "enum": [
+                    "WPA1 and WPA2",
+                    "WPA1 only",
+                    "WPA2 only",
+                    "WPA3 192-bit Security",
+                    "WPA3 Transition Mode",
+                    "WPA3 only"
+                  ],
+                  "description": "The types of WPA encryption"
+                },
+                "radiusServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address (or FQDN) of your RADIUS server"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "UDP port the RADIUS server listens on for Access-requests"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingServers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "type": "string",
+                        "description": "IP address (or FQDN) to which the APs will send RADIUS accounting messages"
+                      },
+                      "port": {
+                        "type": "integer",
+                        "description": "Port on the RADIUS server that is listening for accounting messages"
+                      },
+                      "openRoamingCertificateId": {
+                        "type": "integer",
+                        "description": "The ID of the Openroaming Certificate attached to radius server"
+                      },
+                      "caCertificate": {
+                        "type": "string",
+                        "description": "Certificate used for authorization for the RADSEC Server"
+                      }
+                    }
+                  },
+                  "description": "List of RADIUS accounting 802.1X servers to be used for authentication"
+                },
+                "radiusAccountingEnabled": {
+                  "type": "boolean",
+                  "description": "Whether or not RADIUS accounting is enabled"
+                },
+                "radiusEnabled": {
+                  "type": "boolean",
+                  "description": "Whether RADIUS authentication is enabled"
+                },
+                "radiusAttributeForGroupPolicies": {
+                  "type": "string",
+                  "enum": [
+                    "Airespace-ACL-Name",
+                    "Aruba-User-Role",
+                    "Filter-Id",
+                    "Reply-Message"
+                  ],
+                  "description": "RADIUS attribute used to look up group policies"
+                },
+                "radiusFailoverPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Allow access",
+                    "Deny access"
+                  ],
+                  "description": "Policy which determines how authentication requests should be handled in the event that all of the configured RADIUS servers are unreachable"
+                },
+                "radiusLoadBalancingPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "Round robin",
+                    "Strict priority order"
+                  ],
+                  "description": "Policy which determines which RADIUS server will be contacted first in an authentication attempt, and the ordering of any necessary retry attempts"
+                },
+                "ipAssignmentMode": {
+                  "type": "string",
+                  "enum": [
+                    "Bridge mode",
+                    "Ethernet over GRE",
+                    "Layer 3 roaming",
+                    "Layer 3 roaming with a concentrator",
+                    "NAT mode",
+                    "VPN"
+                  ],
+                  "description": "The client IP assignment mode"
+                },
+                "adminSplashUrl": {
+                  "type": "string",
+                  "description": "URL for the admin splash page"
+                },
+                "splashTimeout": {
+                  "type": "string",
+                  "description": "Splash page timeout"
+                },
+                "walledGardenEnabled": {
+                  "type": "boolean",
+                  "description": "Allow users to access a configurable list of IP ranges prior to sign-on"
+                },
+                "walledGardenRanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Domain names and IP address ranges available in Walled Garden mode"
+                },
+                "minBitrate": {
+                  "type": "integer",
+                  "description": "The minimum bitrate in Mbps of this SSID in the default indoor RF profile"
+                },
+                "bandSelection": {
+                  "type": "string",
+                  "enum": [
+                    "5 GHz band only",
+                    "Dual band operation",
+                    "Dual band operation with Band Steering"
+                  ],
+                  "description": "The client-serving radio frequencies of this SSID in the default indoor RF profile"
+                },
+                "perClientBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The upload bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "perClientBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The download bandwidth limit in Kbps. (0 represents no limit.)"
+                },
+                "visible": {
+                  "type": "boolean",
+                  "description": "Whether the SSID is advertised or hidden by the AP"
+                },
+                "availableOnAllAps": {
+                  "type": "boolean",
+                  "description": "Whether all APs broadcast the SSID or if it's restricted to APs matching any availability tags"
+                },
+                "availabilityTags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of tags for this SSID. If availableOnAllAps is false, then the SSID is only broadcast by APs with tags matching any of the tags in this list"
+                },
+                "perSsidBandwidthLimitUp": {
+                  "type": "integer",
+                  "description": "The total upload bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "perSsidBandwidthLimitDown": {
+                  "type": "integer",
+                  "description": "The total download bandwidth limit in Kbps (0 represents no limit)"
+                },
+                "mandatoryDhcpEnabled": {
+                  "type": "boolean",
+                  "description": "Whether clients connecting to this SSID must use the IP address assigned by the DHCP server"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -59869,9 +61976,17 @@
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "authMode": "8021x-radius",
-                "encryptionMode": "wpa-eap",
+                "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
                 "radiusServers": [
+                  {
+                    "host": "0.0.0.0",
+                    "port": 3000,
+                    "openRoamingCertificateId": 2,
+                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
+                  }
+                ],
+                "radiusAccountingServers": [
                   {
                     "host": "0.0.0.0",
                     "port": 3000,
@@ -59882,8 +61997,8 @@
                 "radiusAccountingEnabled": false,
                 "radiusEnabled": true,
                 "radiusAttributeForGroupPolicies": "Filter-Id",
-                "radiusFailoverPolicy": "null",
-                "radiusLoadBalancingPolicy": "null",
+                "radiusFailoverPolicy": "Deny access",
+                "radiusLoadBalancingPolicy": "Round robin",
                 "ipAssignmentMode": "NAT mode",
                 "adminSplashUrl": "http://example.com",
                 "splashTimeout": "30 minutes",
@@ -59899,19 +62014,12 @@
                 "visible": true,
                 "availableOnAllAps": false,
                 "availabilityTags": [
-                  "test-tag"
+                  "tag1",
+                  "tag2"
                 ],
                 "perSsidBandwidthLimitUp": 0,
                 "perSsidBandwidthLimitDown": 0,
-                "mandatoryDhcpEnabled": false,
-                "radiusAccountingServers": [
-                  {
-                    "host": "0.0.0.0",
-                    "port": 3000,
-                    "openRoamingCertificateId": 2,
-                    "caCertificate": "-----BEGIN CERTIFICATE-----\nMIIEKjCCAxKgAwIBAgIRANb+lsED3eb4+6YKLFFYqEkwDQYJKoZIhvcNAQELBQAw\ngYcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMREwDwYDVQQHDAhT\nYW4gSm9zZTEcMBoGA1UECgwTQ2lzY28gU3lzdGVtcywgSW5jLjESMBAGA1UECwwJ\nRE5BU3BhY2VzMR4wHAYDVQQDDBVjaXNjby5vcGVucm9hbWluZy5vcmcwHhcNMjAx\nMTA1MjEzMzM1WhcNMjExMTA1MjIzMzM1WjCBpDEcMBoGCgmSJomT8ixkAQETDGRu\nYXNwYWNlczpVUzELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMQ4wDAYDVQQKEwVD\naXNjbzEcMBoGA1UECxMTV0JBOldSSVggRW5kLUVudGl0eTE8MDoGA1UEAxMzNjQ3\nMDcwNDM4NDQ5NjQxMjAwMDAuMTg4MzQuaHMuY2lzY28ub3BlbnJvYW1pbmcub3Jn\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoqjP9QgRGyUO3p7SH9QK\nuTq6UYK7nAyjImgS4yQxeBkyZ5f2EUkX8m/AOcewpPxxPBhjPKRwxGeX3S50ksiA\nayFomUeslR0S0Z7RN9rzJa+CFyi9MwWIHMbLgXpB8tsSpgTAqwrzoTzOGq9fgC6u\npZhdZrBkg3FeJgD88goCi9mZDsY2YAoeGRLFJ2fR8iICqIVQy+Htq9pE22WBLpnS\nKjL3+mR9FArHNFtWlhKF2YHMUqyHHrnZnF/Ns7QNoMMF7/CK18iAKgnb+2wuGKM2\naEMddOeOTtz+i/rgjkp/RGMt011EdCsso0/cTo9qqX/bxOOCE4/Mne/ChMkQPnNU\nCwIDAQABo3IwcDAJBgNVHRMEAjAAMB8GA1UdIwQYMBaAFIG+4l5yiB01gP0sw4ML\nUSopqYcuMB0GA1UdDgQWBBSby1T9leYVOVVdOZXiHCSaDDEMiDAOBgNVHQ8BAf8E\nBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBAEyE\n1mjSUyY6uNp6W4l20w7SskALSJDRKkOeZxAgF3VMxlsCuEl70s9oEfntwIpyQtSa\njON/9yJHbwm/Az824bmk8Dc7AXIPhay+dftXb8j529gPuYB9AKoPNg0NctkyYCQh\na/3YQVdDWX7XgmEiXkL57M7G6+IdcPDONLArfjOcT9qHdkVVq1AIjlMSx3OQQmm/\nuoLb/G9q/97QA2/l8shG/Na8HjVqGLcl5TNZdbNhs2w9ogxr/GNzqdvym6RQ8vT/\nUR2n+uwH4n1MUxmHYYeyot5dnIV1IJ6hQ54JAncM9HvCLFk1WHz6RKshQUCuPBiJ\nwTw70BVktzJnb0VLeDg=\n-----END CERTIFICATE-----"
-                  }
-                ]
+                "mandatoryDhcpEnabled": false
               }
             }
           }
@@ -59953,6 +62061,9 @@
             "examples": {
               "application/json": {
                 "enabled": true,
+                "exception": {
+                  "enabled": true
+                },
                 "rules": [
                   {
                     "description": "A simple bonjour rule",
@@ -60042,10 +62153,23 @@
                     ]
                   },
                   "description": "List of bonjour forwarding rules."
+                },
+                "exception": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, Bonjour forwarding exception is enabled on this SSID. Exception is required to enable L2 isolation and Bonjour forwarding to work together."
+                    }
+                  },
+                  "description": "Bonjour forwarding exception"
                 }
               },
               "example": {
                 "enabled": true,
+                "exception": {
+                  "enabled": true
+                },
                 "rules": [
                   {
                     "description": "A simple bonjour rule",
@@ -60068,6 +62192,9 @@
             "examples": {
               "application/json": {
                 "enabled": true,
+                "exception": {
+                  "enabled": true
+                },
                 "rules": [
                   {
                     "description": "A simple bonjour rule",
@@ -68404,6 +70531,110 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/uplinks/usage/byNetwork": {
+      "get": {
+        "description": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization. If more than one device was active during the specified timespan, then the sent and received bytes will be aggregated by interface.",
+        "operationId": "getOrganizationApplianceUplinksUsageByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 14 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network identifier"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Network name"
+                  },
+                  "byUplink": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "serial": {
+                          "type": "string",
+                          "description": "Uplink serial"
+                        },
+                        "interface": {
+                          "type": "string",
+                          "description": "Uplink name"
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "description": "Bytes sent"
+                        },
+                        "received": {
+                          "type": "integer",
+                          "description": "Bytes received"
+                        }
+                      }
+                    },
+                    "description": "Uplink usage"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_24329156",
+                  "name": "Main Office",
+                  "byUplink": [
+                    {
+                      "serial": "Q234-ABCD-5678",
+                      "interface": "wan1",
+                      "sent": 200,
+                      "received": 400
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization",
+        "tags": [
+          "appliance",
+          "monitor",
+          "uplinks",
+          "usage",
+          "byNetwork"
+        ]
+      }
+    },
     "/organizations/{organizationId}/appliance/vpn/stats": {
       "get": {
         "description": "Show VPN history stat for networks in an organization",
@@ -71951,7 +74182,40 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "orders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The numbers of the orders claimed"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the devices claimed"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "description": "The mode of the license"
+                      }
+                    }
+                  },
+                  "description": "The licenses claimed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -72475,7 +74739,28 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The ID of the network or config template to copy configuration from"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the configuration template"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The product types of the configuration template"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                  }
+                }
               }
             },
             "examples": {
@@ -72533,7 +74818,8 @@
               },
               "example": {
                 "name": "My config template",
-                "timeZone": "America/Los_Angeles"
+                "timeZone": "America/Los_Angeles",
+                "copyFromNetworkId": "N_24329156"
               },
               "required": [
                 "name"
@@ -72546,7 +74832,28 @@
           "201": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -72615,7 +74922,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -72692,7 +75020,28 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "The ID of the network or config template to copy configuration from"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the configuration template"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The product types of the configuration template"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "The timezone of the configuration template. For a list of allowed timezones, please see the 'TZ' column in the table in <a target='_blank' href='https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'>this article</a>. Not applicable if copying from existing network or template"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -72718,7 +75067,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles": {
       "get": {
-        "description": "List the switch profiles for your switch template configuration",
+        "description": "List the switch templates for your switch template configuration",
         "operationId": "getOrganizationConfigTemplateSwitchProfiles",
         "parameters": [
           {
@@ -72746,11 +75095,11 @@
                 "properties": {
                   "switchProfileId": {
                     "type": "string",
-                    "description": "Switch profile id"
+                    "description": "Switch template id"
                   },
                   "name": {
                     "type": "string",
-                    "description": "Switch profile name"
+                    "description": "Switch template name"
                   },
                   "model": {
                     "type": "string",
@@ -72763,14 +75112,14 @@
               "application/json": [
                 {
                   "switchProfileId": "1234",
-                  "name": "A Simple Switch Profile",
+                  "name": "A Simple Switch Template",
                   "model": "MS450-24"
                 }
               ]
             }
           }
         },
-        "summary": "List the switch profiles for your switch template configuration",
+        "summary": "List the switch templates for your switch template configuration",
         "tags": [
           "switch",
           "configure",
@@ -72781,7 +75130,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports": {
       "get": {
-        "description": "Return all the ports of a switch profile",
+        "description": "Return all the ports of a switch template",
         "operationId": "getOrganizationConfigTemplateSwitchProfilePorts",
         "parameters": [
           {
@@ -72816,26 +75165,26 @@
                 "properties": {
                   "portId": {
                     "type": "string",
-                    "description": "The identifier of the switch profile port."
+                    "description": "The identifier of the switch template port."
                   },
                   "name": {
                     "type": "string",
-                    "description": "The name of the switch profile port."
+                    "description": "The name of the switch template port."
                   },
                   "tags": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "The list of tags of the switch profile port."
+                    "description": "The list of tags of the switch template port."
                   },
                   "enabled": {
                     "type": "boolean",
-                    "description": "The status of the switch profile port."
+                    "description": "The status of the switch template port."
                   },
                   "poeEnabled": {
                     "type": "boolean",
-                    "description": "The PoE status of the switch profile port."
+                    "description": "The PoE status of the switch template port."
                   },
                   "type": {
                     "type": "string",
@@ -72843,23 +75192,23 @@
                       "access",
                       "trunk"
                     ],
-                    "description": "The type of the switch profile port ('trunk' or 'access')."
+                    "description": "The type of the switch template port ('trunk' or 'access')."
                   },
                   "vlan": {
                     "type": "integer",
-                    "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                    "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                   },
                   "voiceVlan": {
                     "type": "integer",
-                    "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                    "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                   },
                   "allowedVlans": {
                     "type": "string",
-                    "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                    "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                   },
                   "isolationEnabled": {
                     "type": "boolean",
-                    "description": "The isolation status of the switch profile port."
+                    "description": "The isolation status of the switch template port."
                   },
                   "rstpEnabled": {
                     "type": "boolean",
@@ -72877,14 +75226,14 @@
                   },
                   "linkNegotiation": {
                     "type": "string",
-                    "description": "The link speed for the switch profile port."
+                    "description": "The link speed for the switch template port."
                   },
                   "linkNegotiationCapabilities": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "description": "Available link speeds for the switch profile port."
+                    "description": "Available link speeds for the switch template port."
                   },
                   "portScheduleId": {
                     "type": "string",
@@ -72906,11 +75255,11 @@
                       "Open",
                       "Sticky MAC allow list"
                     ],
-                    "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                    "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                   },
                   "accessPolicyNumber": {
                     "type": "integer",
-                    "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                    "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                   },
                   "macAllowList": {
                     "type": "array",
@@ -72932,7 +75281,7 @@
                   },
                   "stormControlEnabled": {
                     "type": "boolean",
-                    "description": "The storm control status of the switch profile port."
+                    "description": "The storm control status of the switch template port."
                   },
                   "flexibleStackingEnabled": {
                     "type": "boolean",
@@ -73012,7 +75361,7 @@
             }
           }
         },
-        "summary": "Return all the ports of a switch profile",
+        "summary": "Return all the ports of a switch template",
         "tags": [
           "switch",
           "configure",
@@ -73024,7 +75373,7 @@
     },
     "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}": {
       "get": {
-        "description": "Return a switch profile port",
+        "description": "Return a switch template port",
         "operationId": "getOrganizationConfigTemplateSwitchProfilePort",
         "parameters": [
           {
@@ -73064,26 +75413,26 @@
               "properties": {
                 "portId": {
                   "type": "string",
-                  "description": "The identifier of the switch profile port."
+                  "description": "The identifier of the switch template port."
                 },
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -73091,23 +75440,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -73125,14 +75474,14 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "linkNegotiationCapabilities": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Available link speeds for the switch profile port."
+                  "description": "Available link speeds for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -73154,11 +75503,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -73180,7 +75529,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -73257,7 +75606,7 @@
             }
           }
         },
-        "summary": "Return a switch profile port",
+        "summary": "Return a switch template port",
         "tags": [
           "switch",
           "configure",
@@ -73267,7 +75616,7 @@
         ]
       },
       "put": {
-        "description": "Update a switch profile port",
+        "description": "Update a switch template port",
         "operationId": "updateOrganizationConfigTemplateSwitchProfilePort",
         "parameters": [
           {
@@ -73306,22 +75655,22 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -73329,23 +75678,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -73363,7 +75712,7 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -73385,11 +75734,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -73411,7 +75760,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -73489,26 +75838,26 @@
               "properties": {
                 "portId": {
                   "type": "string",
-                  "description": "The identifier of the switch profile port."
+                  "description": "The identifier of the switch template port."
                 },
                 "name": {
                   "type": "string",
-                  "description": "The name of the switch profile port."
+                  "description": "The name of the switch template port."
                 },
                 "tags": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "The list of tags of the switch profile port."
+                  "description": "The list of tags of the switch template port."
                 },
                 "enabled": {
                   "type": "boolean",
-                  "description": "The status of the switch profile port."
+                  "description": "The status of the switch template port."
                 },
                 "poeEnabled": {
                   "type": "boolean",
-                  "description": "The PoE status of the switch profile port."
+                  "description": "The PoE status of the switch template port."
                 },
                 "type": {
                   "type": "string",
@@ -73516,23 +75865,23 @@
                     "access",
                     "trunk"
                   ],
-                  "description": "The type of the switch profile port ('trunk' or 'access')."
+                  "description": "The type of the switch template port ('trunk' or 'access')."
                 },
                 "vlan": {
                   "type": "integer",
-                  "description": "The VLAN of the switch profile port. A null value will clear the value set for trunk ports."
+                  "description": "The VLAN of the switch template port. A null value will clear the value set for trunk ports."
                 },
                 "voiceVlan": {
                   "type": "integer",
-                  "description": "The voice VLAN of the switch profile port. Only applicable to access ports."
+                  "description": "The voice VLAN of the switch template port. Only applicable to access ports."
                 },
                 "allowedVlans": {
                   "type": "string",
-                  "description": "The VLANs allowed on the switch profile port. Only applicable to trunk ports."
+                  "description": "The VLANs allowed on the switch template port. Only applicable to trunk ports."
                 },
                 "isolationEnabled": {
                   "type": "boolean",
-                  "description": "The isolation status of the switch profile port."
+                  "description": "The isolation status of the switch template port."
                 },
                 "rstpEnabled": {
                   "type": "boolean",
@@ -73550,14 +75899,14 @@
                 },
                 "linkNegotiation": {
                   "type": "string",
-                  "description": "The link speed for the switch profile port."
+                  "description": "The link speed for the switch template port."
                 },
                 "linkNegotiationCapabilities": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Available link speeds for the switch profile port."
+                  "description": "Available link speeds for the switch template port."
                 },
                 "portScheduleId": {
                   "type": "string",
@@ -73579,11 +75928,11 @@
                     "Open",
                     "Sticky MAC allow list"
                   ],
-                  "description": "The type of the access policy of the switch profile port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
+                  "description": "The type of the access policy of the switch template port. Only applicable to access ports. Can be one of 'Open', 'Custom access policy', 'MAC allow list' or 'Sticky MAC allow list'."
                 },
                 "accessPolicyNumber": {
                   "type": "integer",
-                  "description": "The number of a custom access policy to configure on the switch profile port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
+                  "description": "The number of a custom access policy to configure on the switch template port. Only applicable when 'accessPolicyType' is 'Custom access policy'."
                 },
                 "macAllowList": {
                   "type": "array",
@@ -73605,7 +75954,7 @@
                 },
                 "stormControlEnabled": {
                   "type": "boolean",
-                  "description": "The storm control status of the switch profile port."
+                  "description": "The storm control status of the switch template port."
                 },
                 "flexibleStackingEnabled": {
                   "type": "boolean",
@@ -73682,7 +76031,7 @@
             }
           }
         },
-        "summary": "Update a switch profile port",
+        "summary": "Update a switch template port",
         "tags": [
           "switch",
           "configure",
@@ -74739,83 +77088,86 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Device Name"
-                },
-                "serial": {
-                  "type": "string",
-                  "description": "Device Serial Number"
-                },
-                "mac": {
-                  "type": "string",
-                  "description": "MAC Address"
-                },
-                "publicIp": {
-                  "type": "string",
-                  "description": "Public IP Address"
-                },
-                "networkId": {
-                  "type": "string",
-                  "description": "Network ID"
-                },
-                "status": {
-                  "type": "string",
-                  "description": "Device Status"
-                },
-                "lastReportedAt": {
-                  "type": "string",
-                  "description": "Device Last Reported Location"
-                },
-                "lanIp": {
-                  "type": "string",
-                  "description": "LAN IP Address"
-                },
-                "gateway": {
-                  "type": "string",
-                  "description": "IP Gateway"
-                },
-                "ipType": {
-                  "type": "string",
-                  "description": "IP Type"
-                },
-                "primaryDns": {
-                  "type": "string",
-                  "description": "Primary DNS"
-                },
-                "secondaryDns": {
-                  "type": "string",
-                  "description": "Secondary DNS"
-                },
-                "productType": {
-                  "type": "string",
-                  "description": "Product Type"
-                },
-                "components": {
-                  "type": "object",
-                  "properties": {
-                    "powerSupplies": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "Power Supplies"
-                    }
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Device Name"
                   },
-                  "description": "Components"
-                },
-                "model": {
-                  "type": "string",
-                  "description": "Model"
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                  "serial": {
+                    "type": "string",
+                    "description": "Device Serial Number"
                   },
-                  "description": "Tags"
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC Address"
+                  },
+                  "publicIp": {
+                    "type": "string",
+                    "description": "Public IP Address"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network ID"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Device Status"
+                  },
+                  "lastReportedAt": {
+                    "type": "string",
+                    "description": "Device Last Reported Location"
+                  },
+                  "lanIp": {
+                    "type": "string",
+                    "description": "LAN IP Address"
+                  },
+                  "gateway": {
+                    "type": "string",
+                    "description": "IP Gateway"
+                  },
+                  "ipType": {
+                    "type": "string",
+                    "description": "IP Type"
+                  },
+                  "primaryDns": {
+                    "type": "string",
+                    "description": "Primary DNS"
+                  },
+                  "secondaryDns": {
+                    "type": "string",
+                    "description": "Secondary DNS"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "Product Type"
+                  },
+                  "components": {
+                    "type": "object",
+                    "properties": {
+                      "powerSupplies": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Power Supplies"
+                      }
+                    },
+                    "description": "Components"
+                  },
+                  "model": {
+                    "type": "string",
+                    "description": "Model"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tags"
+                  }
                 }
               }
             },
@@ -74826,31 +77178,33 @@
               }
             },
             "examples": {
-              "application/json": {
-                "name": "My AP",
-                "serial": "Q234-ABCD-5678",
-                "mac": "00:11:22:33:44:55",
-                "publicIp": "123.123.123.1",
-                "networkId": "N_24329156",
-                "status": "online",
-                "lastReportedAt": "2018-02-11T00:00:00.090210Z",
-                "lanIp": "1.2.3.4",
-                "gateway": "1.2.3.5",
-                "ipType": "dhcp",
-                "primaryDns": "8.8.8.8",
-                "secondaryDns": "8.8.4.4",
-                "productType": "wireless",
-                "components": {
-                  "powerSupplies": [
+              "application/json": [
+                {
+                  "name": "My AP",
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:33:44:55",
+                  "publicIp": "123.123.123.1",
+                  "networkId": "N_24329156",
+                  "status": "online",
+                  "lastReportedAt": "2018-02-11T00:00:00.090210Z",
+                  "lanIp": "1.2.3.4",
+                  "gateway": "1.2.3.5",
+                  "ipType": "dhcp",
+                  "primaryDns": "8.8.8.8",
+                  "secondaryDns": "8.8.4.4",
+                  "productType": "wireless",
+                  "components": {
+                    "powerSupplies": [
 
+                    ]
+                  },
+                  "model": "MR34",
+                  "tags": [
+                    "tag1",
+                    "tag2"
                   ]
-                },
-                "model": "MR34",
-                "tags": [
-                  "tag1",
-                  "tag2"
-                ]
-              }
+                }
+              ]
             }
           }
         },
@@ -76539,7 +78893,40 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "orders": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The numbers of the orders claimed"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the devices claimed"
+                },
+                "licenses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "The key of the license"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "description": "The mode of the license"
+                      }
+                    }
+                  },
+                  "description": "The licenses claimed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -84194,39 +86581,6 @@
         ]
       }
     },
-    "/organizations/{organizationId}/users/{userId}": {
-      "delete": {
-        "description": "Delete a user and all of its authentication methods.",
-        "operationId": "deleteOrganizationUser",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "description": "Organization ID",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "User ID",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful operation"
-          }
-        },
-        "summary": "Delete a user and all of its authentication methods.",
-        "tags": [
-          "organizations",
-          "configure",
-          "users"
-        ]
-      }
-    },
     "/organizations/{organizationId}/webhooks/alertTypes": {
       "get": {
         "description": "Return a list of alert types to be used with managing webhook alerts",
@@ -86157,6 +88511,9 @@
       "name": "uplinksLossAndLatency"
     },
     {
+      "name": "usage"
+    },
+    {
       "name": "usageHistories"
     },
     {
@@ -86279,7 +88636,7 @@
       "operation": "update"
     },
     {
-      "group": "Bgp setting",
+      "group": "Bgp settings",
       "summary": "Update a Hub BGP Configuration",
       "resource": "/networks/{networkId}/appliance/vpn/bgp",
       "operation": "update"
@@ -86463,12 +88820,6 @@
       "summary": "Update the EAP overridden parameters for an SSID.",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/eapOverride",
       "operation": "update"
-    },
-    {
-      "group": "End user",
-      "summary": "Delete a user and all of its authentication methods.",
-      "resource": "/organizations/{organizationId}/users/{userId}",
-      "operation": "destroy"
     },
     {
       "group": "Feature opt in",
@@ -87126,7 +89477,7 @@
     },
     {
       "group": "Switch profile port",
-      "summary": "Update a switch profile port",
+      "summary": "Update a switch template port",
       "resource": "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}",
       "operation": "update"
     },
