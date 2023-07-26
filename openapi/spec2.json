@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.35.0-beta.2",
+    "version": "1.35.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 19 July, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 26 July, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -3810,11 +3810,56 @@
                 "count": {
                   "type": "integer",
                   "description": "Count parameter to pass to ping. [1..5], default 5"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "beta",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
                 "target": "75.75.75.75",
-                "count": 2
+                "count": 2,
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               },
               "required": [
                 "target"
@@ -3858,6 +3903,25 @@
                 "status": {
                   "type": "string",
                   "description": "Status of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -3870,7 +3934,12 @@
                   "target": "75.75.75.75",
                   "count": 2
                 },
-                "status": "complete"
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -4071,10 +4140,55 @@
                 "count": {
                   "type": "integer",
                   "description": "Count parameter to pass to ping. [1..5], default 5"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "beta",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
-                "count": 3
+                "count": 3,
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               }
             }
           }
@@ -4114,6 +4228,25 @@
                 "status": {
                   "type": "string",
                   "description": "Status of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -4126,7 +4259,12 @@
                   "target": "75.75.75.75",
                   "count": 2
                 },
-                "status": "complete"
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -4262,6 +4400,25 @@
                     }
                   },
                   "description": "Results of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "beta"
                 }
               }
             },
@@ -4293,6 +4450,11 @@
                       "latency": 15.7
                     }
                   ]
+                },
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
                 }
               }
             }
@@ -4721,6 +4883,472 @@
           "devices",
           "liveTools"
         ]
+      }
+    },
+    "/devices/{serial}/sensor/commands": {
+      "get": {
+        "description": "Returns a historical log of all commands",
+        "operationId": "getDeviceSensorCommands",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "operations",
+            "in": "query",
+            "description": "Optional parameter to filter commands by operation"
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 30 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 30 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 30 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "commandId": {
+                    "type": "string",
+                    "description": "ID to check the status of the command request"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time when the command was triggered"
+                  },
+                  "completedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time when the command was completed"
+                  },
+                  "createdBy": {
+                    "type": "object",
+                    "properties": {
+                      "adminId": {
+                        "type": "string",
+                        "description": "ID of the admin"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the admin"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Email of the admin"
+                      }
+                    },
+                    "description": "Information about the admin who triggered the command"
+                  },
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "connect",
+                      "cycleDownstreamPower",
+                      "disableDownstreamPower",
+                      "enableDownstreamPower"
+                    ],
+                    "description": "Operation run on the sensor"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "completed",
+                      "failed",
+                      "in_progress",
+                      "pending"
+                    ],
+                    "description": "Status of the command request"
+                  },
+                  "gateway": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Gateway serial"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Gateway name"
+                      }
+                    },
+                    "description": "Info about the gateway that was used to connect to the sensor"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of errors if failed"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "commandId": "1284392014819",
+                  "createdAt": "2018-02-11T00:00:00Z",
+                  "completedAt": "2018-05-12T00:00:00Z",
+                  "createdBy": {
+                    "adminId": "212406",
+                    "name": "Miles Meraki",
+                    "email": "miles@meraki.com"
+                  },
+                  "operation": "disableDownstreamPower",
+                  "status": "completed",
+                  "gateway": {
+                    "serial": "Q234-ABCD-5678",
+                    "name": "My camera"
+                  },
+                  "errors": [
+
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns a historical log of all commands",
+        "tags": [
+          "sensor",
+          "monitor",
+          "commands"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Sends a command to a sensor",
+        "operationId": "createDeviceSensorCommand",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceSensorCommand",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation": {
+                  "type": "string",
+                  "enum": [
+                    "connect",
+                    "cycleDownstreamPower",
+                    "disableDownstreamPower",
+                    "enableDownstreamPower"
+                  ],
+                  "description": "Operation to run on the sensor"
+                }
+              },
+              "example": {
+                "operation": "disableDownstreamPower"
+              },
+              "required": [
+                "operation"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "commandId": {
+                  "type": "string",
+                  "description": "ID to check the status of the command request"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time when the command was triggered"
+                },
+                "completedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time when the command was completed"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "adminId": {
+                      "type": "string",
+                      "description": "ID of the admin"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the admin"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "Email of the admin"
+                    }
+                  },
+                  "description": "Information about the admin who triggered the command"
+                },
+                "operation": {
+                  "type": "string",
+                  "enum": [
+                    "connect",
+                    "cycleDownstreamPower",
+                    "disableDownstreamPower",
+                    "enableDownstreamPower"
+                  ],
+                  "description": "Operation run on the sensor"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "failed",
+                    "in_progress",
+                    "pending"
+                  ],
+                  "description": "Status of the command request"
+                },
+                "gateway": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Gateway serial"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Gateway name"
+                    }
+                  },
+                  "description": "Info about the gateway that was used to connect to the sensor"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of errors if failed"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "commandId": "1284392014819",
+                "createdAt": "2018-02-11T00:00:00Z",
+                "completedAt": "2018-05-12T00:00:00Z",
+                "createdBy": {
+                  "adminId": "212406",
+                  "name": "Miles Meraki",
+                  "email": "miles@meraki.com"
+                },
+                "operation": "disableDownstreamPower",
+                "status": "completed",
+                "gateway": {
+                  "serial": "Q234-ABCD-5678",
+                  "name": "My camera"
+                },
+                "errors": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Sends a command to a sensor",
+        "tags": [
+          "sensor",
+          "configure",
+          "commands"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/devices/{serial}/sensor/commands/{id}": {
+      "get": {
+        "description": "Returns information about the command's execution, including the status",
+        "operationId": "getDeviceSensorCommand",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "commandId": {
+                  "type": "string",
+                  "description": "ID to check the status of the command request"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time when the command was triggered"
+                },
+                "completedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time when the command was completed"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "adminId": {
+                      "type": "string",
+                      "description": "ID of the admin"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the admin"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "Email of the admin"
+                    }
+                  },
+                  "description": "Information about the admin who triggered the command"
+                },
+                "operation": {
+                  "type": "string",
+                  "enum": [
+                    "connect",
+                    "cycleDownstreamPower",
+                    "disableDownstreamPower",
+                    "enableDownstreamPower"
+                  ],
+                  "description": "Operation run on the sensor"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "failed",
+                    "in_progress",
+                    "pending"
+                  ],
+                  "description": "Status of the command request"
+                },
+                "gateway": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Gateway serial"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Gateway name"
+                    }
+                  },
+                  "description": "Info about the gateway that was used to connect to the sensor"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of errors if failed"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "commandId": "1284392014819",
+                "createdAt": "2018-02-11T00:00:00Z",
+                "completedAt": "2018-05-12T00:00:00Z",
+                "createdBy": {
+                  "adminId": "212406",
+                  "name": "Miles Meraki",
+                  "email": "miles@meraki.com"
+                },
+                "operation": "disableDownstreamPower",
+                "status": "completed",
+                "gateway": {
+                  "serial": "Q234-ABCD-5678",
+                  "name": "My camera"
+                },
+                "errors": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Returns information about the command's execution, including the status",
+        "tags": [
+          "sensor",
+          "monitor",
+          "commands"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/devices/{serial}/sensor/relationships": {
@@ -35097,7 +35725,7 @@
         ]
       },
       "delete": {
-        "description": "Deauthorize a user. To reauthorize a user after deauthorizing them, POST to this endpoint. (Currently, 802.1X RADIUS, splash guest, and client VPN users can be deauthorized.)",
+        "description": "Delete an 802.1X RADIUS user, or deauthorize and optionally delete a splash guest or client VPN user.",
         "operationId": "deleteNetworkMerakiAuthUser",
         "parameters": [
           {
@@ -35113,6 +35741,12 @@
             "description": "Meraki auth user ID",
             "type": "string",
             "required": true
+          },
+          {
+            "type": "boolean",
+            "name": "delete",
+            "in": "query",
+            "description": "If the ID supplied is for a splash guest or client VPN user, then also delete the user. 802.1X RADIUS users are always deleted regardless of this optional attribute."
           }
         ],
         "responses": {
@@ -35120,7 +35754,7 @@
             "description": "Successful operation"
           }
         },
-        "summary": "Deauthorize a user",
+        "summary": "Delete an 802.1X RADIUS user, or deauthorize and optionally delete a splash guest or client VPN user.",
         "tags": [
           "networks",
           "configure",
@@ -41733,7 +42367,13 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Boolean indicating whether the operation was completed successfully."
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -71032,6 +71672,41 @@
                     ]
                   },
                   "description": "A set of changes to make as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "beta",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
@@ -71042,7 +71717,17 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "create"
                   }
-                ]
+                ],
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               },
               "required": [
                 "actions"
@@ -71134,6 +71819,25 @@
                     ]
                   },
                   "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "beta"
                 }
               },
               "required": [
@@ -71164,7 +71868,12 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update"
                   }
-                ]
+                ],
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -71360,6 +72069,25 @@
                     ]
                   },
                   "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "beta"
                 }
               },
               "required": [
@@ -71390,7 +72118,12 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update"
                   }
-                ]
+                ],
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -78909,10 +79642,10 @@
         ]
       }
     },
-    "/organizations/{organizationId}/camera/permissionScopes": {
+    "/organizations/{organizationId}/camera/permissions": {
       "get": {
         "description": "List the permissions scopes for this organization",
-        "operationId": "getOrganizationCameraPermissionScopes",
+        "operationId": "getOrganizationCameraPermissions",
         "parameters": [
           {
             "name": "organizationId",
@@ -78960,15 +79693,15 @@
         "tags": [
           "camera",
           "configure",
-          "permissionScopes"
+          "permissions"
         ],
         "x-release-stage": "beta"
       }
     },
-    "/organizations/{organizationId}/camera/permissionScopes/{permissionScopeId}": {
+    "/organizations/{organizationId}/camera/permissions/{permissionScopeId}": {
       "get": {
         "description": "Retrieve a single permission scope",
-        "operationId": "getOrganizationCameraPermissionScope",
+        "operationId": "getOrganizationCameraPermission",
         "parameters": [
           {
             "name": "organizationId",
@@ -79018,7 +79751,7 @@
         "tags": [
           "camera",
           "configure",
-          "permissionScopes"
+          "permissions"
         ],
         "x-release-stage": "beta"
       }
@@ -83708,6 +84441,27 @@
             "name": "timespanBeta",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespanBeta, do not specify t0Beta and t1Beta. Maximum is 31 days. Default is 1 day."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-release-stage": "beta",
+            "name": "deviceTags",
+            "in": "query",
+            "description": "Optional parameter to filter device availabilities history by device tags. The filtering is case-sensitive. If tags are included, 'deviceTagsFilterType' should also be included (see below)."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "withAllTags",
+              "withAnyTags"
+            ],
+            "x-release-stage": "beta",
+            "name": "deviceTagsFilterType",
+            "in": "query",
+            "description": "An optional parameter of value 'withAnyTags' or 'withAllTags' to indicate whether to return devices which contain ANY or ALL of the included tags. If no type is included, 'withAnyTags' will be selected."
           }
         ],
         "responses": {
@@ -83761,6 +84515,14 @@
                       "model": {
                         "type": "string",
                         "description": "Device model"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Device tags",
+                        "x-release-stage": "beta"
                       }
                     },
                     "description": "Device information"
@@ -83848,7 +84610,11 @@
                     "serial": "Q234-ABCD-5678",
                     "name": "My AP",
                     "productType": "wireless",
-                    "model": "MR34"
+                    "model": "MR34",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
                   },
                   "details": {
                     "old": [
@@ -85404,7 +86170,7 @@
             "items": {
               "type": "string"
             },
-            "name": "productType",
+            "name": "productTypes",
             "in": "query",
             "description": "The product type in a given upgrade ID"
           }
@@ -85452,7 +86218,7 @@
                     "type": "string",
                     "description": "Timestamp when upgrade completed. Null if status pending."
                   },
-                  "productType": {
+                  "productTypes": {
                     "type": "string",
                     "description": "product upgraded [wireless, appliance, switch, systemsManager, camera, cellularGateway, sensor]"
                   },
@@ -85517,7 +86283,7 @@
                   "status": "Completed",
                   "time": "2022-11-01T00:00:00Z",
                   "completedAt": "2020-11-05 15:50:05 UTC",
-                  "productType": "wireless",
+                  "productTypes": "wireless",
                   "toVersion": {
                     "id": "2888",
                     "shortName": "MR 11.2.1",
@@ -97388,6 +98154,134 @@
         ]
       }
     },
+    "/organizations/{organizationId}/webhooks/callbacks/statuses/{callbackId}": {
+      "get": {
+        "description": "Return the status of an API callback",
+        "operationId": "getOrganizationWebhooksCallbacksStatus",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "callbackId",
+            "in": "path",
+            "description": "Callback ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "callbackId": {
+                  "type": "string",
+                  "description": "The ID of the callback"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "failed",
+                    "running"
+                  ],
+                  "description": "The status of the callback"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The errors returned by the callback"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "adminId": {
+                      "type": "string",
+                      "description": "The ID of the user who initiated the callback"
+                    }
+                  },
+                  "description": "Information around who initiated the callback"
+                },
+                "webhook": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The webhook receiver URL where the callback will be sent"
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information"
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook"
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template"
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    },
+                    "sentAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp the callback was sent to the webhook receiver"
+                    }
+                  },
+                  "description": "The webhook receiver used by the callback to send results"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "callbackId": "1284392014819",
+                "status": "completed",
+                "errors": [
+                  "Callback failed"
+                ],
+                "createdBy": {
+                  "adminId": "212406"
+                },
+                "webhook": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  },
+                  "sentAt": "2018-02-11T00:00:00.090210Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the status of an API callback",
+        "tags": [
+          "organizations",
+          "configure",
+          "webhooks",
+          "callbacks",
+          "statuses"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/webhooks/httpServers": {
       "get": {
         "description": "List the HTTP servers for this organization",
@@ -99610,7 +100504,7 @@
     },
     "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
       "get": {
-        "description": "Endpoint to see power status for wireless devices",
+        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
         "operationId": "getOrganizationWirelessDevicesEthernetStatuses",
         "parameters": [
           {
@@ -99802,7 +100696,7 @@
             }
           }
         },
-        "summary": "Endpoint to see power status for wireless devices",
+        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
         "tags": [
           "wireless",
           "monitor",
@@ -99971,6 +100865,9 @@
       "name": "bypassActivationLockAttempts"
     },
     {
+      "name": "callbacks"
+    },
+    {
       "name": "categories"
     },
     {
@@ -100011,6 +100908,9 @@
     },
     {
       "name": "cloudMonitoring"
+    },
+    {
+      "name": "commands"
     },
     {
       "name": "configTemplates"
@@ -100322,7 +101222,7 @@
       "name": "performanceHistory"
     },
     {
-      "name": "permissionScopes"
+      "name": "permissions"
     },
     {
       "name": "pii"
@@ -100934,7 +101834,7 @@
     },
     {
       "group": "End users/actions/meraki auth user",
-      "summary": "Deauthorize a user. To reauthorize a user after deauthorizing them, POST to this endpoint. (Currently, 802.1X RADIUS, splash guest, and client VPN users can be deauthorized.)",
+      "summary": "Delete an 802.1X RADIUS user, or deauthorize and optionally delete a splash guest or client VPN user.",
       "resource": "/networks/{networkId}/merakiAuthUsers/{merakiAuthUserId}",
       "operation": "destroy"
     },
