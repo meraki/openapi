@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.35.0-beta.3",
+    "version": "1.36.0-beta.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 26 July, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 August, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -23727,7 +23727,8 @@
                   {
                     "mac": "00:11:22:33:44:55",
                     "clientId": "k74272e",
-                    "name": "Miles's phone"
+                    "name": "Miles's phone",
+                    "message": "Blocked message for client"
                   }
                 ],
                 "devicePolicy": "Group policy",
@@ -23753,7 +23754,8 @@
                   {
                     "mac": "00:11:22:33:44:55",
                     "clientId": "k74272e",
-                    "name": "Miles's phone"
+                    "name": "Miles's phone",
+                    "message": "Blocked message for client"
                   }
                 ],
                 "devicePolicy": "Group policy",
@@ -35746,7 +35748,7 @@
             "type": "boolean",
             "name": "delete",
             "in": "query",
-            "description": "If the ID supplied is for a splash guest or client VPN user, then also delete the user. 802.1X RADIUS users are always deleted regardless of this optional attribute."
+            "description": "If the ID supplied is for a splash guest or client VPN user, and that user is not authorized for any other networks in the organization, then also delete the user. 802.1X RADIUS users are always deleted regardless of this optional attribute."
           }
         ],
         "responses": {
@@ -86326,7 +86328,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 50. Default is 50."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
           },
           {
             "type": "string",
@@ -86372,18 +86374,24 @@
             "items": {
               "type": "string"
             },
-            "name": "firmwareUpgradeIds",
+            "name": "firmwareUpgradeBatchIds",
             "in": "query",
-            "description": "Optional parameter to filter by firmware upgrade ids."
+            "description": "Optional parameter to filter by firmware upgrade batch ids."
           },
           {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "canceled",
+                "completed",
+                "pending",
+                "started"
+              ]
             },
-            "name": "firmwareUpgradeBatchIds",
+            "name": "upgradeStatuses",
             "in": "query",
-            "description": "Optional parameter to filter by firmware upgrade batch ids."
+            "description": "Optional parameter to filter by firmware upgrade statuses."
           }
         ],
         "responses": {
@@ -87000,6 +87008,122 @@
           }
         },
         "summary": "Lists all default web applications rules with counter set rule ids",
+        "tags": [
+          "insight",
+          "configure",
+          "webApps"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Add a custom web application for Insight to be able to track",
+        "operationId": "createOrganizationInsightWebApp",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationInsightWebApp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the Web Application"
+                },
+                "hostname": {
+                  "type": "string",
+                  "description": "The hostname of Web Application"
+                }
+              },
+              "example": {
+                "name": "Meraki HTTPS",
+                "hostname": "exampled.com"
+              },
+              "required": [
+                "name",
+                "hostname"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "counterSetRuleId": {
+                  "type": "string",
+                  "description": "Counter set rule id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Web Application name"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category type for web application"
+                },
+                "thresholds": {
+                  "type": "object",
+                  "properties": {
+                    "goodput": {
+                      "type": "string",
+                      "description": "App goodput"
+                    },
+                    "responseDelay": {
+                      "type": "string",
+                      "description": "App response delay"
+                    }
+                  },
+                  "description": "Default thresholds for each application"
+                },
+                "expression": {
+                  "type": "string",
+                  "description": "Http hostname for tracking web app"
+                },
+                "signature": {
+                  "type": "object",
+                  "properties": {
+                    "signatureType": {
+                      "type": "string",
+                      "description": "Signature type"
+                    },
+                    "host": {
+                      "type": "string",
+                      "description": "Custom host name"
+                    }
+                  },
+                  "description": "If custom host or port is specified, this field populates"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "counterSetRuleId": "12345",
+                "name": "Meraki HTTPS",
+                "category": "Remote monitoring & management",
+                "thresholds": {
+                  "goodput": "20000",
+                  "responseDelay": "3000"
+                },
+                "expression": "http_host[*.example.com] or http_host",
+                "signature": {
+                  "signatureType": "custom_host",
+                  "host": "exampled.com"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Add a custom web application for Insight to be able to track",
         "tags": [
           "insight",
           "configure",
@@ -95810,7 +95934,7 @@
     },
     "/organizations/{organizationId}/summary/switch/power/history": {
       "get": {
-        "description": "Returns the power draw over time for all switches in the given organization. The interval size returned depends on the requested timespan with a 20 minute resolution used for timespans up to 1 day, a 4 hour resolution used for timespans up to 2 weeks, and a 1 day resolution for timespans larger than 2 weeks.",
+        "description": "Returns the total PoE power draw for all switch ports in the organization over the requested timespan (by default the last 24 hours). The returned array is a newest-first list of intervals. The time between intervals depends on the requested timespan with 20 minute intervals used for timespans up to 1 day, 4 hour intervals used for timespans up to 2 weeks, and 1 day intervals for timespans larger than 2 weeks.",
         "operationId": "getOrganizationSummarySwitchPowerHistory",
         "parameters": [
           {
@@ -95851,12 +95975,12 @@
                   "ts": {
                     "type": "string",
                     "format": "date-time",
-                    "description": "Timestamp of the reading."
+                    "description": "Timestamp of the start of the interval."
                   },
                   "draw": {
                     "type": "number",
                     "format": "float",
-                    "description": "The power draw in watts at time ts."
+                    "description": "The PoE power draw in watts for all switch ports in the organization for the given interval."
                   }
                 }
               }
@@ -95871,7 +95995,7 @@
             }
           }
         },
-        "summary": "Returns the power draw over time for all switches in the given organization",
+        "summary": "Returns the total PoE power draw for all switch ports in the organization over the requested timespan (by default the last 24 hours)",
         "tags": [
           "switch",
           "monitor",
@@ -101897,6 +102021,12 @@
       "summary": "Update the Hotspot 2.0 settings of an SSID",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/hotspot20",
       "operation": "update"
+    },
+    {
+      "group": "Insight/actions/web app",
+      "summary": "Add a custom web application for Insight to be able to track",
+      "resource": "/organizations/{organizationId}/insight/webApps",
+      "operation": "create"
     },
     {
       "group": "L3 firewall",
