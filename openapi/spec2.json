@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.36.0",
+    "version": "1.37.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 02 August, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 September, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2158,6 +2158,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 1 hour."
@@ -2340,6 +2341,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 50400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 hours. The default is 1 hour."
@@ -2663,13 +2665,12 @@
                     "1080x1080",
                     "1280x720",
                     "1920x1080",
-                    "2058x2058",
                     "2112x2112",
                     "2688x1512",
                     "2880x2880",
                     "3840x2160"
                   ],
-                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080', '2058x2058', '2112x2112', '2880x2880', '2688x1512' or '3840x2160'.Not all resolutions are supported by every camera model."
+                  "description": "Resolution of the camera. Can be one of '1280x720', '1920x1080', '1080x1080', '2112x2112', '2880x2880', '2688x1512' or '3840x2160'.Not all resolutions are supported by every camera model."
                 },
                 "motionDetectorVersion": {
                   "type": "integer",
@@ -2897,7 +2898,17 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "externalRtspEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating if external rtsp stream is exposed"
+                },
+                "rtspUrl": {
+                  "type": "string",
+                  "description": "External rstp url. Will only be returned if external rtsp stream is exposed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -2947,7 +2958,17 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "externalRtspEnabled": {
+                  "type": "boolean",
+                  "description": "Boolean indicating if external rtsp stream is exposed"
+                },
+                "rtspUrl": {
+                  "type": "string",
+                  "description": "External rstp url. Will only be returned if external rtsp stream is exposed"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -3740,6 +3761,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -4391,6 +4413,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -5234,6 +5257,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -5597,6 +5621,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 86400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 1 day. The default is 1 day."
@@ -7942,7 +7967,233 @@
         ]
       }
     },
+    "/devices/{serial}/wireless/alternateManagementInterface/ipv6": {
+      "put": {
+        "description": "Update alternate management interface IPv6 address",
+        "operationId": "updateDeviceWirelessAlternateManagementInterfaceIpv6",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateDeviceWirelessAlternateManagementInterfaceIpv6",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "description": "The IP protocol used for the address"
+                      },
+                      "assignmentMode": {
+                        "type": "string",
+                        "enum": [
+                          "dynamic",
+                          "static"
+                        ],
+                        "description": "The type of address assignment. Either static or dynamic."
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "The IP address configured for the alternate management interface"
+                      },
+                      "gateway": {
+                        "type": "string",
+                        "description": "The gateway address configured for the alternate managment interface"
+                      },
+                      "prefix": {
+                        "type": "string",
+                        "description": "The IPv6 prefix length of the IPv6 interface. Required if IPv6 object is included."
+                      },
+                      "nameservers": {
+                        "type": "object",
+                        "properties": {
+                          "addresses": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority."
+                          }
+                        },
+                        "description": "The DNS servers settings for this address."
+                      }
+                    }
+                  },
+                  "description": "configured alternate management interface addresses"
+                }
+              },
+              "example": {
+                "addresses": [
+                  {
+                    "protocol": "ipv6",
+                    "assignmentMode": "static",
+                    "address": "2001:db8:3c4d:15::1",
+                    "gateway": "fe80:db8:c15:c0:d0c::10ca:1d02",
+                    "prefix": "2001:db8:3c4d:15::/64",
+                    "nameservers": {
+                      "addresses": [
+                        "2001:db8:3c4d:15::1",
+                        "2001:db8:3c4d:15::1"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "ipv4",
+                          "ipv6"
+                        ],
+                        "description": "The IP protocol used for the address"
+                      },
+                      "assignmentMode": {
+                        "type": "string",
+                        "enum": [
+                          "dynamic",
+                          "static"
+                        ],
+                        "description": "The type of address assignment. Either static or dynamic."
+                      },
+                      "address": {
+                        "type": "string",
+                        "description": "The IP address configured for the alternate management interface"
+                      },
+                      "gateway": {
+                        "type": "string",
+                        "description": "The gateway address configured for the alternate managment interface"
+                      },
+                      "prefix": {
+                        "type": "string",
+                        "description": "The IPv6 prefix of the interface. Required if IPv6 object is included."
+                      },
+                      "nameservers": {
+                        "type": "object",
+                        "properties": {
+                          "addresses": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority."
+                          }
+                        },
+                        "description": "The DNS servers settings for this address."
+                      }
+                    }
+                  },
+                  "description": "configured alternate management interface addresses"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "addresses": [
+                  {
+                    "protocol": "ipv6",
+                    "assignmentMode": "static",
+                    "address": "2001:db8:3c4d:15::1",
+                    "gateway": "fe80:db8:c15:c0:d0c::10ca:1d02",
+                    "prefix": "2001:db8:3c4d:15::/64",
+                    "nameservers": {
+                      "addresses": [
+                        "2001:db8:3c4d:15::1",
+                        "2001:db8:3c4d:15::1"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update alternate management interface IPv6 address",
+        "tags": [
+          "wireless",
+          "configure",
+          "alternateManagementInterface",
+          "ipv6"
+        ]
+      }
+    },
     "/devices/{serial}/wireless/bluetooth/settings": {
+      "get": {
+        "description": "Return the bluetooth settings for a wireless device",
+        "operationId": "getDeviceWirelessBluetoothSettings",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "major": {
+                  "type": "integer",
+                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                },
+                "minor": {
+                  "type": "integer",
+                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "uuid": "00000000-0000-0000-000-000000000000",
+                "major": 13,
+                "minor": 125
+              }
+            }
+          }
+        },
+        "summary": "Return the bluetooth settings for a wireless device",
+        "tags": [
+          "wireless",
+          "configure",
+          "bluetooth",
+          "settings"
+        ]
+      },
       "put": {
         "description": "Update the bluetooth settings for a wireless device",
         "operationId": "updateDeviceWirelessBluetoothSettings",
@@ -8017,55 +8268,6 @@
           "bluetooth",
           "settings"
         ]
-      },
-      "get": {
-        "description": "Return the bluetooth settings for a wireless device",
-        "operationId": "getDeviceWirelessBluetoothSettings",
-        "parameters": [
-          {
-            "name": "serial",
-            "in": "path",
-            "description": "Serial",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "uuid": {
-                  "type": "string",
-                  "description": "Desired UUID of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "major": {
-                  "type": "integer",
-                  "description": "Desired major value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                },
-                "minor": {
-                  "type": "integer",
-                  "description": "Desired minor value of the beacon. If the value is set to null it will reset to Dashboard's automatically generated value."
-                }
-              }
-            },
-            "examples": {
-              "application/json": {
-                "uuid": "00000000-0000-0000-000-000000000000",
-                "major": 13,
-                "minor": 125
-              }
-            }
-          }
-        },
-        "summary": "Return the bluetooth settings for a wireless device",
-        "tags": [
-          "wireless",
-          "configure",
-          "bluetooth",
-          "settings"
-        ]
       }
     },
     "/devices/{serial}/wireless/connectionStats": {
@@ -8095,6 +8297,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -8216,6 +8419,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -9310,6 +9514,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 68342400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 31 days."
@@ -13414,6 +13619,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -14889,7 +15095,8 @@
                       "end": "192.168.1.1",
                       "comment": "A reserved IP range"
                     }
-                  ]
+                  ],
+                  "gatewayVlanId": 100
                 }
               ]
             }
@@ -15031,7 +15238,8 @@
                     "end": "192.168.1.1",
                     "comment": "A reserved IP range"
                   }
-                ]
+                ],
+                "gatewayVlanId": 100
               }
             }
           }
@@ -15168,7 +15376,8 @@
                     "end": "192.168.1.1",
                     "comment": "A reserved IP range"
                   }
-                ]
+                ],
+                "gatewayVlanId": 100
               }
             }
           }
@@ -17225,6 +17434,230 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/trafficShaping/vpnExclusions": {
+      "put": {
+        "description": "Update VPN exclusion rules for an MX network.",
+        "operationId": "updateNetworkApplianceTrafficShapingVpnExclusions",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkApplianceTrafficShapingVpnExclusions",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "custom": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "dns",
+                          "icmp",
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "Protocol."
+                      },
+                      "destination": {
+                        "type": "string",
+                        "description": "Destination address; hostname required for DNS, IPv4 otherwise."
+                      },
+                      "port": {
+                        "type": "string",
+                        "description": "Destination port."
+                      }
+                    },
+                    "required": [
+                      "protocol"
+                    ]
+                  },
+                  "description": "Custom VPN exclusion rules. Pass an empty array to clear existing rules."
+                },
+                "majorApplications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Application's Meraki ID."
+                      },
+                      "name": {
+                        "type": "string",
+                        "enum": [
+                          "AWS",
+                          "Box",
+                          "Office 365 Sharepoint",
+                          "Office 365 Suite",
+                          "Oracle",
+                          "SAP",
+                          "Salesforce",
+                          "Skype & Teams",
+                          "Slack",
+                          "Webex",
+                          "Webex Calling",
+                          "Webex Meetings",
+                          "Zoom"
+                        ],
+                        "description": "Application's name."
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ]
+                  },
+                  "description": "Major Application based VPN exclusion rules. Pass an empty array to clear existing rules."
+                }
+              },
+              "example": {
+                "custom": [
+                  {
+                    "protocol": "tcp",
+                    "destination": "192.168.3.0/24",
+                    "port": "8000"
+                  }
+                ],
+                "majorApplications": [
+                  {
+                    "id": "meraki:vpnExclusion/application/2",
+                    "name": "Office 365 Sharepoint"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "networkId": {
+                  "type": "string",
+                  "description": "ID of the network whose VPN exclusion rules are returned."
+                },
+                "networkName": {
+                  "type": "string",
+                  "description": "Name of the network whose VPN exclusion rules are returned."
+                },
+                "custom": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "protocol": {
+                        "type": "string",
+                        "enum": [
+                          "any",
+                          "dns",
+                          "icmp",
+                          "tcp",
+                          "udp"
+                        ],
+                        "description": "Protocol."
+                      },
+                      "destination": {
+                        "type": "string",
+                        "description": "Destination address; hostname required for DNS, IPv4 otherwise."
+                      },
+                      "port": {
+                        "type": "string",
+                        "description": "Destination port."
+                      }
+                    },
+                    "required": [
+                      "protocol",
+                      "destination",
+                      "port"
+                    ]
+                  },
+                  "description": "Custom VPN exclusion rules."
+                },
+                "majorApplications": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Application's Meraki ID."
+                      },
+                      "name": {
+                        "type": "string",
+                        "enum": [
+                          "AWS",
+                          "Box",
+                          "Office 365 Sharepoint",
+                          "Office 365 Suite",
+                          "Oracle",
+                          "SAP",
+                          "Salesforce",
+                          "Skype & Teams",
+                          "Slack",
+                          "Webex",
+                          "Webex Calling",
+                          "Webex Meetings",
+                          "Zoom"
+                        ],
+                        "description": "Application's name."
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ]
+                  },
+                  "description": "Major Application based VPN exclusion rules."
+                }
+              },
+              "required": [
+                "networkId",
+                "networkName",
+                "custom",
+                "majorApplications"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "networkId": "N_24329156",
+                "networkName": "Main Office",
+                "custom": [
+                  {
+                    "protocol": "tcp",
+                    "destination": "192.168.3.0/24",
+                    "port": "8000"
+                  }
+                ],
+                "majorApplications": [
+                  {
+                    "id": "meraki:vpnExclusion/application/2",
+                    "name": "Office 365 Sharepoint"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update VPN exclusion rules for an MX network.",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping",
+          "vpnExclusions"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/uplinks/usageHistory": {
       "get": {
         "description": "Get the sent and received bytes for each uplink of a network.",
@@ -17252,6 +17685,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 10 minutes."
@@ -19664,6 +20098,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 7 days. The default is 1 day."
@@ -19990,9 +20425,9 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058"
+                            "2112x2112"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
                         }
                       },
                       "required": [
@@ -20506,9 +20941,9 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2058x2058"
+                            "2112x2112"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2058x2058'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
                         }
                       },
                       "required": [
@@ -20873,7 +21308,17 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Schedule id"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Schedule name"
+                  }
+                }
               }
             },
             "examples": {
@@ -20881,10 +21326,6 @@
                 {
                   "id": "123",
                   "name": "Weekday schedule"
-                },
-                {
-                  "id": "124",
-                  "name": "Office hours"
                 }
               ]
             }
@@ -21808,6 +22249,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -22171,6 +22613,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -22245,6 +22688,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -22329,6 +22773,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -22914,6 +23359,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -33984,6 +34430,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
@@ -35202,6 +35649,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -35811,6 +36259,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -36049,6 +36498,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -36396,9 +36846,12 @@
                             600,
                             900,
                             1800,
-                            3600
+                            3600,
+                            7200,
+                            14400,
+                            28800
                           ],
-                          "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                          "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                           "default": 0
                         }
                       },
@@ -36756,9 +37209,12 @@
                           600,
                           900,
                           1800,
-                          3600
+                          3600,
+                          7200,
+                          14400,
+                          28800
                         ],
-                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                         "default": 0
                       }
                     },
@@ -37100,9 +37556,12 @@
                           600,
                           900,
                           1800,
-                          3600
+                          3600,
+                          7200,
+                          14400,
+                          28800
                         ],
-                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                         "default": 0
                       }
                     },
@@ -37475,9 +37934,12 @@
                           600,
                           900,
                           1800,
-                          3600
+                          3600,
+                          7200,
+                          14400,
+                          28800
                         ],
-                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                         "default": 0
                       }
                     },
@@ -37839,9 +38301,12 @@
                           600,
                           900,
                           1800,
-                          3600
+                          3600,
+                          7200,
+                          14400,
+                          28800
                         ],
-                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                         "default": 0
                       }
                     },
@@ -38178,9 +38643,12 @@
                           600,
                           900,
                           1800,
-                          3600
+                          3600,
+                          7200,
+                          14400,
+                          28800
                         ],
-                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, and 1 hour. Default is 0.",
+                        "description": "Length of time in seconds that the triggering state must persist before an alert is sent. Available options are 0 seconds, 1 minute, 2 minutes, 3 minutes, 4 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour, 2 hours, 4 hours, and 8 hours. Default is 0.",
                         "default": 0
                       }
                     },
@@ -44409,6 +44877,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -48711,6 +49180,16 @@
                     }
                   },
                   "description": "Uplink client sampling"
+                },
+                "macBlocklist": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable MAC blocklist for switches in the network"
+                    }
+                  },
+                  "description": "MAC blocklist"
                 }
               }
             },
@@ -48725,6 +49204,9 @@
                   }
                 ],
                 "uplinkClientSampling": {
+                  "enabled": true
+                },
+                "macBlocklist": {
                   "enabled": true
                 }
               }
@@ -48798,6 +49280,16 @@
                     }
                   },
                   "description": "Uplink client sampling"
+                },
+                "macBlocklist": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable MAC blocklist"
+                    }
+                  },
+                  "description": "MAC blocklist"
                 }
               },
               "example": {
@@ -48851,6 +49343,16 @@
                     }
                   },
                   "description": "Uplink client sampling"
+                },
+                "macBlocklist": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enable MAC blocklist for switches in the network"
+                    }
+                  },
+                  "description": "MAC blocklist"
                 }
               }
             },
@@ -48865,6 +49367,9 @@
                   }
                 ],
                 "uplinkClientSampling": {
+                  "enabled": true
+                },
+                "macBlocklist": {
                   "enabled": true
                 }
               }
@@ -51207,6 +51712,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2592000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 30 days."
@@ -52856,6 +53362,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -53558,6 +54065,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -53688,6 +54196,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -53811,6 +54320,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -53926,6 +54436,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -54102,6 +54613,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -54217,6 +54729,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -54376,6 +54889,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 68342400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 1 day."
@@ -54511,6 +55025,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -54623,6 +55138,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -54731,6 +55247,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -54864,6 +55381,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -54991,6 +55509,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -55107,6 +55626,831 @@
         ]
       }
     },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles": {
+      "get": {
+        "description": "List the AP port profiles for this network",
+        "operationId": "getNetworkWirelessEthernetPortsProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "profileId": {
+                    "type": "string",
+                    "description": "AP port profile ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "AP port profile name"
+                  },
+                  "isDefault": {
+                    "type": "boolean",
+                    "description": "Is default profile"
+                  },
+                  "ports": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name"
+                        },
+                        "number": {
+                          "type": "integer",
+                          "description": "Number"
+                        },
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enabled"
+                        },
+                        "ssid": {
+                          "type": "integer",
+                          "description": "Ssid number"
+                        },
+                        "pskGroupId": {
+                          "type": "string",
+                          "description": "PSK Group number"
+                        }
+                      }
+                    },
+                    "description": "Ports config"
+                  },
+                  "usbPorts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name"
+                        },
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enabled"
+                        },
+                        "ssid": {
+                          "type": "integer",
+                          "description": "Ssid number"
+                        }
+                      }
+                    },
+                    "description": "Usb ports config"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "profileId": "1001",
+                  "name": "Ap Port Profile Name",
+                  "isDefault": false,
+                  "ports": [
+                    {
+                      "name": "port 1",
+                      "number": 1,
+                      "enabled": true,
+                      "ssid": 1,
+                      "pskGroupId": "100"
+                    }
+                  ],
+                  "usbPorts": [
+                    {
+                      "name": "usb port",
+                      "enabled": true,
+                      "ssid": 5
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the AP port profiles for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      },
+      "post": {
+        "description": "Create an AP port profile",
+        "operationId": "createNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkWirelessEthernetPortsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "AP port profile name"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "AP port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "AP port enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "AP port ssid number"
+                      },
+                      "pskGroupId": {
+                        "type": "string",
+                        "description": "AP port PSK Group ID"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "AP ports configuration"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "AP usb port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "AP usb port enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "AP usb port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "AP usb ports configuration"
+                }
+              },
+              "example": {
+                "name": "name",
+                "ports": [
+                  {
+                    "name": "port",
+                    "enabled": true,
+                    "ssid": 1,
+                    "pskGroupId": "2"
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "enabled": true,
+                    "ssid": 2
+                  }
+                ]
+              },
+              "required": [
+                "name",
+                "ports"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "AP port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "AP port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      },
+                      "pskGroupId": {
+                        "type": "string",
+                        "description": "PSK Group number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1001",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "number": 1,
+                    "enabled": true,
+                    "ssid": 1,
+                    "pskGroupId": "100"
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "enabled": true,
+                    "ssid": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create an AP port profile",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/assign": {
+      "post": {
+        "description": "Assign AP port profile to list of APs",
+        "operationId": "assignNetworkWirelessEthernetPortsProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "assignNetworkWirelessEthernetPortsProfiles",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of AP serials"
+                },
+                "profileId": {
+                  "type": "string",
+                  "description": "AP profile ID"
+                }
+              },
+              "example": {
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
+                "profileId": "1001"
+              },
+              "required": [
+                "serials",
+                "profileId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of updated AP serials"
+                },
+                "profileId": {
+                  "type": "string",
+                  "description": "AP profile ID"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serials": [
+                  "Q234-ABCD-0001",
+                  "Q234-ABCD-0002",
+                  "Q234-ABCD-0003"
+                ],
+                "profileId": "1001"
+              }
+            }
+          }
+        },
+        "summary": "Assign AP port profile to list of APs",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/setDefault": {
+      "post": {
+        "description": "Set the AP port profile to be default for this network",
+        "operationId": "setNetworkWirelessEthernetPortsProfilesDefault",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "setNetworkWirelessEthernetPortsProfilesDefault",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "AP profile ID"
+                }
+              },
+              "example": {
+                "profileId": "1001"
+              },
+              "required": [
+                "profileId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "AP profile ID"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1001"
+              }
+            }
+          }
+        },
+        "summary": "Set the AP port profile to be default for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}": {
+      "get": {
+        "description": "Show the AP port profile by ID for this network",
+        "operationId": "getNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "AP port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "AP port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      },
+                      "pskGroupId": {
+                        "type": "string",
+                        "description": "PSK Group number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1001",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "number": 1,
+                    "enabled": true,
+                    "ssid": 1,
+                    "pskGroupId": "100"
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "enabled": true,
+                    "ssid": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Show the AP port profile by ID for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      },
+      "put": {
+        "description": "Update the AP port profile by ID for this network",
+        "operationId": "updateNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessEthernetPortsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "AP port profile name"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "AP port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "AP port enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "AP port ssid number"
+                      },
+                      "pskGroupId": {
+                        "type": "string",
+                        "description": "AP port PSK Group number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "AP ports configuration"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "AP usb port name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "AP usb port enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "AP usb port ssid number"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  },
+                  "description": "AP usb ports configuration"
+                }
+              },
+              "example": {
+
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "AP port profile ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "AP port profile name"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Is default profile"
+                },
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "number": {
+                        "type": "integer",
+                        "description": "Number"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      },
+                      "pskGroupId": {
+                        "type": "string",
+                        "description": "PSK Group number"
+                      }
+                    }
+                  },
+                  "description": "Ports config"
+                },
+                "usbPorts": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name"
+                      },
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Enabled"
+                      },
+                      "ssid": {
+                        "type": "integer",
+                        "description": "Ssid number"
+                      }
+                    }
+                  },
+                  "description": "Usb ports config"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "1001",
+                "name": "Ap Port Profile Name",
+                "isDefault": false,
+                "ports": [
+                  {
+                    "name": "port 1",
+                    "number": 1,
+                    "enabled": true,
+                    "ssid": 1,
+                    "pskGroupId": "100"
+                  }
+                ],
+                "usbPorts": [
+                  {
+                    "name": "usb port",
+                    "enabled": true,
+                    "ssid": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the AP port profile by ID for this network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete an AP port profile",
+        "operationId": "deleteNetworkWirelessEthernetPortsProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an AP port profile",
+        "tags": [
+          "wireless",
+          "configure",
+          "ethernet",
+          "ports",
+          "profiles"
+        ]
+      }
+    },
     "/networks/{networkId}/wireless/failedConnections": {
       "get": {
         "description": "List of all failed client connection events on this network in a given time range",
@@ -55134,6 +56478,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -55270,6 +56615,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -55405,6 +56751,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -62853,6 +64200,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -63010,6 +64358,10 @@
                   "ssidAdminAccessible": {
                     "type": "boolean",
                     "description": "SSID Administrator access status"
+                  },
+                  "localAuth": {
+                    "type": "boolean",
+                    "description": "Extended local auth flag for Enterprise NAC"
                   },
                   "authMode": {
                     "type": "string",
@@ -63224,6 +64576,7 @@
                   "enabled": true,
                   "splashPage": "Click-through splash page",
                   "ssidAdminAccessible": false,
+                  "localAuth": false,
                   "authMode": "8021x-radius",
                   "encryptionMode": "wpa",
                   "wpaEncryptionMode": "WPA2 only",
@@ -63343,6 +64696,10 @@
                 "ssidAdminAccessible": {
                   "type": "boolean",
                   "description": "SSID Administrator access status"
+                },
+                "localAuth": {
+                  "type": "boolean",
+                  "description": "Extended local auth flag for Enterprise NAC"
                 },
                 "authMode": {
                   "type": "string",
@@ -63555,6 +64912,7 @@
                 "enabled": true,
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
+                "localAuth": false,
                 "authMode": "8021x-radius",
                 "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
@@ -64418,6 +65776,10 @@
                   "type": "boolean",
                   "description": "SSID Administrator access status"
                 },
+                "localAuth": {
+                  "type": "boolean",
+                  "description": "Extended local auth flag for Enterprise NAC"
+                },
                 "authMode": {
                   "type": "string",
                   "enum": [
@@ -64629,6 +65991,7 @@
                 "enabled": true,
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
+                "localAuth": false,
                 "authMode": "8021x-radius",
                 "encryptionMode": "wpa",
                 "wpaEncryptionMode": "WPA2 only",
@@ -68037,6 +69400,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -72104,6 +73468,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
@@ -72308,6 +73673,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
@@ -72812,6 +74178,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -73056,6 +74423,179 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/trafficShaping/vpnExclusions/byNetwork": {
+      "get": {
+        "description": "Display VPN exclusion rules for MX networks.",
+        "operationId": "getOrganizationApplianceTrafficShapingVpnExclusionsByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter the results by network IDs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "ID of the network whose VPN exclusion rules are returned."
+                  },
+                  "networkName": {
+                    "type": "string",
+                    "description": "Name of the network whose VPN exclusion rules are returned."
+                  },
+                  "custom": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "protocol": {
+                          "type": "string",
+                          "enum": [
+                            "any",
+                            "dns",
+                            "icmp",
+                            "tcp",
+                            "udp"
+                          ],
+                          "description": "Protocol."
+                        },
+                        "destination": {
+                          "type": "string",
+                          "description": "Destination address; hostname required for DNS, IPv4 otherwise."
+                        },
+                        "port": {
+                          "type": "string",
+                          "description": "Destination port."
+                        }
+                      },
+                      "required": [
+                        "protocol",
+                        "destination",
+                        "port"
+                      ]
+                    },
+                    "description": "Custom VPN exclusion rules."
+                  },
+                  "majorApplications": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Application's Meraki ID."
+                        },
+                        "name": {
+                          "type": "string",
+                          "enum": [
+                            "AWS",
+                            "Box",
+                            "Office 365 Sharepoint",
+                            "Office 365 Suite",
+                            "Oracle",
+                            "SAP",
+                            "Salesforce",
+                            "Skype & Teams",
+                            "Slack",
+                            "Webex",
+                            "Webex Calling",
+                            "Webex Meetings",
+                            "Zoom"
+                          ],
+                          "description": "Application's name."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    },
+                    "description": "Major Application based VPN exclusion rules."
+                  }
+                },
+                "required": [
+                  "networkId",
+                  "networkName",
+                  "custom",
+                  "majorApplications"
+                ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_24329156",
+                  "networkName": "Main Office",
+                  "custom": [
+                    {
+                      "protocol": "tcp",
+                      "destination": "192.168.3.0/24",
+                      "port": "8000"
+                    }
+                  ],
+                  "majorApplications": [
+                    {
+                      "id": "meraki:vpnExclusion/application/2",
+                      "name": "Office 365 Sharepoint"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Display VPN exclusion rules for MX networks.",
+        "tags": [
+          "appliance",
+          "configure",
+          "trafficShaping",
+          "vpnExclusions",
+          "byNetwork"
+        ]
+      }
+    },
     "/organizations/{organizationId}/appliance/uplink/statuses": {
       "get": {
         "description": "List the uplink status of every Meraki MX and Z series appliances in the organization",
@@ -73212,6 +74752,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
@@ -73343,6 +74884,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -74368,7 +75910,50 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Description of the rule"
+                      },
+                      "policy": {
+                        "type": "string",
+                        "description": "'Deny' traffic specified by this rule"
+                      },
+                      "protocol": {
+                        "type": "string",
+                        "description": "The type of protocol"
+                      },
+                      "srcPort": {
+                        "type": "string",
+                        "description": "List of source ports"
+                      },
+                      "srcCidr": {
+                        "type": "string",
+                        "description": "List of source IP addresses"
+                      },
+                      "destPort": {
+                        "type": "string",
+                        "description": "List of destination ports"
+                      },
+                      "destCidr": {
+                        "type": "string",
+                        "description": "List of destination IP addresses"
+                      },
+                      "syslogEnabled": {
+                        "type": "boolean",
+                        "description": "Flag indicating whether the rule should be logged to syslog"
+                      }
+                    }
+                  },
+                  "description": "List of firewall rules"
+                }
+              }
             },
             "examples": {
               "application/json": {
@@ -74377,10 +75962,10 @@
                     "comment": "Allow TCP traffic to subnet with HTTP servers.",
                     "policy": "allow",
                     "protocol": "tcp",
-                    "destPort": "443",
-                    "destCidr": "192.168.1.0/24",
                     "srcPort": "Any",
                     "srcCidr": "Any",
+                    "destPort": "443",
+                    "destCidr": "192.168.1.0/24",
                     "syslogEnabled": false
                   }
                 ]
@@ -76549,6 +78134,626 @@
         ]
       }
     },
+    "/organizations/{organizationId}/camera/permissions": {
+      "get": {
+        "description": "List the permissions scopes for this organization",
+        "operationId": "getOrganizationCameraPermissions",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Permission scope id"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of permission scope"
+                  },
+                  "level": {
+                    "type": "string",
+                    "description": "Permission scope level"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "id": "1234",
+                  "name": "camera_video",
+                  "level": "live_video"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the permissions scopes for this organization",
+        "tags": [
+          "camera",
+          "configure",
+          "permissions"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/permissions/{permissionScopeId}": {
+      "get": {
+        "description": "Retrieve a single permission scope",
+        "operationId": "getOrganizationCameraPermission",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "permissionScopeId",
+            "in": "path",
+            "description": "Permission scope ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Permission scope id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of permission scope"
+                },
+                "level": {
+                  "type": "string",
+                  "description": "Permission scope level"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "1234",
+                "name": "camera_video",
+                "level": "live_video"
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single permission scope",
+        "tags": [
+          "camera",
+          "configure",
+          "permissions"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/roles": {
+      "get": {
+        "description": "List all the roles in this organization",
+        "operationId": "getOrganizationCameraRoles",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Security_Guard",
+                  "appliedOnDevices": [
+                    {
+                      "tag": "reception-desk",
+                      "id": "",
+                      "permissionScopeId": "1",
+                      "permissionScope": "camera-video",
+                      "permissionLevel": "view_and_export"
+                    }
+                  ],
+                  "appliedOnNetworks": [
+                    {
+                      "tag": "",
+                      "id": "2568",
+                      "permissionScopeId": "2",
+                      "permissionScope": "camera-video",
+                      "permissionLevel": "view"
+                    }
+                  ],
+                  "appliedOrgWide": [
+                    {
+                      "tag": "building-a",
+                      "permissionScopeId": "2",
+                      "permissionScope": "camera_video",
+                      "permissionLevel": "view_live"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List all the roles in this organization",
+        "tags": [
+          "camera",
+          "configure",
+          "roles"
+        ]
+      },
+      "post": {
+        "description": "Creates new role for this organization.",
+        "operationId": "createOrganizationCameraRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationCameraRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new role. Must be unique. This parameter is required."
+                },
+                "appliedOnDevices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Device tag."
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Device id."
+                      },
+                      "inNetworksWithTag": {
+                        "type": "string",
+                        "description": "Network tag scope"
+                      },
+                      "inNetworksWithId": {
+                        "type": "string",
+                        "description": "Network id scope"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Device tag on which this specified permission is applied."
+                },
+                "appliedOnNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Network tag"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id."
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Network tag on which this specified permission is applied."
+                },
+                "appliedOrgWide": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Permissions to be applied org wide."
+                }
+              },
+              "example": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ]
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Creates new role for this organization.",
+        "tags": [
+          "camera",
+          "configure",
+          "roles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/roles/{roleId}": {
+      "get": {
+        "description": "Retrieve a single role.",
+        "operationId": "getOrganizationCameraRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Retrieve a single role.",
+        "tags": [
+          "camera",
+          "configure",
+          "roles"
+        ]
+      },
+      "delete": {
+        "description": "Delete an existing role for this organization.",
+        "operationId": "deleteOrganizationCameraRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an existing role for this organization.",
+        "tags": [
+          "camera",
+          "configure",
+          "roles"
+        ]
+      },
+      "put": {
+        "description": "Update an existing role in this organization.",
+        "operationId": "updateOrganizationCameraRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationCameraRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the new role. Must be unique."
+                },
+                "appliedOnDevices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Device tag."
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Device id."
+                      },
+                      "inNetworksWithTag": {
+                        "type": "string",
+                        "description": "Network tag scope"
+                      },
+                      "inNetworksWithId": {
+                        "type": "string",
+                        "description": "Network id scope"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Device tag on which this specified permission is applied."
+                },
+                "appliedOnNetworks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string",
+                        "description": "Network tag"
+                      },
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      },
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Network tag on which this specified permission is applied."
+                },
+                "appliedOrgWide": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "permissionScopeId": {
+                        "type": "string",
+                        "description": "Permission scope id"
+                      }
+                    },
+                    "required": [
+                      "permissionScopeId"
+                    ]
+                  },
+                  "description": "Permissions to be applied org wide."
+                }
+              },
+              "example": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "id": "",
+                    "permissionScopeId": "2"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+                "name": "Security_Guard",
+                "appliedOnDevices": [
+                  {
+                    "tag": "reception-desk",
+                    "id": "",
+                    "permissionScopeId": "1",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view_and_export"
+                  }
+                ],
+                "appliedOnNetworks": [
+                  {
+                    "tag": "",
+                    "id": "2568",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera-video",
+                    "permissionLevel": "view"
+                  }
+                ],
+                "appliedOrgWide": [
+                  {
+                    "tag": "building-a",
+                    "permissionScopeId": "2",
+                    "permissionScope": "camera_video",
+                    "permissionLevel": "view_live"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update an existing role in this organization.",
+        "tags": [
+          "camera",
+          "configure",
+          "roles"
+        ]
+      }
+    },
     "/organizations/{organizationId}/cellularGateway/uplink/statuses": {
       "get": {
         "description": "List the uplink status of every Meraki MG cellular gateway in the organization",
@@ -76924,6 +79129,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -77005,6 +79211,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -78723,6 +80930,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 365 days."
@@ -79276,6 +81484,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
@@ -79492,7 +81701,7 @@
     },
     "/organizations/{organizationId}/devices/powerModules/statuses/byDevice": {
       "get": {
-        "description": "List the power status information for devices in an organization. The data returned by this endpoint is updated every 5 minutes.",
+        "description": "List the most recent status information for power modules in rackmount MX and MS devices that support them. The data returned by this endpoint is updated every 5 minutes.",
         "operationId": "getOrganizationDevicesPowerModulesStatusesByDevice",
         "parameters": [
           {
@@ -79689,7 +81898,7 @@
             }
           }
         },
-        "summary": "List the power status information for devices in an organization",
+        "summary": "List the most recent status information for power modules in rackmount MX and MS devices that support them",
         "tags": [
           "organizations",
           "monitor",
@@ -80505,6 +82714,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 300,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 5 minutes. The default is 5 minutes."
@@ -82056,6 +84266,10 @@
                   "productType": {
                     "type": "string",
                     "description": "Product type of the device"
+                  },
+                  "countryCode": {
+                    "type": "string",
+                    "description": "Country/region code from device, network, or store order"
                   }
                 }
               }
@@ -82081,7 +84295,8 @@
                     "tag1",
                     "tag2"
                   ],
-                  "productType": "wireless"
+                  "productType": "wireless",
+                  "countryCode": "US"
                 }
               ]
             }
@@ -82166,6 +84381,10 @@
                 "productType": {
                   "type": "string",
                   "description": "Product type of the device"
+                },
+                "countryCode": {
+                  "type": "string",
+                  "description": "Country/region code from device, network, or store order"
                 }
               }
             },
@@ -82183,7 +84402,8 @@
                   "tag1",
                   "tag2"
                 ],
-                "productType": "wireless"
+                "productType": "wireless",
+                "countryCode": "US"
               }
             }
           }
@@ -87247,6 +89467,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
@@ -87523,7 +89744,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
             "type": "string",
@@ -88114,9 +90335,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 1500,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -88236,9 +90459,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 28800,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -88363,6 +90588,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -88478,9 +90704,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 28800,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -88624,9 +90852,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 28800,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -88717,9 +90947,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 28800,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -88837,9 +91069,11 @@
           {
             "type": "number",
             "format": "float",
+            "minimum": 1500,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 31 days. The default is 1 day."
           }
         ],
         "responses": {
@@ -89502,6 +91736,93 @@
         ]
       }
     },
+    "/organizations/{organizationId}/uplinksLossAndLatency": {
+      "get": {
+        "description": "Return the uplink loss and latency for every MX in the organization from at latest 2 minutes ago",
+        "operationId": "getOrganizationUplinksLossAndLatency",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 60 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 5 minutes after t0. The latest possible time that t1 can be is 2 minutes into the past."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "maximum": 300,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 5 minutes. The default is 5 minutes."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "cellular",
+              "wan1",
+              "wan2",
+              "wan3"
+            ],
+            "name": "uplink",
+            "in": "query",
+            "description": "Optional filter for a specific WAN uplink. Valid uplinks are wan1, wan2, wan3, cellular. Default will return all uplinks."
+          },
+          {
+            "type": "string",
+            "name": "ip",
+            "in": "query",
+            "description": "Optional filter for a specific destination IP. Default will return all destination IPs."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_12345",
+                  "serial": "Q2AB-CDEF-GHIJ",
+                  "uplink": "wan1",
+                  "ip": "8.8.8.8",
+                  "timeSeries": [
+                    {
+                      "ts": "2019-01-31T18:46:13Z",
+                      "lossPercent": 5.3,
+                      "latencyMs": 194.9
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return the uplink loss and latency for every MX in the organization from at latest 2 minutes ago",
+        "tags": [
+          "organizations",
+          "monitor",
+          "uplinksLossAndLatency"
+        ]
+      }
+    },
     "/organizations/{organizationId}/webhooks/alertTypes": {
       "get": {
         "description": "Return a list of alert types to be used with managing webhook alerts",
@@ -89618,6 +91939,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -89786,6 +92108,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 90 days. The default is 7 days."
@@ -89978,6 +92301,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 90 days. The default is 7 days."
@@ -90160,6 +92484,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -90366,6 +92691,7 @@
           {
             "type": "number",
             "format": "float",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -91051,6 +93377,9 @@
       "name": "inventory"
     },
     {
+      "name": "ipv6"
+    },
+    {
       "name": "l3FirewallRules"
     },
     {
@@ -91183,6 +93512,9 @@
       "name": "performanceHistory"
     },
     {
+      "name": "permissions"
+    },
+    {
       "name": "pii"
     },
     {
@@ -91265,6 +93597,9 @@
     },
     {
       "name": "rfProfiles"
+    },
+    {
+      "name": "roles"
     },
     {
       "name": "rollbacks"
@@ -91469,6 +93804,9 @@
     },
     {
       "name": "vpn"
+    },
+    {
+      "name": "vpnExclusions"
     },
     {
       "name": "vpnFirewallRules"
@@ -91989,6 +94327,42 @@
       "group": "Mqtt broker",
       "summary": "Update an MQTT broker",
       "resource": "/networks/{networkId}/mqttBrokers/{mqttBrokerId}",
+      "operation": "update"
+    },
+    {
+      "group": "Mr/actions/ap port profile",
+      "summary": "Create an AP port profile",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Mr/actions/ap port profile",
+      "summary": "Delete an AP port profile",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Mr/actions/ap port profile",
+      "summary": "Update the AP port profile by ID for this network",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles/{profileId}",
+      "operation": "update"
+    },
+    {
+      "group": "Mr/actions/ap port profile assign",
+      "summary": "Assign AP port profile to list of APs",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles",
+      "operation": "aps"
+    },
+    {
+      "group": "Mr/actions/ap port profile set",
+      "summary": "Set the AP port profile to be default for this network",
+      "resource": "/networks/{networkId}/wireless/ethernet/ports/profiles",
+      "operation": "default"
+    },
+    {
+      "group": "Mr/actions/wireless alternate management interface v6",
+      "summary": "Update alternate management interface IPv6 address",
+      "resource": "/devices/{serial}/wireless/alternateManagementInterface/ipv6",
       "operation": "update"
     },
     {
@@ -92553,6 +94927,12 @@
       "group": "Webhook template",
       "summary": "Update a webhook payload template for a network",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/actions/vpn exclusions",
+      "summary": "Update VPN exclusion rules for an MX network.",
+      "resource": "/networks/{networkId}/appliance/trafficShaping/vpnExclusions",
       "operation": "update"
     },
     {
