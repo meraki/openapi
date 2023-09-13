@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.37.0-beta.0",
+    "version": "1.37.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 September, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 September, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -23086,6 +23086,12 @@
             "description": "Filters clients based on the full match for the VLAN field."
           },
           {
+            "type": "string",
+            "name": "namedVlan",
+            "in": "query",
+            "description": "Filters clients based on the partial or full match for the named VLAN field."
+          },
+          {
             "type": "array",
             "items": {
               "type": "string",
@@ -24943,7 +24949,9 @@
                   "address": "1600 Pennsylvania Ave",
                   "notes": "My AP's note",
                   "lanIp": "1.2.3.4",
-                  "tags": " recently-added ",
+                  "tags": [
+                    "recently-added"
+                  ],
                   "networkId": "N_24329156",
                   "beaconIdParams": {
                     "uuid": "00000000-0000-0000-0000-000000000000",
@@ -40389,6 +40397,16 @@
                   },
                   "x-release-stage": "beta",
                   "description": "A hash of FIPS options applied to the Network"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Enables / disables Named VLANs on the Network."
+                    }
+                  },
+                  "description": "A hash of Named VLANs options applied to the Network."
                 }
               },
               "example": {
@@ -40404,6 +40422,9 @@
                   "enabled": false
                 },
                 "fips": {
+                  "enabled": true
+                },
+                "namedVlans": {
                   "enabled": true
                 }
               }
@@ -53336,6 +53357,870 @@
         ]
       }
     },
+    "/networks/{networkId}/vlanProfiles": {
+      "get": {
+        "description": "List VLAN profiles for a network",
+        "operationId": "getNetworkVlanProfiles",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "iname": {
+                    "type": "string",
+                    "description": "IName of the VLAN profile"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the profile, string length must be from 1 to 255 characters"
+                  },
+                  "isDefault": {
+                    "type": "boolean",
+                    "description": "Boolean indicating the default VLAN Profile for any device that does not have a profile explicitly assigned"
+                  },
+                  "vlanNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                        },
+                        "vlanId": {
+                          "type": "string",
+                          "description": "VLAN ID"
+                        }
+                      }
+                    },
+                    "description": "An array of named VLANs"
+                  },
+                  "vlanGroups": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                        },
+                        "vlanIds": {
+                          "type": "string",
+                          "description": "Comma-separated VLAN IDs or ID ranges"
+                        }
+                      }
+                    },
+                    "description": "An array of named VLANs"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "iname": "Profile1",
+                  "name": "My VLAN profile name",
+                  "isDefault": false,
+                  "vlanNames": [
+                    {
+                      "name": "named-1",
+                      "vlanId": "1"
+                    }
+                  ],
+                  "vlanGroups": [
+                    {
+                      "name": "named-group-1",
+                      "vlanIds": "2,5-7"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List VLAN profiles for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles"
+        ]
+      },
+      "post": {
+        "description": "Create a VLAN profile for a network",
+        "operationId": "createNetworkVlanProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkVlanProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the profile, string length must be from 1 to 255 characters"
+                },
+                "vlanNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "VLAN ID"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "vlanId"
+                    ]
+                  },
+                  "description": "An array of named VLANs"
+                },
+                "vlanGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanIds": {
+                        "type": "string",
+                        "description": "Comma-separated VLAN IDs or ID ranges"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "vlanIds"
+                    ]
+                  },
+                  "description": "An array of VLAN groups"
+                },
+                "iname": {
+                  "type": "string",
+                  "description": "IName of the profile"
+                }
+              },
+              "example": {
+                "name": "My VLAN profile name",
+                "vlanNames": [
+                  {
+                    "name": "named-1",
+                    "vlanId": "1"
+                  }
+                ],
+                "vlanGroups": [
+                  {
+                    "name": "named-group-1",
+                    "vlanIds": "2,5-7"
+                  }
+                ],
+                "iname": "Profile1"
+              },
+              "required": [
+                "name",
+                "vlanNames",
+                "vlanGroups",
+                "iname"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "iname": {
+                  "type": "string",
+                  "description": "IName of the VLAN profile"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the profile, string length must be from 1 to 255 characters"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Boolean indicating the default VLAN Profile for any device that does not have a profile explicitly assigned"
+                },
+                "vlanNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "VLAN ID"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                },
+                "vlanGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanIds": {
+                        "type": "string",
+                        "description": "Comma-separated VLAN IDs or ID ranges"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "iname": "Profile1",
+                "name": "My VLAN profile name",
+                "isDefault": false,
+                "vlanNames": [
+                  {
+                    "name": "named-1",
+                    "vlanId": "1"
+                  }
+                ],
+                "vlanGroups": [
+                  {
+                    "name": "named-group-1",
+                    "vlanIds": "2,5-7"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create a VLAN profile for a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles"
+        ]
+      }
+    },
+    "/networks/{networkId}/vlanProfiles/assignments/byDevice": {
+      "get": {
+        "description": "Get the assigned VLAN Profiles for devices in a network",
+        "operationId": "getNetworkVlanProfilesAssignmentsByDevice",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Optional parameter to filter devices by serials. All devices returned belong to serial numbers that are an exact match."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "switch",
+                "wireless"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "Optional parameter to filter devices by product types."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "stackIds",
+            "in": "query",
+            "description": "Optional parameter to filter devices by Switch Stack ids."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the Device"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "Serial of the Device"
+                  },
+                  "mac": {
+                    "type": "string",
+                    "description": "MAC address of the device"
+                  },
+                  "productType": {
+                    "type": "string",
+                    "description": "The product type"
+                  },
+                  "vlanProfile": {
+                    "type": "object",
+                    "properties": {
+                      "iname": {
+                        "type": "string",
+                        "description": "IName of the VLAN Profile"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN Profile"
+                      },
+                      "isDefault": {
+                        "type": "boolean",
+                        "description": "Is this VLAN profile the default for the network?"
+                      }
+                    },
+                    "description": "The VLAN Profile"
+                  },
+                  "stack": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the Switch Stack"
+                      }
+                    },
+                    "description": "The Switch Stack the device belongs to"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "My switch",
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:33:44:55",
+                  "productType": "switch",
+                  "vlanProfile": {
+                    "iname": "Profile1",
+                    "name": "My VLAN Profile",
+                    "isDefault": true
+                  },
+                  "stack": {
+                    "id": "1234"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Get the assigned VLAN Profiles for devices in a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles",
+          "assignments",
+          "byDevice"
+        ]
+      }
+    },
+    "/networks/{networkId}/vlanProfiles/assignments/reassign": {
+      "post": {
+        "description": "Update the assigned VLAN Profile for devices in a network",
+        "operationId": "reassignNetworkVlanProfilesAssignments",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "reassignNetworkVlanProfilesAssignments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vlanProfile": {
+                  "type": "object",
+                  "properties": {
+                    "iname": {
+                      "type": "string",
+                      "description": "IName of the VLAN Profile"
+                    }
+                  },
+                  "description": "The VLAN Profile"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of Device Serials"
+                },
+                "stackIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of Switch Stack IDs"
+                }
+              },
+              "example": {
+                "vlanProfile": {
+                  "iname": "Profile1"
+                },
+                "serials": [
+                  "Q234-ABCD-5678"
+                ],
+                "stackIds": [
+                  "1234"
+                ]
+              },
+              "required": [
+                "serials",
+                "stackIds"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vlanProfile": {
+                  "type": "object",
+                  "properties": {
+                    "iname": {
+                      "type": "string",
+                      "description": "IName of the VLAN Profile"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the VLAN Profile"
+                    }
+                  },
+                  "description": "The VLAN Profile"
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of Device Serials"
+                },
+                "stackIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of Switch Stack IDs"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "vlanProfile": {
+                  "iname": "Profile1",
+                  "name": "My VLAN Profile"
+                },
+                "serials": [
+                  "Q234-ABCD-5678"
+                ],
+                "stackIds": [
+                  "1234"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update the assigned VLAN Profile for devices in a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles",
+          "assignments"
+        ]
+      }
+    },
+    "/networks/{networkId}/vlanProfiles/{iname}": {
+      "get": {
+        "description": "Get an existing VLAN profile of a network",
+        "operationId": "getNetworkVlanProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "iname",
+            "in": "path",
+            "description": "Iname",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "iname": {
+                  "type": "string",
+                  "description": "IName of the VLAN profile"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the profile, string length must be from 1 to 255 characters"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Boolean indicating the default VLAN Profile for any device that does not have a profile explicitly assigned"
+                },
+                "vlanNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "VLAN ID"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                },
+                "vlanGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanIds": {
+                        "type": "string",
+                        "description": "Comma-separated VLAN IDs or ID ranges"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "iname": "Profile1",
+                "name": "My VLAN profile name",
+                "isDefault": false,
+                "vlanNames": [
+                  {
+                    "name": "named-1",
+                    "vlanId": "1"
+                  }
+                ],
+                "vlanGroups": [
+                  {
+                    "name": "named-group-1",
+                    "vlanIds": "2,5-7"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Get an existing VLAN profile of a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles"
+        ]
+      },
+      "put": {
+        "description": "Update an existing VLAN profile of a network",
+        "operationId": "updateNetworkVlanProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "iname",
+            "in": "path",
+            "description": "Iname",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkVlanProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the profile, string length must be from 1 to 255 characters"
+                },
+                "vlanNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "VLAN ID"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "vlanId"
+                    ]
+                  },
+                  "description": "An array of named VLANs"
+                },
+                "vlanGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanIds": {
+                        "type": "string",
+                        "description": "Comma-separated VLAN IDs or ID ranges"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "vlanIds"
+                    ]
+                  },
+                  "description": "An array of VLAN groups"
+                }
+              },
+              "example": {
+                "name": "My VLAN profile name",
+                "vlanNames": [
+                  {
+                    "name": "named-1",
+                    "vlanId": "1"
+                  }
+                ],
+                "vlanGroups": [
+                  {
+                    "name": "named-group-1",
+                    "vlanIds": "2,5-7"
+                  }
+                ]
+              },
+              "required": [
+                "name",
+                "vlanNames",
+                "vlanGroups"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "iname": {
+                  "type": "string",
+                  "description": "IName of the VLAN profile"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the profile, string length must be from 1 to 255 characters"
+                },
+                "isDefault": {
+                  "type": "boolean",
+                  "description": "Boolean indicating the default VLAN Profile for any device that does not have a profile explicitly assigned"
+                },
+                "vlanNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanId": {
+                        "type": "string",
+                        "description": "VLAN ID"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                },
+                "vlanGroups": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the VLAN, string length must be from 1 to 32 characters"
+                      },
+                      "vlanIds": {
+                        "type": "string",
+                        "description": "Comma-separated VLAN IDs or ID ranges"
+                      }
+                    }
+                  },
+                  "description": "An array of named VLANs"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "iname": "Profile1",
+                "name": "My VLAN profile name",
+                "isDefault": false,
+                "vlanNames": [
+                  {
+                    "name": "named-1",
+                    "vlanId": "1"
+                  }
+                ],
+                "vlanGroups": [
+                  {
+                    "name": "named-group-1",
+                    "vlanIds": "2,5-7"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update an existing VLAN profile of a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete a VLAN profile of a network",
+        "operationId": "deleteNetworkVlanProfile",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "iname",
+            "in": "path",
+            "description": "Iname",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a VLAN profile of a network",
+        "tags": [
+          "networks",
+          "configure",
+          "vlanProfiles"
+        ]
+      }
+    },
     "/networks/{networkId}/webhooks/httpServers": {
       "get": {
         "description": "List the HTTP servers for a network",
@@ -58472,6 +59357,241 @@
           "monitor",
           "meshStatuses"
         ]
+      }
+    },
+    "/networks/{networkId}/wireless/radio/autoRf": {
+      "put": {
+        "description": "Update the AutoRF settings for a wireless network",
+        "operationId": "updateNetworkWirelessRadioAutoRf",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkWirelessRadioAutoRf",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "busyHour": {
+                  "type": "object",
+                  "properties": {
+                    "schedule": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "automatic",
+                            "manual"
+                          ],
+                          "description": "The Busy Hour mode applied to the network when minimizeChanges is enabled. Must be one of 'automatic' or 'manual'. Automatic busy hour is only available on firmware versions >= MR 27.0"
+                        },
+                        "manual": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "description": "The hour that Manual Busy Hour starts each day, in the network time zone"
+                            },
+                            "end": {
+                              "type": "string",
+                              "description": "The hour that Manual Busy Hour ends each day, in the network time zone"
+                            }
+                          },
+                          "description": "Manual Busy Hour settings"
+                        }
+                      },
+                      "description": "Busy hour mode settings"
+                    },
+                    "minimizeChanges": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Toggle for enabling or disabling Busy Hour in a network"
+                        }
+                      },
+                      "description": "Minimize Changes settings"
+                    }
+                  },
+                  "description": "Busy Hour settings"
+                },
+                "channel": {
+                  "type": "object",
+                  "properties": {
+                    "avoidance": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Toggle for enabling or disabling channel avoidance in a network"
+                        }
+                      },
+                      "description": "Avoidance settings"
+                    }
+                  },
+                  "description": "Channel settings"
+                }
+              },
+              "example": {
+                "busyHour": {
+                  "schedule": {
+                    "mode": "automatic",
+                    "manual": {
+                      "start": "10:00",
+                      "end": "15:00"
+                    }
+                  },
+                  "minimizeChanges": {
+                    "enabled": true
+                  }
+                },
+                "channel": {
+                  "avoidance": {
+                    "enabled": true
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "networkId": {
+                  "type": "string",
+                  "description": "Id of the network"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of the network"
+                },
+                "timeZone": {
+                  "type": "string",
+                  "description": "Time zone of the network"
+                },
+                "busyHour": {
+                  "type": "object",
+                  "properties": {
+                    "schedule": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "automatic",
+                            "manual"
+                          ],
+                          "description": "The Busy Hour mode applied to the network when minimizeChanges is enabled. Must be one of 'automatic' or 'manual'. Automatic busy hour is only available on firmware versions >= MR 27.0"
+                        },
+                        "automatic": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "description": "The hour that Automatic Busy Hour starts each day, in the network time zone"
+                            },
+                            "end": {
+                              "type": "string",
+                              "description": "The hour that Automatic Busy Hour ends each day, in the network time zone"
+                            }
+                          },
+                          "description": "Automatic Busy Hour settings"
+                        },
+                        "manual": {
+                          "type": "object",
+                          "properties": {
+                            "start": {
+                              "type": "string",
+                              "description": "The hour that Manual Busy Hour starts each day, in the network time zone"
+                            },
+                            "end": {
+                              "type": "string",
+                              "description": "The hour that Manual Busy Hour ends each day, in the network time zone"
+                            }
+                          },
+                          "description": "Manual Busy Hour settings"
+                        }
+                      },
+                      "description": "Busy hour mode settings"
+                    },
+                    "minimizeChanges": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Toggle for enabling or disabling Busy Hour in a network"
+                        }
+                      },
+                      "description": "Minimize Changes settings"
+                    }
+                  },
+                  "description": "Busy Hour settings"
+                },
+                "channel": {
+                  "type": "object",
+                  "properties": {
+                    "avoidance": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Toggle for enabling or disabling channel avoidance in a network"
+                        }
+                      },
+                      "description": "Channel avoidance settings"
+                    }
+                  },
+                  "description": "Channel settings"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "networkId": "L_12345",
+                "name": "My Network",
+                "timeZone": "America/Los_Angeles",
+                "busyHour": {
+                  "schedule": {
+                    "mode": "automatic",
+                    "automatic": {
+                      "start": "08:00",
+                      "end": "17:00"
+                    },
+                    "manual": {
+                      "start": "10:00",
+                      "end": "15:00"
+                    }
+                  },
+                  "minimizeChanges": {
+                    "enabled": true
+                  }
+                },
+                "channel": {
+                  "avoidance": {
+                    "enabled": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update the AutoRF settings for a wireless network",
+        "tags": [
+          "wireless",
+          "configure",
+          "radio",
+          "autoRf"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/networks/{networkId}/wireless/rfProfiles": {
@@ -65699,6 +66819,26 @@
                 "ledLightsOn": {
                   "type": "boolean",
                   "description": "Toggle for enabling or disabling LED lights on all APs in the network (making them run dark)"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "poolDhcpMonitoring": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether or not devices using named VLAN pools should remove dirty VLANs from the pool, thereby preventing clients from being assigned to VLANs where they would be unable to obtain an IP address via DHCP."
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "description": "The duration in minutes that devices will refrain from using dirty VLANs before adding them back to the pool."
+                        }
+                      },
+                      "description": "Named VLAN Pool DHCP Monitoring settings."
+                    }
+                  },
+                  "description": "Named VLAN settings for wireless networks."
                 }
               },
               "example": {
@@ -65706,7 +66846,13 @@
                 "ipv6BridgeEnabled": false,
                 "locationAnalyticsEnabled": false,
                 "upgradeStrategy": "minimizeUpgradeTime",
-                "ledLightsOn": false
+                "ledLightsOn": false,
+                "namedVlans": {
+                  "poolDhcpMonitoring": {
+                    "enabled": true,
+                    "duration": 5
+                  }
+                }
               }
             }
           }
@@ -67206,6 +68352,66 @@
                     }
                   },
                   "description": "The SpeedBurst setting for this SSID'"
+                },
+                "namedVlans": {
+                  "type": "object",
+                  "properties": {
+                    "tagging": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether or not traffic should be directed to use specific VLAN names."
+                        },
+                        "defaultVlanName": {
+                          "type": "string",
+                          "description": "The default VLAN name used to tag traffic in the absence of a matching AP tag."
+                        },
+                        "byApTags": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "List of AP tags."
+                              },
+                              "vlanName": {
+                                "type": "string",
+                                "description": "VLAN name that will be used to tag traffic."
+                              }
+                            }
+                          },
+                          "description": "The list of AP tags and VLAN names used for named VLAN tagging. If an AP has a tag matching one in the list, then traffic on this SSID will be directed to use the VLAN name associated to the tag."
+                        }
+                      },
+                      "description": "VLAN tagging settings. This param is only valid when ipAssignmentMode is 'Bridge mode' or 'Layer 3 roaming'."
+                    },
+                    "radius": {
+                      "type": "object",
+                      "properties": {
+                        "guestVlan": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not RADIUS guest named VLAN is enabled."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "RADIUS guest VLAN name."
+                            }
+                          },
+                          "description": "Guest VLAN settings. Used to direct traffic to a guest VLAN when none of the RADIUS servers are reachable or a client receives access-reject from the RADIUS server."
+                        }
+                      },
+                      "description": "RADIUS settings. This param is only valid when authMode is 'open-with-radius' and ipAssignmentMode is not 'NAT mode'."
+                    }
+                  },
+                  "description": "Named VLAN settings."
                 }
               },
               "example": {
@@ -67362,6 +68568,27 @@
                 },
                 "speedBurst": {
                   "enabled": true
+                },
+                "namedVlans": {
+                  "tagging": {
+                    "enabled": true,
+                    "defaultVlanName": "My VLAN",
+                    "byApTags": [
+                      {
+                        "tags": [
+                          "tag1",
+                          "tag2"
+                        ],
+                        "vlanName": "My VLAN"
+                      }
+                    ]
+                  },
+                  "radius": {
+                    "guestVlan": {
+                      "enabled": true,
+                      "name": "Guest VLAN"
+                    }
+                  }
                 }
               }
             }
@@ -87603,6 +88830,124 @@
       }
     },
     "/organizations/{organizationId}/insight/webApps/{customCounterSetRuleId}": {
+      "put": {
+        "description": "Update a custom web application for Insight to be able to track",
+        "operationId": "updateOrganizationInsightWebApp",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "customCounterSetRuleId",
+            "in": "path",
+            "description": "Custom counter set rule ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationInsightWebApp",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the Web Application"
+                },
+                "hostname": {
+                  "type": "string",
+                  "description": "The hostname of Web Application"
+                }
+              },
+              "example": {
+                "name": "Meraki HTTPS",
+                "hostname": "exampled.com"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "counterSetRuleId": {
+                  "type": "string",
+                  "description": "Counter set rule id"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Web Application name"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Category type for web application"
+                },
+                "thresholds": {
+                  "type": "object",
+                  "properties": {
+                    "goodput": {
+                      "type": "string",
+                      "description": "App goodput"
+                    },
+                    "responseDelay": {
+                      "type": "string",
+                      "description": "App response delay"
+                    }
+                  },
+                  "description": "Default thresholds for each application"
+                },
+                "expression": {
+                  "type": "string",
+                  "description": "Http hostname for tracking web app"
+                },
+                "signature": {
+                  "type": "object",
+                  "properties": {
+                    "signatureType": {
+                      "type": "string",
+                      "description": "Signature type"
+                    },
+                    "host": {
+                      "type": "string",
+                      "description": "Custom host name"
+                    }
+                  },
+                  "description": "If custom host or port is specified, this field populates"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "counterSetRuleId": "12345",
+                "name": "Meraki HTTPS",
+                "category": "Remote monitoring & management",
+                "thresholds": {
+                  "goodput": "20000",
+                  "responseDelay": "3000"
+                },
+                "expression": "http_host[*.example.com] or http_host",
+                "signature": {
+                  "signatureType": "custom_host",
+                  "host": "exampled.com"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update a custom web application for Insight to be able to track",
+        "tags": [
+          "insight",
+          "configure",
+          "webApps"
+        ],
+        "x-release-stage": "beta"
+      },
       "delete": {
         "description": "Delete a custom web application by counter set rule id.",
         "operationId": "deleteOrganizationInsightWebApp",
@@ -95026,6 +96371,484 @@
         "x-release-stage": "beta"
       }
     },
+    "/organizations/{organizationId}/secureConnect/remoteAccessLogsExports": {
+      "get": {
+        "description": "Provides a list of remote access logs exports for an Organization",
+        "operationId": "getOrganizationSecureConnectRemoteAccessLogsExports",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "complete",
+              "continue",
+              "error",
+              "in_progress",
+              "new",
+              "zip"
+            ],
+            "name": "status",
+            "in": "query",
+            "description": "Filter exports by status."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Export ID"
+                      },
+                      "from": {
+                        "type": "string",
+                        "description": "Export logs from timestamp"
+                      },
+                      "to": {
+                        "type": "string",
+                        "description": "Export logs to timestamp"
+                      },
+                      "userEmail": {
+                        "type": "string",
+                        "description": "Export user email"
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Export status"
+                      },
+                      "metadata": {
+                        "type": "object",
+                        "properties": {
+                          "fileCount": {
+                            "type": "integer",
+                            "description": "File count"
+                          },
+                          "logCount": {
+                            "type": "integer",
+                            "description": "Log count"
+                          },
+                          "currentFileLogCount": {
+                            "type": "integer",
+                            "description": "Current file count"
+                          },
+                          "generatorCount": {
+                            "type": "integer",
+                            "description": "Generator count"
+                          },
+                          "limitReached": {
+                            "type": "boolean",
+                            "description": "Limit reached"
+                          },
+                          "startedAt": {
+                            "type": "string",
+                            "description": "Started at"
+                          },
+                          "endedAt": {
+                            "type": "string",
+                            "description": "Ended at"
+                          },
+                          "duration": {
+                            "type": "integer",
+                            "description": "Duration"
+                          }
+                        },
+                        "description": "Export metadata"
+                      }
+                    }
+                  },
+                  "description": "List of remote access log exports"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total count of exports"
+                    }
+                  },
+                  "description": "Meta data details about result"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "data": [
+                  {
+                    "id": "123",
+                    "from": "2023-05-16 04:23:43 UTC",
+                    "to": "2023-06-14 04:23:52 UTC",
+                    "userEmail": "joe@meraki.net",
+                    "status": "new",
+                    "metadata": {
+                      "fileCount": 0,
+                      "logCount": 0,
+                      "currentFileLogCount": 0,
+                      "generatorCount": 0,
+                      "limitReached": false,
+                      "startedAt": "2023-05-15 21:23:43.388597",
+                      "endedAt": "2023-05-15 21:23:43.388597",
+                      "duration": 60
+                    }
+                  }
+                ],
+                "meta": {
+                  "total": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Provides a list of remote access logs exports for an Organization",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "remoteAccessLogsExports"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Creates a export for a provided timestamp interval.",
+        "operationId": "createOrganizationSecureConnectRemoteAccessLogsExport",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationSecureConnectRemoteAccessLogsExport",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "integer",
+                  "description": "The start of the interval, must be within the past 30 days."
+                },
+                "to": {
+                  "type": "integer",
+                  "description": "The end of the interval, must not exceed the current date."
+                }
+              },
+              "example": {
+                "from": 1684211023,
+                "to": 1686716632
+              },
+              "required": [
+                "from",
+                "to"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Export ID"
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Export logs from timestamp"
+                },
+                "to": {
+                  "type": "string",
+                  "description": "Export logs to timestamp"
+                },
+                "userEmail": {
+                  "type": "string",
+                  "description": "Export user email"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Export status"
+                },
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "fileCount": {
+                      "type": "integer",
+                      "description": "File count"
+                    },
+                    "logCount": {
+                      "type": "integer",
+                      "description": "Log count"
+                    },
+                    "currentFileLogCount": {
+                      "type": "integer",
+                      "description": "Current file count"
+                    },
+                    "generatorCount": {
+                      "type": "integer",
+                      "description": "Generator count"
+                    },
+                    "limitReached": {
+                      "type": "boolean",
+                      "description": "Limit reached"
+                    },
+                    "startedAt": {
+                      "type": "string",
+                      "description": "Started at"
+                    },
+                    "endedAt": {
+                      "type": "string",
+                      "description": "Ended at"
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "description": "Duration"
+                    }
+                  },
+                  "description": "Export metadata"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "from": "2023-05-16 04:23:43 UTC",
+                "to": "2023-06-14 04:23:52 UTC",
+                "userEmail": "joe@meraki.net",
+                "status": "new",
+                "metadata": {
+                  "fileCount": 0,
+                  "logCount": 0,
+                  "currentFileLogCount": 0,
+                  "generatorCount": 0,
+                  "limitReached": false,
+                  "startedAt": "2023-05-15 21:23:43.388597",
+                  "endedAt": "2023-05-15 21:23:43.388597",
+                  "duration": 60
+                }
+              }
+            }
+          }
+        },
+        "summary": "Creates a export for a provided timestamp interval.",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "remoteAccessLogsExports"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/secureConnect/remoteAccessLogsExports/download": {
+      "get": {
+        "description": "Redirects to the download link of the completed export.",
+        "operationId": "getOrganizationSecureConnectRemoteAccessLogsExportsDownload",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "description": "Export ID."
+          },
+          {
+            "type": "string",
+            "name": "fileType",
+            "in": "query",
+            "required": true,
+            "description": "Export download file type."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "link": {
+                  "type": "string",
+                  "description": "Export download link"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "link": "download"
+              }
+            }
+          }
+        },
+        "summary": "Redirects to the download link of the completed export.",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "remoteAccessLogsExports",
+          "download"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/secureConnect/remoteAccessLogsExports/{id}": {
+      "get": {
+        "description": "Return the details of a specific remote access logs export",
+        "operationId": "getOrganizationSecureConnectRemoteAccessLogsExport",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Export ID"
+                },
+                "from": {
+                  "type": "string",
+                  "description": "Export logs from timestamp"
+                },
+                "to": {
+                  "type": "string",
+                  "description": "Export logs to timestamp"
+                },
+                "userEmail": {
+                  "type": "string",
+                  "description": "Export user email"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Export status"
+                },
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "fileCount": {
+                      "type": "integer",
+                      "description": "File count"
+                    },
+                    "logCount": {
+                      "type": "integer",
+                      "description": "Log count"
+                    },
+                    "currentFileLogCount": {
+                      "type": "integer",
+                      "description": "Current file count"
+                    },
+                    "generatorCount": {
+                      "type": "integer",
+                      "description": "Generator count"
+                    },
+                    "limitReached": {
+                      "type": "boolean",
+                      "description": "Limit reached"
+                    },
+                    "startedAt": {
+                      "type": "string",
+                      "description": "Started at"
+                    },
+                    "endedAt": {
+                      "type": "string",
+                      "description": "Ended at"
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "description": "Duration"
+                    }
+                  },
+                  "description": "Export metadata"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "123",
+                "from": "2023-05-16 04:23:43 UTC",
+                "to": "2023-06-14 04:23:52 UTC",
+                "userEmail": "joe@meraki.net",
+                "status": "new",
+                "metadata": {
+                  "fileCount": 0,
+                  "logCount": 0,
+                  "currentFileLogCount": 0,
+                  "generatorCount": 0,
+                  "limitReached": false,
+                  "startedAt": "2023-05-15 21:23:43.388597",
+                  "endedAt": "2023-05-15 21:23:43.388597",
+                  "duration": 60
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the details of a specific remote access logs export",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "remoteAccessLogsExports"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/sensor/readings/history": {
       "get": {
         "description": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
@@ -100447,6 +102270,337 @@
         "x-release-stage": "beta"
       }
     },
+    "/organizations/{organizationId}/wireless/autoRf/byNetwork": {
+      "get": {
+        "description": "List the AutoRF settings of an organization by network",
+        "operationId": "getOrganizationWirelessAutoRfByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter results by network."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "Id of the network"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the network"
+                  },
+                  "timeZone": {
+                    "type": "string",
+                    "description": "Time zone of the network"
+                  },
+                  "busyHour": {
+                    "type": "object",
+                    "properties": {
+                      "schedule": {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "enum": [
+                              "automatic",
+                              "manual"
+                            ],
+                            "description": "The Busy Hour mode applied to the network when minimizeChanges is enabled. Must be one of 'automatic' or 'manual'. Automatic busy hour is only available on firmware versions >= MR 27.0"
+                          },
+                          "automatic": {
+                            "type": "object",
+                            "properties": {
+                              "start": {
+                                "type": "string",
+                                "description": "The hour that Automatic Busy Hour starts each day, in the network time zone"
+                              },
+                              "end": {
+                                "type": "string",
+                                "description": "The hour that Automatic Busy Hour ends each day, in the network time zone"
+                              }
+                            },
+                            "description": "Automatic Busy Hour settings"
+                          },
+                          "manual": {
+                            "type": "object",
+                            "properties": {
+                              "start": {
+                                "type": "string",
+                                "description": "The hour that Manual Busy Hour starts each day, in the network time zone"
+                              },
+                              "end": {
+                                "type": "string",
+                                "description": "The hour that Manual Busy Hour ends each day, in the network time zone"
+                              }
+                            },
+                            "description": "Manual Busy Hour settings"
+                          }
+                        },
+                        "description": "Busy hour mode settings"
+                      },
+                      "minimizeChanges": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Toggle for enabling or disabling Busy Hour in a network"
+                          }
+                        },
+                        "description": "Minimize Changes settings"
+                      }
+                    },
+                    "description": "Busy Hour settings"
+                  },
+                  "channel": {
+                    "type": "object",
+                    "properties": {
+                      "avoidance": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Toggle for enabling or disabling channel avoidance in a network"
+                          }
+                        },
+                        "description": "Channel avoidance settings"
+                      }
+                    },
+                    "description": "Channel settings"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "L_12345",
+                  "name": "My Network",
+                  "timeZone": "America/Los_Angeles",
+                  "busyHour": {
+                    "schedule": {
+                      "mode": "automatic",
+                      "automatic": {
+                        "start": "08:00",
+                        "end": "17:00"
+                      },
+                      "manual": {
+                        "start": "10:00",
+                        "end": "15:00"
+                      }
+                    },
+                    "minimizeChanges": {
+                      "enabled": true
+                    }
+                  },
+                  "channel": {
+                    "avoidance": {
+                      "enabled": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the AutoRF settings of an organization by network",
+        "tags": [
+          "wireless",
+          "configure",
+          "autoRf",
+          "byNetwork"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/wireless/autoRf/channels/planning/activities": {
+      "get": {
+        "description": "List the channel planning activities of an organization",
+        "operationId": "getOrganizationWirelessAutoRfChannelsPlanningActivities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter results by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "deviceSerials",
+            "in": "query",
+            "description": "Optional parameter to filter results by device serial."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp of when the channel planning activity was triggered"
+                  },
+                  "endsAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp of when the channel planning activity expires"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "avoid",
+                      "monitor"
+                    ],
+                    "description": "The type of channel planning activity that occured"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "dfs",
+                      "jammed"
+                    ],
+                    "description": "The event that caused the channel planning activity"
+                  },
+                  "band": {
+                    "type": "string",
+                    "description": "The band over which the channel planning activity occurred"
+                  },
+                  "channel": {
+                    "type": "integer",
+                    "description": "The channel where the channel planning activity occured"
+                  },
+                  "severity": {
+                    "type": "integer",
+                    "description": "The severity of the channel planning activity that occured (1 = most severe, 6 = least severe)"
+                  },
+                  "network": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Network id"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of custom tags for the network."
+                      }
+                    },
+                    "description": "Network data"
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Device name"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Device serial number"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "Device mac address"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of custom tags for the device."
+                      }
+                    },
+                    "description": "Device data"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startedAt": "2018-02-11T00:00:00Z",
+                  "endsAt": "2018-05-12T00:00:00Z",
+                  "type": "avoid",
+                  "reason": "dfs",
+                  "band": "5 Ghz",
+                  "channel": 44,
+                  "severity": 6,
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  },
+                  "device": {
+                    "name": "My AP",
+                    "serial": "Q234-ABCD-5678",
+                    "mac": "00:11:22:33:44:55",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the channel planning activities of an organization",
+        "tags": [
+          "wireless",
+          "configure",
+          "autoRf",
+          "channels",
+          "planning",
+          "activities"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/wireless/devices/channelUtilization/byDevice": {
       "get": {
         "description": "Get average channel utilization for all bands in a network, split by AP",
@@ -102090,6 +104244,9 @@
       "name": "actionBatches"
     },
     {
+      "name": "activities"
+    },
+    {
       "name": "adaptivePolicy"
     },
     {
@@ -102142,6 +104299,9 @@
     },
     {
       "name": "authenticationToken"
+    },
+    {
+      "name": "autoRf"
     },
     {
       "name": "availabilities"
@@ -102226,6 +104386,9 @@
     },
     {
       "name": "channelUtilizationHistory"
+    },
+    {
+      "name": "channels"
     },
     {
       "name": "claim"
@@ -102313,6 +104476,9 @@
     },
     {
       "name": "dhcpServerPolicy"
+    },
+    {
+      "name": "download"
     },
     {
       "name": "dscpTaggingOptions"
@@ -102576,6 +104742,9 @@
       "name": "pingDevice"
     },
     {
+      "name": "planning"
+    },
+    {
       "name": "policies"
     },
     {
@@ -102646,6 +104815,9 @@
     },
     {
       "name": "remoteAccessLog"
+    },
+    {
+      "name": "remoteAccessLogsExports"
     },
     {
       "name": "rendezvousPoints"
@@ -102868,6 +105040,9 @@
     },
     {
       "name": "vlanAssignments"
+    },
+    {
+      "name": "vlanProfiles"
     },
     {
       "name": "vlans"
@@ -103262,6 +105437,12 @@
       "operation": "destroy"
     },
     {
+      "group": "Insight/actions/web app",
+      "summary": "Update a custom web application for Insight to be able to track",
+      "resource": "/organizations/{organizationId}/insight/webApps/{customCounterSetRuleId}",
+      "operation": "update"
+    },
+    {
       "group": "L3 firewall",
       "summary": "Update the L3 firewall rules of an SSID on an MR network",
       "resource": "/networks/{networkId}/wireless/ssids/{number}/firewall/l3FirewallRules",
@@ -103481,6 +105662,12 @@
       "group": "Mr/actions/wireless alternate management interface v6",
       "summary": "Update alternate management interface IPv6 address",
       "resource": "/devices/{serial}/wireless/alternateManagementInterface/ipv6",
+      "operation": "update"
+    },
+    {
+      "group": "Mr/speedy/actions/auto RF",
+      "summary": "Update the AutoRF settings for a wireless network",
+      "resource": "/networks/{networkId}/wireless/radio/autoRf",
       "operation": "update"
     },
     {
@@ -104022,6 +106209,18 @@
       "summary": "Update a VLAN",
       "resource": "/networks/{networkId}/appliance/vlans/{vlanId}",
       "operation": "update"
+    },
+    {
+      "group": "VLAN profile",
+      "summary": "Create a VLAN profile for a network",
+      "resource": "/networks/{networkId}/vlanProfiles",
+      "operation": "create"
+    },
+    {
+      "group": "VLAN profile",
+      "summary": "Delete a VLAN profile of a network",
+      "resource": "/networks/{networkId}/vlanProfiles/{iname}",
+      "operation": "destroy"
     },
     {
       "group": "Vmx",
