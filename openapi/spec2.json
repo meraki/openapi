@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.37.0-beta.1",
+    "version": "1.37.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 13 September, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 20 September, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -87606,7 +87606,7 @@
             },
             "name": "status",
             "in": "query",
-            "description": "The status of an upgrade "
+            "description": "Optional parameter to filter the upgrade by status."
           },
           {
             "type": "array",
@@ -87615,7 +87615,7 @@
             },
             "name": "productTypes",
             "in": "query",
-            "description": "The product type in a given upgrade ID"
+            "description": "Optional parameter to filter the upgrade by product type."
           }
         ],
         "responses": {
@@ -87676,6 +87676,10 @@
                         "type": "string",
                         "description": "Firmware version short name"
                       },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware name"
+                      },
                       "releaseType": {
                         "type": "string",
                         "description": "Release type of the firmware version"
@@ -87699,6 +87703,10 @@
                         "type": "string",
                         "description": "Firmware version short name"
                       },
+                      "firmware": {
+                        "type": "string",
+                        "description": "Firmware name"
+                      },
                       "releaseType": {
                         "type": "string",
                         "description": "Release type of the firmware version"
@@ -87717,8 +87725,8 @@
             "examples": {
               "application/json": [
                 {
-                  "upgradeId": "Event ID Number",
-                  "upgradeBatchId": "Batch ID Number",
+                  "upgradeId": "1234",
+                  "upgradeBatchId": "5678",
                   "network": {
                     "id": "L_1738",
                     "name": "Minions"
@@ -87730,12 +87738,14 @@
                   "toVersion": {
                     "id": "2888",
                     "shortName": "MR 11.2.1",
+                    "firmware": "wireless-11-2-1",
                     "releaseType": "stable",
                     "releaseDate": "2022-03-17T17:22:52Z"
                   },
                   "fromVersion": {
                     "id": "2887",
                     "shortName": "MR 11.2.1",
+                    "firmware": "wireless-11-2-1",
                     "releaseType": "stable",
                     "releaseDate": "2022-03-17T17:22:52Z"
                   }
@@ -99168,6 +99178,63 @@
         ]
       }
     },
+    "/organizations/{organizationId}/support/salesRepresentatives": {
+      "get": {
+        "description": "Returns the organization's sales representatives",
+        "operationId": "getOrganizationSupportSalesRepresentatives",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "Phone number"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "name": "Miles Meraki",
+                  "email": "miles@meraki.com",
+                  "phone": "+15555555555"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns the organization's sales representatives",
+        "tags": [
+          "organizations",
+          "monitor",
+          "support",
+          "salesRepresentatives"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/switch/devices/clone": {
       "post": {
         "description": "Clone port-level and some switch-level configuration settings from a source switch to one or more target switches. Cloned settings include: Aggregation Groups, Power Settings, Multicast Settings, MTU Configuration, STP Bridge priority, Port Mirroring",
@@ -104853,6 +104920,9 @@
       "name": "rules"
     },
     {
+      "name": "salesRepresentatives"
+    },
+    {
       "name": "saml"
     },
     {
@@ -104959,6 +105029,9 @@
     },
     {
       "name": "summary"
+    },
+    {
+      "name": "support"
     },
     {
       "name": "switches"
