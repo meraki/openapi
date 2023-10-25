@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.38.0-beta.2",
+    "version": "1.38.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 October, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 25 October, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -43089,7 +43089,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all the profiles in the network",
+        "description": "List all profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -43104,35 +43104,53 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "ID of a profile."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of a profile."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of a profile."
+                  },
+                  "scope": {
+                    "type": "string",
+                    "description": "Scope of a profile."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tags of a profile."
+                  }
+                }
+              }
             },
             "examples": {
-              "application/json": {
-                "profiles": [
-                  {
-                    "id": "1234",
-                    "payload_display_name": "API Profile",
-                    "payload_identifier": "com.meraki.sm.1",
-                    "payload_description": "API docs test",
-                    "scope": "some",
-                    "tags": [
-                      "tag1",
-                      "tag2"
-                    ],
-                    "wifis": [
-
-                    ],
-                    "payload_types": [
-                      "Privacy",
-                      "Document"
-                    ]
-                  }
-                ]
-              }
+              "application/json": [
+                {
+                  "id": "1284392014819",
+                  "name": "My profile",
+                  "description": "Some profile description",
+                  "scope": "withAny",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ]
+                }
+              ]
             }
           }
         },
-        "summary": "List all the profiles in the network",
+        "summary": "List all profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -63485,7 +63503,7 @@
                   "x-release-stage": "beta",
                   "description": "Set this profile as the default indoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default"
                 },
-                "isOutdoorDefaut": {
+                "isOutdoorDefault": {
                   "type": "boolean",
                   "x-release-stage": "beta",
                   "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor',   then a new profile will be created from the respective ID and set as the default"
@@ -64360,7 +64378,7 @@
               "example": {
                 "name": "1234",
                 "isIndoorDefault": true,
-                "isOutdoorDefaut": true,
+                "isOutdoorDefault": true,
                 "clientBalancingEnabled": true,
                 "minBitrateType": "band",
                 "bandSelectionType": "ap",
@@ -89862,6 +89880,23 @@
                   "countryCode": {
                     "type": "string",
                     "description": "Country/region code from device, network, or store order"
+                  },
+                  "details": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Additional property name"
+                        },
+                        "value": {
+                          "type": "string",
+                          "description": "Additional property value"
+                        }
+                      }
+                    },
+                    "description": "Additional device information"
                   }
                 }
               }
@@ -89888,7 +89923,13 @@
                     "tag2"
                   ],
                   "productType": "wireless",
-                  "countryCode": "US"
+                  "countryCode": "US",
+                  "details": [
+                    {
+                      "name": "Catalyst serial",
+                      "value": "FOC2234432B"
+                    }
+                  ]
                 }
               ]
             }
@@ -90419,6 +90460,23 @@
                 "countryCode": {
                   "type": "string",
                   "description": "Country/region code from device, network, or store order"
+                },
+                "details": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Additional property name"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Additional property value"
+                      }
+                    }
+                  },
+                  "description": "Additional device information"
                 }
               }
             },
@@ -90437,7 +90495,13 @@
                   "tag2"
                 ],
                 "productType": "wireless",
-                "countryCode": "US"
+                "countryCode": "US",
+                "details": [
+                  {
+                    "name": "Catalyst serial",
+                    "value": "FOC2234432B"
+                  }
+                ]
               }
             }
           }
@@ -97127,6 +97191,211 @@
           "secureConnect",
           "configure",
           "privateApplications"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/secureConnect/publicApplications": {
+      "get": {
+        "description": "Provides a list of public applications for an Organization.",
+        "operationId": "getOrganizationSecureConnectPublicApplications",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "nameIncludes",
+            "in": "query",
+            "description": "Optional parameter to filter the public applications list by application name, case is ignored"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "high",
+                "low",
+                "medium",
+                "veryHigh",
+                "veryLow"
+              ]
+            },
+            "name": "risks",
+            "in": "query",
+            "description": "List of risk levels to filter by"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "categories",
+            "in": "query",
+            "description": "List of categories to filter by"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "iaas",
+                "paas",
+                "saas"
+              ]
+            },
+            "name": "appTypes",
+            "in": "query",
+            "description": "List of app types to filter by"
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "maximum": 2678400,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "appType",
+              "category",
+              "lastDetected",
+              "name",
+              "risk"
+            ],
+            "name": "sortBy",
+            "in": "query",
+            "description": "Optional parameter to specify the field used to sort objects, by default, applications are returned by lastDetected desc"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Optional parameter to specify the sort order. Default value is desc."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID for Public Applications"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of Application. This is required."
+                      },
+                      "lastDetected": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time at which we last saw activity from this Public Application"
+                      },
+                      "risk": {
+                        "type": "string",
+                        "description": "Risk score associated with Public Application"
+                      },
+                      "category": {
+                        "type": "string",
+                        "description": "Category associated with Public Application"
+                      },
+                      "appType": {
+                        "type": "string",
+                        "description": "App type associated with Public Application"
+                      }
+                    }
+                  },
+                  "description": "List of Public Applications"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total count of Public Applications"
+                    }
+                  },
+                  "description": "Meta data details about result"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "id": "ABCDEFG",
+                    "name": "Snapcraft",
+                    "lastDetected": "2021-12-13T16:07:07.222Z",
+                    "risk": "medium",
+                    "category": "Application Development and Testing",
+                    "appType": "paas"
+                  }
+                ],
+                "meta": {
+                  "total": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Provides a list of public applications for an Organization.",
+        "tags": [
+          "secureConnect",
+          "configure",
+          "publicApplications"
         ],
         "x-release-stage": "beta"
       }
@@ -105934,6 +106203,9 @@
     },
     {
       "name": "provisioning"
+    },
+    {
+      "name": "publicApplications"
     },
     {
       "name": "qosRules"
