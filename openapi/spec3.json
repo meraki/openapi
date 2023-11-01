@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 04 October, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 01 November, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.38.0"
+    "version": "1.39.0"
   },
   "servers": [
     {
@@ -3191,7 +3191,8 @@
                   "type": "object"
                 },
                 "example": {
-                  "url": "https://nxx.meraki.com/office-cameras/n/bs0a1k/manage/nodes/new_list/29048243992402?timestamp=1535732570077"
+                  "url": "https://nxx.meraki.com/office-cameras/n/bs0a1k/manage/nodes/new_list/29048243992402?timestamp=1535732570077",
+                  "visionUrl": "https://vision.meraki.com/n/6482158978508419/cameras/29048243992402?ts=1535732570077"
                 }
               }
             }
@@ -5055,52 +5056,47 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "livestream": {
-                        "type": "object",
-                        "properties": {
-                          "relatedDevices": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "serial": {
-                                  "type": "string",
-                                  "description": "The serial of the related device"
-                                },
-                                "productType": {
-                                  "type": "string",
-                                  "enum": [
-                                    "camera",
-                                    "sensor"
-                                  ],
-                                  "description": "The product type of the related device"
-                                }
-                              }
-                            },
-                            "description": "An array of the related devices for the role"
-                          }
-                        },
-                        "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
-                      }
-                    }
-                  }
-                },
-                "example": [
-                  {
+                  "properties": {
                     "livestream": {
-                      "relatedDevices": [
-                        {
-                          "serial": "Q234-ABCD-5678",
-                          "productType": "camera"
+                      "type": "object",
+                      "properties": {
+                        "relatedDevices": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "serial": {
+                                "type": "string",
+                                "description": "The serial of the related device"
+                              },
+                              "productType": {
+                                "type": "string",
+                                "enum": [
+                                  "camera",
+                                  "sensor"
+                                ],
+                                "description": "The product type of the related device"
+                              }
+                            }
+                          },
+                          "description": "An array of the related devices for the role"
                         }
-                      ]
+                      },
+                      "description": "A role defined between an MT sensor and an MV camera that adds the camera's livestream to the sensor's details page. Snapshots from the camera will also appear in alert notifications that the sensor triggers."
                     }
+                  },
+                  "type": "object"
+                },
+                "example": {
+                  "livestream": {
+                    "relatedDevices": [
+                      {
+                        "serial": "Q234-ABCD-5678",
+                        "productType": "camera"
+                      }
+                    ]
                   }
-                ]
+                }
               }
             }
           }
@@ -11134,6 +11130,53 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "comment": {
+                            "type": "string",
+                            "description": "Description of the rule (optional)"
+                          },
+                          "policy": {
+                            "type": "string",
+                            "description": "'allow' or 'deny' traffic specified by this rule"
+                          },
+                          "protocol": {
+                            "type": "string",
+                            "description": "The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any')"
+                          },
+                          "srcPort": {
+                            "type": "string",
+                            "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
+                          },
+                          "srcCidr": {
+                            "type": "string",
+                            "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
+                          },
+                          "destPort": {
+                            "type": "string",
+                            "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
+                          },
+                          "destCidr": {
+                            "type": "string",
+                            "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
+                          },
+                          "syslogEnabled": {
+                            "type": "boolean",
+                            "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
+                          }
+                        }
+                      },
+                      "description": "An ordered array of the firewall rules (not including the default rule)"
+                    },
+                    "syslogDefaultRule": {
+                      "type": "boolean",
+                      "description": "Log the special default rule (boolean value - enable only if you've configured a syslog server) (optional)"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -11142,14 +11185,14 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": "443",
-                      "destCidr": "192.168.1.0/24",
                       "srcPort": "Any",
                       "srcCidr": "Any",
+                      "destPort": "443",
+                      "destCidr": "192.168.1.0/24",
                       "syslogEnabled": false
                     }
                   ],
-                  "syslogDefaultRule": true
+                  "syslogDefaultRule": false
                 }
               }
             }
@@ -11252,13 +11295,14 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": "443",
-                      "destCidr": "192.168.1.0/24",
                       "srcPort": "Any",
                       "srcCidr": "Any",
+                      "destPort": "443",
+                      "destCidr": "192.168.1.0/24",
                       "syslogEnabled": false
                     }
-                  ]
+                  ],
+                  "syslogDefaultRule": true
                 }
               }
             }
@@ -11271,6 +11315,53 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "comment": {
+                            "type": "string",
+                            "description": "Description of the rule (optional)"
+                          },
+                          "policy": {
+                            "type": "string",
+                            "description": "'allow' or 'deny' traffic specified by this rule"
+                          },
+                          "protocol": {
+                            "type": "string",
+                            "description": "The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any')"
+                          },
+                          "srcPort": {
+                            "type": "string",
+                            "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
+                          },
+                          "srcCidr": {
+                            "type": "string",
+                            "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
+                          },
+                          "destPort": {
+                            "type": "string",
+                            "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
+                          },
+                          "destCidr": {
+                            "type": "string",
+                            "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
+                          },
+                          "syslogEnabled": {
+                            "type": "boolean",
+                            "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
+                          }
+                        }
+                      },
+                      "description": "An ordered array of the firewall rules (not including the default rule)"
+                    },
+                    "syslogDefaultRule": {
+                      "type": "boolean",
+                      "description": "Log the special default rule (boolean value - enable only if you've configured a syslog server) (optional)"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -11279,14 +11370,14 @@
                       "comment": "Allow TCP traffic to subnet with HTTP servers.",
                       "policy": "allow",
                       "protocol": "tcp",
-                      "destPort": "443",
-                      "destCidr": "192.168.1.0/24",
                       "srcPort": "Any",
                       "srcCidr": "Any",
+                      "destPort": "443",
+                      "destCidr": "192.168.1.0/24",
                       "syslogEnabled": false
                     }
                   ],
-                  "syslogDefaultRule": true
+                  "syslogDefaultRule": false
                 }
               }
             }
@@ -31006,6 +31097,64 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "groupId": {
+                      "type": "string",
+                      "description": "Id of staged upgrade group"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the Staged Upgrade Group"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the Staged Upgrade Group"
+                    },
+                    "isDefault": {
+                      "type": "boolean",
+                      "description": "Boolean indicating the default Group. Any device that does not have a group explicitly assigned will upgrade with this group"
+                    },
+                    "assignedDevices": {
+                      "type": "object",
+                      "properties": {
+                        "devices": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "serial": {
+                                "type": "string",
+                                "description": "Serial of the device"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the device"
+                              }
+                            }
+                          },
+                          "description": "Data Array of Devices containing the name and serial"
+                        },
+                        "switchStacks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "ID of the Switch Stack"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the Switch Stack"
+                              }
+                            }
+                          },
+                          "description": "Data Array of Switch Stacks containing the name and id"
+                        }
+                      },
+                      "description": "The devices and Switch Stacks assigned to the Group"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -31016,14 +31165,14 @@
                   "assignedDevices": {
                     "devices": [
                       {
-                        "name": "Device Name",
-                        "serial": "Q234-ABCD-5678"
+                        "serial": "Q234-ABCD-5678",
+                        "name": "Device Name"
                       }
                     ],
                     "switchStacks": [
                       {
-                        "name": "Stack Name",
-                        "id": "1234"
+                        "id": "1234",
+                        "name": "Stack Name"
                       }
                     ]
                   }
@@ -31287,6 +31436,64 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "properties": {
+                    "groupId": {
+                      "type": "string",
+                      "description": "Id of staged upgrade group"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the Staged Upgrade Group"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Description of the Staged Upgrade Group"
+                    },
+                    "isDefault": {
+                      "type": "boolean",
+                      "description": "Boolean indicating the default Group. Any device that does not have a group explicitly assigned will upgrade with this group"
+                    },
+                    "assignedDevices": {
+                      "type": "object",
+                      "properties": {
+                        "devices": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "serial": {
+                                "type": "string",
+                                "description": "Serial of the device"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the device"
+                              }
+                            }
+                          },
+                          "description": "Data Array of Devices containing the name and serial"
+                        },
+                        "switchStacks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "ID of the Switch Stack"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the Switch Stack"
+                              }
+                            }
+                          },
+                          "description": "Data Array of Switch Stacks containing the name and id"
+                        }
+                      },
+                      "description": "The devices and Switch Stacks assigned to the Group"
+                    }
+                  },
                   "type": "object"
                 },
                 "example": {
@@ -31297,14 +31504,14 @@
                   "assignedDevices": {
                     "devices": [
                       {
-                        "name": "Device Name",
-                        "serial": "Q234-ABCD-5678"
+                        "serial": "Q234-ABCD-5678",
+                        "name": "Device Name"
                       }
                     ],
                     "switchStacks": [
                       {
-                        "name": "Stack Name",
-                        "id": "1234"
+                        "id": "1234",
+                        "name": "Stack Name"
                       }
                     ]
                   }
@@ -40657,21 +40864,6 @@
                         "enabled"
                       ],
                       "description": "A hash of Named VLANs options applied to the Network."
-                    },
-                    "clientPrivacy": {
-                      "type": "object",
-                      "properties": {
-                        "expireDataOlderThan": {
-                          "type": "integer",
-                          "description": "The number of days, weeks, or months in Epoch time to expire the data before"
-                        },
-                        "expireDataBefore": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "The date to expire the data before"
-                        }
-                      },
-                      "description": "Privacy settings"
                     }
                   },
                   "type": "object"
@@ -40693,10 +40885,6 @@
                   },
                   "namedVlans": {
                     "enabled": true
-                  },
-                  "clientPrivacy": {
-                    "expireDataOlderThan": 86400,
-                    "expireDataBefore": "2022-10-01T00:00:00Z"
                   }
                 }
               }
@@ -40867,21 +41055,6 @@
                         "enabled"
                       ],
                       "description": "A hash of Named VLANs options applied to the Network."
-                    },
-                    "clientPrivacy": {
-                      "type": "object",
-                      "properties": {
-                        "expireDataOlderThan": {
-                          "type": "integer",
-                          "description": "The number of days, weeks, or months in Epoch time to expire the data before"
-                        },
-                        "expireDataBefore": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "The date to expire the data before"
-                        }
-                      },
-                      "description": "Privacy settings"
                     }
                   },
                   "type": "object"
@@ -40903,10 +41076,6 @@
                   },
                   "namedVlans": {
                     "enabled": true
-                  },
-                  "clientPrivacy": {
-                    "expireDataOlderThan": 86400,
-                    "expireDataBefore": "2022-10-01T00:00:00Z"
                   }
                 }
               }
@@ -41107,6 +41276,17 @@
             "name": "ids",
             "in": "query",
             "description": "Filter devices by id(s)."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "uuids",
+            "in": "query",
+            "description": "Filter devices by uuid(s)."
           },
           {
             "schema": {
@@ -43458,7 +43638,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all the profiles in the network",
+        "description": "List all profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -43477,35 +43657,53 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
-                },
-                "example": {
-                  "profiles": [
-                    {
-                      "id": "1234",
-                      "payload_display_name": "API Profile",
-                      "payload_identifier": "com.meraki.sm.1",
-                      "payload_description": "API docs test",
-                      "scope": "some",
-                      "tags": [
-                        "tag1",
-                        "tag2"
-                      ],
-                      "wifis": [
-
-                      ],
-                      "payload_types": [
-                        "Privacy",
-                        "Document"
-                      ]
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of a profile."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of a profile."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Description of a profile."
+                      },
+                      "scope": {
+                        "type": "string",
+                        "description": "Scope of a profile."
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Tags of a profile."
+                      }
                     }
-                  ]
-                }
+                  }
+                },
+                "example": [
+                  {
+                    "id": "1284392014819",
+                    "name": "My profile",
+                    "description": "Some profile description",
+                    "scope": "withAny",
+                    "tags": [
+                      "tag1",
+                      "tag2"
+                    ]
+                  }
+                ]
               }
             }
           }
         },
-        "summary": "List all the profiles in the network",
+        "summary": "List all profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -51639,7 +51837,24 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Switch stacks id"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Switch stacks name"
+                      },
+                      "serials": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Serials of the switches in the switch stack"
+                      }
+                    }
                   }
                 },
                 "example": [
@@ -80646,39 +80861,39 @@
                         "properties": {
                           "comment": {
                             "type": "string",
-                            "description": "Description of the rule"
+                            "description": "Description of the rule (optional)"
                           },
                           "policy": {
                             "type": "string",
-                            "description": "'Deny' traffic specified by this rule"
+                            "description": "'allow' or 'deny' traffic specified by this rule"
                           },
                           "protocol": {
                             "type": "string",
-                            "description": "The type of protocol"
+                            "description": "The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any')"
                           },
                           "srcPort": {
                             "type": "string",
-                            "description": "List of source ports"
+                            "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
                           },
                           "srcCidr": {
                             "type": "string",
-                            "description": "List of source IP addresses"
+                            "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
                           },
                           "destPort": {
                             "type": "string",
-                            "description": "List of destination ports"
+                            "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
                           },
                           "destCidr": {
                             "type": "string",
-                            "description": "List of destination IP addresses"
+                            "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
                           },
                           "syslogEnabled": {
                             "type": "boolean",
-                            "description": "Flag indicating whether the rule should be logged to syslog"
+                            "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
                           }
                         }
                       },
-                      "description": "List of firewall rules"
+                      "description": "An ordered array of the firewall rules (not including the default rule)"
                     }
                   },
                   "type": "object"
@@ -80826,39 +81041,39 @@
                         "properties": {
                           "comment": {
                             "type": "string",
-                            "description": "Description of the rule"
+                            "description": "Description of the rule (optional)"
                           },
                           "policy": {
                             "type": "string",
-                            "description": "'Deny' traffic specified by this rule"
+                            "description": "'allow' or 'deny' traffic specified by this rule"
                           },
                           "protocol": {
                             "type": "string",
-                            "description": "The type of protocol"
+                            "description": "The type of protocol (must be 'tcp', 'udp', 'icmp', 'icmp6' or 'any')"
                           },
                           "srcPort": {
                             "type": "string",
-                            "description": "List of source ports"
+                            "description": "Comma-separated list of source port(s) (integer in the range 1-65535), or 'any'"
                           },
                           "srcCidr": {
                             "type": "string",
-                            "description": "List of source IP addresses"
+                            "description": "Comma-separated list of source IP address(es) (in IP or CIDR notation), or 'any' (note: FQDN not supported for source addresses)"
                           },
                           "destPort": {
                             "type": "string",
-                            "description": "List of destination ports"
+                            "description": "Comma-separated list of destination port(s) (integer in the range 1-65535), or 'any'"
                           },
                           "destCidr": {
                             "type": "string",
-                            "description": "List of destination IP addresses"
+                            "description": "Comma-separated list of destination IP address(es) (in IP or CIDR notation), fully-qualified domain names (FQDN) or 'any'"
                           },
                           "syslogEnabled": {
                             "type": "boolean",
-                            "description": "Flag indicating whether the rule should be logged to syslog"
+                            "description": "Log this rule to syslog (true or false, boolean value) - only applicable if a syslog has been configured (optional)"
                           }
                         }
                       },
-                      "description": "List of firewall rules"
+                      "description": "An ordered array of the firewall rules (not including the default rule)"
                     }
                   },
                   "type": "object"
@@ -85974,7 +86189,58 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "type": "object",
+                    "properties": {
+                      "ts": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time, in ISO8601 format, when the configuration change was made."
+                      },
+                      "adminName": {
+                        "type": "string",
+                        "description": "The name of the admin who made the configuration change."
+                      },
+                      "adminEmail": {
+                        "type": "string",
+                        "description": "The email address of the admin who made the configuration change. This attribute may be null."
+                      },
+                      "adminId": {
+                        "type": "string",
+                        "description": "The ID of the admin who made the configuration change. This attribute may be null."
+                      },
+                      "networkName": {
+                        "type": "string",
+                        "description": "The name of the network that the configuration change was applied to. This attribute may be null."
+                      },
+                      "networkId": {
+                        "type": "string",
+                        "description": "The ID of the network that the configuration change was applied to. This attribute may be null."
+                      },
+                      "ssidName": {
+                        "type": "string",
+                        "description": "The name of the ssid that the configuration change was applied to, if applicable. This attribute may be null."
+                      },
+                      "ssidNumber": {
+                        "type": "integer",
+                        "description": "The ssid number that the configuration change was applied to, if applicable. This attribute may be null."
+                      },
+                      "page": {
+                        "type": "string",
+                        "description": "The name of the Meraki Dashboard page on which the configuration change was made."
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "Description of the configuration change."
+                      },
+                      "oldValue": {
+                        "type": "string",
+                        "description": "The value of the configuration, before the change was applied."
+                      },
+                      "newValue": {
+                        "type": "string",
+                        "description": "The value of the configuration, after the change was applied."
+                      }
+                    }
                   }
                 },
                 "example": [
@@ -85983,6 +86249,10 @@
                     "adminName": "Miles Meraki",
                     "adminEmail": "miles@meraki.com",
                     "adminId": "212406",
+                    "networkName": "Main Office",
+                    "networkId": "N_24329156",
+                    "ssidName": "My SSID",
+                    "ssidNumber": 1,
                     "page": "via API",
                     "label": "PUT /api/v1/organizations/2930418",
                     "oldValue": "{\"id\":\"2930418\",\"name\":\"My organization\",\"url\":\"https://dashboard.meraki.com/o/VjjsAd/manage/organization/overview\"}",
@@ -87452,7 +87722,47 @@
                           "powerSupplies": {
                             "type": "array",
                             "items": {
-                              "type": "string"
+                              "type": "object",
+                              "properties": {
+                                "slot": {
+                                  "type": "integer",
+                                  "description": "Slot the power supply is in"
+                                },
+                                "serial": {
+                                  "type": "string",
+                                  "description": "Serial of the power supply"
+                                },
+                                "model": {
+                                  "type": "string",
+                                  "description": "Model of the power supply"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "available",
+                                    "connected",
+                                    "disconnected",
+                                    "powered",
+                                    "powering",
+                                    "standby"
+                                  ],
+                                  "description": "Status of the power supply"
+                                },
+                                "poe": {
+                                  "type": "object",
+                                  "properties": {
+                                    "unit": {
+                                      "type": "string",
+                                      "description": "Unit of the PoE maximum"
+                                    },
+                                    "maximum": {
+                                      "type": "integer",
+                                      "description": "Maximum PoE this power supply can provide when connected to the current switch model"
+                                    }
+                                  },
+                                  "description": "PoE info of the power supply"
+                                }
+                              }
                             },
                             "description": "Power Supplies"
                           }
@@ -87490,7 +87800,16 @@
                     "productType": "wireless",
                     "components": {
                       "powerSupplies": [
-
+                        {
+                          "slot": 1,
+                          "serial": "QABC-1234-5678",
+                          "model": "PWR-MS320-1025WAC",
+                          "status": "powering",
+                          "poe": {
+                            "unit": "watts",
+                            "maximum": 740
+                          }
+                        }
                       ]
                     },
                     "model": "MR34",
@@ -88744,7 +89063,7 @@
                 "enum": [
                   "canceled",
                   "completed",
-                  "pending",
+                  "scheduled",
                   "started"
                 ]
               }
@@ -88880,7 +89199,7 @@
                         "releaseType": "stable",
                         "releaseDate": "2018-02-11T00:00:00.090210Z"
                       },
-                      "status": "completed",
+                      "status": "Completed",
                       "id": "1234",
                       "upgradeBatchId": "1234",
                       "staged": {
@@ -89667,6 +89986,23 @@
                       "countryCode": {
                         "type": "string",
                         "description": "Country/region code from device, network, or store order"
+                      },
+                      "details": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Additional property name"
+                            },
+                            "value": {
+                              "type": "string",
+                              "description": "Additional property value"
+                            }
+                          }
+                        },
+                        "description": "Additional device information"
                       }
                     }
                   }
@@ -89686,7 +90022,13 @@
                       "tag2"
                     ],
                     "productType": "wireless",
-                    "countryCode": "US"
+                    "countryCode": "US",
+                    "details": [
+                      {
+                        "name": "Catalyst serial",
+                        "value": "FOC2234432B"
+                      }
+                    ]
                   }
                 ]
               }
@@ -89789,6 +90131,23 @@
                     "countryCode": {
                       "type": "string",
                       "description": "Country/region code from device, network, or store order"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Additional property name"
+                          },
+                          "value": {
+                            "type": "string",
+                            "description": "Additional property value"
+                          }
+                        }
+                      },
+                      "description": "Additional device information"
                     }
                   },
                   "type": "object"
@@ -89807,7 +90166,13 @@
                     "tag2"
                   ],
                   "productType": "wireless",
-                  "countryCode": "US"
+                  "countryCode": "US",
+                  "details": [
+                    {
+                      "name": "Catalyst serial",
+                      "value": "FOC2234432B"
+                    }
+                  ]
                 }
               }
             }
@@ -90127,6 +90492,14 @@
             "in": "query",
             "required": true,
             "description": "Device Type switch or wireless controller"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "search",
+            "in": "query",
+            "description": "Optional parameter to search on network name"
           },
           {
             "schema": {
@@ -95862,6 +96235,75 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "vppAccountId": {
+                        "type": "string",
+                        "description": "The id of the VPP Account"
+                      },
+                      "contentToken": {
+                        "type": "string",
+                        "description": "The VPP service token"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "The email address associated with the VPP account"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the VPP account"
+                      },
+                      "allowedAdmins": {
+                        "type": "string",
+                        "description": "The allowed admins for the VPP account"
+                      },
+                      "networkIdAdmins": {
+                        "type": "string",
+                        "description": "The network IDs of the admins for the VPP account"
+                      },
+                      "assignableNetworks": {
+                        "type": "string",
+                        "description": "The assignable networks for the VPP account"
+                      },
+                      "assignableNetworkIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The network IDs of the assignable networks for the VPP account"
+                      },
+                      "vppLocationId": {
+                        "type": "string",
+                        "description": "The VPP location ID"
+                      },
+                      "vppLocationName": {
+                        "type": "string",
+                        "description": "The VPP location name"
+                      },
+                      "lastSyncedAt": {
+                        "type": "string",
+                        "description": "The last time the VPP account was synced"
+                      },
+                      "lastForceSyncedAt": {
+                        "type": "string",
+                        "description": "The last time the VPP account was force synced"
+                      },
+                      "parsedToken": {
+                        "type": "object",
+                        "properties": {
+                          "orgName": {
+                            "type": "string",
+                            "description": "The organization name"
+                          },
+                          "hashedToken": {
+                            "type": "string",
+                            "description": "The hashed token"
+                          },
+                          "expiresAt": {
+                            "type": "string",
+                            "description": "The expiration time of the token"
+                          }
+                        },
+                        "description": "The parsed VPP service token"
+                      },
                       "id": {
                         "type": "string",
                         "description": "The id of the VPP Account"
@@ -95875,8 +96317,27 @@
                 },
                 "example": [
                   {
+                    "vppAccountId": "1284392014819",
+                    "contentToken": "eyJleHBEYXRlIjoiMzAyMy0xMC0yMVQxMjowOTo0NSswMDAwIiwidG9rZW4iOiIvVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlQiLCJvcmdOYW1lIjoiTWVyYWtpICsgREVWRUxPUEVSIn0=",
+                    "email": "email@example.com",
+                    "name": "VPP Account name",
+                    "allowedAdmins": "Network",
+                    "networkIdAdmins": "N_24329156",
+                    "assignableNetworks": "Some",
+                    "assignableNetworkIds": [
+                      "N_24329156"
+                    ],
+                    "vppLocationId": "22222222222",
+                    "vppLocationName": "LocationName",
+                    "lastSyncedAt": "2021-02-25T16:59:23Z",
+                    "lastForceSyncedAt": "2021-02-25T16:59:23Z",
+                    "parsedToken": {
+                      "orgName": "My organization",
+                      "hashedToken": "f572d396fae9206628714fb2ce00f72e94f2258f",
+                      "expiresAt": "2023-10-21T12:09:45Z"
+                    },
                     "id": "1284392014819",
-                    "vppServiceToken": "eyJleHBEYXRlIjoiMjAyMS0wMi0yNVQxNjo1NToyMy0wODAwIiwidG9rZW4iOiJBZFN4YWxyQmhFK0FhSWUrYTJDbDE1aDg1N0ZkUDkrL2c5c00xUWhlMG1WS0ZKWkdOL0hxRnQxeitSVERSTkNLNkxhMEExellML3JFa2tpOG1pbk8xRDlJWHhZQnBERy8wZllhTE44UlUrMDhYZkZsNlVwenkrRE8wQW41ZGgxWncwSmZiYmlXU21VVG94TFJmV1BCcVE9PSIsIm9yZ05hbWUiOiJNZXJha2kgTExDICsgRGV2ZWxvcGVyIn0="
+                    "vppServiceToken": "eyJleHBEYXRlIjoiMzAyMy0xMC0yMVQxMjowOTo0NSswMDAwIiwidG9rZW4iOiIvVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlQiLCJvcmdOYW1lIjoiTWVyYWtpICsgREVWRUxPUEVSIn0="
                   }
                 ]
               }
@@ -95922,6 +96383,75 @@
               "application/json": {
                 "schema": {
                   "properties": {
+                    "vppAccountId": {
+                      "type": "string",
+                      "description": "The id of the VPP Account"
+                    },
+                    "contentToken": {
+                      "type": "string",
+                      "description": "The VPP service token"
+                    },
+                    "email": {
+                      "type": "string",
+                      "description": "The email address associated with the VPP account"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the VPP account"
+                    },
+                    "allowedAdmins": {
+                      "type": "string",
+                      "description": "The allowed admins for the VPP account"
+                    },
+                    "networkIdAdmins": {
+                      "type": "string",
+                      "description": "The network IDs of the admins for the VPP account"
+                    },
+                    "assignableNetworks": {
+                      "type": "string",
+                      "description": "The assignable networks for the VPP account"
+                    },
+                    "assignableNetworkIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "The network IDs of the assignable networks for the VPP account"
+                    },
+                    "vppLocationId": {
+                      "type": "string",
+                      "description": "The VPP location ID"
+                    },
+                    "vppLocationName": {
+                      "type": "string",
+                      "description": "The VPP location name"
+                    },
+                    "lastSyncedAt": {
+                      "type": "string",
+                      "description": "The last time the VPP account was synced"
+                    },
+                    "lastForceSyncedAt": {
+                      "type": "string",
+                      "description": "The last time the VPP account was force synced"
+                    },
+                    "parsedToken": {
+                      "type": "object",
+                      "properties": {
+                        "orgName": {
+                          "type": "string",
+                          "description": "The organization name"
+                        },
+                        "hashedToken": {
+                          "type": "string",
+                          "description": "The hashed token"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "description": "The expiration time of the token"
+                        }
+                      },
+                      "description": "The parsed VPP service token"
+                    },
                     "id": {
                       "type": "string",
                       "description": "The id of the VPP Account"
@@ -95934,8 +96464,27 @@
                   "type": "object"
                 },
                 "example": {
+                  "vppAccountId": "1284392014819",
+                  "contentToken": "eyJleHBEYXRlIjoiMzAyMy0xMC0yMVQxMjowOTo0NSswMDAwIiwidG9rZW4iOiIvVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlQiLCJvcmdOYW1lIjoiTWVyYWtpICsgREVWRUxPUEVSIn0=",
+                  "email": "email@example.com",
+                  "name": "VPP Account name",
+                  "allowedAdmins": "Network",
+                  "networkIdAdmins": "N_24329156",
+                  "assignableNetworks": "Some",
+                  "assignableNetworkIds": [
+                    "N_24329156"
+                  ],
+                  "vppLocationId": "22222222222",
+                  "vppLocationName": "LocationName",
+                  "lastSyncedAt": "2021-02-25T16:59:23Z",
+                  "lastForceSyncedAt": "2021-02-25T16:59:23Z",
+                  "parsedToken": {
+                    "orgName": "My organization",
+                    "hashedToken": "f572d396fae9206628714fb2ce00f72e94f2258f",
+                    "expiresAt": "2023-10-21T12:09:45Z"
+                  },
                   "id": "1284392014819",
-                  "vppServiceToken": "eyJleHBEYXRlIjoiMjAyMS0wMi0yNVQxNjo1NToyMy0wODAwIiwidG9rZW4iOiJBZFN4YWxyQmhFK0FhSWUrYTJDbDE1aDg1N0ZkUDkrL2c5c00xUWhlMG1WS0ZKWkdOL0hxRnQxeitSVERSTkNLNkxhMEExellML3JFa2tpOG1pbk8xRDlJWHhZQnBERy8wZllhTE44UlUrMDhYZkZsNlVwenkrRE8wQW41ZGgxWncwSmZiYmlXU21VVG94TFJmV1BCcVE9PSIsIm9yZ05hbWUiOiJNZXJha2kgTExDICsgRGV2ZWxvcGVyIn0="
+                  "vppServiceToken": "eyJleHBEYXRlIjoiMzAyMy0xMC0yMVQxMjowOTo0NSswMDAwIiwidG9rZW4iOiIvVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlRPS0VOVE9LRU5UT0tFTlQiLCJvcmdOYW1lIjoiTWVyYWtpICsgREVWRUxPUEVSIn0="
                 }
               }
             }
@@ -98990,6 +99539,692 @@
           "statuses"
         ]
       }
+    },
+    "/organizations/{organizationId}/wireless/devices/packetLoss/byClient": {
+      "get": {
+        "description": "Get average packet loss for the given timespan for all clients in the organization.",
+        "operationId": "getOrganizationWirelessDevicesPacketLossByClient",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Filter results by network."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "name": "ssids",
+            "in": "query",
+            "description": "Filter results by SSID number."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "bands",
+            "in": "query",
+            "description": "Filter results by band. Valid bands are: 2.4, 5, and 6."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "macs",
+            "in": "query",
+            "description": "Filter results by client mac address(es)."
+          },
+          {
+            "schema": {
+              "type": "integer"
+            },
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 90 days from today."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 90 days after t0."
+          },
+          {
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "minimum": 300,
+              "maximum": 7776000
+            },
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "downstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets received by a client."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by an AP that did not reach the client."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from an AP to a client."
+                      },
+                      "upstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client to an AP."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client and did not reach the AP."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from a client to an AP."
+                      },
+                      "client": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Client ID."
+                          },
+                          "mac": {
+                            "type": "string",
+                            "description": "MAC address."
+                          }
+                        },
+                        "description": "Client."
+                      },
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the network."
+                          }
+                        },
+                        "description": "Network."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "downstream": {
+                      "total": 1000,
+                      "lost": 10,
+                      "lossPercentage": 1.0
+                    },
+                    "upstream": {
+                      "total": 1200,
+                      "lost": 15,
+                      "lossPercentage": 1.3
+                    },
+                    "client": {
+                      "id": "k74272e",
+                      "mac": "22:33:44:55:66:77"
+                    },
+                    "network": {
+                      "id": "N_24329156",
+                      "name": "Main Office"
+                    }
+                  }
+                ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "summary": "Get average packet loss for the given timespan for all clients in the organization.",
+        "tags": [
+          "wireless",
+          "monitor",
+          "devices",
+          "packetLoss",
+          "byClient"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/wireless/devices/packetLoss/byDevice": {
+      "get": {
+        "description": "Get average packet loss for the given timespan for all devices in the organization. Does not include device's own traffic.",
+        "operationId": "getOrganizationWirelessDevicesPacketLossByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Filter results by network."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Filter results by device."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "name": "ssids",
+            "in": "query",
+            "description": "Filter results by SSID number."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "bands",
+            "in": "query",
+            "description": "Filter results by band. Valid bands are: 2.4, 5, and 6."
+          },
+          {
+            "schema": {
+              "type": "integer"
+            },
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 90 days from today."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 90 days after t0."
+          },
+          {
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "minimum": 300,
+              "maximum": 7776000
+            },
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "downstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets received by a client."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by an AP that did not reach the client."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from an AP to a client."
+                      },
+                      "upstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client to an AP."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client and did not reach the AP."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from a client to an AP."
+                      },
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the network."
+                          }
+                        },
+                        "description": "Network."
+                      },
+                      "device": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Name"
+                          },
+                          "serial": {
+                            "type": "string",
+                            "description": "Serial Number"
+                          },
+                          "mac": {
+                            "type": "string",
+                            "description": "MAC address"
+                          }
+                        },
+                        "description": "Device."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "downstream": {
+                      "total": 1000,
+                      "lost": 10,
+                      "lossPercentage": 1.0
+                    },
+                    "upstream": {
+                      "total": 1200,
+                      "lost": 15,
+                      "lossPercentage": 1.3
+                    },
+                    "network": {
+                      "id": "N_24329156",
+                      "name": "Main Office"
+                    },
+                    "device": {
+                      "name": "My AP",
+                      "serial": "Q234-ABCD-5678",
+                      "mac": "00:11:22:33:44:55"
+                    }
+                  }
+                ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "summary": "Get average packet loss for the given timespan for all devices in the organization",
+        "tags": [
+          "wireless",
+          "monitor",
+          "devices",
+          "packetLoss",
+          "byDevice"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/wireless/devices/packetLoss/byNetwork": {
+      "get": {
+        "description": "Get average packet loss for the given timespan for all networks in the organization.",
+        "operationId": "getOrganizationWirelessDevicesPacketLossByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Filter results by network."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Filter results by device."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "name": "ssids",
+            "in": "query",
+            "description": "Filter results by SSID number."
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "name": "bands",
+            "in": "query",
+            "description": "Filter results by band. Valid bands are: 2.4, 5, and 6."
+          },
+          {
+            "schema": {
+              "type": "integer"
+            },
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 90 days from today."
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 90 days after t0."
+          },
+          {
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "minimum": 300,
+              "maximum": 7776000
+            },
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "downstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets received by a client."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by an AP that did not reach the client."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from an AP to a client."
+                      },
+                      "upstream": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client to an AP."
+                          },
+                          "lost": {
+                            "type": "integer",
+                            "description": "Total packets sent by a client and did not reach the AP."
+                          },
+                          "lossPercentage": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Percentage of lost packets."
+                          }
+                        },
+                        "description": "Packets sent from a client to an AP."
+                      },
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Name of the network."
+                          }
+                        },
+                        "description": "Network."
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "downstream": {
+                      "total": 1000,
+                      "lost": 10,
+                      "lossPercentage": 1.0
+                    },
+                    "upstream": {
+                      "total": 1200,
+                      "lost": 15,
+                      "lossPercentage": 1.3
+                    },
+                    "network": {
+                      "id": "N_24329156",
+                      "name": "Main Office"
+                    }
+                  }
+                ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "summary": "Get average packet loss for the given timespan for all networks in the organization.",
+        "tags": [
+          "wireless",
+          "monitor",
+          "devices",
+          "packetLoss",
+          "byNetwork"
+        ]
+      }
     }
   },
   "tags": [
@@ -99463,6 +100698,9 @@
     },
     {
       "name": "overview"
+    },
+    {
+      "name": "packetLoss"
     },
     {
       "name": "packets"
@@ -100334,10 +101572,10 @@
       "operation": "update"
     },
     {
-      "group": "Ms/actions/switch",
+      "group": "Ms/switch",
       "summary": "Update switch network settings",
       "resource": "/networks/{networkId}/switch/settings",
-      "operation": "settings/update"
+      "operation": "settings/actions/update"
     },
     {
       "group": "Mt/api/actions/alert profiles",
@@ -100355,6 +101593,12 @@
       "group": "Mt/api/actions/alert profiles",
       "summary": "Updates a sensor alert profile for a network.",
       "resource": "/networks/{networkId}/sensor/alerts/profiles/{id}",
+      "operation": "update"
+    },
+    {
+      "group": "Mt/api/actions/sensor gateway role",
+      "summary": "Assign one or more sensor roles to a given sensor or camera device.",
+      "resource": "/devices/{serial}/sensor/relationships",
       "operation": "update"
     },
     {
@@ -100607,12 +101851,6 @@
       "group": "Sense setting",
       "summary": "Update sense settings for the given camera",
       "resource": "/devices/{serial}/camera/sense",
-      "operation": "update"
-    },
-    {
-      "group": "Sensor gateway role",
-      "summary": "Assign one or more sensor roles to a given sensor or camera device.",
-      "resource": "/devices/{serial}/sensor/relationships",
       "operation": "update"
     },
     {
