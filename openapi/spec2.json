@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.39.0-beta.1",
+    "version": "1.39.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 November, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 15 November, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -4571,6 +4571,261 @@
           "liveTools",
           "pingDevice"
         ]
+      }
+    },
+    "/devices/{serial}/liveTools/speedTest": {
+      "post": {
+        "description": "Enqueue a job to execute a speed test from a device",
+        "operationId": "createDeviceLiveToolsSpeedTest",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsSpeedTest",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "interface": {
+                  "type": "string",
+                  "enum": [
+                    "wan1",
+                    "wan2"
+                  ],
+                  "description": "Optional filter for a specific WAN interface. Valid interfaces are wan1, wan2. Default will return wan1."
+                }
+              },
+              "example": {
+                "interface": "wan1"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "speedTestId": {
+                  "type": "string",
+                  "description": "The Meraki device Id."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The url of the test."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Serial number."
+                    },
+                    "interface": {
+                      "type": "string",
+                      "description": "WAN interface."
+                    }
+                  },
+                  "description": "Request details."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Status of the test."
+                },
+                "startedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time that the test is started."
+                },
+                "completionTimeEstimateSecs": {
+                  "type": "integer",
+                  "description": "How many seconds the test is expected to take."
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "speeds": {
+                      "type": "object",
+                      "properties": {
+                        "average": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Average speed."
+                        },
+                        "maximum": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Maximum speed."
+                        },
+                        "minimum": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Minimum speed."
+                        }
+                      },
+                      "description": "Speeds."
+                    }
+                  },
+                  "description": "Results of the test."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "speedTestId": "1284392014819",
+                "url": "/devices/SERIAL/liveTools/speedTest/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "interface": "wan1"
+                },
+                "status": "complete",
+                "startedAt": "2021-10-01T15:55:39.000000Z",
+                "completionTimeEstimateSecs": 60,
+                "results": {
+                  "speeds": {
+                    "average": 123.45,
+                    "maximum": 400.12,
+                    "minimum": 1.1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to execute a speed test from a device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "speedTest"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/devices/{serial}/liveTools/speedTest/{id}": {
+      "get": {
+        "description": "Returns a speed test result in megabits per second. If test is not complete, no results are present.",
+        "operationId": "getDeviceLiveToolsSpeedTest",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "speedTestId": {
+                  "type": "string",
+                  "description": "The Meraki device Id."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The url of the test."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Serial number."
+                    },
+                    "interface": {
+                      "type": "string",
+                      "description": "WAN interface."
+                    }
+                  },
+                  "description": "Request details."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Status of the test."
+                },
+                "startedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Time that the test is started."
+                },
+                "completionTimeEstimateSecs": {
+                  "type": "integer",
+                  "description": "How many seconds the test is expected to take."
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "speeds": {
+                      "type": "object",
+                      "properties": {
+                        "average": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Average speed."
+                        },
+                        "maximum": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Maximum speed."
+                        },
+                        "minimum": {
+                          "type": "number",
+                          "format": "float",
+                          "description": "Minimum speed."
+                        }
+                      },
+                      "description": "Speeds."
+                    }
+                  },
+                  "description": "Results of the test."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "speedTestId": "1284392014819",
+                "url": "/devices/SERIAL/liveTools/speedTest/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "interface": "wan1"
+                },
+                "status": "complete",
+                "startedAt": "2021-10-01T15:55:39.000000Z",
+                "completionTimeEstimateSecs": 60,
+                "results": {
+                  "speeds": {
+                    "average": 123.45,
+                    "maximum": 400.12,
+                    "minimum": 1.1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns a speed test result in megabits per second",
+        "tags": [
+          "devices",
+          "liveTools",
+          "speedTest"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/devices/{serial}/liveTools/wakeOnLan": {
@@ -23482,7 +23737,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 5000. Default is 10."
           },
           {
             "type": "string",
@@ -40889,7 +41144,7 @@
             },
             "name": "fields",
             "in": "query",
-            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, and url."
+            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, cellular, and url."
           },
           {
             "type": "array",
@@ -89273,6 +89528,143 @@
         ]
       }
     },
+    "/organizations/{organizationId}/insight/speedTestResults": {
+      "get": {
+        "description": "List the speed tests for the given devices under this organization. Only valid for organizations with Meraki Insight.",
+        "operationId": "getOrganizationInsightSpeedTestResults",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "required": true,
+            "description": "A list of serial numbers. The returned results will be filtered to only include these serials."
+          },
+          {
+            "type": "integer",
+            "name": "timespan",
+            "in": "query",
+            "description": "Amount of seconds ago to query for results. Only include timespan OR both t0 & t1."
+          },
+          {
+            "type": "integer",
+            "name": "t0",
+            "in": "query",
+            "description": "Start time to query for results in epoch seconds. Only include timespan OR both t0 & t1."
+          },
+          {
+            "type": "integer",
+            "name": "t1",
+            "in": "query",
+            "description": "End time to query for results in epoch seconds. Only include timespan OR both t0 & t1."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "speedTestId": {
+                    "type": "string",
+                    "description": "SpeedTest result identifier"
+                  },
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network identifier"
+                  },
+                  "request": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Device serial number"
+                      },
+                      "interface": {
+                        "type": "string",
+                        "description": "Uplink name"
+                      }
+                    },
+                    "description": "Ping request parameters"
+                  },
+                  "results": {
+                    "type": "object",
+                    "properties": {
+                      "speeds": {
+                        "type": "object",
+                        "properties": {
+                          "average": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Average speed"
+                          },
+                          "maximum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Maximum speed"
+                          },
+                          "minimum": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Minimum speed"
+                          }
+                        },
+                        "description": "Speed test results"
+                      }
+                    },
+                    "description": "Ping request results"
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Time when the test started"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "speedTestId": "1284392014819",
+                  "networkId": "N_24329156",
+                  "request": {
+                    "serial": "Q234-ABCD-5678",
+                    "interface": "wan1"
+                  },
+                  "results": {
+                    "speeds": {
+                      "average": 247.279,
+                      "maximum": 983.611,
+                      "minimum": 71.606
+                    }
+                  },
+                  "startedAt": "2021-12-08T20:07:13Z"
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the speed tests for the given devices under this organization",
+        "tags": [
+          "insight",
+          "configure",
+          "speedTestResults"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/insight/webApps": {
       "get": {
         "description": "Lists all default web applications rules with counter set rule ids",
@@ -98213,6 +98605,388 @@
         "x-release-stage": "beta"
       }
     },
+    "/organizations/{organizationId}/sensor/alerts": {
+      "get": {
+        "description": "Return a list of sensor alert events",
+        "operationId": "getOrganizationSensorAlerts",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 365 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 365 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "maximum": 31536000,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 365 days."
+          },
+          {
+            "type": "string",
+            "name": "sensorSerial",
+            "in": "query",
+            "description": "Filters alerts to those triggered by this sensor."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "required": true,
+            "description": "Filters alerts by network. For now, this must be a single network ID."
+          },
+          {
+            "type": "string",
+            "name": "triggerMetric",
+            "in": "query",
+            "description": "Filters alerts to those triggered by this metric. Allowed values are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startTs": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "The start time of the alert"
+                  },
+                  "sensor": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the sensor."
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the sensor."
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model of the sensor."
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "URL to the sensor."
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "serial",
+                      "model",
+                      "url"
+                    ],
+                    "description": "The sensor that triggered the alert"
+                  },
+                  "trigger": {
+                    "type": "object",
+                    "properties": {
+                      "ts": {
+                        "type": "string",
+                        "description": "Time at which the reading occurred, in ISO8601 format."
+                      },
+                      "metric": {
+                        "type": "string",
+                        "enum": [
+                          "battery",
+                          "button",
+                          "door",
+                          "humidity",
+                          "indoorAirQuality",
+                          "noise",
+                          "pm25",
+                          "temperature",
+                          "tvoc",
+                          "water"
+                        ],
+                        "description": "Type of sensor reading."
+                      },
+                      "battery": {
+                        "type": "object",
+                        "properties": {
+                          "percentage": {
+                            "type": "integer",
+                            "description": "Remaining battery life."
+                          }
+                        },
+                        "description": "Reading for the 'battery' metric. This will only be present if the 'metric' property equals 'battery'."
+                      },
+                      "button": {
+                        "type": "object",
+                        "properties": {
+                          "pressType": {
+                            "type": "string",
+                            "enum": [
+                              "long",
+                              "short"
+                            ],
+                            "description": "Type of button press that occurred."
+                          }
+                        },
+                        "description": "Reading for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
+                      },
+                      "door": {
+                        "type": "object",
+                        "properties": {
+                          "open": {
+                            "type": "boolean",
+                            "description": "True if the door is open."
+                          }
+                        },
+                        "description": "Reading for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
+                      },
+                      "humidity": {
+                        "type": "object",
+                        "properties": {
+                          "relativePercentage": {
+                            "type": "integer",
+                            "description": "Humidity reading in %RH."
+                          }
+                        },
+                        "description": "Reading for the 'humidity' metric. This will only be present if the 'metric' property equals 'humidity'."
+                      },
+                      "indoorAirQuality": {
+                        "type": "object",
+                        "properties": {
+                          "score": {
+                            "type": "integer",
+                            "description": "Indoor air quality score between 0 and 100."
+                          }
+                        },
+                        "description": "Reading for the 'indoorAirQuality' metric. This will only be present if the 'metric' property equals 'indoorAirQuality'."
+                      },
+                      "noise": {
+                        "type": "object",
+                        "properties": {
+                          "ambient": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "integer",
+                                "description": "Ambient noise reading in adjusted decibels."
+                              }
+                            },
+                            "description": "Ambient noise reading."
+                          }
+                        },
+                        "description": "Reading for the 'noise' metric. This will only be present if the 'metric' property equals 'noise'."
+                      },
+                      "pm25": {
+                        "type": "object",
+                        "properties": {
+                          "concentration": {
+                            "type": "integer",
+                            "description": "PM2.5 reading in micrograms per cubic meter."
+                          }
+                        },
+                        "description": "Reading for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
+                      },
+                      "temperature": {
+                        "type": "object",
+                        "properties": {
+                          "fahrenheit": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Temperature reading in degrees Fahrenheit."
+                          },
+                          "celsius": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Temperature reading in degrees Celsius."
+                          }
+                        },
+                        "description": "Reading for the 'temperature' metric. This will only be present if the 'metric' property equals 'temperature'."
+                      },
+                      "tvoc": {
+                        "type": "object",
+                        "properties": {
+                          "concentration": {
+                            "type": "integer",
+                            "description": "TVOC reading in micrograms per cubic meter."
+                          }
+                        },
+                        "description": "Reading for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
+                      },
+                      "water": {
+                        "type": "object",
+                        "properties": {
+                          "present": {
+                            "type": "boolean",
+                            "description": "True if water is detected."
+                          }
+                        },
+                        "description": "Reading for the 'water' metric. This will only be present if the 'metric' property equals 'water'."
+                      }
+                    },
+                    "description": "The sensor reading that triggered the alert."
+                  },
+                  "profile": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the sensor alert profile."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the sensor alert profile."
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ],
+                    "description": "The triggered sensor alert profile"
+                  },
+                  "snapshotCamera": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the camera"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the camera"
+                      },
+                      "url": {
+                        "type": "string",
+                        "description": "URL to the camera"
+                      }
+                    },
+                    "required": [
+                      "serial",
+                      "name",
+                      "url"
+                    ],
+                    "description": "Camera snapshot information for the alert. If the sensor did not have a camera assigned at the time of the alert, this will be null."
+                  }
+                },
+                "required": [
+                  "startTs",
+                  "sensor",
+                  "trigger",
+                  "profile"
+                ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "startTs": "2018-02-11T00:00:00.090210Z",
+                  "sensor": {
+                    "name": "My sensor",
+                    "serial": "Q234-ABCD-5678",
+                    "model": "MT10",
+                    "url": "http://example.com"
+                  },
+                  "trigger": {
+                    "ts": "2021-10-18T23:54:48Z",
+                    "metric": "temperature",
+                    "battery": {
+                      "percentage": 91
+                    },
+                    "button": {
+                      "pressType": "short"
+                    },
+                    "door": {
+                      "open": true
+                    },
+                    "humidity": {
+                      "relativePercentage": 34
+                    },
+                    "indoorAirQuality": {
+                      "score": 89
+                    },
+                    "noise": {
+                      "ambient": {
+                        "level": 45
+                      }
+                    },
+                    "pm25": {
+                      "concentration": 100
+                    },
+                    "temperature": {
+                      "fahrenheit": 77.81,
+                      "celsius": 25.45
+                    },
+                    "tvoc": {
+                      "concentration": 100
+                    },
+                    "water": {
+                      "present": true
+                    }
+                  },
+                  "profile": {
+                    "id": "1",
+                    "name": "Too hot"
+                  },
+                  "snapshotCamera": {
+                    "serial": "QAAA-AAAA-AAAA",
+                    "name": "Camera",
+                    "url": "http://example.com"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Return a list of sensor alert events",
+        "tags": [
+          "sensor",
+          "monitor",
+          "alerts"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/sensor/readings/history": {
       "get": {
         "description": "Return all reported readings from sensors in a given timespan, sorted by timestamp",
@@ -106425,6 +107199,12 @@
     },
     {
       "name": "softwares"
+    },
+    {
+      "name": "speedTest"
+    },
+    {
+      "name": "speedTestResults"
     },
     {
       "name": "splash"
