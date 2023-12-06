@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.39.0",
+    "version": "1.40.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 November, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 December, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -194,7 +194,8 @@
                     "name": "Catalyst serial",
                     "value": "123ABC"
                   }
-                ]
+                ],
+                "imei": "123456789000000"
               }
             }
           }
@@ -310,7 +311,8 @@
                     "name": "Catalyst serial",
                     "value": "123ABC"
                   }
-                ]
+                ],
+                "imei": "123456789000000"
               }
             }
           }
@@ -3845,11 +3847,56 @@
                 "count": {
                   "type": "integer",
                   "description": "Count parameter to pass to ping. [1..5], default 5"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
                 "target": "75.75.75.75",
-                "count": 2
+                "count": 2,
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               },
               "required": [
                 "target"
@@ -3893,6 +3940,25 @@
                 "status": {
                   "type": "string",
                   "description": "Status of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -3905,7 +3971,12 @@
                   "target": "75.75.75.75",
                   "count": 2
                 },
-                "status": "complete"
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -4106,10 +4177,55 @@
                 "count": {
                   "type": "integer",
                   "description": "Count parameter to pass to ping. [1..5], default 5"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
-                "count": 3
+                "count": 3,
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               }
             }
           }
@@ -4149,6 +4265,25 @@
                 "status": {
                   "type": "string",
                   "description": "Status of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -4161,7 +4296,12 @@
                   "target": "75.75.75.75",
                   "count": 2
                 },
-                "status": "complete"
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -4297,6 +4437,25 @@
                     }
                   },
                   "description": "Results of the ping request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -4328,6 +4487,11 @@
                       "latency": 15.7
                     }
                   ]
+                },
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
                 }
               }
             }
@@ -5542,7 +5706,7 @@
                     "Very high proportion of CRC errors"
                   ],
                   "warnings": [
-                    "SecureConnect authentication in progress",
+                    "SecurePort authentication in progress",
                     "PoE port was denied power",
                     "High proportion of CRC errors"
                   ],
@@ -20555,9 +20719,10 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2112x2112"
+                            "2112x2112",
+                            "2880x2880"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
                         }
                       },
                       "required": [
@@ -20608,10 +20773,11 @@
                         "resolution": {
                           "type": "string",
                           "enum": [
-                            "1080x1080",
-                            "2688x1512"
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2688x1512'."
+                          "description": "Resolution of the camera. Can be one of '1920x1080', '2688x1512' or '3840x2160'."
                         }
                       },
                       "required": [
@@ -21071,9 +21237,10 @@
                           "type": "string",
                           "enum": [
                             "1080x1080",
-                            "2112x2112"
+                            "2112x2112",
+                            "2880x2880"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2112x2112'."
+                          "description": "Resolution of the camera. Can be one of '1080x1080', '2112x2112' or '2880x2880'."
                         }
                       },
                       "required": [
@@ -21124,10 +21291,11 @@
                         "resolution": {
                           "type": "string",
                           "enum": [
-                            "1080x1080",
-                            "2688x1512"
+                            "1920x1080",
+                            "2688x1512",
+                            "3840x2160"
                           ],
-                          "description": "Resolution of the camera. Can be one of '1080x1080' or '2688x1512'."
+                          "description": "Resolution of the camera. Can be one of '1920x1080', '2688x1512' or '3840x2160'."
                         }
                       },
                       "required": [
@@ -22361,7 +22529,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 10."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 5000. Default is 10."
           },
           {
             "type": "string",
@@ -24316,7 +24484,8 @@
                       "name": "Catalyst serial",
                       "value": "123ABC"
                     }
-                  ]
+                  ],
+                  "imei": "123456789000000"
                 }
               ]
             }
@@ -24455,7 +24624,8 @@
                     "name": "Catalyst serial",
                     "value": "123ABC"
                   }
-                ]
+                ],
+                "imei": "123456789000000"
               }
             }
           }
@@ -30349,6 +30519,10 @@
                           "type": "string",
                           "description": "Model of the device"
                         },
+                        "imei": {
+                          "type": "string",
+                          "description": "IMEI of the device, if applicable"
+                        },
                         "mac": {
                           "type": "string",
                           "description": "MAC address of the device"
@@ -30501,6 +30675,7 @@
                       "networkId": "N_24329156",
                       "serial": "Q234-ABCD-5678",
                       "model": "MR34",
+                      "imei": "123456789000000",
                       "mac": "00:11:22:33:44:55",
                       "lanIp": "1.2.3.4",
                       "firmware": "wireless-25-14",
@@ -30763,6 +30938,10 @@
                         "type": "string",
                         "description": "Model of the device"
                       },
+                      "imei": {
+                        "type": "string",
+                        "description": "IMEI of the device, if applicable"
+                      },
                       "mac": {
                         "type": "string",
                         "description": "MAC address of the device"
@@ -30913,6 +31092,7 @@
                     "networkId": "N_24329156",
                     "serial": "Q234-ABCD-5678",
                     "model": "MR34",
+                    "imei": "123456789000000",
                     "mac": "00:11:22:33:44:55",
                     "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
@@ -31056,6 +31236,10 @@
                         "type": "string",
                         "description": "Model of the device"
                       },
+                      "imei": {
+                        "type": "string",
+                        "description": "IMEI of the device, if applicable"
+                      },
                       "mac": {
                         "type": "string",
                         "description": "MAC address of the device"
@@ -31206,6 +31390,7 @@
                     "networkId": "N_24329156",
                     "serial": "Q234-ABCD-5678",
                     "model": "MR34",
+                    "imei": "123456789000000",
                     "mac": "00:11:22:33:44:55",
                     "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
@@ -31469,6 +31654,10 @@
                         "type": "string",
                         "description": "Model of the device"
                       },
+                      "imei": {
+                        "type": "string",
+                        "description": "IMEI of the device, if applicable"
+                      },
                       "mac": {
                         "type": "string",
                         "description": "MAC address of the device"
@@ -31619,6 +31808,7 @@
                     "networkId": "N_24329156",
                     "serial": "Q234-ABCD-5678",
                     "model": "MR34",
+                    "imei": "123456789000000",
                     "mac": "00:11:22:33:44:55",
                     "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
@@ -31760,6 +31950,10 @@
                         "type": "string",
                         "description": "Model of the device"
                       },
+                      "imei": {
+                        "type": "string",
+                        "description": "IMEI of the device, if applicable"
+                      },
                       "mac": {
                         "type": "string",
                         "description": "MAC address of the device"
@@ -31910,6 +32104,7 @@
                     "networkId": "N_24329156",
                     "serial": "Q234-ABCD-5678",
                     "model": "MR34",
+                    "imei": "123456789000000",
                     "mac": "00:11:22:33:44:55",
                     "lanIp": "1.2.3.4",
                     "firmware": "wireless-25-14",
@@ -39405,7 +39600,7 @@
             },
             "name": "fields",
             "in": "query",
-            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, and url."
+            "description": "Additional fields that will be displayed for each device.\n    The default fields are: id, name, tags, ssid, wifiMac, osName, systemModel, uuid, and serialNumber. The additional fields are: ip,\n    systemType, availableDeviceCapacity, kioskAppName, biosVersion, lastConnected, missingAppsCount, userSuppliedAddress, location, lastUser,\n    ownerEmail, ownerUsername, osBuild, publicIp, phoneNumber, diskInfoJson, deviceCapacity, isManaged, hadMdm, isSupervised, meid, imei, iccid,\n    simCarrierNetwork, cellularDataUsed, isHotspotEnabled, createdAt, batteryEstCharge, quarantined, avName, avRunning, asName, fwName,\n    isRooted, loginRequired, screenLockEnabled, screenLockDelay, autoLoginDisabled, autoTags, hasMdm, hasDesktopAgent, diskEncryptionEnabled,\n    hardwareEncryptionCaps, passCodeLock, usesHardwareKeystore, androidSecurityPatchVersion, cellular, and url."
           },
           {
             "type": "array",
@@ -52250,6 +52445,20 @@
                         "vlanId": {
                           "type": "string",
                           "description": "VLAN ID"
+                        },
+                        "adaptivePolicyGroup": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Adaptive Policy Group ID"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Adaptive Policy Group name"
+                            }
+                          },
+                          "description": "Adaptive Policy Group assigned to Vlan ID"
                         }
                       }
                     },
@@ -52284,7 +52493,11 @@
                   "vlanNames": [
                     {
                       "name": "named-1",
-                      "vlanId": "1"
+                      "vlanId": "1",
+                      "adaptivePolicyGroup": {
+                        "id": "791",
+                        "name": "Infrastructure"
+                      }
                     }
                   ],
                   "vlanGroups": [
@@ -52338,6 +52551,16 @@
                       "vlanId": {
                         "type": "string",
                         "description": "VLAN ID"
+                      },
+                      "adaptivePolicyGroup": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group ID"
+                          }
+                        },
+                        "description": "Adaptive Policy Group assigned to Vlan ID"
                       }
                     },
                     "required": [
@@ -52378,7 +52601,10 @@
                 "vlanNames": [
                   {
                     "name": "named-1",
-                    "vlanId": "1"
+                    "vlanId": "1",
+                    "adaptivePolicyGroup": {
+                      "id": "791"
+                    }
                   }
                 ],
                 "vlanGroups": [
@@ -52429,6 +52655,20 @@
                       "vlanId": {
                         "type": "string",
                         "description": "VLAN ID"
+                      },
+                      "adaptivePolicyGroup": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group name"
+                          }
+                        },
+                        "description": "Adaptive Policy Group assigned to Vlan ID"
                       }
                     }
                   },
@@ -52461,7 +52701,11 @@
                 "vlanNames": [
                   {
                     "name": "named-1",
-                    "vlanId": "1"
+                    "vlanId": "1",
+                    "adaptivePolicyGroup": {
+                      "id": "791",
+                      "name": "Infrastructure"
+                    }
                   }
                 ],
                 "vlanGroups": [
@@ -52808,6 +53052,20 @@
                       "vlanId": {
                         "type": "string",
                         "description": "VLAN ID"
+                      },
+                      "adaptivePolicyGroup": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group name"
+                          }
+                        },
+                        "description": "Adaptive Policy Group assigned to Vlan ID"
                       }
                     }
                   },
@@ -52840,7 +53098,11 @@
                 "vlanNames": [
                   {
                     "name": "named-1",
-                    "vlanId": "1"
+                    "vlanId": "1",
+                    "adaptivePolicyGroup": {
+                      "id": "791",
+                      "name": "Infrastructure"
+                    }
                   }
                 ],
                 "vlanGroups": [
@@ -52900,6 +53162,16 @@
                       "vlanId": {
                         "type": "string",
                         "description": "VLAN ID"
+                      },
+                      "adaptivePolicyGroup": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group ID"
+                          }
+                        },
+                        "description": "Adaptive Policy Group assigned to Vlan ID"
                       }
                     },
                     "required": [
@@ -52936,7 +53208,10 @@
                 "vlanNames": [
                   {
                     "name": "named-1",
-                    "vlanId": "1"
+                    "vlanId": "1",
+                    "adaptivePolicyGroup": {
+                      "id": "791"
+                    }
                   }
                 ],
                 "vlanGroups": [
@@ -52985,6 +53260,20 @@
                       "vlanId": {
                         "type": "string",
                         "description": "VLAN ID"
+                      },
+                      "adaptivePolicyGroup": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group ID"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Adaptive Policy Group name"
+                          }
+                        },
+                        "description": "Adaptive Policy Group assigned to Vlan ID"
                       }
                     }
                   },
@@ -53017,7 +53306,11 @@
                 "vlanNames": [
                   {
                     "name": "named-1",
-                    "vlanId": "1"
+                    "vlanId": "1",
+                    "adaptivePolicyGroup": {
+                      "id": "791",
+                      "name": "Infrastructure"
+                    }
                   }
                 ],
                 "vlanGroups": [
@@ -70689,7 +70982,7 @@
                             }
                           }
                         },
-                        "description": "Details related to organization management, possibly empty"
+                        "description": "Details related to organization management, possibly empty. Details may be named 'MSP ID', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any."
                       }
                     },
                     "description": "Information about the organization's management system"
@@ -70866,7 +71159,7 @@
                           }
                         }
                       },
-                      "description": "Details related to organization management, possibly empty"
+                      "description": "Details related to organization management, possibly empty. Details may be named 'MSP ID', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any."
                     }
                   },
                   "description": "Information about the organization's management system"
@@ -70998,7 +71291,7 @@
                           }
                         }
                       },
-                      "description": "Details related to organization management, possibly empty"
+                      "description": "Details related to organization management, possibly empty. Details may be named 'MSP ID', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any."
                     }
                   },
                   "description": "Information about the organization's management system"
@@ -71188,7 +71481,7 @@
                           }
                         }
                       },
-                      "description": "Details related to organization management, possibly empty"
+                      "description": "Details related to organization management, possibly empty. Details may be named 'MSP ID', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any."
                     }
                   },
                   "description": "Information about the organization's management system"
@@ -71309,6 +71602,41 @@
                     ]
                   },
                   "description": "A set of changes to make as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
@@ -71319,7 +71647,17 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "create"
                   }
-                ]
+                ],
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
               },
               "required": [
                 "actions"
@@ -71411,6 +71749,25 @@
                     ]
                   },
                   "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
                 }
               },
               "required": [
@@ -71441,7 +71798,12 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update"
                   }
-                ]
+                ],
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -71637,6 +71999,25 @@
                     ]
                   },
                   "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
                 }
               },
               "required": [
@@ -71667,7 +72048,12 @@
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
                     "operation": "update"
                   }
-                ]
+                ],
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
               }
             }
           }
@@ -80639,7 +81025,7 @@
                           }
                         }
                       },
-                      "description": "Details related to organization management, possibly empty"
+                      "description": "Details related to organization management, possibly empty. Details may be named 'MSP ID', 'IP restriction mode for API', or 'IP restriction mode for dashboard', if the organization admin has configured any."
                     }
                   },
                   "description": "Information about the organization's management system"
@@ -82360,6 +82746,10 @@
                     "type": "string",
                     "description": "Model of the device"
                   },
+                  "imei": {
+                    "type": "string",
+                    "description": "IMEI of the device, if applicable"
+                  },
                   "mac": {
                     "type": "string",
                     "description": "MAC address of the device"
@@ -82416,6 +82806,7 @@
                   "networkId": "N_24329156",
                   "serial": "Q234-ABCD-5678",
                   "model": "MR34",
+                  "imei": "123456789000000",
                   "mac": "00:11:22:33:44:55",
                   "lanIp": "1.2.3.4",
                   "firmware": "wireless-25-14",
@@ -85398,7 +85789,7 @@
             },
             "name": "networkIds",
             "in": "query",
-            "description": "Search for devices in inventory based on network ids."
+            "description": "Search for devices in inventory based on network ids. Use explicit 'null' value to get available devices only."
           },
           {
             "type": "array",
@@ -91786,6 +92177,80 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/switch/power/history": {
+      "get": {
+        "description": "Returns the total PoE power draw for all switch ports in the organization over the requested timespan (by default the last 24 hours). The returned array is a newest-first list of intervals. The time between intervals depends on the requested timespan with 20 minute intervals used for timespans up to 1 day, 4 hour intervals used for timespans up to 2 weeks, and 1 day intervals for timespans larger than 2 weeks.",
+        "operationId": "getOrganizationSummarySwitchPowerHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "maximum": 2678400,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Timestamp of the start of the interval."
+                  },
+                  "draw": {
+                    "type": "number",
+                    "format": "float",
+                    "description": "The PoE power draw in watts for all switch ports in the organization for the given interval."
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "ts": "2021-06-20T01:00:00.000Z",
+                  "draw": 5.4321
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns the total PoE power draw for all switch ports in the organization over the requested timespan (by default the last 24 hours)",
+        "tags": [
+          "switch",
+          "monitor",
+          "summary",
+          "power",
+          "history"
+        ]
+      }
+    },
     "/organizations/{organizationId}/summary/top/appliances/byUtilization": {
       "get": {
         "description": "Return the top 10 appliances sorted by utilization over given time range.",
@@ -93248,24 +93713,152 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "object"
+              "type": "object",
+              "properties": {
+                "alertTypeId": {
+                  "type": "string",
+                  "description": "The type ID of Meraki alert"
+                },
+                "alertType": {
+                  "type": "string",
+                  "description": "The type of Meraki alert"
+                },
+                "example": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "string",
+                      "description": "Version of the alert"
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "Shared secret for the alert"
+                    },
+                    "sentAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "When the alert notification was sent, in ISO8601 format"
+                    },
+                    "alertId": {
+                      "type": "string",
+                      "description": "ID for the alert instance"
+                    },
+                    "alertLevel": {
+                      "type": "string",
+                      "enum": [
+                        "critical",
+                        "informational",
+                        "warning"
+                      ],
+                      "description": "Severity level of the alert"
+                    },
+                    "occurredAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "When the alert occurred, in ISO8601 format"
+                    },
+                    "alertData": {
+                      "type": "object",
+                      "description": "Data for the specific alert. Contents depend on the type of the alert",
+                      "additionalProperties": true
+                    },
+                    "organizationId": {
+                      "type": "string",
+                      "description": "ID of the organization associated with the alert"
+                    },
+                    "organizationName": {
+                      "type": "string",
+                      "description": "Name of the organization associated with the alert"
+                    },
+                    "organizationUrl": {
+                      "type": "string",
+                      "description": "URL of the organization associated with the alert"
+                    },
+                    "deviceSerial": {
+                      "type": "string",
+                      "description": "Serial for the device associated with the alert"
+                    },
+                    "deviceMac": {
+                      "type": "string",
+                      "description": "Mac address for the device associated with the alert"
+                    },
+                    "deviceName": {
+                      "type": "string",
+                      "description": "Name of the device associated with the alert"
+                    },
+                    "deviceUrl": {
+                      "type": "string",
+                      "description": "URL of the device associated with the alert"
+                    },
+                    "deviceTags": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of tags for the device associated with the alert"
+                    },
+                    "deviceModel": {
+                      "type": "string",
+                      "description": "Model of the device associated with the alert"
+                    },
+                    "networkId": {
+                      "type": "string",
+                      "description": "ID of the network associated with the alert"
+                    },
+                    "networkName": {
+                      "type": "string",
+                      "description": "Name of the network associated with the alert"
+                    },
+                    "networkUrl": {
+                      "type": "string",
+                      "description": "URL of the network associated with the alert"
+                    },
+                    "enrollmentString": {
+                      "type": "string",
+                      "description": "Enrollment string of the network associated with the alert"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Notes for the network associated with the alert"
+                    },
+                    "productTypes": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "appliance",
+                          "camera",
+                          "cellularGateway",
+                          "sensor",
+                          "switch",
+                          "systemsManager",
+                          "wireless"
+                        ]
+                      },
+                      "description": "List of product types that are part of the network associated with the alert"
+                    },
+                    "encryptedId": {
+                      "type": "string",
+                      "description": "Encrypted ID of the network associated with the alert"
+                    }
+                  },
+                  "description": "Example alert type"
+                }
               }
             },
             "examples": {
-              "application/json": [
-                {
-                  "alertTypeId": "stopped_reporting",
-                  "alertType": "APs went down",
+              "application/json": {
+                "alertTypeId": "stopped_reporting",
+                "alertType": "APs went down",
+                "example": {
                   "version": "0.1",
                   "sharedSecret": "secret",
-                  "sentAt": "2020-07-11T00:03:12.331789Z",
+                  "sentAt": "2018-02-11T00:00:00.090210Z",
                   "alertId": "0000000000000000",
                   "alertLevel": "warning",
-                  "occurredAt": "2018-02-11T00:00:00.123450Z",
+                  "occurredAt": "2018-02-11T00:00:00.090210Z",
                   "alertData": {
-
+                    "automationId": "0000000000000000"
                   },
                   "organizationId": "2930418",
                   "organizationName": "My organization",
@@ -93288,9 +93881,10 @@
                     "appliance",
                     "switch",
                     "wireless"
-                  ]
+                  ],
+                  "encryptedId": "6GREra"
                 }
-              ]
+              }
             }
           }
         },
@@ -93300,6 +93894,133 @@
           "monitor",
           "webhooks",
           "alertTypes"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/webhooks/callbacks/statuses/{callbackId}": {
+      "get": {
+        "description": "Return the status of an API callback",
+        "operationId": "getOrganizationWebhooksCallbacksStatus",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "callbackId",
+            "in": "path",
+            "description": "Callback ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "callbackId": {
+                  "type": "string",
+                  "description": "The ID of the callback"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "completed",
+                    "failed",
+                    "running"
+                  ],
+                  "description": "The status of the callback"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The errors returned by the callback"
+                },
+                "createdBy": {
+                  "type": "object",
+                  "properties": {
+                    "adminId": {
+                      "type": "string",
+                      "description": "The ID of the user who initiated the callback"
+                    }
+                  },
+                  "description": "Information around who initiated the callback"
+                },
+                "webhook": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The webhook receiver URL where the callback will be sent"
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information"
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook"
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template"
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    },
+                    "sentAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp the callback was sent to the webhook receiver"
+                    }
+                  },
+                  "description": "The webhook receiver used by the callback to send results"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "callbackId": "1284392014819",
+                "status": "completed",
+                "errors": [
+                  "Callback failed"
+                ],
+                "createdBy": {
+                  "adminId": "212406"
+                },
+                "webhook": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  },
+                  "sentAt": "2018-02-11T00:00:00.090210Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the status of an API callback",
+        "tags": [
+          "organizations",
+          "configure",
+          "webhooks",
+          "callbacks",
+          "statuses"
         ]
       }
     },
@@ -95187,6 +95908,9 @@
       "name": "bypassActivationLockAttempts"
     },
     {
+      "name": "callbacks"
+    },
+    {
       "name": "categories"
     },
     {
@@ -95548,6 +96272,9 @@
     },
     {
       "name": "ports"
+    },
+    {
+      "name": "power"
     },
     {
       "name": "powerModules"
@@ -96063,15 +96790,15 @@
     },
     {
       "group": "Device",
-      "summary": "Claim devices into a network. (Note: for recently claimed devices, it may take a few minutes for API requsts against that device to succeed)",
-      "resource": "/networks/{networkId}/devices",
-      "operation": "claim"
-    },
-    {
-      "group": "Device",
       "summary": "Remove a single device",
       "resource": "/networks/{networkId}/devices",
       "operation": "remove"
+    },
+    {
+      "group": "Device",
+      "summary": "Claim devices into a network. (Note: for recently claimed devices, it may take a few minutes for API requsts against that device to succeed)",
+      "resource": "/networks/{networkId}/devices/claim",
+      "operation": "claim"
     },
     {
       "group": "Dhcp server policy",
@@ -96910,7 +97637,7 @@
     {
       "group": "Vmx",
       "summary": "Claim a vMX into a network",
-      "resource": "/networks/{networkId}/devices/claim",
+      "resource": "/networks/{networkId}/devices/claim/vmx",
       "operation": "claim"
     },
     {
