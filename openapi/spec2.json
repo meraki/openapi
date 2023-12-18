@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.40.0",
+    "version": "1.41.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 06 December, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 December, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -145,6 +145,791 @@
           "monitor",
           "identities",
           "me"
+        ]
+      }
+    },
+    "/administered/licensing/subscription/subscriptions": {
+      "get": {
+        "description": "List available subscriptions",
+        "operationId": "getAdministeredLicensingSubscriptionSubscriptions",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "subscriptionIds",
+            "in": "query",
+            "description": "List of subscription ids to fetch"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "organizationIds",
+            "in": "query",
+            "description": "Organizations to get associated subscriptions for"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "name": "startDate",
+            "in": "query",
+            "description": "Filter subscriptions by start date, ISO 8601 format. To filter with a range of dates, use 'startDate[<option>]=?' in the request. Accepted options include lt, gt, lte, gte."
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "name": "endDate",
+            "in": "query",
+            "description": "Filter subscriptions by end date, ISO 8601 format. To filter with a range of dates, use 'endDate[<option>]=?' in the request. Accepted options include lt, gt, lte, gte."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "active",
+                "canceled",
+                "expired",
+                "inactive"
+              ]
+            },
+            "name": "statuses",
+            "in": "query",
+            "description": "List of statuses that returned subscriptions can have"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "appliance",
+                "camera",
+                "cellularGateway",
+                "sensor",
+                "switch",
+                "systemsManager",
+                "wireless"
+              ]
+            },
+            "name": "productTypes",
+            "in": "query",
+            "description": "List of product types that returned subscriptions need to have entitlements for."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "subscriptionId": {
+                    "type": "string",
+                    "description": "Subscription's ID"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Subscription name"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Subscription description"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "canceled",
+                      "expired",
+                      "inactive"
+                    ],
+                    "description": "Subscription status"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Subscription start date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Subscription expiration date"
+                  },
+                  "webOrderId": {
+                    "type": "string",
+                    "description": "Web order id"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "appliance",
+                        "camera",
+                        "cellularGateway",
+                        "sensor",
+                        "switch",
+                        "systemsManager",
+                        "wireless"
+                      ]
+                    },
+                    "description": "Products the subscription has entitlements for"
+                  },
+                  "entitlements": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "sku": {
+                          "type": "string",
+                          "description": "SKU of the required product"
+                        },
+                        "seats": {
+                          "type": "object",
+                          "properties": {
+                            "assigned": {
+                              "type": "integer",
+                              "description": "Number of seats in use"
+                            },
+                            "available": {
+                              "type": "integer",
+                              "description": "Number of seats available for use"
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "description": "Total number of seats provided by this subscription for this sku"
+                            }
+                          },
+                          "description": "Seat distribution"
+                        }
+                      }
+                    },
+                    "description": "Entitlement info"
+                  },
+                  "counts": {
+                    "type": "object",
+                    "properties": {
+                      "seats": {
+                        "type": "object",
+                        "properties": {
+                          "assigned": {
+                            "type": "integer",
+                            "description": "Number of seats in use"
+                          },
+                          "available": {
+                            "type": "integer",
+                            "description": "Number of seats available for use"
+                          },
+                          "limit": {
+                            "type": "integer",
+                            "description": "Total number of seats provided by this subscription"
+                          }
+                        },
+                        "description": "Seat distribution"
+                      },
+                      "networks": {
+                        "type": "integer",
+                        "description": "Number of networks bound to this subscription"
+                      }
+                    },
+                    "description": "Numeric breakdown of network and entitlement counts"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "subscriptionId": "2345",
+                  "name": "Corporate subscription",
+                  "description": "A description",
+                  "status": "active",
+                  "startDate": "2027-06-30T00:00:00Z",
+                  "endDate": "2028-06-30T00:00:00Z",
+                  "webOrderId": "55598764",
+                  "productTypes": [
+                    "wireless"
+                  ],
+                  "entitlements": [
+                    {
+                      "sku": "LIC-MS-400-L-A",
+                      "seats": {
+                        "assigned": 10,
+                        "available": 15,
+                        "limit": 25
+                      }
+                    }
+                  ],
+                  "counts": {
+                    "seats": {
+                      "assigned": 10,
+                      "available": 15,
+                      "limit": 25
+                    },
+                    "networks": 1
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List available subscriptions",
+        "tags": [
+          "licensing",
+          "configure",
+          "subscription",
+          "subscriptions"
+        ]
+      }
+    },
+    "/administered/licensing/subscription/subscriptions/claim": {
+      "post": {
+        "description": "Claim a subscription into an organization.",
+        "operationId": "claimAdministeredLicensingSubscriptionSubscriptions",
+        "parameters": [
+          {
+            "name": "claimAdministeredLicensingSubscriptionSubscriptions",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "claimKey": {
+                  "type": "string",
+                  "description": "The subscription's claim key"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "The id of the organization claiming the subscription"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Friendly name to identify the subscription"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Extra details or notes about the subscription"
+                }
+              },
+              "example": {
+                "claimKey": "S2345-6789A-BCDEF-GHJKM",
+                "organizationId": "12345678910",
+                "name": "Corporate subscription",
+                "description": "Subscription for all main offices"
+              },
+              "required": [
+                "claimKey",
+                "organizationId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subscriptionId": {
+                  "type": "string",
+                  "description": "Subscription's ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Subscription name"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Subscription description"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "canceled",
+                    "expired",
+                    "inactive"
+                  ],
+                  "description": "Subscription status"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Subscription start date"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Subscription expiration date"
+                },
+                "webOrderId": {
+                  "type": "string",
+                  "description": "Web order id"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "appliance",
+                      "camera",
+                      "cellularGateway",
+                      "sensor",
+                      "switch",
+                      "systemsManager",
+                      "wireless"
+                    ]
+                  },
+                  "description": "Products the subscription has entitlements for"
+                },
+                "entitlements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sku": {
+                        "type": "string",
+                        "description": "SKU of the required product"
+                      },
+                      "seats": {
+                        "type": "object",
+                        "properties": {
+                          "assigned": {
+                            "type": "integer",
+                            "description": "Number of seats in use"
+                          },
+                          "available": {
+                            "type": "integer",
+                            "description": "Number of seats available for use"
+                          },
+                          "limit": {
+                            "type": "integer",
+                            "description": "Total number of seats provided by this subscription for this sku"
+                          }
+                        },
+                        "description": "Seat distribution"
+                      }
+                    }
+                  },
+                  "description": "Entitlement info"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "seats": {
+                      "type": "object",
+                      "properties": {
+                        "assigned": {
+                          "type": "integer",
+                          "description": "Number of seats in use"
+                        },
+                        "available": {
+                          "type": "integer",
+                          "description": "Number of seats available for use"
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Total number of seats provided by this subscription"
+                        }
+                      },
+                      "description": "Seat distribution"
+                    },
+                    "networks": {
+                      "type": "integer",
+                      "description": "Number of networks bound to this subscription"
+                    }
+                  },
+                  "description": "Numeric breakdown of network and entitlement counts"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "subscriptionId": "2345",
+                "name": "Corporate subscription",
+                "description": "A description",
+                "status": "active",
+                "startDate": "2027-06-30T00:00:00Z",
+                "endDate": "2028-06-30T00:00:00Z",
+                "webOrderId": "55598764",
+                "productTypes": [
+                  "wireless"
+                ],
+                "entitlements": [
+                  {
+                    "sku": "LIC-MS-400-L-A",
+                    "seats": {
+                      "assigned": 10,
+                      "available": 15,
+                      "limit": 25
+                    }
+                  }
+                ],
+                "counts": {
+                  "seats": {
+                    "assigned": 10,
+                    "available": 15,
+                    "limit": 25
+                  },
+                  "networks": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Claim a subscription into an organization.",
+        "tags": [
+          "licensing",
+          "configure",
+          "subscription",
+          "subscriptions"
+        ]
+      }
+    },
+    "/administered/licensing/subscription/subscriptions/claimKey/validate": {
+      "post": {
+        "description": "Find a subscription by claim key. Returns 400 if the key has already been claimed.",
+        "operationId": "validateAdministeredLicensingSubscriptionSubscriptionsClaimKey",
+        "parameters": [
+          {
+            "name": "validateAdministeredLicensingSubscriptionSubscriptionsClaimKey",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "claimKey": {
+                  "type": "string",
+                  "description": "The subscription's claim key"
+                }
+              },
+              "example": {
+                "claimKey": "S2345-6789A-BCDEF-GHJKM"
+              },
+              "required": [
+                "claimKey"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subscriptionId": {
+                  "type": "string",
+                  "description": "Subscription's ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Subscription name"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Subscription description"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "canceled",
+                    "expired",
+                    "inactive"
+                  ],
+                  "description": "Subscription status"
+                },
+                "startDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Subscription start date"
+                },
+                "endDate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Subscription expiration date"
+                },
+                "webOrderId": {
+                  "type": "string",
+                  "description": "Web order id"
+                },
+                "productTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "appliance",
+                      "camera",
+                      "cellularGateway",
+                      "sensor",
+                      "switch",
+                      "systemsManager",
+                      "wireless"
+                    ]
+                  },
+                  "description": "Products the subscription has entitlements for"
+                },
+                "entitlements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sku": {
+                        "type": "string",
+                        "description": "SKU of the required product"
+                      },
+                      "seats": {
+                        "type": "object",
+                        "properties": {
+                          "assigned": {
+                            "type": "integer",
+                            "description": "Number of seats in use"
+                          },
+                          "available": {
+                            "type": "integer",
+                            "description": "Number of seats available for use"
+                          },
+                          "limit": {
+                            "type": "integer",
+                            "description": "Total number of seats provided by this subscription for this sku"
+                          }
+                        },
+                        "description": "Seat distribution"
+                      }
+                    }
+                  },
+                  "description": "Entitlement info"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "seats": {
+                      "type": "object",
+                      "properties": {
+                        "assigned": {
+                          "type": "integer",
+                          "description": "Number of seats in use"
+                        },
+                        "available": {
+                          "type": "integer",
+                          "description": "Number of seats available for use"
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "description": "Total number of seats provided by this subscription"
+                        }
+                      },
+                      "description": "Seat distribution"
+                    },
+                    "networks": {
+                      "type": "integer",
+                      "description": "Number of networks bound to this subscription"
+                    }
+                  },
+                  "description": "Numeric breakdown of network and entitlement counts"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "subscriptionId": "2345",
+                "name": "Corporate subscription",
+                "description": "A description",
+                "status": "active",
+                "startDate": "2027-06-30T00:00:00Z",
+                "endDate": "2028-06-30T00:00:00Z",
+                "webOrderId": "55598764",
+                "productTypes": [
+                  "wireless"
+                ],
+                "entitlements": [
+                  {
+                    "sku": "LIC-MS-400-L-A",
+                    "seats": {
+                      "assigned": 10,
+                      "available": 15,
+                      "limit": 25
+                    }
+                  }
+                ],
+                "counts": {
+                  "seats": {
+                    "assigned": 10,
+                    "available": 15,
+                    "limit": 25
+                  },
+                  "networks": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Find a subscription by claim key",
+        "tags": [
+          "licensing",
+          "configure",
+          "subscription",
+          "subscriptions",
+          "claimKey"
+        ]
+      }
+    },
+    "/administered/licensing/subscription/subscriptions/{subscriptionId}/bind": {
+      "post": {
+        "description": "Bind networks to a subscription",
+        "operationId": "bindAdministeredLicensingSubscriptionSubscription",
+        "parameters": [
+          {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "Subscription ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "boolean",
+            "name": "validate",
+            "in": "query",
+            "description": "Check if the provided networks can be bound to the subscription. Returns any licensing problems and does not commit the results."
+          },
+          {
+            "name": "bindAdministeredLicensingSubscriptionSubscription",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "networkIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "List of network ids to bind to the subscription"
+                }
+              },
+              "example": {
+                "networkIds": [
+                  "L_1234",
+                  "N_5678"
+                ],
+                "validate": true
+              },
+              "required": [
+                "networkIds"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subscriptionId": {
+                  "type": "string",
+                  "description": "Subscription ID"
+                },
+                "networks": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Network ID"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Network name"
+                      }
+                    }
+                  },
+                  "description": "Unbound networks"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of errors if failed"
+                },
+                "insufficientEntitlements": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sku": {
+                        "type": "string",
+                        "description": "SKU of the required product"
+                      },
+                      "quantity": {
+                        "type": "integer",
+                        "description": "Number required"
+                      }
+                    }
+                  },
+                  "description": "A list of entitlements required to successfully bind the networks to the subscription"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "subscriptionId": "XY1234567",
+                "networks": [
+                  {
+                    "id": "L_1234",
+                    "name": "Corporate network"
+                  }
+                ],
+                "errors": [
+                  "Insufficient licenses"
+                ],
+                "insufficientEntitlements": [
+                  {
+                    "sku": "LIC-MS-400-L-A",
+                    "quantity": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Bind networks to a subscription",
+        "tags": [
+          "licensing",
+          "configure",
+          "subscription",
+          "subscriptions"
         ]
       }
     },
@@ -3303,6 +4088,10 @@
                     "enabled": {
                       "type": "boolean",
                       "description": "Failover to secondary SIM (optional)"
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "description": "Failover timeout in seconds (optional)"
                     }
                   },
                   "description": "SIM Failover settings."
@@ -9338,9 +10127,6 @@
                   },
                   "alertData": {
                     "type": "object",
-                    "properties": {
-
-                    },
                     "description": "relevant data about the event that caused the alert"
                   }
                 }
@@ -9539,9 +10325,6 @@
                       },
                       "filters": {
                         "type": "object",
-                        "properties": {
-
-                        },
                         "description": "A hash of specific configuration data for the alert. Only filters specific to the alert will be updated."
                       }
                     },
@@ -15564,9 +16347,6 @@
                 },
                 "fixedIpAssignments": {
                   "type": "object",
-                  "properties": {
-
-                  },
                   "description": "The DHCP fixed IP assignments on the static route. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                 },
                 "reservedIpRanges": {
@@ -18124,8 +18904,19 @@
                   },
                   "fixedIpAssignments": {
                     "type": "object",
-                    "properties": {
-
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "ip": {
+                          "type": "string",
+                          "description": "IP address of the assignment"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the IP assignment"
+                        }
+                      },
+                      "description": "IP assignment information, keyed by MAC address of the device"
                     },
                     "description": "The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                   },
@@ -18276,6 +19067,12 @@
                   "dhcpBootOptionsEnabled": false,
                   "dhcpBootNextServer": "1.2.3.4",
                   "dhcpBootFilename": "sample.file",
+                  "fixedIpAssignments": {
+                    "00:11:22:33:44:55": {
+                      "ip": "1.2.3.4",
+                      "name": "My favorite IP"
+                    }
+                  },
                   "reservedIpRanges": [
                     {
                       "start": "192.168.1.0",
@@ -18826,8 +19623,19 @@
                 },
                 "fixedIpAssignments": {
                   "type": "object",
-                  "properties": {
-
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "IP address of the assignment"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the IP assignment"
+                      }
+                    },
+                    "description": "IP assignment information, keyed by MAC address of the device"
                   },
                   "description": "The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                 },
@@ -18976,6 +19784,12 @@
                 "dhcpBootOptionsEnabled": false,
                 "dhcpBootNextServer": "1.2.3.4",
                 "dhcpBootFilename": "sample.file",
+                "fixedIpAssignments": {
+                  "00:11:22:33:44:55": {
+                    "ip": "1.2.3.4",
+                    "name": "My favorite IP"
+                  }
+                },
                 "reservedIpRanges": [
                   {
                     "start": "192.168.1.0",
@@ -19108,9 +19922,6 @@
                 },
                 "fixedIpAssignments": {
                   "type": "object",
-                  "properties": {
-
-                  },
                   "description": "The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                 },
                 "reservedIpRanges": {
@@ -19409,8 +20220,19 @@
                 },
                 "fixedIpAssignments": {
                   "type": "object",
-                  "properties": {
-
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "IP address of the assignment"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the IP assignment"
+                      }
+                    },
+                    "description": "IP assignment information, keyed by MAC address of the device"
                   },
                   "description": "The DHCP fixed IP assignments on the VLAN. This should be an object that contains mappings from MAC addresses to objects that themselves each contain \"ip\" and \"name\" string fields. See the sample request/response for more details."
                 },
@@ -19559,6 +20381,12 @@
                 "dhcpBootOptionsEnabled": false,
                 "dhcpBootNextServer": "1.2.3.4",
                 "dhcpBootFilename": "sample.file",
+                "fixedIpAssignments": {
+                  "00:11:22:33:44:55": {
+                    "ip": "1.2.3.4",
+                    "name": "My favorite IP"
+                  }
+                },
                 "reservedIpRanges": [
                   {
                     "start": "192.168.1.0",
@@ -19710,7 +20538,7 @@
                 },
                 "ibgpHoldTimer": {
                   "type": "integer",
-                  "description": "The IBGP holdtimer in seconds. The IBGP holdtimer must be an integer between 12 and 240. When absent, this field is not updated. If no value exists then it defaults to 240."
+                  "description": "The iBGP holdtimer in seconds. The iBGP holdtimer must be an integer between 12 and 240. When absent, this field is not updated. If no value exists then it defaults to 240."
                 },
                 "neighbors": {
                   "type": "array",
@@ -19748,11 +20576,11 @@
                       },
                       "ebgpHoldTimer": {
                         "type": "integer",
-                        "description": "The EBGP hold timer in seconds for each neighbor. The EBGP hold timer must be an integer between 12 and 240."
+                        "description": "The eBGP hold timer in seconds for each neighbor. The eBGP hold timer must be an integer between 12 and 240."
                       },
                       "ebgpMultihop": {
                         "type": "integer",
-                        "description": "Configure this if the neighbor is not adjacent. The EBGP multi-hop must be an integer between 1 and 255."
+                        "description": "Configure this if the neighbor is not adjacent. The eBGP multi-hop must be an integer between 1 and 255."
                       },
                       "sourceInterface": {
                         "type": "string",
@@ -35318,9 +36146,6 @@
                 },
                 "authentication": {
                   "type": "object",
-                  "properties": {
-
-                  },
                   "description": "Authentication settings of the MQTT broker"
                 }
               },
@@ -35497,9 +36322,6 @@
                 },
                 "authentication": {
                   "type": "object",
-                  "properties": {
-
-                  },
                   "description": "Authentication settings of the MQTT broker"
                 }
               },
@@ -68480,9 +69302,6 @@
                             },
                             "authenticationTypes": {
                               "type": "object",
-                              "properties": {
-
-                              },
                               "description": "The authentication types for the method. These should be formatted as an object with the EAP method category in camelcase as the key and the list of types as the value (nonEapInnerAuthentication: Reserved, PAP, CHAP, MSCHAP, MSCHAPV2; eapInnerAuthentication: EAP-TLS, EAP-SIM, EAP-AKA, EAP-TTLS with MSCHAPv2; credentials: SIM, USIM, NFC Secure Element, Hardware Token, Softoken, Certificate, username/password, none, Reserved, Vendor Specific; tunneledEapMethodCredentials: SIM, USIM, NFC Secure Element, Hardware Token, Softoken, Certificate, username/password, Reserved, Anonymous, Vendor Specific)"
                             }
                           }
@@ -71587,9 +72406,6 @@
                       },
                       "body": {
                         "type": "object",
-                        "properties": {
-
-                        },
                         "description": "The body of the action",
                         "default": {
 
@@ -86158,10 +86974,7 @@
           "202": {
             "description": "Successful operation",
             "schema": {
-              "type": "object",
-              "properties": {
-
-              }
+              "type": "object"
             },
             "examples": {
               "application/json": {
@@ -95938,6 +96751,9 @@
       "name": "claim"
     },
     {
+      "name": "claimKey"
+    },
+    {
       "name": "clientCountHistory"
     },
     {
@@ -96443,6 +97259,12 @@
     },
     {
       "name": "subnets"
+    },
+    {
+      "name": "subscription"
+    },
+    {
+      "name": "subscriptions"
     },
     {
       "name": "summary"
