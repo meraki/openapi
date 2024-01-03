@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.41.0",
+    "version": "1.42.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 18 December, 2023\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 January, 2024\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -20584,7 +20584,7 @@
                       },
                       "sourceInterface": {
                         "type": "string",
-                        "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wired0', 'wired1' or 'vlan{VLAN ID}'(e.g. 'vlan123')."
+                        "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan1', 'wan2' or 'vlan{VLAN ID}'(e.g. 'vlan123')."
                       },
                       "nextHopIp": {
                         "type": "string",
@@ -29459,7 +29459,7 @@
                               "required": [
                                 "id"
                               ],
-                              "description": "The version to be updated to for switch catalyst devices"
+                              "description": "The version to be updated to for switch Catalyst devices"
                             }
                           },
                           "description": "The next upgrade version for the switch network"
@@ -72557,6 +72557,11 @@
                       "operation": {
                         "type": "string",
                         "description": "The operation to be used by this action"
+                      },
+                      "body": {
+                        "type": "object",
+                        "description": "Data provided in the body of the Action. Contents depend on the Action type",
+                        "additionalProperties": true
                       }
                     },
                     "required": [
@@ -72612,7 +72617,10 @@
                 "actions": [
                   {
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
-                    "operation": "update"
+                    "operation": "update",
+                    "body": {
+                      "enabled": false
+                    }
                   }
                 ],
                 "callback": {
@@ -72660,13 +72668,101 @@
             "schema": {
               "type": "array",
               "items": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "ID of the action batch. Can be used to check the status of the action batch at /organizations/{organizationId}/actionBatches/{actionBatchId}"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "ID of the organization this action batch belongs to"
+                  },
+                  "confirmed": {
+                    "type": "boolean",
+                    "description": "Flag describing whether the action should be previewed before executing or not"
+                  },
+                  "synchronous": {
+                    "type": "boolean",
+                    "description": "Flag describing whether actions should run synchronously or asynchronously"
+                  },
+                  "status": {
+                    "type": "object",
+                    "properties": {
+                      "completed": {
+                        "type": "boolean",
+                        "description": "Flag describing whether all actions in the action batch have completed"
+                      },
+                      "failed": {
+                        "type": "boolean",
+                        "description": "Flag describing whether any actions in the action batch failed"
+                      },
+                      "errors": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "List of errors encountered when running actions in the action batch"
+                      },
+                      "createdResources": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "ID of the created resource"
+                            },
+                            "uri": {
+                              "type": "string",
+                              "description": "URI, not including base, of the created resource"
+                            }
+                          }
+                        },
+                        "description": "Resources created as a result of this action batch"
+                      }
+                    },
+                    "required": [
+                      "createdResources"
+                    ],
+                    "description": "Status of action batch"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "resource": {
+                          "type": "string",
+                          "description": "Unique identifier for the resource to be acted on"
+                        },
+                        "operation": {
+                          "type": "string",
+                          "description": "The operation to be used by this action"
+                        },
+                        "body": {
+                          "type": "object",
+                          "description": "Data provided in the body of the Action. Contents depend on the Action type",
+                          "additionalProperties": true
+                        }
+                      },
+                      "required": [
+                        "resource",
+                        "operation"
+                      ]
+                    },
+                    "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                  }
+                },
+                "required": [
+                  "actions"
+                ]
               }
             },
             "examples": {
               "application/json": [
                 {
-                  "id": "123",
+                  "id": "1234",
                   "organizationId": "2930418",
                   "confirmed": true,
                   "synchronous": false,
@@ -72678,7 +72774,7 @@
                     ],
                     "createdResources": [
                       {
-                        "id": 100,
+                        "id": "1284392014819",
                         "uri": "/networks/L_XXXXX/groupPolicies/100"
                       }
                     ]
@@ -72689,13 +72785,6 @@
                       "operation": "update",
                       "body": {
                         "enabled": false
-                      }
-                    },
-                    {
-                      "resource": "/networks/L_XXXXX/groupPolicies",
-                      "operation": "create",
-                      "body": {
-                        "name": "Group 1"
                       }
                     }
                   ]
@@ -72807,6 +72896,11 @@
                       "operation": {
                         "type": "string",
                         "description": "The operation to be used by this action"
+                      },
+                      "body": {
+                        "type": "object",
+                        "description": "Data provided in the body of the Action. Contents depend on the Action type",
+                        "additionalProperties": true
                       }
                     },
                     "required": [
@@ -72862,7 +72956,10 @@
                 "actions": [
                   {
                     "resource": "/devices/QXXX-XXXX-XXXX/switch/ports/3",
-                    "operation": "update"
+                    "operation": "update",
+                    "body": {
+                      "enabled": false
+                    }
                   }
                 ],
                 "callback": {
@@ -72956,22 +73053,113 @@
           "200": {
             "description": "Successful operation",
             "schema": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "ID of the action batch. Can be used to check the status of the action batch at /organizations/{organizationId}/actionBatches/{actionBatchId}"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "ID of the organization this action batch belongs to"
+                },
+                "confirmed": {
+                  "type": "boolean",
+                  "description": "Flag describing whether the action should be previewed before executing or not"
+                },
+                "synchronous": {
+                  "type": "boolean",
+                  "description": "Flag describing whether actions should run synchronously or asynchronously"
+                },
+                "status": {
+                  "type": "object",
+                  "properties": {
+                    "completed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether all actions in the action batch have completed"
+                    },
+                    "failed": {
+                      "type": "boolean",
+                      "description": "Flag describing whether any actions in the action batch failed"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of errors encountered when running actions in the action batch"
+                    },
+                    "createdResources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the created resource"
+                          },
+                          "uri": {
+                            "type": "string",
+                            "description": "URI, not including base, of the created resource"
+                          }
+                        }
+                      },
+                      "description": "Resources created as a result of this action batch"
+                    }
+                  },
+                  "required": [
+                    "createdResources"
+                  ],
+                  "description": "Status of action batch"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "resource": {
+                        "type": "string",
+                        "description": "Unique identifier for the resource to be acted on"
+                      },
+                      "operation": {
+                        "type": "string",
+                        "description": "The operation to be used by this action"
+                      },
+                      "body": {
+                        "type": "object",
+                        "description": "Data provided in the body of the Action. Contents depend on the Action type",
+                        "additionalProperties": true
+                      }
+                    },
+                    "required": [
+                      "resource",
+                      "operation"
+                    ]
+                  },
+                  "description": "A set of changes made as part of this action (<a href='https://developer.cisco.com/meraki/api/#/rest/guides/action-batches/'>more details</a>)"
+                }
+              },
+              "required": [
+                "actions"
+              ]
             },
             "examples": {
               "application/json": {
-                "id": "123",
+                "id": "1234",
                 "organizationId": "2930418",
                 "confirmed": true,
                 "synchronous": false,
                 "status": {
-                  "completed": false,
+                  "completed": true,
                   "failed": false,
                   "errors": [
 
                   ],
                   "createdResources": [
-
+                    {
+                      "id": "1284392014819",
+                      "uri": "/networks/L_XXXXX/groupPolicies/100"
+                    }
                   ]
                 },
                 "actions": [
@@ -72980,13 +73168,6 @@
                     "operation": "update",
                     "body": {
                       "enabled": false
-                    }
-                  },
-                  {
-                    "resource": "/networks/L_XXXXX/groupPolicies",
-                    "operation": "create",
-                    "body": {
-                      "name": "Group 1"
                     }
                   }
                 ]
@@ -83300,6 +83481,10 @@
                     "type": "string",
                     "description": "The ID of the network that the configuration change was applied to. This attribute may be null."
                   },
+                  "networkUrl": {
+                    "type": "string",
+                    "description": "The url of the network that the configuration change was applied to. This attribute may be null."
+                  },
                   "ssidName": {
                     "type": "string",
                     "description": "The name of the ssid that the configuration change was applied to, if applicable. This attribute may be null."
@@ -83342,6 +83527,7 @@
                   "adminId": "212406",
                   "networkName": "Main Office",
                   "networkId": "N_24329156",
+                  "networkUrl": "https://n1.meraki.com//n//manage/nodes/list",
                   "ssidName": "My SSID",
                   "ssidNumber": 1,
                   "page": "via API",
@@ -83855,21 +84041,21 @@
             "type": "string",
             "name": "t0",
             "in": "query",
-            "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 31 days from today."
           },
           {
             "type": "string",
             "name": "t1",
             "in": "query",
-            "description": "The end of the timespan for the data. t1 can be a maximum of 14 days after t0."
+            "description": "The end of the timespan for the data. t1 can be a maximum of 31 days after t0."
           },
           {
             "type": "number",
             "format": "float",
-            "maximum": 1209600,
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
-            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
           },
           {
             "type": "array",
