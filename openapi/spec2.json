@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.42.0",
+    "version": "1.43.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 03 January, 2024\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 07 February, 2024\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -416,6 +416,12 @@
         "operationId": "claimAdministeredLicensingSubscriptionSubscriptions",
         "parameters": [
           {
+            "type": "boolean",
+            "name": "validate",
+            "in": "query",
+            "description": "Check if the provided claim key is valid and can be claimed into the organization."
+          },
+          {
             "name": "claimAdministeredLicensingSubscriptionSubscriptions",
             "in": "body",
             "schema": {
@@ -439,6 +445,7 @@
                 }
               },
               "example": {
+                "validate": true,
                 "claimKey": "S2345-6789A-BCDEF-GHJKM",
                 "organizationId": "12345678910",
                 "name": "Corporate subscription",
@@ -2892,6 +2899,7 @@
     },
     "/devices/{serial}/camera/analytics/live": {
       "get": {
+        "deprecated": true,
         "description": "Returns live state from camera of analytics zones",
         "operationId": "getDeviceCameraAnalyticsLive",
         "parameters": [
@@ -2932,6 +2940,7 @@
     },
     "/devices/{serial}/camera/analytics/overview": {
       "get": {
+        "deprecated": true,
         "description": "Returns an overview of aggregate analytics data for a timespan",
         "operationId": "getDeviceCameraAnalyticsOverview",
         "parameters": [
@@ -3006,6 +3015,7 @@
     },
     "/devices/{serial}/camera/analytics/recent": {
       "get": {
+        "deprecated": true,
         "description": "Returns most recent record for analytics zones",
         "operationId": "getDeviceCameraAnalyticsRecent",
         "parameters": [
@@ -3060,6 +3070,7 @@
     },
     "/devices/{serial}/camera/analytics/zones": {
       "get": {
+        "deprecated": true,
         "description": "Returns all configured analytic zones for this camera",
         "operationId": "getDeviceCameraAnalyticsZones",
         "parameters": [
@@ -3108,6 +3119,7 @@
     },
     "/devices/{serial}/camera/analytics/zones/{zoneId}/history": {
       "get": {
+        "deprecated": true,
         "description": "Return historical records for analytic zones",
         "operationId": "getDeviceCameraAnalyticsZoneHistory",
         "parameters": [
@@ -4611,6 +4623,634 @@
         ]
       }
     },
+    "/devices/{serial}/liveTools/arpTable": {
+      "post": {
+        "description": "Enqueue a job to perform a ARP table request for the device. This endpoint currently supports switches.",
+        "operationId": "createDeviceLiveToolsArpTable",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsArpTable",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
+                }
+              },
+              "example": {
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "arpTableId": {
+                  "type": "string",
+                  "description": "Id of the ARP table request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your ARP table request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    }
+                  },
+                  "description": "ARP table request parameters"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the ARP table request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "arpTableId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/arpTable/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678"
+                },
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to perform a ARP table request for the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "arpTable"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/arpTable/{arpTableId}": {
+      "get": {
+        "description": "Return an ARP table live tool job.",
+        "operationId": "getDeviceLiveToolsArpTable",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "arpTableId",
+            "in": "path",
+            "description": "Arp table ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "arpTableId": {
+                  "type": "string",
+                  "description": "Id of the ARP table request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your ARP table request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    }
+                  },
+                  "description": "ARP table request parameters"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the ARP table request."
+                },
+                "entries": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ip": {
+                        "type": "string",
+                        "description": "The IP address of the ARP table entry"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "The MAC address of the ARP table entry"
+                      },
+                      "vlanId": {
+                        "type": "integer",
+                        "description": "The VLAN ID of the ARP table entry"
+                      },
+                      "lastUpdatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Time of the last update of the ARP table entry"
+                      }
+                    }
+                  },
+                  "description": "The ARP table entries"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "An error message for a failed execution"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "arpTableId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/arpTable/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678"
+                },
+                "status": "complete",
+                "entries": [
+                  {
+                    "ip": "10.0.0.0/24",
+                    "mac": "00:11:22:33:44:55",
+                    "vlanId": 100,
+                    "lastUpdatedAt": "2018-02-11T00:00:00.090210Z"
+                  }
+                ],
+                "error": "The device is unreachable."
+              }
+            }
+          }
+        },
+        "summary": "Return an ARP table live tool job.",
+        "tags": [
+          "devices",
+          "liveTools",
+          "arpTable"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/cableTest": {
+      "post": {
+        "description": "Enqueue a job to perform a cable test for the device on the specified ports.",
+        "operationId": "createDeviceLiveToolsCableTest",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsCableTest",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ports": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "A list of ports for which to perform the cable test."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
+                }
+              },
+              "example": {
+                "ports": [
+                  "2",
+                  "8"
+                ],
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
+              },
+              "required": [
+                "ports"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cableTestId": {
+                  "type": "string",
+                  "description": "Id of the cable test request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your cable test request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    },
+                    "ports": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of ports for which to perform the cable test."
+                    }
+                  },
+                  "description": "Cable test request parameters"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the cable test request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "cableTestId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/cableTest/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "ports": [
+                    "2",
+                    "8"
+                  ]
+                },
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to perform a cable test for the device on the specified ports.",
+        "tags": [
+          "devices",
+          "liveTools",
+          "cableTest"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/cableTest/{id}": {
+      "get": {
+        "description": "Return a cable test live tool job.",
+        "operationId": "getDeviceLiveToolsCableTest",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cableTestId": {
+                  "type": "string",
+                  "description": "Id of the cable test request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your cable test request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    },
+                    "ports": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of ports for which to perform the cable test."
+                    }
+                  },
+                  "description": "Cable test request parameters"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the cable test request."
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "port": {
+                        "type": "string",
+                        "description": "The port for which the test was performed."
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "down",
+                          "error",
+                          "in-progress",
+                          "up"
+                        ],
+                        "description": "The current status of the port. If the cable test is still being performed on the port, \"in-progress\" is used. If an error occurred during the cable test, \"error\" is used and the error property will be populated."
+                      },
+                      "speedMbps": {
+                        "type": "integer",
+                        "description": "Speed in Mbps.  A speed of 0 indicates the port is down or the port speed is automatic."
+                      },
+                      "error": {
+                        "type": "string",
+                        "description": "If an error occurred during the cable test, the error message will be populated here."
+                      },
+                      "pairs": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "index": {
+                              "type": "integer",
+                              "enum": [
+                                0,
+                                1,
+                                2,
+                                3
+                              ],
+                              "description": "The index of the twisted pair tested."
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "abnormal",
+                                "couplex",
+                                "fail",
+                                "forced",
+                                "in-progress",
+                                "invalid",
+                                "not-supported",
+                                "ok",
+                                "open",
+                                "open or short",
+                                "short",
+                                "short or abnormal",
+                                "short or couplex",
+                                "unknown"
+                              ],
+                              "description": "The test result of the twisted pair tested."
+                            },
+                            "lengthMeters": {
+                              "type": "integer",
+                              "description": "The detected length of the twisted pair."
+                            }
+                          }
+                        },
+                        "description": "Results for each twisted pair within the cable."
+                      }
+                    }
+                  },
+                  "description": "Results of the cable test request, one for each requested port."
+                },
+                "error": {
+                  "type": "string",
+                  "description": "An error message for a failed execution"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "cableTestId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/cableTest/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "ports": [
+                    "2",
+                    "8"
+                  ]
+                },
+                "status": "complete",
+                "results": [
+                  {
+                    "port": "2",
+                    "status": "up",
+                    "speedMbps": 10000,
+                    "error": "An unexpected error occurred during the execution of the cable test.",
+                    "pairs": [
+                      {
+                        "index": 0,
+                        "status": "ok",
+                        "lengthMeters": 1
+                      }
+                    ]
+                  }
+                ],
+                "error": "The device is unreachable."
+              }
+            }
+          }
+        },
+        "summary": "Return a cable test live tool job.",
+        "tags": [
+          "devices",
+          "liveTools",
+          "cableTest"
+        ]
+      }
+    },
     "/devices/{serial}/liveTools/ping": {
       "post": {
         "description": "Enqueue a job to ping a target host from the device",
@@ -5291,6 +5931,280 @@
           "devices",
           "liveTools",
           "pingDevice"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/wakeOnLan": {
+      "post": {
+        "description": "Enqueue a job to send a Wake-on-LAN packet from the device",
+        "operationId": "createDeviceLiveToolsWakeOnLan",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsWakeOnLan",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "vlanId": {
+                  "type": "integer",
+                  "description": "The target's VLAN (1 to 4094)"
+                },
+                "mac": {
+                  "type": "string",
+                  "description": "The target's MAC address"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
+                }
+              },
+              "example": {
+                "vlanId": 12,
+                "mac": "00:11:22:33:44:55",
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
+              },
+              "required": [
+                "vlanId",
+                "mac"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wakeOnLanId": {
+                  "type": "string",
+                  "description": "ID of the Wake-on-LAN job"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your ping request"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the Wake-on-LAN request"
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    },
+                    "vlanId": {
+                      "type": "integer",
+                      "description": "The target's VLAN (1 to 4094)"
+                    },
+                    "mac": {
+                      "type": "string",
+                      "description": "The target's MAC address"
+                    }
+                  },
+                  "description": "The parameters of the Wake-on-LAN request"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "An error message for a failed execution"
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "wakeOnLanId": "123",
+                "url": "/devices/QXXX-YYYY-ZZZZ/liveTools/wakeOnLan/1738",
+                "status": "complete",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "vlanId": 12,
+                  "mac": "00:11:22:33:44:55"
+                },
+                "error": "The device is unreachable.",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a job to send a Wake-on-LAN packet from the device",
+        "tags": [
+          "devices",
+          "liveTools",
+          "wakeOnLan"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/wakeOnLan/{wakeOnLanId}": {
+      "get": {
+        "description": "Return a Wake-on-LAN job",
+        "operationId": "getDeviceLiveToolsWakeOnLan",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "wakeOnLanId",
+            "in": "path",
+            "description": "Wake on lan ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wakeOnLanId": {
+                  "type": "string",
+                  "description": "ID of the Wake-on-LAN job"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this url to check the status of your ping request"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the Wake-on-LAN request"
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    },
+                    "vlanId": {
+                      "type": "integer",
+                      "description": "The target's VLAN (1 to 4094)"
+                    },
+                    "mac": {
+                      "type": "string",
+                      "description": "The target's MAC address"
+                    }
+                  },
+                  "description": "The parameters of the Wake-on-LAN request"
+                },
+                "error": {
+                  "type": "string",
+                  "description": "An error message for a failed execution"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "wakeOnLanId": "123",
+                "url": "/devices/QXXX-YYYY-ZZZZ/liveTools/wakeOnLan/1738",
+                "status": "complete",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "vlanId": 12,
+                  "mac": "00:11:22:33:44:55"
+                },
+                "error": "The device is unreachable."
+              }
+            }
+          }
+        },
+        "summary": "Return a Wake-on-LAN job",
+        "tags": [
+          "devices",
+          "liveTools",
+          "wakeOnLan"
         ]
       }
     },
@@ -6249,6 +7163,19 @@
                     ],
                     "description": "The current connection status of the port."
                   },
+                  "spanningTree": {
+                    "type": "object",
+                    "properties": {
+                      "statuses": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The current Spanning Tree Protocol statuses of the port."
+                      }
+                    },
+                    "description": "The Spanning Tree Protocol (STP) information of the connected device."
+                  },
                   "isUplink": {
                     "type": "boolean",
                     "description": "Whether the port is the switch's uplink."
@@ -6489,6 +7416,11 @@
                   "portId": "1",
                   "enabled": true,
                   "status": "Connected",
+                  "spanningTree": {
+                    "statuses": [
+                      "Learning"
+                    ]
+                  },
                   "isUplink": false,
                   "errors": [
                     "PoE overload",
@@ -23329,7 +24261,7 @@
     },
     "/networks/{networkId}/clients": {
       "get": {
-        "description": "List the clients that have used this network in the timespan",
+        "description": "List the clients that have used this network in the timespan. The data is updated at most once every five minutes.",
         "operationId": "getNetworkClients",
         "parameters": [
           {
@@ -25404,9 +26336,10 @@
                     "100",
                     "large",
                     "medium",
-                    "small"
+                    "small",
+                    "xlarge"
                   ],
-                  "description": "The size of the vMX you claim. It can be one of: small, medium, large, 100"
+                  "description": "The size of the vMX you claim. It can be one of: small, medium, large, xlarge, 100"
                 }
               },
               "example": {
@@ -37276,13 +38209,21 @@
                   "items": {
                     "type": "string",
                     "enum": [
+                      "apparentPower",
+                      "co2",
+                      "current",
                       "door",
+                      "frequency",
                       "humidity",
                       "indoorAirQuality",
                       "noise",
                       "pm25",
+                      "powerFactor",
+                      "realPower",
                       "temperature",
                       "tvoc",
+                      "upstreamPower",
+                      "voltage",
                       "water"
                     ]
                   },
@@ -37291,9 +38232,25 @@
                 "counts": {
                   "type": "object",
                   "properties": {
+                    "apparentPower": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to apparent power readings"
+                    },
+                    "co2": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to CO2 readings"
+                    },
+                    "current": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to electrical current readings"
+                    },
                     "door": {
                       "type": "integer",
                       "description": "Number of sensors that are currently alerting due to an open door"
+                    },
+                    "frequency": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to frequency readings"
                     },
                     "humidity": {
                       "type": "integer",
@@ -37317,6 +38274,14 @@
                       "type": "integer",
                       "description": "Number of sensors that are currently alerting due to PM2.5 readings"
                     },
+                    "powerFactor": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to power factor readings"
+                    },
+                    "realPower": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to real power readings"
+                    },
                     "temperature": {
                       "type": "integer",
                       "description": "Number of sensors that are currently alerting due to temperature readings"
@@ -37324,6 +38289,14 @@
                     "tvoc": {
                       "type": "integer",
                       "description": "Number of sensors that are currently alerting due to TVOC readings"
+                    },
+                    "upstreamPower": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to an upstream power outage"
+                    },
+                    "voltage": {
+                      "type": "integer",
+                      "description": "Number of sensors that are currently alerting due to voltage readings"
                     },
                     "water": {
                       "type": "integer",
@@ -37342,15 +38315,23 @@
                   "door"
                 ],
                 "counts": {
+                  "apparentPower": 0,
+                  "co2": 0,
+                  "current": 0,
                   "door": 0,
+                  "frequency": 0,
                   "humidity": 1,
                   "indoorAirQuality": 0,
                   "noise": {
                     "ambient": 0
                   },
                   "pm25": 0,
+                  "powerFactor": 0,
+                  "realPower": 0,
                   "temperature": 4,
                   "tvoc": 0,
+                  "upstreamPower": 0,
+                  "voltage": 0,
                   "water": 0
                 }
               }
@@ -37428,9 +38409,25 @@
                   "counts": {
                     "type": "object",
                     "properties": {
+                      "apparentPower": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to apparent power readings"
+                      },
+                      "co2": {
+                        "type": "integer",
+                        "description": "Number of sensors that are currently alerting due to CO2 readings"
+                      },
+                      "current": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to electrical current readings"
+                      },
                       "door": {
                         "type": "integer",
                         "description": "Number of sensor alerts that occurred due to an open door"
+                      },
+                      "frequency": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to frequency readings"
                       },
                       "humidity": {
                         "type": "integer",
@@ -37454,6 +38451,14 @@
                         "type": "integer",
                         "description": "Number of sensor alerts that occurred due to PM2.5 readings"
                       },
+                      "powerFactor": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to power factor readings"
+                      },
+                      "realPower": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to real power readings"
+                      },
                       "temperature": {
                         "type": "integer",
                         "description": "Number of sensor alerts that occurred due to temperature readings"
@@ -37461,6 +38466,14 @@
                       "tvoc": {
                         "type": "integer",
                         "description": "Number of sensor alerts that occurred due to TVOC readings"
+                      },
+                      "upstreamPower": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to upstream power outages"
+                      },
+                      "voltage": {
+                        "type": "integer",
+                        "description": "Number of sensor alerts that occurred due to voltage readings"
                       },
                       "water": {
                         "type": "integer",
@@ -37478,15 +38491,23 @@
                   "startTs": "2022-08-21T00:00:00Z",
                   "endTs": "2022-08-27T23:59:59Z",
                   "counts": {
+                    "apparentPower": 0,
+                    "co2": 0,
+                    "current": 0,
                     "door": 0,
+                    "frequency": 1,
                     "humidity": 1,
                     "indoorAirQuality": 0,
                     "noise": {
                       "ambient": 2
                     },
                     "pm25": 0,
+                    "powerFactor": 0,
+                    "realPower": 0,
                     "temperature": 4,
                     "tvoc": 0,
+                    "upstreamPower": 0,
+                    "voltage": 0,
                     "water": 0
                   }
                 }
@@ -37554,7 +38575,7 @@
                       "properties": {
                         "metric": {
                           "type": "string",
-                          "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                          "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                         },
                         "threshold": {
                           "type": "object",
@@ -37719,6 +38740,102 @@
                                 }
                               },
                               "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                            },
+                            "realPower": {
+                              "type": "object",
+                              "properties": {
+                                "draw": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                                }
+                              },
+                              "required": [
+                                "draw"
+                              ],
+                              "description": "Real power threshold. 'draw' must be provided."
+                            },
+                            "apparentPower": {
+                              "type": "object",
+                              "properties": {
+                                "draw": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                                }
+                              },
+                              "required": [
+                                "draw"
+                              ],
+                              "description": "Apparent power threshold. 'draw' must be provided."
+                            },
+                            "powerFactor": {
+                              "type": "object",
+                              "properties": {
+                                "percentage": {
+                                  "type": "integer",
+                                  "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                                }
+                              },
+                              "required": [
+                                "percentage"
+                              ],
+                              "description": "Power factor threshold. 'percentage' must be provided."
+                            },
+                            "current": {
+                              "type": "object",
+                              "properties": {
+                                "draw": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in amps. Must be between 0 and 15."
+                                }
+                              },
+                              "required": [
+                                "draw"
+                              ],
+                              "description": "Electrical current threshold. 'level' must be provided."
+                            },
+                            "voltage": {
+                              "type": "object",
+                              "properties": {
+                                "level": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in volts. Must be between 0 and 250."
+                                }
+                              },
+                              "required": [
+                                "level"
+                              ],
+                              "description": "Voltage threshold. 'level' must be provided."
+                            },
+                            "frequency": {
+                              "type": "object",
+                              "properties": {
+                                "level": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                                }
+                              },
+                              "required": [
+                                "level"
+                              ],
+                              "description": "Electrical frequency threshold. 'level' must be provided."
+                            },
+                            "upstreamPower": {
+                              "type": "object",
+                              "properties": {
+                                "outageDetected": {
+                                  "type": "boolean",
+                                  "description": "Alerting threshold for an upstream power event. Must be set to true."
+                                }
+                              },
+                              "required": [
+                                "outageDetected"
+                              ],
+                              "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                             }
                           },
                           "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -37729,7 +38846,7 @@
                             "above",
                             "below"
                           ],
-                          "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                          "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                         },
                         "duration": {
                           "type": "integer",
@@ -37844,6 +38961,27 @@
                         "indoorAirQuality": {
                           "score": 80,
                           "quality": "fair"
+                        },
+                        "realPower": {
+                          "draw": 14.1
+                        },
+                        "apparentPower": {
+                          "draw": 17.2
+                        },
+                        "powerFactor": {
+                          "percentage": 81
+                        },
+                        "current": {
+                          "draw": 0.14
+                        },
+                        "voltage": {
+                          "level": 119.5
+                        },
+                        "frequency": {
+                          "level": 58.8
+                        },
+                        "upstreamPower": {
+                          "outageDetected": true
                         }
                       },
                       "direction": "above",
@@ -37917,7 +39055,7 @@
                     "properties": {
                       "metric": {
                         "type": "string",
-                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                       },
                       "threshold": {
                         "type": "object",
@@ -38082,6 +39220,102 @@
                               }
                             },
                             "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          },
+                          "realPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Real power threshold. 'draw' must be provided."
+                          },
+                          "apparentPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Apparent power threshold. 'draw' must be provided."
+                          },
+                          "powerFactor": {
+                            "type": "object",
+                            "properties": {
+                              "percentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                              }
+                            },
+                            "required": [
+                              "percentage"
+                            ],
+                            "description": "Power factor threshold. 'percentage' must be provided."
+                          },
+                          "current": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in amps. Must be between 0 and 15."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Electrical current threshold. 'level' must be provided."
+                          },
+                          "voltage": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volts. Must be between 0 and 250."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Voltage threshold. 'level' must be provided."
+                          },
+                          "frequency": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Electrical frequency threshold. 'level' must be provided."
+                          },
+                          "upstreamPower": {
+                            "type": "object",
+                            "properties": {
+                              "outageDetected": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for an upstream power event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "outageDetected"
+                            ],
+                            "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                           }
                         },
                         "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -38092,7 +39326,7 @@
                           "above",
                           "below"
                         ],
-                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                       },
                       "duration": {
                         "type": "integer",
@@ -38198,6 +39432,27 @@
                       "indoorAirQuality": {
                         "score": 80,
                         "quality": "fair"
+                      },
+                      "realPower": {
+                        "draw": 14.1
+                      },
+                      "apparentPower": {
+                        "draw": 17.2
+                      },
+                      "powerFactor": {
+                        "percentage": 81
+                      },
+                      "current": {
+                        "draw": 0.14
+                      },
+                      "voltage": {
+                        "level": 119.5
+                      },
+                      "frequency": {
+                        "level": 58.8
+                      },
+                      "upstreamPower": {
+                        "outageDetected": true
                       }
                     },
                     "direction": "above",
@@ -38264,7 +39519,7 @@
                     "properties": {
                       "metric": {
                         "type": "string",
-                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                       },
                       "threshold": {
                         "type": "object",
@@ -38429,6 +39684,102 @@
                               }
                             },
                             "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          },
+                          "realPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Real power threshold. 'draw' must be provided."
+                          },
+                          "apparentPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Apparent power threshold. 'draw' must be provided."
+                          },
+                          "powerFactor": {
+                            "type": "object",
+                            "properties": {
+                              "percentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                              }
+                            },
+                            "required": [
+                              "percentage"
+                            ],
+                            "description": "Power factor threshold. 'percentage' must be provided."
+                          },
+                          "current": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in amps. Must be between 0 and 15."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Electrical current threshold. 'level' must be provided."
+                          },
+                          "voltage": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volts. Must be between 0 and 250."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Voltage threshold. 'level' must be provided."
+                          },
+                          "frequency": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Electrical frequency threshold. 'level' must be provided."
+                          },
+                          "upstreamPower": {
+                            "type": "object",
+                            "properties": {
+                              "outageDetected": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for an upstream power event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "outageDetected"
+                            ],
+                            "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                           }
                         },
                         "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -38439,7 +39790,7 @@
                           "above",
                           "below"
                         ],
-                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                       },
                       "duration": {
                         "type": "integer",
@@ -38552,6 +39903,27 @@
                       "indoorAirQuality": {
                         "score": 80,
                         "quality": "fair"
+                      },
+                      "realPower": {
+                        "draw": 14.1
+                      },
+                      "apparentPower": {
+                        "draw": 17.2
+                      },
+                      "powerFactor": {
+                        "percentage": 81
+                      },
+                      "current": {
+                        "draw": 0.14
+                      },
+                      "voltage": {
+                        "level": 119.5
+                      },
+                      "frequency": {
+                        "level": 58.8
+                      },
+                      "upstreamPower": {
+                        "outageDetected": true
                       }
                     },
                     "direction": "above",
@@ -38642,7 +40014,7 @@
                     "properties": {
                       "metric": {
                         "type": "string",
-                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                       },
                       "threshold": {
                         "type": "object",
@@ -38807,6 +40179,102 @@
                               }
                             },
                             "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          },
+                          "realPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Real power threshold. 'draw' must be provided."
+                          },
+                          "apparentPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Apparent power threshold. 'draw' must be provided."
+                          },
+                          "powerFactor": {
+                            "type": "object",
+                            "properties": {
+                              "percentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                              }
+                            },
+                            "required": [
+                              "percentage"
+                            ],
+                            "description": "Power factor threshold. 'percentage' must be provided."
+                          },
+                          "current": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in amps. Must be between 0 and 15."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Electrical current threshold. 'level' must be provided."
+                          },
+                          "voltage": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volts. Must be between 0 and 250."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Voltage threshold. 'level' must be provided."
+                          },
+                          "frequency": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Electrical frequency threshold. 'level' must be provided."
+                          },
+                          "upstreamPower": {
+                            "type": "object",
+                            "properties": {
+                              "outageDetected": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for an upstream power event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "outageDetected"
+                            ],
+                            "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                           }
                         },
                         "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -38817,7 +40285,7 @@
                           "above",
                           "below"
                         ],
-                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                       },
                       "duration": {
                         "type": "integer",
@@ -38930,6 +40398,27 @@
                       "indoorAirQuality": {
                         "score": 80,
                         "quality": "fair"
+                      },
+                      "realPower": {
+                        "draw": 14.1
+                      },
+                      "apparentPower": {
+                        "draw": 17.2
+                      },
+                      "powerFactor": {
+                        "percentage": 81
+                      },
+                      "current": {
+                        "draw": 0.14
+                      },
+                      "voltage": {
+                        "level": 119.5
+                      },
+                      "frequency": {
+                        "level": 58.8
+                      },
+                      "upstreamPower": {
+                        "outageDetected": true
                       }
                     },
                     "direction": "above",
@@ -39009,7 +40498,7 @@
                     "properties": {
                       "metric": {
                         "type": "string",
-                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                       },
                       "threshold": {
                         "type": "object",
@@ -39174,6 +40663,102 @@
                               }
                             },
                             "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          },
+                          "realPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Real power threshold. 'draw' must be provided."
+                          },
+                          "apparentPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Apparent power threshold. 'draw' must be provided."
+                          },
+                          "powerFactor": {
+                            "type": "object",
+                            "properties": {
+                              "percentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                              }
+                            },
+                            "required": [
+                              "percentage"
+                            ],
+                            "description": "Power factor threshold. 'percentage' must be provided."
+                          },
+                          "current": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in amps. Must be between 0 and 15."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Electrical current threshold. 'level' must be provided."
+                          },
+                          "voltage": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volts. Must be between 0 and 250."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Voltage threshold. 'level' must be provided."
+                          },
+                          "frequency": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Electrical frequency threshold. 'level' must be provided."
+                          },
+                          "upstreamPower": {
+                            "type": "object",
+                            "properties": {
+                              "outageDetected": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for an upstream power event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "outageDetected"
+                            ],
+                            "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                           }
                         },
                         "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -39184,7 +40769,7 @@
                           "above",
                           "below"
                         ],
-                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                       },
                       "duration": {
                         "type": "integer",
@@ -39290,6 +40875,27 @@
                       "indoorAirQuality": {
                         "score": 80,
                         "quality": "fair"
+                      },
+                      "realPower": {
+                        "draw": 14.1
+                      },
+                      "apparentPower": {
+                        "draw": 17.2
+                      },
+                      "powerFactor": {
+                        "percentage": 81
+                      },
+                      "current": {
+                        "draw": 0.14
+                      },
+                      "voltage": {
+                        "level": 119.5
+                      },
+                      "frequency": {
+                        "level": 58.8
+                      },
+                      "upstreamPower": {
+                        "outageDetected": true
                       }
                     },
                     "direction": "above",
@@ -39351,7 +40957,7 @@
                     "properties": {
                       "metric": {
                         "type": "string",
-                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+                        "description": "The type of sensor metric that will be monitored for changes. Available metrics are apparentPower, co2, current, door, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, temperature, tvoc, upstreamPower, voltage, and water."
                       },
                       "threshold": {
                         "type": "object",
@@ -39516,6 +41122,102 @@
                               }
                             },
                             "description": "Indoor air quality score threshold. One of 'score' or 'quality' must be provided."
+                          },
+                          "realPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in watts. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Real power threshold. 'draw' must be provided."
+                          },
+                          "apparentPower": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volt-amps. Must be between 0 and 3750."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Apparent power threshold. 'draw' must be provided."
+                          },
+                          "powerFactor": {
+                            "type": "object",
+                            "properties": {
+                              "percentage": {
+                                "type": "integer",
+                                "description": "Alerting threshold as the ratio of active power to apparent power. Must be between 0 and 100."
+                              }
+                            },
+                            "required": [
+                              "percentage"
+                            ],
+                            "description": "Power factor threshold. 'percentage' must be provided."
+                          },
+                          "current": {
+                            "type": "object",
+                            "properties": {
+                              "draw": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in amps. Must be between 0 and 15."
+                              }
+                            },
+                            "required": [
+                              "draw"
+                            ],
+                            "description": "Electrical current threshold. 'level' must be provided."
+                          },
+                          "voltage": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in volts. Must be between 0 and 250."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Voltage threshold. 'level' must be provided."
+                          },
+                          "frequency": {
+                            "type": "object",
+                            "properties": {
+                              "level": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Alerting threshold in hertz. Must be between 0 and 60."
+                              }
+                            },
+                            "required": [
+                              "level"
+                            ],
+                            "description": "Electrical frequency threshold. 'level' must be provided."
+                          },
+                          "upstreamPower": {
+                            "type": "object",
+                            "properties": {
+                              "outageDetected": {
+                                "type": "boolean",
+                                "description": "Alerting threshold for an upstream power event. Must be set to true."
+                              }
+                            },
+                            "required": [
+                              "outageDetected"
+                            ],
+                            "description": "Upstream power threshold. 'outageDetected' must be provided and set to true."
                           }
                         },
                         "description": "Threshold for sensor readings that will cause an alert to be sent. This object should contain a single property key matching the condition's 'metric' value."
@@ -39526,7 +41228,7 @@
                           "above",
                           "below"
                         ],
-                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature and humidity thresholds."
+                        "description": "If 'above', an alert will be sent when a sensor reads above the threshold. If 'below', an alert will be sent when a sensor reads below the threshold. Only applicable for temperature, humidity, realPower, apparentPower, powerFactor, voltage, current, and frequency thresholds."
                       },
                       "duration": {
                         "type": "integer",
@@ -39639,6 +41341,27 @@
                       "indoorAirQuality": {
                         "score": 80,
                         "quality": "fair"
+                      },
+                      "realPower": {
+                        "draw": 14.1
+                      },
+                      "apparentPower": {
+                        "draw": 17.2
+                      },
+                      "powerFactor": {
+                        "percentage": 81
+                      },
+                      "current": {
+                        "draw": 0.14
+                      },
+                      "voltage": {
+                        "level": 119.5
+                      },
+                      "frequency": {
+                        "level": 58.8
+                      },
+                      "upstreamPower": {
+                        "outageDetected": true
                       }
                     },
                     "direction": "above",
@@ -40465,6 +42188,15 @@
             "items": {
               "type": "string"
             },
+            "name": "systemTypes",
+            "in": "query",
+            "description": "Filter devices by system type(s)."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "name": "scope",
             "in": "query",
             "description": "Specify a scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags."
@@ -40643,9 +42375,9 @@
                   "2983092129865"
                 ],
                 "serials": [
-                  "Q234-ABCD-0001",
-                  "Q234-ABCD-0002",
-                  "Q234-ABCD-0003"
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
                 ],
                 "scope": [
                   "withAny",
@@ -40737,7 +42469,7 @@
               "example": {
                 "wifiMac": "00:11:22:33:44:55",
                 "id": "1284392014819",
-                "serial": "Q234-ABCD-5678",
+                "serial": "XY0XX0Y0X0",
                 "deviceFields": {
                   "name": "Miles's phone",
                   "notes": "Here's some info about my device"
@@ -40847,7 +42579,7 @@
                   "items": {
                     "type": "string"
                   },
-                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be wiped."
+                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the devices to be locked."
                 },
                 "pin": {
                   "type": "integer",
@@ -40863,9 +42595,9 @@
                   "2983092129865"
                 ],
                 "serials": [
-                  "Q234-ABCD-0001",
-                  "Q234-ABCD-0002",
-                  "Q234-ABCD-0003"
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
                 ],
                 "scope": [
                   "withAny",
@@ -40977,9 +42709,9 @@
                   "2983092129865"
                 ],
                 "serials": [
-                  "Q234-ABCD-0001",
-                  "Q234-ABCD-0002",
-                  "Q234-ABCD-0003"
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
                 ],
                 "scope": [
                   "withAny, old_tag"
@@ -41111,9 +42843,9 @@
                   "2983092129865"
                 ],
                 "serials": [
-                  "Q234-ABCD-0001",
-                  "Q234-ABCD-0002",
-                  "Q234-ABCD-0003"
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
                 ],
                 "scope": [
                   "withAny",
@@ -41167,6 +42899,235 @@
         ]
       }
     },
+    "/networks/{networkId}/sm/devices/reboot": {
+      "post": {
+        "description": "Reboot a set of endpoints",
+        "operationId": "rebootNetworkSmDevices",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "rebootNetworkSmDevices",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wifiMacs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The wifiMacs of the endpoints to be rebooted."
+                },
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The ids of the endpoints to be rebooted."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the endpoints to be rebooted."
+                },
+                "scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the endpoints to be rebooted."
+                },
+                "kextPaths": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The KextPaths of the endpoints to be rebooted. Available for macOS 11+"
+                },
+                "notifyUser": {
+                  "type": "boolean",
+                  "description": "Whether or not to notify the user before rebooting the endpoint. Available for macOS 11.3+"
+                },
+                "rebuildKernelCache": {
+                  "type": "boolean",
+                  "description": "Whether or not to rebuild the kernel cache when rebooting the endpoint. Available for macOS 11+"
+                },
+                "requestRequiresNetworkTether": {
+                  "type": "boolean",
+                  "description": "Whether or not the request requires network tethering. Available for macOS and supervised iOS or tvOS"
+                }
+              },
+              "example": {
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
+                ],
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
+                ],
+                "scope": [
+                  "withAny",
+                  "tag1",
+                  "tag2"
+                ],
+                "kextPaths": [
+                  "test"
+                ],
+                "notifyUser": true,
+                "rebuildKernelCache": true,
+                "requestRequiresNetworkTether": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The Meraki Ids of the set of endpoints."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Reboot a set of endpoints",
+        "tags": [
+          "sm",
+          "configure",
+          "devices"
+        ]
+      }
+    },
+    "/networks/{networkId}/sm/devices/shutdown": {
+      "post": {
+        "description": "Shutdown a set of endpoints",
+        "operationId": "shutdownNetworkSmDevices",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "shutdownNetworkSmDevices",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "wifiMacs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The wifiMacs of the endpoints to be shutdown."
+                },
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The ids of the endpoints to be shutdown."
+                },
+                "serials": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The serials of the endpoints to be shutdown."
+                },
+                "scope": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The scope (one of all, none, withAny, withAll, withoutAny, or withoutAll) and a set of tags of the endpoints to be shutdown."
+                }
+              },
+              "example": {
+                "wifiMacs": [
+                  "00:11:22:33:44:55"
+                ],
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ],
+                "serials": [
+                  "XY0XX0Y0X0",
+                  "A01B01CD00E",
+                  "X02YZ1ZYZX"
+                ],
+                "scope": [
+                  "withAny",
+                  "tag1",
+                  "tag2"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The Meraki Ids of the set of endpoints."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "ids": [
+                  "1284392014819",
+                  "2983092129865"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Shutdown a set of endpoints",
+        "tags": [
+          "sm",
+          "configure",
+          "devices"
+        ]
+      }
+    },
     "/networks/{networkId}/sm/devices/wipe": {
       "post": {
         "description": "Wipe a device",
@@ -41205,7 +43166,7 @@
               "example": {
                 "wifiMac": "00:11:22:33:44:55",
                 "id": "1284392014819",
-                "serial": "Q234-ABCD-5678",
+                "serial": "XY0XX0Y0X0",
                 "pin": 123456
               }
             }
@@ -44465,6 +46426,22 @@
                       "type": "string"
                     },
                     "description": "IP address ranges, in CIDR notation, to restrict access for clients to a specific set of IP addresses or hostnames prior to authentication"
+                  },
+                  "counts": {
+                    "type": "object",
+                    "properties": {
+                      "ports": {
+                        "type": "object",
+                        "properties": {
+                          "withThisPolicy": {
+                            "type": "integer",
+                            "description": "Number of ports in the network with this policy"
+                          }
+                        },
+                        "description": "Counts associated with ports"
+                      }
+                    },
+                    "description": "Counts associated with the access policy"
                   }
                 }
               }
@@ -44510,7 +46487,12 @@
                   "urlRedirectWalledGardenEnabled": true,
                   "urlRedirectWalledGardenRanges": [
                     "192.168.1.0/24"
-                  ]
+                  ],
+                  "counts": {
+                    "ports": {
+                      "withThisPolicy": 12
+                    }
+                  }
                 }
               ]
             }
@@ -44912,6 +46894,22 @@
                     "type": "string"
                   },
                   "description": "IP address ranges, in CIDR notation, to restrict access for clients to a specific set of IP addresses or hostnames prior to authentication"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "ports": {
+                      "type": "object",
+                      "properties": {
+                        "withThisPolicy": {
+                          "type": "integer",
+                          "description": "Number of ports in the network with this policy"
+                        }
+                      },
+                      "description": "Counts associated with ports"
+                    }
+                  },
+                  "description": "Counts associated with the access policy"
                 }
               }
             },
@@ -44955,7 +46953,12 @@
                 "urlRedirectWalledGardenEnabled": true,
                 "urlRedirectWalledGardenRanges": [
                   "192.168.1.0/24"
-                ]
+                ],
+                "counts": {
+                  "ports": {
+                    "withThisPolicy": 12
+                  }
+                }
               }
             }
           }
@@ -45139,6 +47142,22 @@
                     "type": "string"
                   },
                   "description": "IP address ranges, in CIDR notation, to restrict access for clients to a specific set of IP addresses or hostnames prior to authentication"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "ports": {
+                      "type": "object",
+                      "properties": {
+                        "withThisPolicy": {
+                          "type": "integer",
+                          "description": "Number of ports in the network with this policy"
+                        }
+                      },
+                      "description": "Counts associated with ports"
+                    }
+                  },
+                  "description": "Counts associated with the access policy"
                 }
               }
             },
@@ -45182,7 +47201,12 @@
                 "urlRedirectWalledGardenEnabled": true,
                 "urlRedirectWalledGardenRanges": [
                   "192.168.1.0/24"
-                ]
+                ],
+                "counts": {
+                  "ports": {
+                    "withThisPolicy": 12
+                  }
+                }
               }
             }
           }
@@ -45580,6 +47604,22 @@
                     "type": "string"
                   },
                   "description": "IP address ranges, in CIDR notation, to restrict access for clients to a specific set of IP addresses or hostnames prior to authentication"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "ports": {
+                      "type": "object",
+                      "properties": {
+                        "withThisPolicy": {
+                          "type": "integer",
+                          "description": "Number of ports in the network with this policy"
+                        }
+                      },
+                      "description": "Counts associated with ports"
+                    }
+                  },
+                  "description": "Counts associated with the access policy"
                 }
               }
             },
@@ -45623,7 +47663,12 @@
                 "urlRedirectWalledGardenEnabled": true,
                 "urlRedirectWalledGardenRanges": [
                   "192.168.1.0/24"
-                ]
+                ],
+                "counts": {
+                  "ports": {
+                    "withThisPolicy": 12
+                  }
+                }
               }
             }
           }
@@ -65990,6 +68035,10 @@
                       "type": "string",
                       "description": "The name of the regulatory domain for this network."
                     },
+                    "countryCode": {
+                      "type": "string",
+                      "description": "The country code of the regulatory domain."
+                    },
                     "permits6e": {
                       "type": "boolean",
                       "description": "Whether or not the regulatory domain for this network permits Wifi 6E."
@@ -66014,6 +68063,7 @@
                 },
                 "regulatoryDomain": {
                   "name": "FCC",
+                  "countryCode": "US",
                   "permits6e": true
                 }
               }
@@ -66162,6 +68212,10 @@
                       "type": "string",
                       "description": "The name of the regulatory domain for this network."
                     },
+                    "countryCode": {
+                      "type": "string",
+                      "description": "The country code of the regulatory domain."
+                    },
                     "permits6e": {
                       "type": "boolean",
                       "description": "Whether or not the regulatory domain for this network permits Wifi 6E."
@@ -66186,6 +68240,7 @@
                 },
                 "regulatoryDomain": {
                   "name": "FCC",
+                  "countryCode": "US",
                   "permits6e": true
                 }
               }
@@ -77207,6 +79262,84 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/uplinks/statuses/overview": {
+      "get": {
+        "description": "Returns an overview of uplink statuses",
+        "operationId": "getOrganizationApplianceUplinksStatusesOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "byStatus": {
+                      "type": "object",
+                      "properties": {
+                        "active": {
+                          "type": "integer",
+                          "description": "number of uplinks that are active and working"
+                        },
+                        "ready": {
+                          "type": "integer",
+                          "description": "number of uplinks that are working but on standby"
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "description": "number of uplinks that were working but have failed"
+                        },
+                        "connecting": {
+                          "type": "integer",
+                          "description": "number of uplinks currently connecting"
+                        },
+                        "notConnected": {
+                          "type": "integer",
+                          "description": "number of uplinks currently where nothing is plugged in"
+                        }
+                      },
+                      "description": "byStatus"
+                    }
+                  },
+                  "description": "counts"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "counts": {
+                  "byStatus": {
+                    "active": 5,
+                    "ready": 5,
+                    "failed": 4,
+                    "connecting": 2,
+                    "notConnected": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns an overview of uplink statuses",
+        "tags": [
+          "appliance",
+          "configure",
+          "uplinks",
+          "statuses",
+          "overview"
+        ]
+      }
+    },
     "/organizations/{organizationId}/appliance/uplinks/usage/byNetwork": {
       "get": {
         "description": "Get the sent and received bytes for each uplink of all MX and Z networks within an organization. If more than one device was active during the specified timespan, then the sent and received bytes will be aggregated by interface.",
@@ -80318,6 +82451,244 @@
         ]
       }
     },
+    "/organizations/{organizationId}/camera/boundaries/areas/byDevice": {
+      "get": {
+        "description": "Returns all configured area boundaries of cameras",
+        "operationId": "getOrganizationCameraBoundariesAreasByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "A list of serial numbers. The returned cameras will be filtered to only include these serials."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "The network id of the camera"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The serial number of the camera"
+                  },
+                  "boundaries": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The area boundary id"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The area boundary type"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The area boundary name"
+                      },
+                      "vertices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "The vertex x coordinate"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "The vertex y coordinate"
+                            }
+                          }
+                        },
+                        "description": "The area boundary vertices"
+                      }
+                    },
+                    "description": "Configured area boundaries of the camera"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_24329156",
+                  "serial": "Q234-ABCD-5678",
+                  "boundaries": {
+                    "id": "k74272e",
+                    "type": "area",
+                    "name": "myarea",
+                    "vertices": [
+                      {
+                        "x": 0.1,
+                        "y": 0.1
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns all configured area boundaries of cameras",
+        "tags": [
+          "camera",
+          "configure",
+          "boundaries",
+          "areas",
+          "byDevice"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/boundaries/lines/byDevice": {
+      "get": {
+        "description": "Returns all configured crossingline boundaries of cameras",
+        "operationId": "getOrganizationCameraBoundariesLinesByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "A list of serial numbers. The returned cameras will be filtered to only include these serials."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "The network id of the camera"
+                  },
+                  "serial": {
+                    "type": "string",
+                    "description": "The serial number of the camera"
+                  },
+                  "boundaries": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The line boundary id"
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The line boundary type"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The line boundary name"
+                      },
+                      "vertices": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "The vertex x coordinate"
+                            },
+                            "y": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "The vertex y coordinate"
+                            }
+                          }
+                        },
+                        "description": "The line boundary vertices"
+                      },
+                      "directionVertex": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The vertex x coordinate"
+                          },
+                          "y": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The vertex y coordinate"
+                          }
+                        },
+                        "description": "The line boundary crossing direction vertex"
+                      }
+                    },
+                    "description": "Configured line boundaries of the camera"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_24329156",
+                  "serial": "Q234-ABCD-5678",
+                  "boundaries": {
+                    "id": "k74272e",
+                    "type": "line",
+                    "name": "mycline",
+                    "vertices": [
+                      {
+                        "x": 0.375,
+                        "y": 0.5
+                      }
+                    ],
+                    "directionVertex": {
+                      "x": 0.5,
+                      "y": 0.54
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns all configured crossingline boundaries of cameras",
+        "tags": [
+          "camera",
+          "configure",
+          "boundaries",
+          "lines",
+          "byDevice"
+        ]
+      }
+    },
     "/organizations/{organizationId}/camera/customAnalytics/artifacts": {
       "get": {
         "description": "List Custom Analytics Artifacts",
@@ -80499,6 +82870,127 @@
           "configure",
           "customAnalytics",
           "artifacts"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/camera/detections/history/byBoundary/byInterval": {
+      "get": {
+        "description": "Returns analytics data for timespans",
+        "operationId": "getOrganizationCameraDetectionsHistoryByBoundaryByInterval",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "boundaryIds",
+            "in": "query",
+            "required": true,
+            "description": "A list of boundary ids. The returned cameras will be filtered to only include these ids."
+          },
+          {
+            "type": "integer",
+            "name": "duration",
+            "in": "query",
+            "description": "The minimum time, in seconds, that the person or car remains in the area to be counted. Defaults to boundary configuration or 60."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 1 - 1000. Defaults to 1000."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "person",
+                "vehicle"
+              ]
+            },
+            "name": "boundaryTypes",
+            "in": "query",
+            "description": "The detection types. Defaults to 'person'."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "boundaryId": {
+                    "type": "string",
+                    "description": "The boundary id"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The boundary type"
+                  },
+                  "results": {
+                    "type": "object",
+                    "properties": {
+                      "startTime": {
+                        "type": "string",
+                        "description": "The period start time"
+                      },
+                      "endTime": {
+                        "type": "string",
+                        "description": "The period end time"
+                      },
+                      "objectType": {
+                        "type": "string",
+                        "description": "The detection type"
+                      },
+                      "in": {
+                        "type": "integer",
+                        "description": "The number of detections entered"
+                      },
+                      "out": {
+                        "type": "integer",
+                        "description": "The number of detections exited"
+                      }
+                    },
+                    "description": "The analytics data"
+                  }
+                }
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "boundaryId": "k74272e",
+                  "type": "line",
+                  "results": {
+                    "startTime": "2018-02-11T00:00:00Z",
+                    "endTime": "2018-05-12T00:00:00Z",
+                    "objectType": "person",
+                    "in": 22,
+                    "out": 13
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "Returns analytics data for timespans",
+        "tags": [
+          "camera",
+          "configure",
+          "detections",
+          "history",
+          "byBoundary",
+          "byInterval"
         ]
       }
     },
@@ -85995,7 +88487,7 @@
     },
     "/organizations/{organizationId}/firmware/upgrades/byDevice": {
       "get": {
-        "description": "Get firmware upgrade status for the filtered devices",
+        "description": "Get firmware upgrade status for the filtered devices. This endpoint currently only supports Meraki switches.",
         "operationId": "getOrganizationFirmwareUpgradesByDevice",
         "parameters": [
           {
@@ -86190,19 +88682,19 @@
               "application/json": [
                 {
                   "serial": "Q234-ABCD-5678",
-                  "name": "My AP",
+                  "name": "My switch",
                   "deviceStatus": "completed",
                   "upgrade": {
                     "time": "2018-02-11T00:00:00.090210Z",
                     "fromVersion": {
                       "id": "1234",
-                      "shortName": "MV 10.8.1",
+                      "shortName": "MS 16.7",
                       "releaseType": "stable",
                       "releaseDate": "2018-02-11T00:00:00.090210Z"
                     },
                     "toVersion": {
                       "id": "1234",
-                      "shortName": "MV 11.2.1",
+                      "shortName": "MS 16.7.1",
                       "releaseType": "stable",
                       "releaseDate": "2018-02-11T00:00:00.090210Z"
                     },
@@ -92189,7 +94681,7 @@
             },
             "name": "metrics",
             "in": "query",
-            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are battery, button, door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are apparentPower, battery, button, co2, current, door, downstreamPower, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, remoteLockoutSwitch, temperature, tvoc, voltage, and water."
           }
         ],
         "responses": {
@@ -92225,18 +94717,38 @@
                   "metric": {
                     "type": "string",
                     "enum": [
+                      "apparentPower",
                       "battery",
                       "button",
+                      "co2",
+                      "current",
                       "door",
+                      "downstreamPower",
+                      "frequency",
                       "humidity",
                       "indoorAirQuality",
                       "noise",
                       "pm25",
+                      "powerFactor",
+                      "realPower",
+                      "remoteLockoutSwitch",
                       "temperature",
                       "tvoc",
+                      "voltage",
                       "water"
                     ],
                     "description": "Type of sensor reading."
+                  },
+                  "apparentPower": {
+                    "type": "object",
+                    "properties": {
+                      "draw": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Apparent power reading in volt-amperes."
+                      }
+                    },
+                    "description": "Reading for the 'apparentPower' metric. This will only be present if the 'metric' property equals 'apparentPower'."
                   },
                   "battery": {
                     "type": "object",
@@ -92262,6 +94774,27 @@
                     },
                     "description": "Reading for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
                   },
+                  "co2": {
+                    "type": "object",
+                    "properties": {
+                      "concentration": {
+                        "type": "integer",
+                        "description": "CO2 reading in parts per million."
+                      }
+                    },
+                    "description": "Reading for the 'co2' metric. This will only be present if the 'metric' property equals 'co2'."
+                  },
+                  "current": {
+                    "type": "object",
+                    "properties": {
+                      "draw": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Electrical current reading in amperes."
+                      }
+                    },
+                    "description": "Reading for the 'current' metric. This will only be present if the 'metric' property equals 'current'."
+                  },
                   "door": {
                     "type": "object",
                     "properties": {
@@ -92271,6 +94804,27 @@
                       }
                     },
                     "description": "Reading for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
+                  },
+                  "downstreamPower": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "True if power is turned on to the device that is connected downstream of the MT40 power monitor."
+                      }
+                    },
+                    "description": "Reading for the 'downstreamPower' metric. This will only be present if the 'metric' property equals 'downstreamPower'."
+                  },
+                  "frequency": {
+                    "type": "object",
+                    "properties": {
+                      "level": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Electrical current frequency reading in hertz."
+                      }
+                    },
+                    "description": "Reading for the 'frequency' metric. This will only be present if the 'metric' property equals 'frequency'."
                   },
                   "humidity": {
                     "type": "object",
@@ -92318,6 +94872,37 @@
                     },
                     "description": "Reading for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
                   },
+                  "powerFactor": {
+                    "type": "object",
+                    "properties": {
+                      "percentage": {
+                        "type": "integer",
+                        "description": "Power factor reading as a percentage."
+                      }
+                    },
+                    "description": "Reading for the 'powerFactor' metric. This will only be present if the 'metric' property equals 'powerFactor'."
+                  },
+                  "realPower": {
+                    "type": "object",
+                    "properties": {
+                      "draw": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Real power reading in watts."
+                      }
+                    },
+                    "description": "Reading for the 'realPower' metric. This will only be present if the 'metric' property equals 'realPower'."
+                  },
+                  "remoteLockoutSwitch": {
+                    "type": "object",
+                    "properties": {
+                      "locked": {
+                        "type": "boolean",
+                        "description": "True if power controls are disabled via the MT40's physical remote lockout switch."
+                      }
+                    },
+                    "description": "Reading for the 'remoteLockoutSwitch' metric. This will only be present if the 'metric' property equals 'remoteLockoutSwitch'."
+                  },
                   "temperature": {
                     "type": "object",
                     "properties": {
@@ -92343,6 +94928,17 @@
                       }
                     },
                     "description": "Reading for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
+                  },
+                  "voltage": {
+                    "type": "object",
+                    "properties": {
+                      "level": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Voltage reading in volts."
+                      }
+                    },
+                    "description": "Reading for the 'voltage' metric. This will only be present if the 'metric' property equals 'voltage'."
                   },
                   "water": {
                     "type": "object",
@@ -92371,16 +94967,31 @@
                     "id": "N_24329156",
                     "name": "Main Office"
                   },
-                  "ts": "2021-10-18T23:54:48Z",
+                  "ts": "2021-10-18T23:54:48.000000Z",
                   "metric": "temperature",
+                  "apparentPower": {
+                    "draw": 15.9
+                  },
                   "battery": {
                     "percentage": 91
                   },
                   "button": {
                     "pressType": "short"
                   },
+                  "co2": {
+                    "concentration": 100
+                  },
+                  "current": {
+                    "draw": 0.13
+                  },
                   "door": {
                     "open": true
+                  },
+                  "downstreamPower": {
+                    "enabled": true
+                  },
+                  "frequency": {
+                    "level": 60.1
                   },
                   "humidity": {
                     "relativePercentage": 34
@@ -92396,12 +95007,24 @@
                   "pm25": {
                     "concentration": 100
                   },
+                  "powerFactor": {
+                    "percentage": 86
+                  },
+                  "realPower": {
+                    "draw": 13.7
+                  },
+                  "remoteLockoutSwitch": {
+                    "locked": false
+                  },
                   "temperature": {
                     "fahrenheit": 77.81,
                     "celsius": 25.45
                   },
                   "tvoc": {
                     "concentration": 100
+                  },
+                  "voltage": {
+                    "level": 122.4
                   },
                   "water": {
                     "present": true
@@ -92475,7 +95098,7 @@
             },
             "name": "metrics",
             "in": "query",
-            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are battery, button, door, humidity, indoorAirQuality, noise, pm25, temperature, tvoc, and water."
+            "description": "Types of sensor readings to retrieve. If no metrics are supplied, all available types of readings will be retrieved. Allowed values are apparentPower, battery, button, co2, current, door, downstreamPower, frequency, humidity, indoorAirQuality, noise, pm25, powerFactor, realPower, remoteLockoutSwitch, temperature, tvoc, voltage, and water."
           }
         ],
         "responses": {
@@ -92516,18 +95139,38 @@
                         "metric": {
                           "type": "string",
                           "enum": [
+                            "apparentPower",
                             "battery",
                             "button",
+                            "co2",
+                            "current",
                             "door",
+                            "downstreamPower",
+                            "frequency",
                             "humidity",
                             "indoorAirQuality",
                             "noise",
                             "pm25",
+                            "powerFactor",
+                            "realPower",
+                            "remoteLockoutSwitch",
                             "temperature",
                             "tvoc",
+                            "voltage",
                             "water"
                           ],
                           "description": "Type of sensor reading."
+                        },
+                        "apparentPower": {
+                          "type": "object",
+                          "properties": {
+                            "draw": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Apparent power reading in volt-amperes."
+                            }
+                          },
+                          "description": "Reading for the 'apparentPower' metric. This will only be present if the 'metric' property equals 'apparentPower'."
                         },
                         "battery": {
                           "type": "object",
@@ -92553,6 +95196,27 @@
                           },
                           "description": "Reading for the 'button' metric. This will only be present if the 'metric' property equals 'button'."
                         },
+                        "co2": {
+                          "type": "object",
+                          "properties": {
+                            "concentration": {
+                              "type": "integer",
+                              "description": "CO2 reading in parts per million."
+                            }
+                          },
+                          "description": "Reading for the 'co2' metric. This will only be present if the 'metric' property equals 'co2'."
+                        },
+                        "current": {
+                          "type": "object",
+                          "properties": {
+                            "draw": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Electrical current reading in amperes."
+                            }
+                          },
+                          "description": "Reading for the 'current' metric. This will only be present if the 'metric' property equals 'current'."
+                        },
                         "door": {
                           "type": "object",
                           "properties": {
@@ -92562,6 +95226,27 @@
                             }
                           },
                           "description": "Reading for the 'door' metric. This will only be present if the 'metric' property equals 'door'."
+                        },
+                        "downstreamPower": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "True if power is turned on to the device that is connected downstream of the MT40 power monitor."
+                            }
+                          },
+                          "description": "Reading for the 'downstreamPower' metric. This will only be present if the 'metric' property equals 'downstreamPower'."
+                        },
+                        "frequency": {
+                          "type": "object",
+                          "properties": {
+                            "level": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Electrical current frequency reading in hertz."
+                            }
+                          },
+                          "description": "Reading for the 'frequency' metric. This will only be present if the 'metric' property equals 'frequency'."
                         },
                         "humidity": {
                           "type": "object",
@@ -92609,6 +95294,37 @@
                           },
                           "description": "Reading for the 'pm25' metric. This will only be present if the 'metric' property equals 'pm25'."
                         },
+                        "powerFactor": {
+                          "type": "object",
+                          "properties": {
+                            "percentage": {
+                              "type": "integer",
+                              "description": "Power factor reading as a percentage."
+                            }
+                          },
+                          "description": "Reading for the 'powerFactor' metric. This will only be present if the 'metric' property equals 'powerFactor'."
+                        },
+                        "realPower": {
+                          "type": "object",
+                          "properties": {
+                            "draw": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Real power reading in watts."
+                            }
+                          },
+                          "description": "Reading for the 'realPower' metric. This will only be present if the 'metric' property equals 'realPower'."
+                        },
+                        "remoteLockoutSwitch": {
+                          "type": "object",
+                          "properties": {
+                            "locked": {
+                              "type": "boolean",
+                              "description": "True if power controls are disabled via the MT40's physical remote lockout switch."
+                            }
+                          },
+                          "description": "Reading for the 'remoteLockoutSwitch' metric. This will only be present if the 'metric' property equals 'remoteLockoutSwitch'."
+                        },
                         "temperature": {
                           "type": "object",
                           "properties": {
@@ -92634,6 +95350,17 @@
                             }
                           },
                           "description": "Reading for the 'tvoc' metric. This will only be present if the 'metric' property equals 'tvoc'."
+                        },
+                        "voltage": {
+                          "type": "object",
+                          "properties": {
+                            "level": {
+                              "type": "number",
+                              "format": "float",
+                              "description": "Voltage reading in volts."
+                            }
+                          },
+                          "description": "Reading for the 'voltage' metric. This will only be present if the 'metric' property equals 'voltage'."
                         },
                         "water": {
                           "type": "object",
@@ -92668,16 +95395,31 @@
                   },
                   "readings": [
                     {
-                      "ts": "2021-10-18T23:54:48Z",
+                      "ts": "2021-10-18T23:54:48.000000Z",
                       "metric": "temperature",
+                      "apparentPower": {
+                        "draw": 15.9
+                      },
                       "battery": {
                         "percentage": 91
                       },
                       "button": {
                         "pressType": "short"
                       },
+                      "co2": {
+                        "concentration": 100
+                      },
+                      "current": {
+                        "draw": 0.13
+                      },
                       "door": {
                         "open": true
+                      },
+                      "downstreamPower": {
+                        "enabled": true
+                      },
+                      "frequency": {
+                        "level": 60.1
                       },
                       "humidity": {
                         "relativePercentage": 34
@@ -92693,12 +95435,24 @@
                       "pm25": {
                         "concentration": 100
                       },
+                      "powerFactor": {
+                        "percentage": 86
+                      },
+                      "realPower": {
+                        "draw": 13.7
+                      },
+                      "remoteLockoutSwitch": {
+                        "locked": false
+                      },
                       "temperature": {
                         "fahrenheit": 77.81,
                         "celsius": 25.45
                       },
                       "tvoc": {
                         "concentration": 100
+                      },
+                      "voltage": {
+                        "level": 122.4
                       },
                       "water": {
                         "present": true
@@ -92716,6 +95470,465 @@
           "monitor",
           "readings",
           "latest"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sm/admins/roles": {
+      "get": {
+        "description": "List the Limited Access Roles for an organization",
+        "operationId": "getOrganizationSmAdminsRoles",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "roleId": {
+                        "type": "string",
+                        "description": "The Id of the limited access role"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "The name of the limited access role"
+                      },
+                      "scope": {
+                        "type": "string",
+                        "enum": [
+                          "all_tags",
+                          "some",
+                          "without_all_tags",
+                          "without_some"
+                        ],
+                        "description": "The scope of the limited access role"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "The tags of the limited access role"
+                      }
+                    }
+                  },
+                  "description": "Array of Limited Access Roles"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "The total number of items in the dataset"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "The number of items in the dataset that are available on subsequent pages"
+                            }
+                          },
+                          "description": "Counts relating to the paginated items"
+                        }
+                      },
+                      "description": "Counts relating to the paginated dataset"
+                    }
+                  },
+                  "description": "Metadata relevant to the paginated dataset"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "roleId": "1284392014819",
+                    "name": "sample name",
+                    "scope": "all_tags",
+                    "tags": [
+                      "tag"
+                    ]
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 10,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List the Limited Access Roles for an organization",
+        "tags": [
+          "sm",
+          "configure",
+          "admins",
+          "roles"
+        ]
+      },
+      "post": {
+        "description": "Create a Limited Access Role",
+        "operationId": "createOrganizationSmAdminsRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationSmAdminsRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the Limited Access Role"
+                },
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "all_tags",
+                    "some",
+                    "without_all_tags",
+                    "without_some"
+                  ],
+                  "description": "The scope of the Limited Access Role"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The tags of the Limited Access Role"
+                }
+              },
+              "example": {
+                "name": "sample name",
+                "scope": "all_tags",
+                "tags": [
+                  "tag"
+                ]
+              },
+              "required": [
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "roleId": {
+                  "type": "string",
+                  "description": "The Id of the limited access role"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the limited access role"
+                },
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "all_tags",
+                    "some",
+                    "without_all_tags",
+                    "without_some"
+                  ],
+                  "description": "The scope of the limited access role"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The tags of the limited access role"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "roleId": "1284392014819",
+                "name": "sample name",
+                "scope": "all_tags",
+                "tags": [
+                  "tag"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create a Limited Access Role",
+        "tags": [
+          "sm",
+          "configure",
+          "admins",
+          "roles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sm/admins/roles/{roleId}": {
+      "get": {
+        "description": "Return a Limited Access Role",
+        "operationId": "getOrganizationSmAdminsRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "roleId": {
+                  "type": "string",
+                  "description": "The Id of the limited access role"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the limited access role"
+                },
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "all_tags",
+                    "some",
+                    "without_all_tags",
+                    "without_some"
+                  ],
+                  "description": "The scope of the limited access role"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The tags of the limited access role"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "roleId": "1284392014819",
+                "name": "sample name",
+                "scope": "all_tags",
+                "tags": [
+                  "tag"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a Limited Access Role",
+        "tags": [
+          "sm",
+          "configure",
+          "admins",
+          "roles"
+        ]
+      },
+      "put": {
+        "description": "Update a Limited Access Role",
+        "operationId": "updateOrganizationSmAdminsRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationSmAdminsRole",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the Limited Access Role"
+                },
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "all_tags",
+                    "some",
+                    "without_all_tags",
+                    "without_some"
+                  ],
+                  "description": "The scope of the Limited Access Role"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The tags of the Limited Access Role"
+                }
+              },
+              "example": {
+                "name": "sample name",
+                "scope": "all_tags",
+                "tags": [
+                  "tag"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "roleId": {
+                  "type": "string",
+                  "description": "The Id of the limited access role"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The name of the limited access role"
+                },
+                "scope": {
+                  "type": "string",
+                  "enum": [
+                    "all_tags",
+                    "some",
+                    "without_all_tags",
+                    "without_some"
+                  ],
+                  "description": "The scope of the limited access role"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "The tags of the limited access role"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "roleId": "1284392014819",
+                "name": "sample name",
+                "scope": "all_tags",
+                "tags": [
+                  "tag"
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update a Limited Access Role",
+        "tags": [
+          "sm",
+          "configure",
+          "admins",
+          "roles"
+        ]
+      },
+      "delete": {
+        "description": "Delete a Limited Access Role",
+        "operationId": "deleteOrganizationSmAdminsRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "Role ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a Limited Access Role",
+        "tags": [
+          "sm",
+          "configure",
+          "admins",
+          "roles"
         ]
       }
     },
@@ -92756,6 +95969,437 @@
           "sm",
           "configure",
           "apnsCert"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sm/sentry/policies/assignments": {
+      "put": {
+        "description": "Update an Organizations Sentry Policies using the provided list. Sentry Policies are ordered in descending order of priority (i.e. highest priority at the bottom, this is opposite the Dashboard UI). Policies not present in the request will be deleted.",
+        "operationId": "updateOrganizationSmSentryPoliciesAssignments",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationSmSentryPoliciesAssignments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "networkId": {
+                        "type": "string",
+                        "description": "The Id of the Network"
+                      },
+                      "policies": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "policyId": {
+                              "type": "string",
+                              "description": "The Sentry Policy Id, if updating an existing Sentry Policy"
+                            },
+                            "smNetworkId": {
+                              "type": "string",
+                              "description": "The Id of the Systems Manager Network"
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "none",
+                                "withAll",
+                                "withAny",
+                                "withoutAll",
+                                "withoutAny"
+                              ],
+                              "description": "The scope of the Sentry Policy"
+                            },
+                            "tags": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "The tags for the Sentry Policy"
+                            },
+                            "groupPolicyId": {
+                              "type": "string",
+                              "description": "The Group Policy Id"
+                            }
+                          },
+                          "required": [
+                            "smNetworkId",
+                            "scope",
+                            "tags",
+                            "groupPolicyId"
+                          ]
+                        },
+                        "description": "Array of Sentry Group Policies for the Network"
+                      }
+                    },
+                    "required": [
+                      "networkId"
+                    ]
+                  },
+                  "description": "Sentry Group Policies for the Organization keyed by Network Id"
+                }
+              },
+              "example": {
+                "items": [
+                  {
+                    "networkId": "N_24329156",
+                    "policies": [
+                      {
+                        "policyId": "1284392014819",
+                        "smNetworkId": "N_24329156",
+                        "scope": "withAny",
+                        "tags": [
+                          "tag1",
+                          "tag2"
+                        ],
+                        "groupPolicyId": "1284392014819"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "required": [
+                "items"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "networkId": {
+                        "type": "string",
+                        "description": "The Id of the Network"
+                      },
+                      "policies": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "policyId": {
+                              "type": "string",
+                              "description": "The Id of the Sentry Policy"
+                            },
+                            "networkId": {
+                              "type": "string",
+                              "description": "The Id of the Network the Sentry Policy is associated with. In a locale, this should be the Wireless Group if present, otherwise the Wired Group."
+                            },
+                            "smNetworkId": {
+                              "type": "string",
+                              "description": "The Id of the Systems Manager Network the Sentry Policy is assigned to"
+                            },
+                            "tags": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "The tags of the Sentry Policy"
+                            },
+                            "scope": {
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "none",
+                                "withAll",
+                                "withAny",
+                                "withoutAll",
+                                "withoutAny"
+                              ],
+                              "description": "The scope of the Sentry Policy"
+                            },
+                            "groupNumber": {
+                              "type": "string",
+                              "description": "The number of the Group Policy"
+                            },
+                            "groupPolicyId": {
+                              "type": "string",
+                              "description": "The Id of the Group Policy. This is associated with the network specified by the networkId."
+                            },
+                            "priority": {
+                              "type": "string",
+                              "description": "The priority of the Sentry Policy"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "description": "The creation time of the Sentry Policy"
+                            },
+                            "lastUpdatedAt": {
+                              "type": "string",
+                              "description": "The last update time of the Sentry Policy"
+                            }
+                          }
+                        },
+                        "description": "Array of Sentry Group Policies for the Network"
+                      }
+                    }
+                  },
+                  "description": "Sentry Group Policies for the Organization keyed by Network Id"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "networkId": "N_24329156",
+                    "policies": [
+                      {
+                        "policyId": "1284392014819",
+                        "networkId": "N_24329156",
+                        "smNetworkId": "N_24329156",
+                        "tags": [
+                          "tag1",
+                          "tag2"
+                        ],
+                        "scope": "withAny",
+                        "groupNumber": "1234",
+                        "groupPolicyId": "1284392014819",
+                        "priority": "1",
+                        "createdAt": "2018-05-12T00:00:00Z",
+                        "lastUpdatedAt": "2018-05-12T00:00:00Z"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update an Organizations Sentry Policies using the provided list",
+        "tags": [
+          "sm",
+          "configure",
+          "sentry",
+          "policies",
+          "assignments"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/sm/sentry/policies/assignments/byNetwork": {
+      "get": {
+        "description": "List the Sentry Policies for an organization ordered in ascending order of priority",
+        "operationId": "getOrganizationSmSentryPoliciesAssignmentsByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter Sentry Policies by Network Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "networkId": {
+                          "type": "string",
+                          "description": "The Id of the Network"
+                        },
+                        "policies": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "policyId": {
+                                "type": "string",
+                                "description": "The Id of the Sentry Policy"
+                              },
+                              "networkId": {
+                                "type": "string",
+                                "description": "The Id of the Network the Sentry Policy is associated with. In a locale, this should be the Wireless Group if present, otherwise the Wired Group."
+                              },
+                              "smNetworkId": {
+                                "type": "string",
+                                "description": "The Id of the Systems Manager Network the Sentry Policy is assigned to"
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "The tags of the Sentry Policy"
+                              },
+                              "scope": {
+                                "type": "string",
+                                "enum": [
+                                  "all",
+                                  "none",
+                                  "withAll",
+                                  "withAny",
+                                  "withoutAll",
+                                  "withoutAny"
+                                ],
+                                "description": "The scope of the Sentry Policy"
+                              },
+                              "groupNumber": {
+                                "type": "string",
+                                "description": "The number of the Group Policy"
+                              },
+                              "groupPolicyId": {
+                                "type": "string",
+                                "description": "The Id of the Group Policy. This is associated with the network specified by the networkId."
+                              },
+                              "priority": {
+                                "type": "string",
+                                "description": "The priority of the Sentry Policy"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "description": "The creation time of the Sentry Policy"
+                              },
+                              "lastUpdatedAt": {
+                                "type": "string",
+                                "description": "The last update time of the Sentry Policy"
+                              }
+                            }
+                          },
+                          "description": "Array of Sentry Group Policies for the Network"
+                        }
+                      }
+                    },
+                    "description": "Sentry Group Policies for the Organization keyed by the Network or Locale Id the Policy belongs to"
+                  },
+                  "meta": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "description": "The total number of items in the dataset"
+                              },
+                              "remaining": {
+                                "type": "integer",
+                                "description": "The number of items in the dataset that are available on subsequent pages"
+                              }
+                            },
+                            "description": "Counts relating to the paginated items"
+                          }
+                        },
+                        "description": "Counts relating to the paginated dataset"
+                      }
+                    },
+                    "description": "Metadata relevant to the paginated dataset"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "items": [
+                    {
+                      "networkId": "N_24329156",
+                      "policies": [
+                        {
+                          "policyId": "1284392014819",
+                          "networkId": "N_24329156",
+                          "smNetworkId": "N_24329156",
+                          "tags": [
+                            "tag1",
+                            "tag2"
+                          ],
+                          "scope": "withAny",
+                          "groupNumber": "1234",
+                          "groupPolicyId": "1284392014819",
+                          "priority": "1",
+                          "createdAt": "2018-05-12T00:00:00Z",
+                          "lastUpdatedAt": "2018-05-12T00:00:00Z"
+                        }
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 10,
+                        "remaining": 0
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the Sentry Policies for an organization ordered in ascending order of priority",
+        "tags": [
+          "sm",
+          "configure",
+          "sentry",
+          "policies",
+          "assignments",
+          "byNetwork"
         ]
       }
     },
@@ -93862,6 +97506,242 @@
         ]
       }
     },
+    "/organizations/{organizationId}/summary/top/networks/byStatus": {
+      "get": {
+        "description": "List the client and status overview information for the networks in an organization. Usage is measured in kilobytes and from the last seven days.",
+        "operationId": "getOrganizationSummaryTopNetworksByStatus",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 5000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "networkId": {
+                    "type": "string",
+                    "description": "Network identifier"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Network name"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "Network clients list URL"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Network tags"
+                  },
+                  "clients": {
+                    "type": "object",
+                    "properties": {
+                      "counts": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "description": "Total count of clients in network"
+                          }
+                        },
+                        "description": "Network client counts"
+                      },
+                      "usage": {
+                        "type": "object",
+                        "properties": {
+                          "upstream": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Total upstream usage in network, in KB"
+                          },
+                          "downstream": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Total downstream usage in network, in KB"
+                          }
+                        },
+                        "description": "Network client usage data"
+                      }
+                    },
+                    "description": "Network clients data"
+                  },
+                  "statuses": {
+                    "type": "object",
+                    "properties": {
+                      "overall": {
+                        "type": "string",
+                        "description": "Overall status of network"
+                      },
+                      "byProductType": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "productType": {
+                              "type": "string",
+                              "description": "Product type"
+                            },
+                            "counts": {
+                              "type": "object",
+                              "properties": {
+                                "online": {
+                                  "type": "integer",
+                                  "description": "Count of online devices"
+                                },
+                                "offline": {
+                                  "type": "integer",
+                                  "description": "Count of offline devices"
+                                },
+                                "alerting": {
+                                  "type": "integer",
+                                  "description": "Count of alerting devices"
+                                },
+                                "dormant": {
+                                  "type": "integer",
+                                  "description": "Count of dormant devices"
+                                }
+                              },
+                              "description": "Counts of devices by status"
+                            }
+                          }
+                        },
+                        "description": "List of status counts by product type"
+                      }
+                    },
+                    "description": "Network device statuses"
+                  },
+                  "devices": {
+                    "type": "object",
+                    "properties": {
+                      "byProductType": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "productType": {
+                              "type": "string",
+                              "description": "Product type"
+                            },
+                            "url": {
+                              "type": "string",
+                              "description": "URL to clients list for the relevant product type"
+                            }
+                          }
+                        },
+                        "description": "URLs by product type"
+                      }
+                    },
+                    "description": "Network device information"
+                  },
+                  "productTypes": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Product types in network"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": [
+                {
+                  "networkId": "N_24329156",
+                  "name": "Main Office",
+                  "url": "https://n1.meraki.com//n//manage/nodes/list",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "clients": {
+                    "counts": {
+                      "total": 72
+                    },
+                    "usage": {
+                      "upstream": 3732658.44,
+                      "downstream": 983732658.87
+                    }
+                  },
+                  "statuses": {
+                    "overall": "online",
+                    "byProductType": [
+                      {
+                        "productType": "wireless",
+                        "counts": {
+                          "online": 2,
+                          "offline": 1,
+                          "alerting": 0,
+                          "dormant": 3
+                        }
+                      }
+                    ]
+                  },
+                  "devices": {
+                    "byProductType": [
+                      {
+                        "productType": "wireless",
+                        "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000"
+                      }
+                    ]
+                  },
+                  "productTypes": [
+                    "appliance",
+                    "switch",
+                    "wireless"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "summary": "List the client and status overview information for the networks in an organization",
+        "tags": [
+          "organizations",
+          "monitor",
+          "summary",
+          "top",
+          "networks",
+          "byStatus"
+        ]
+      }
+    },
     "/organizations/{organizationId}/summary/top/ssids/byUsage": {
       "get": {
         "description": "Return metrics for organization's top 10 ssids by data usage over given time range. Default unit is megabytes.",
@@ -94529,6 +98409,20 @@
                     "format": "date-time",
                     "description": "Last reported time for the device"
                   },
+                  "highAvailability": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Indicates whether High Availability is enabled for the device. For devices that do not support HA, this will be 'false'"
+                      },
+                      "role": {
+                        "type": "string",
+                        "description": "The HA role of the device on the network. For devices that do not support HA, this will be 'primary'"
+                      }
+                    },
+                    "description": "Device High Availability Capabilities"
+                  },
                   "uplinks": {
                     "type": "array",
                     "items": {
@@ -94641,6 +98535,10 @@
                   "serial": "Q234-ABCD-5678",
                   "model": "MX68C",
                   "lastReportedAt": "2018-02-11T00:00:00Z",
+                  "highAvailability": {
+                    "enabled": true,
+                    "role": "primary"
+                  },
                   "uplinks": [
                     {
                       "interface": "wan1",
@@ -96841,7 +100739,13 @@
       "name": "applications"
     },
     {
+      "name": "areas"
+    },
+    {
       "name": "arpInspection"
+    },
+    {
+      "name": "arpTable"
     },
     {
       "name": "artifacts"
@@ -96874,7 +100778,13 @@
       "name": "bonjourForwarding"
     },
     {
+      "name": "boundaries"
+    },
+    {
       "name": "brandingPolicies"
+    },
+    {
+      "name": "byBoundary"
     },
     {
       "name": "byClient"
@@ -96895,6 +100805,9 @@
       "name": "byNetwork"
     },
     {
+      "name": "byStatus"
+    },
+    {
       "name": "bySwitch"
     },
     {
@@ -96905,6 +100818,9 @@
     },
     {
       "name": "bypassActivationLockAttempts"
+    },
+    {
+      "name": "cableTest"
     },
     {
       "name": "callbacks"
@@ -96992,6 +100908,9 @@
     },
     {
       "name": "desktopLogs"
+    },
+    {
+      "name": "detections"
     },
     {
       "name": "deviceCommandLogs"
@@ -97130,6 +101049,9 @@
     },
     {
       "name": "licensing"
+    },
+    {
+      "name": "lines"
     },
     {
       "name": "linkAggregations"
@@ -97369,6 +101291,9 @@
       "name": "sense"
     },
     {
+      "name": "sentry"
+    },
+    {
       "name": "servers"
     },
     {
@@ -97556,6 +101481,9 @@
     },
     {
       "name": "vppAccounts"
+    },
+    {
+      "name": "wakeOnLan"
     },
     {
       "name": "warmSpare"
@@ -98400,6 +102328,30 @@
       "group": "Site to site vpn",
       "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
       "resource": "/networks/{networkId}/appliance/vpn/siteToSiteVpn",
+      "operation": "update"
+    },
+    {
+      "group": "Sm/actions/admins/role",
+      "summary": "Create a Limited Access Role",
+      "resource": "/organizations/{organizationId}/sm/admins/roles",
+      "operation": "create"
+    },
+    {
+      "group": "Sm/actions/admins/role",
+      "summary": "Delete a Limited Access Role",
+      "resource": "/organizations/{organizationId}/sm/admins/roles/{roleId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Sm/actions/admins/role",
+      "summary": "Update a Limited Access Role",
+      "resource": "/organizations/{organizationId}/sm/admins/roles/{roleId}",
+      "operation": "update"
+    },
+    {
+      "group": "Sm/actions/sentry/policies/assignments",
+      "summary": "Update an Organizations Sentry Policies using the provided list. Sentry Policies are ordered in descending order of priority (i.e. highest priority at the bottom, this is opposite the Dashboard UI). Policies not present in the request will be deleted.",
+      "resource": "/organizations/{organizationId}/sm/sentry/policies/assignments",
       "operation": "update"
     },
     {
