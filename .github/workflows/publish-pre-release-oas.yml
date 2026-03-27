@@ -30,16 +30,21 @@ jobs:
     needs: check
     if: inputs.override_schedule || needs.check.outputs.should-continue == 'yes'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - uses: actions/checkout@master
         with:
           ref: "v1-beta"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::469746060910:role/github-openapi-s3-download
+          aws-region: us-west-2
       - name: Read from AWS bucket
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region ${{ secrets.AWS_REGION }}
-          aws s3 sync ${{ secrets.AWS_S3_BUCKET }} ./openapi
+          aws s3 sync s3://meraki-api-oas ./openapi
           mv openapi/oas2_beta.json openapi/spec2.json
           mv openapi/oas3_beta.json openapi/spec3.json
           rm openapi/oas*_ga.json
