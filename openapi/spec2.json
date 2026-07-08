@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.72.0-beta.0",
+    "version": "1.72.0-beta.1",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 01 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 08 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -9746,6 +9746,12 @@
                         "type": "string",
                         "description": "The interface name of the ARP table entry, such as Vlan1, Port-channel2, or GigabitEthernet1/0/1"
                       },
+                      "vrfName": {
+                        "type": "string",
+                        "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs. Null when the Catalyst router entry has no VRF name.",
+                        "x-release-stage": "beta",
+                        "x-nullable": true
+                      },
                       "lastUpdatedAt": {
                         "type": "string",
                         "format": "date-time",
@@ -9776,6 +9782,7 @@
                     "mac": "00:11:22:33:44:55",
                     "vlanId": 100,
                     "interface": "Vlan100",
+                    "vrfName": "Default",
                     "lastUpdatedAt": "2018-02-11T00:00:00.090210Z"
                   }
                 ],
@@ -10790,6 +10797,11 @@
             "schema": {
               "type": "object",
               "properties": {
+                "mac": {
+                  "type": "string",
+                  "x-release-stage": "beta",
+                  "description": "Optional parameter to filter MAC table entries by MAC address. Must be a colon-delimited six-octet MAC address, for example '00:11:22:a0:b1:c2'. Matching is case-insensitive."
+                },
                 "callback": {
                   "type": "object",
                   "properties": {
@@ -10827,6 +10839,7 @@
                 }
               },
               "example": {
+                "mac": "00:11:22:a0:b1:c2",
                 "callback": {
                   "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
                   "sharedSecret": "secret",
@@ -10861,6 +10874,11 @@
                     "serial": {
                       "type": "string",
                       "description": "Device serial number"
+                    },
+                    "mac": {
+                      "type": "string",
+                      "description": "MAC address used to filter MAC table entries",
+                      "x-release-stage": "beta"
                     }
                   },
                   "description": "MAC table request parameters"
@@ -10903,7 +10921,8 @@
                 "macTableId": "1284392014819",
                 "url": "/devices/Q234-ABCD-5678/liveTools/macTable/1284392014819",
                 "request": {
-                  "serial": "Q234-ABCD-5678"
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:a0:b1:c2"
                 },
                 "status": "complete",
                 "callback": {
@@ -10963,6 +10982,11 @@
                     "serial": {
                       "type": "string",
                       "description": "Device serial number"
+                    },
+                    "mac": {
+                      "type": "string",
+                      "description": "MAC address used to filter MAC table entries",
+                      "x-release-stage": "beta"
                     }
                   },
                   "description": "MAC table request parameters"
@@ -11011,7 +11035,8 @@
                 "macTableId": "1284392014819",
                 "url": "/devices/Q234-ABCD-5678/liveTools/macTable/1284392014819",
                 "request": {
-                  "serial": "Q234-ABCD-5678"
+                  "serial": "Q234-ABCD-5678",
+                  "mac": "00:11:22:a0:b1:c2"
                 },
                 "status": "complete",
                 "entries": [
@@ -13511,6 +13536,18 @@
             "schema": {
               "type": "object",
               "properties": {
+                "destination": {
+                  "type": "object",
+                  "properties": {
+                    "cidr": {
+                      "type": "string",
+                      "description": "IPv4 or IPv6 address or CIDR used to filter returned routes. Invalid values return 400 Bad Request before the job is enqueued.",
+                      "x-release-stage": "beta"
+                    }
+                  },
+                  "x-release-stage": "beta",
+                  "description": "Optional destination filter used to return routes containing the supplied destination."
+                },
                 "callback": {
                   "type": "object",
                   "properties": {
@@ -13548,6 +13585,9 @@
                 }
               },
               "example": {
+                "destination": {
+                  "cidr": "10.0.0.0/24"
+                },
                 "callback": {
                   "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
                   "sharedSecret": "secret",
@@ -13582,6 +13622,18 @@
                     "serial": {
                       "type": "string",
                       "description": "Device serial number"
+                    },
+                    "destination": {
+                      "type": "object",
+                      "properties": {
+                        "cidr": {
+                          "type": "string",
+                          "description": "IPv4 or IPv6 address or CIDR filter.",
+                          "x-release-stage": "beta"
+                        }
+                      },
+                      "description": "Optional destination filter; returns routes containing the supplied CIDR",
+                      "x-release-stage": "beta"
                     }
                   },
                   "description": "Routing table request parameters"
@@ -13624,7 +13676,10 @@
                 "routingTableId": "1284392014819",
                 "url": "/devices/Q234-ABCD-5678/liveTools/routingTable/1284392014819",
                 "request": {
-                  "serial": "Q234-ABCD-5678"
+                  "serial": "Q234-ABCD-5678",
+                  "destination": {
+                    "cidr": "10.0.0.0/24"
+                  }
                 },
                 "status": "complete",
                 "callback": {
@@ -14539,6 +14594,18 @@
                     "serial": {
                       "type": "string",
                       "description": "Device serial number"
+                    },
+                    "destination": {
+                      "type": "object",
+                      "properties": {
+                        "cidr": {
+                          "type": "string",
+                          "description": "IPv4 or IPv6 address or CIDR filter.",
+                          "x-release-stage": "beta"
+                        }
+                      },
+                      "description": "Optional destination filter; returns routes containing the supplied CIDR",
+                      "x-release-stage": "beta"
                     }
                   },
                   "description": "Routing table request parameters"
@@ -14605,7 +14672,10 @@
                 "routingTableId": "1284392014819",
                 "url": "/devices/Q234-ABCD-5678/liveTools/routingTable/1284392014819",
                 "request": {
-                  "serial": "Q234-ABCD-5678"
+                  "serial": "Q234-ABCD-5678",
+                  "destination": {
+                    "cidr": "10.0.0.0/24"
+                  }
                 },
                 "status": "complete",
                 "entries": [
@@ -18437,6 +18507,7 @@
                       "20 Gbps",
                       "25 Gbps",
                       "40 Gbps",
+                      "400 Gbps",
                       "5 Gbps",
                       "50 Gbps"
                     ],
@@ -95606,6 +95677,10 @@
                     "type": "string",
                     "description": "The URL of the HTTP server."
                   },
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the HTTP server is enabled for webhooks."
+                  },
                   "networkId": {
                     "type": "string",
                     "description": "A Meraki network ID."
@@ -95633,6 +95708,7 @@
                   "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                   "name": "Example Webhook Server",
                   "url": "https://www.example.com/my_custom_webhook",
+                  "enabled": true,
                   "networkId": "N_12345678",
                   "payloadTemplate": {
                     "payloadTemplateId": "wpt_00001",
@@ -95731,6 +95807,10 @@
                   "type": "string",
                   "description": "The URL of the HTTP server."
                 },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether the HTTP server is enabled for webhooks."
+                },
                 "networkId": {
                   "type": "string",
                   "description": "A Meraki network ID."
@@ -95756,6 +95836,7 @@
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "enabled": true,
                 "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
@@ -95813,6 +95894,10 @@
                   "type": "string",
                   "description": "The URL of the HTTP server."
                 },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether the HTTP server is enabled for webhooks."
+                },
                 "networkId": {
                   "type": "string",
                   "description": "A Meraki network ID."
@@ -95838,6 +95923,7 @@
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "enabled": true,
                 "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
@@ -95927,6 +96013,10 @@
                   "type": "string",
                   "description": "The URL of the HTTP server."
                 },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether the HTTP server is enabled for webhooks."
+                },
                 "networkId": {
                   "type": "string",
                   "description": "A Meraki network ID."
@@ -95952,6 +96042,7 @@
                 "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXlfY3VzdG9tX3dlYmhvb2s=",
                 "name": "Example Webhook Server",
                 "url": "https://www.example.com/my_custom_webhook",
+                "enabled": true,
                 "networkId": "N_12345678",
                 "payloadTemplate": {
                   "payloadTemplateId": "wpt_00001",
@@ -103318,7 +103409,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-06-01T08:01:21Z"
+                  "lastEnabledAt": "2026-06-08T08:01:25Z"
                 }
               }
             }
@@ -103610,7 +103701,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-06-01T08:01:21Z"
+                  "lastEnabledAt": "2026-06-08T08:01:25Z"
                 }
               }
             }
@@ -111449,6 +111540,10 @@
                     "type": "boolean",
                     "description": "Whether or not the SSID is enabled"
                   },
+                  "wlanIdentifier": {
+                    "type": "integer",
+                    "description": "WLAN identifier for the SSID. Only present for Meraki admin users."
+                  },
                   "splashPage": {
                     "type": "string",
                     "enum": [
@@ -112005,6 +112100,7 @@
                   "number": 0,
                   "name": "My SSID",
                   "enabled": true,
+                  "wlanIdentifier": 16,
                   "splashPage": "Click-through splash page",
                   "ssidAdminAccessible": false,
                   "localAuth": false,
@@ -112190,6 +112286,10 @@
                 "enabled": {
                   "type": "boolean",
                   "description": "Whether or not the SSID is enabled"
+                },
+                "wlanIdentifier": {
+                  "type": "integer",
+                  "description": "WLAN identifier for the SSID. Only present for Meraki admin users."
                 },
                 "splashPage": {
                   "type": "string",
@@ -112745,6 +112845,7 @@
                 "number": 0,
                 "name": "My SSID",
                 "enabled": true,
+                "wlanIdentifier": 16,
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "localAuth": false,
@@ -113919,6 +114020,10 @@
                   "type": "boolean",
                   "description": "Whether or not the SSID is enabled"
                 },
+                "wlanIdentifier": {
+                  "type": "integer",
+                  "description": "WLAN identifier for the SSID. Only present for Meraki admin users."
+                },
                 "splashPage": {
                   "type": "string",
                   "enum": [
@@ -114473,6 +114578,7 @@
                 "number": 0,
                 "name": "My SSID",
                 "enabled": true,
+                "wlanIdentifier": 16,
                 "splashPage": "Click-through splash page",
                 "ssidAdminAccessible": false,
                 "localAuth": false,
@@ -136594,13 +136700,13 @@
                       "usageBytes": 1000,
                       "outage": [
                         {
-                          "ts": 1782885661,
+                          "ts": 1783490465,
                           "isConnected": true
                         }
                       ],
                       "usageIntervals": [
                         {
-                          "ts": 1782885661,
+                          "ts": 1783490465,
                           "latency": 35.3,
                           "loss": {
                             "percentage": 50
@@ -152050,6 +152156,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -152082,6 +152205,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -152147,6 +152287,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -152156,7 +152302,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -152449,6 +152601,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -152481,6 +152650,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -152556,6 +152742,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -152565,7 +152757,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -152887,6 +153085,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -152919,6 +153134,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -153003,6 +153235,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -153012,7 +153250,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -153192,11 +153436,6 @@
                           },
                           "description": "Client OS info."
                         },
-                        "driverVersion": {
-                          "type": "string",
-                          "description": "Driver version.",
-                          "x-nullable": true
-                        },
                         "driver": {
                           "type": "object",
                           "properties": {
@@ -153312,6 +153551,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -153344,6 +153600,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -153386,7 +153659,6 @@
                       "clientOs": {
                         "name": "iOS"
                       },
-                      "driverVersion": "22.10.14.8",
                       "driver": {
                         "version": "22.10.14.8",
                         "vendor": "Intel"
@@ -153420,6 +153692,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -153429,7 +153707,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -153708,6 +153992,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -153740,6 +154041,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -153811,6 +154129,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -153820,7 +154144,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -154165,6 +154495,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -154197,6 +154544,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -154288,6 +154652,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -154297,7 +154667,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -154854,6 +155230,23 @@
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
                               },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
+                              },
                               "bySubContributor": {
                                 "type": "array",
                                 "items": {
@@ -154886,6 +155279,23 @@
                                         }
                                       },
                                       "description": "Percentage of failures this subcontributor is responsible for."
+                                    },
+                                    "impactedBands": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "band": {
+                                            "type": "string",
+                                            "description": "Band label."
+                                          },
+                                          "failureCount": {
+                                            "type": "integer",
+                                            "description": "Failed client minutes observed on this band."
+                                          }
+                                        }
+                                      },
+                                      "description": "Bands with observed client impact for this subcontributor."
                                     }
                                   }
                                 },
@@ -154966,6 +155376,12 @@
                             "percent": 20
                           },
                           "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ],
                           "bySubContributor": [
                             {
                               "name": "Inefficient Client Capabilities",
@@ -154975,7 +155391,13 @@
                               },
                               "failureContribution": {
                                 "percent": 20
-                              }
+                              },
+                              "impactedBands": [
+                                {
+                                  "band": "2.4",
+                                  "failureCount": 2
+                                }
+                              ]
                             }
                           ]
                         }
@@ -155939,6 +156361,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -155996,7 +156435,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -156245,6 +156690,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -156303,7 +156765,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -156612,6 +157080,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -156688,7 +157173,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -156860,11 +157351,6 @@
                           "type": "string",
                           "description": "Client OS."
                         },
-                        "driverVersion": {
-                          "type": "string",
-                          "description": "Driver version.",
-                          "x-nullable": true
-                        },
                         "driver": {
                           "type": "object",
                           "properties": {
@@ -156959,6 +157445,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -156995,7 +157498,6 @@
                         "name": "Example Network"
                       },
                       "clientOs": "Mac OS",
-                      "driverVersion": "22.10.14.8",
                       "driver": {
                         "version": "22.10.14.8",
                         "vendor": "Intel"
@@ -157022,7 +157524,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -157272,6 +157780,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -157330,7 +157855,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -157637,6 +158168,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -157713,7 +158261,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -158257,6 +158811,23 @@
                               "clients": {
                                 "type": "integer",
                                 "description": "Unique clients affected by this contributor."
+                              },
+                              "impactedBands": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "band": {
+                                      "type": "string",
+                                      "description": "Band label."
+                                    },
+                                    "failureCount": {
+                                      "type": "integer",
+                                      "description": "Failed client minutes observed on this band."
+                                    }
+                                  }
+                                },
+                                "description": "Bands with observed client impact for this contributor."
                               }
                             }
                           },
@@ -158326,7 +158897,13 @@
                           "failureContribution": {
                             "percent": 40
                           },
-                          "clients": 2
+                          "clients": 2,
+                          "impactedBands": [
+                            {
+                              "band": "2.4",
+                              "failureCount": 2
+                            }
+                          ]
                         }
                       ]
                     }
@@ -160773,11 +161350,6 @@
                           },
                           "description": "Client OS info."
                         },
-                        "driverVersion": {
-                          "type": "string",
-                          "description": "Driver version.",
-                          "x-nullable": true
-                        },
                         "driver": {
                           "type": "object",
                           "properties": {
@@ -160982,7 +161554,6 @@
                       "clientOs": {
                         "name": "iOS"
                       },
-                      "driverVersion": "22.10.14.8",
                       "driver": {
                         "version": "22.10.14.8",
                         "vendor": "Intel"
@@ -164567,11 +165138,6 @@
                           },
                           "description": "Client OS info."
                         },
-                        "driverVersion": {
-                          "type": "string",
-                          "description": "Driver version.",
-                          "x-nullable": true
-                        },
                         "driver": {
                           "type": "object",
                           "properties": {
@@ -164718,7 +165284,6 @@
                       "clientOs": {
                         "name": "iOS"
                       },
-                      "driverVersion": "22.10.14.8",
                       "driver": {
                         "version": "22.10.14.8",
                         "vendor": "Intel"
@@ -180246,6 +180811,10 @@
                             "id": {
                               "type": "string",
                               "description": "Network identifier"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Network name"
                             }
                           },
                           "description": "Network information"
@@ -180269,6 +180838,43 @@
                             }
                           },
                           "description": "Application information"
+                        },
+                        "interfaces": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "vlanId": {
+                                "type": "string",
+                                "description": "SVI Vlan Interface ID"
+                              },
+                              "dynamic": {
+                                "type": "boolean",
+                                "description": "Whether the interface is dynamic"
+                              },
+                              "ipAddress": {
+                                "type": "string",
+                                "description": "SVI IP Address"
+                              },
+                              "subnetMask": {
+                                "type": "string",
+                                "description": "SVI Subnet Mask"
+                              },
+                              "ipv6PrefixLength": {
+                                "type": "string",
+                                "description": "SVI IPv6 Prefix Length"
+                              },
+                              "nameServer": {
+                                "type": "string",
+                                "description": "SVI Name Server"
+                              },
+                              "ipGateway": {
+                                "type": "string",
+                                "description": "SVI IP Gateway"
+                              }
+                            }
+                          },
+                          "description": "List of deployment interfaces"
                         }
                       }
                     },
@@ -180320,14 +180926,26 @@
                       "type": "node",
                       "name": "Main Switch",
                       "network": {
-                        "id": "N_24329156"
+                        "id": "N_24329156",
+                        "name": "Main Office"
                       },
                       "application": {
                         "developer": {
                           "name": "ThousandEyes"
                         },
                         "name": "Enterprise Agent"
-                      }
+                      },
+                      "interfaces": [
+                        {
+                          "vlanId": "10",
+                          "dynamic": false,
+                          "ipAddress": "192.168.1.10",
+                          "subnetMask": "255.255.255.0",
+                          "ipv6PrefixLength": "64",
+                          "nameServer": "8.8.8.8",
+                          "ipGateway": "192.168.1.1"
+                        }
+                      ]
                     }
                   ],
                   "meta": {
@@ -180409,6 +181027,10 @@
                             "subnetMask": {
                               "type": "string",
                               "description": "SVI Subnet Mask"
+                            },
+                            "ipv6PrefixLength": {
+                              "type": "string",
+                              "description": "SVI IPv6 Prefix Length"
                             },
                             "nameServer": {
                               "type": "string",
@@ -180524,6 +181146,7 @@
                         "dynamic": true,
                         "ipAddress": "192.168.1.1",
                         "subnetMask": "255.255.255.0",
+                        "ipv6PrefixLength": "64",
                         "nameServer": "8.8.8.8",
                         "ipGateway": "192.168.1.254"
                       }
@@ -180601,6 +181224,10 @@
                           "id": {
                             "type": "string",
                             "description": "Network identifier"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Network name"
                           }
                         },
                         "description": "Network information"
@@ -180624,6 +181251,43 @@
                           }
                         },
                         "description": "Application information"
+                      },
+                      "interfaces": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "vlanId": {
+                              "type": "string",
+                              "description": "SVI Vlan Interface ID"
+                            },
+                            "dynamic": {
+                              "type": "boolean",
+                              "description": "Whether the interface is dynamic"
+                            },
+                            "ipAddress": {
+                              "type": "string",
+                              "description": "SVI IP Address"
+                            },
+                            "subnetMask": {
+                              "type": "string",
+                              "description": "SVI Subnet Mask"
+                            },
+                            "ipv6PrefixLength": {
+                              "type": "string",
+                              "description": "SVI IPv6 Prefix Length"
+                            },
+                            "nameServer": {
+                              "type": "string",
+                              "description": "SVI Name Server"
+                            },
+                            "ipGateway": {
+                              "type": "string",
+                              "description": "SVI IP Gateway"
+                            }
+                          }
+                        },
+                        "description": "List of deployment interfaces"
                       }
                     }
                   },
@@ -180667,14 +181331,26 @@
                     "type": "node",
                     "name": "Main Switch",
                     "network": {
-                      "id": "N_24329156"
+                      "id": "N_24329156",
+                      "name": "Main Office"
                     },
                     "application": {
                       "developer": {
                         "name": "ThousandEyes"
                       },
                       "name": "Enterprise Agent"
-                    }
+                    },
+                    "interfaces": [
+                      {
+                        "vlanId": "10",
+                        "dynamic": false,
+                        "ipAddress": "192.168.1.10",
+                        "subnetMask": "255.255.255.0",
+                        "ipv6PrefixLength": "64",
+                        "nameServer": "8.8.8.8",
+                        "ipGateway": "192.168.1.1"
+                      }
+                    ]
                   }
                 ],
                 "meta": {
@@ -180826,6 +181502,10 @@
                         "type": "string",
                         "description": "SVI Subnet Mask"
                       },
+                      "ipv6PrefixLength": {
+                        "type": "string",
+                        "description": "SVI IPv6 Prefix Length"
+                      },
                       "nameServer": {
                         "type": "string",
                         "description": "SVI Name Server"
@@ -180863,6 +181543,7 @@
                     "dynamic": false,
                     "ipAddress": "192.168.1.10",
                     "subnetMask": "255.255.255.0",
+                    "ipv6PrefixLength": "64",
                     "nameServer": "8.8.8.8",
                     "ipGateway": "192.168.1.1"
                   }
@@ -181064,6 +181745,10 @@
                                     "type": "string",
                                     "description": "Static interface subnet mask"
                                   },
+                                  "ipv6PrefixLength": {
+                                    "type": "string",
+                                    "description": "Static IPv6 interface prefix length"
+                                  },
                                   "nameServer": {
                                     "type": "string",
                                     "description": "Static interface DNS server"
@@ -181147,6 +181832,7 @@
                             "dynamic": false,
                             "ipAddress": "192.168.1.10",
                             "subnetMask": "255.255.255.0",
+                            "ipv6PrefixLength": "64",
                             "nameServer": "8.8.8.8",
                             "ipGateway": "192.168.1.1"
                           }
@@ -194709,10 +195395,11 @@
                                     25000,
                                     40000,
                                     50000,
-                                    100000
+                                    100000,
+                                    400000
                                   ]
                                 },
-                                "description": "Supported link speeds for the interface in Mbps when available. Maximum 11 entries."
+                                "description": "Supported link speeds for the interface in Mbps when available. Maximum 12 entries."
                               }
                             },
                             "description": "Supported and negotiated interface speed information."
@@ -194743,6 +195430,13 @@
                         },
                         "description": "IP addresses for the interface when available. Maximum 32 addresses.",
                         "x-nullable": true
+                      },
+                      "prefixes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "IPv4 and IPv6 CIDR prefixes for the interface when available. Maximum 2 prefixes."
                       },
                       "vlans": {
                         "type": "object",
@@ -194839,6 +195533,10 @@
                     "addresses": [
                       "192.0.2.10"
                     ],
+                    "prefixes": [
+                      "192.0.2.0/24",
+                      "2001:db8::/64"
+                    ],
                     "vlans": {
                       "attached": [
                         100,
@@ -194892,7 +195590,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 500. Default is 500."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
             "type": "string",
@@ -195135,7 +195833,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 500. Default is 500."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
           },
           {
             "type": "string",
@@ -213339,8 +214037,39 @@
                         "description": "Status"
                       },
                       "details": {
-                        "type": "string",
-                        "description": "Details"
+                        "type": "object",
+                        "properties": {
+                          "failureInfo": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Failure labels associated with the session when present."
+                          },
+                          "failureAction": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Suggested remediation actions when present."
+                          },
+                          "ruleDetails": {
+                            "type": "string",
+                            "description": "Authorization rule details for the session."
+                          },
+                          "failureDetails": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Additional failure metadata when present."
+                          },
+                          "isEntraIdError": {
+                            "type": "boolean",
+                            "description": "Whether the failure was identified as an Entra ID-specific error."
+                          }
+                        },
+                        "description": "Details for session failure metadata."
                       },
                       "user": {
                         "type": "object",
@@ -213459,7 +214188,19 @@
                     },
                     "ts": "2023-02-01T11:36:25.480Z",
                     "status": "Success",
-                    "details": "A policy for whose first matched rule will return its assigned authz profile",
+                    "details": {
+                      "failureInfo": [
+                        "The matched rule has an ACCESS_REJECT action."
+                      ],
+                      "failureAction": [
+                        "Check policy and rule configuration."
+                      ],
+                      "ruleDetails": "Default rule",
+                      "failureDetails": [
+                        "Additional failure context."
+                      ],
+                      "isEntraIdError": false
+                    },
                     "user": {
                       "id": "stress"
                     },
@@ -213548,8 +214289,39 @@
                   "description": "Status"
                 },
                 "details": {
-                  "type": "string",
-                  "description": "Details"
+                  "type": "object",
+                  "properties": {
+                    "failureInfo": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Failure labels associated with the session when present."
+                    },
+                    "failureAction": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Suggested remediation actions when present."
+                    },
+                    "ruleDetails": {
+                      "type": "string",
+                      "description": "Authorization rule details for the session."
+                    },
+                    "failureDetails": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Additional failure metadata when present."
+                    },
+                    "isEntraIdError": {
+                      "type": "boolean",
+                      "description": "Whether the failure was identified as an Entra ID-specific error."
+                    }
+                  },
+                  "description": "Details for session failure metadata."
                 },
                 "counts": {
                   "type": "object",
@@ -213991,7 +214763,19 @@
                 "hasCompleteEvent": true,
                 "ts": "2023-02-01T13:25:26.181Z",
                 "status": "Success",
-                "details": "",
+                "details": {
+                  "failureInfo": [
+                    "The matched rule has an ACCESS_REJECT action."
+                  ],
+                  "failureAction": [
+                    "Check policy and rule configuration."
+                  ],
+                  "ruleDetails": "Default rule",
+                  "failureDetails": [
+                    "Additional failure context."
+                  ],
+                  "isEntraIdError": false
+                },
                 "counts": {
                   "events": {
                     "total": 5
@@ -216352,6 +217136,16 @@
             "description": "Filter rulesets by name (partial match, case-insensitive). If multiple instances are provided, only the last one is used."
           },
           {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-release-stage": "beta",
+            "name": "excludedPolicyIds",
+            "in": "query",
+            "description": "Filter out rulesets that are associated with the specified policy IDs"
+          },
+          {
             "type": "integer",
             "name": "perPage",
             "in": "query",
@@ -216622,7 +217416,8 @@
                           "applianceVlans",
                           "policyObjectGroups",
                           "policyObjects",
-                          "ports"
+                          "ports",
+                          "siteSpecificVlans"
                         ]
                       },
                       "description": "Source match criteria types"
@@ -216691,6 +217486,42 @@
                             ]
                           },
                           "description": "Appliance VLANs"
+                        },
+                        "siteSpecificVlans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "VLAN ID (1-4094)"
+                              },
+                              "address": {
+                                "type": "object",
+                                "properties": {
+                                  "offsets": {
+                                    "type": "object",
+                                    "properties": {
+                                      "ipv4": {
+                                        "type": "integer",
+                                        "description": "IPv4 address offset. Added to the base network address to determine the host address within the subnet. Maximum value: 16777215 (2^24-1, covering up to /8 subnets)."
+                                      },
+                                      "ipv6": {
+                                        "type": "string",
+                                        "description": "IPv6 interface identifier offset in colon-separated hex format (e.g., '200:ff:fe01:f'). Appended to the /64 network prefix to form the complete IPv6 address."
+                                      }
+                                    },
+                                    "description": "IP address offsets. For IPv4, the offset is added to the base address (e.g., base 10.0.0.0/24 + offset 25 = 10.0.0.25). For IPv6, the offset forms the interface identifier suffix appended to the /64 prefix (e.g., prefix 2001:db8::/64 + offset 'ff:fe01' = 2001:db8::ff:fe01)."
+                                  }
+                                },
+                                "description": "Address offsets added to the VLAN's base network address to form the target host address"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          },
+                          "description": "Site-specific VLANs with address offset configuration."
                         }
                       },
                       "description": "Source criteria values (not present if 'any' is in matchCriteria)"
@@ -216714,10 +217545,13 @@
                           "applianceVlans",
                           "applicationCategories",
                           "applications",
+                          "countries",
+                          "fqdns",
                           "policyObjectGroups",
                           "policyObjects",
                           "ports",
-                          "services"
+                          "services",
+                          "siteSpecificVlans"
                         ]
                       },
                       "description": "Destination match criteria types"
@@ -216870,6 +217704,316 @@
                             ]
                           },
                           "description": "Appliance VLANs"
+                        },
+                        "countries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "AD",
+                                  "AE",
+                                  "AF",
+                                  "AG",
+                                  "AI",
+                                  "AL",
+                                  "AM",
+                                  "AN",
+                                  "AO",
+                                  "AQ",
+                                  "AR",
+                                  "AS",
+                                  "AT",
+                                  "AU",
+                                  "AW",
+                                  "AX",
+                                  "AZ",
+                                  "BA",
+                                  "BB",
+                                  "BD",
+                                  "BE",
+                                  "BF",
+                                  "BG",
+                                  "BH",
+                                  "BI",
+                                  "BJ",
+                                  "BL",
+                                  "BM",
+                                  "BN",
+                                  "BO",
+                                  "BR",
+                                  "BS",
+                                  "BT",
+                                  "BV",
+                                  "BW",
+                                  "BY",
+                                  "BZ",
+                                  "CA",
+                                  "CC",
+                                  "CD",
+                                  "CF",
+                                  "CG",
+                                  "CH",
+                                  "CI",
+                                  "CK",
+                                  "CL",
+                                  "CM",
+                                  "CN",
+                                  "CO",
+                                  "CR",
+                                  "CU",
+                                  "CV",
+                                  "CW",
+                                  "CX",
+                                  "CY",
+                                  "CZ",
+                                  "DE",
+                                  "DJ",
+                                  "DK",
+                                  "DM",
+                                  "DO",
+                                  "DZ",
+                                  "EC",
+                                  "EE",
+                                  "EG",
+                                  "EH",
+                                  "ER",
+                                  "ES",
+                                  "ET",
+                                  "FI",
+                                  "FJ",
+                                  "FK",
+                                  "FM",
+                                  "FO",
+                                  "FR",
+                                  "GA",
+                                  "GB",
+                                  "GD",
+                                  "GE",
+                                  "GF",
+                                  "GG",
+                                  "GH",
+                                  "GI",
+                                  "GL",
+                                  "GM",
+                                  "GN",
+                                  "GP",
+                                  "GQ",
+                                  "GR",
+                                  "GS",
+                                  "GT",
+                                  "GU",
+                                  "GW",
+                                  "GY",
+                                  "HK",
+                                  "HM",
+                                  "HN",
+                                  "HR",
+                                  "HT",
+                                  "HU",
+                                  "ID",
+                                  "IE",
+                                  "IL",
+                                  "IM",
+                                  "IN",
+                                  "IO",
+                                  "IQ",
+                                  "IR",
+                                  "IS",
+                                  "IT",
+                                  "JE",
+                                  "JM",
+                                  "JO",
+                                  "JP",
+                                  "KE",
+                                  "KG",
+                                  "KH",
+                                  "KI",
+                                  "KM",
+                                  "KN",
+                                  "KP",
+                                  "KR",
+                                  "KW",
+                                  "KY",
+                                  "KZ",
+                                  "LA",
+                                  "LB",
+                                  "LC",
+                                  "LI",
+                                  "LK",
+                                  "LR",
+                                  "LS",
+                                  "LT",
+                                  "LU",
+                                  "LV",
+                                  "LY",
+                                  "MA",
+                                  "MC",
+                                  "MD",
+                                  "ME",
+                                  "MF",
+                                  "MG",
+                                  "MH",
+                                  "MK",
+                                  "ML",
+                                  "MM",
+                                  "MN",
+                                  "MO",
+                                  "MP",
+                                  "MQ",
+                                  "MR",
+                                  "MS",
+                                  "MT",
+                                  "MU",
+                                  "MV",
+                                  "MW",
+                                  "MX",
+                                  "MY",
+                                  "MZ",
+                                  "NA",
+                                  "NC",
+                                  "NE",
+                                  "NF",
+                                  "NG",
+                                  "NI",
+                                  "NL",
+                                  "NO",
+                                  "NP",
+                                  "NR",
+                                  "NU",
+                                  "NZ",
+                                  "OM",
+                                  "PA",
+                                  "PE",
+                                  "PF",
+                                  "PG",
+                                  "PH",
+                                  "PK",
+                                  "PL",
+                                  "PM",
+                                  "PN",
+                                  "PR",
+                                  "PS",
+                                  "PT",
+                                  "PW",
+                                  "PY",
+                                  "QA",
+                                  "RE",
+                                  "RO",
+                                  "RS",
+                                  "RU",
+                                  "RW",
+                                  "SA",
+                                  "SB",
+                                  "SC",
+                                  "SD",
+                                  "SE",
+                                  "SG",
+                                  "SH",
+                                  "SI",
+                                  "SJ",
+                                  "SK",
+                                  "SL",
+                                  "SM",
+                                  "SN",
+                                  "SO",
+                                  "SR",
+                                  "SS",
+                                  "ST",
+                                  "SV",
+                                  "SY",
+                                  "SZ",
+                                  "TC",
+                                  "TD",
+                                  "TF",
+                                  "TG",
+                                  "TH",
+                                  "TJ",
+                                  "TK",
+                                  "TL",
+                                  "TM",
+                                  "TN",
+                                  "TO",
+                                  "TR",
+                                  "TT",
+                                  "TV",
+                                  "TW",
+                                  "TZ",
+                                  "UA",
+                                  "UG",
+                                  "UM",
+                                  "US",
+                                  "UY",
+                                  "UZ",
+                                  "VA",
+                                  "VC",
+                                  "VE",
+                                  "VG",
+                                  "VI",
+                                  "VN",
+                                  "VU",
+                                  "WF",
+                                  "WS",
+                                  "XK",
+                                  "YE",
+                                  "YT",
+                                  "ZA",
+                                  "ZM",
+                                  "ZW"
+                                ],
+                                "description": "Country code (ISO 3166-1 alpha-2)"
+                              }
+                            },
+                            "required": [
+                              "code"
+                            ]
+                          },
+                          "description": "Countries"
+                        },
+                        "fqdns": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Fully qualified domain names or wildcard patterns."
+                        },
+                        "siteSpecificVlans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "VLAN ID (1-4094)"
+                              },
+                              "address": {
+                                "type": "object",
+                                "properties": {
+                                  "offsets": {
+                                    "type": "object",
+                                    "properties": {
+                                      "ipv4": {
+                                        "type": "integer",
+                                        "description": "IPv4 address offset. Added to the base network address to determine the host address within the subnet. Maximum value: 16777215 (2^24-1, covering up to /8 subnets)."
+                                      },
+                                      "ipv6": {
+                                        "type": "string",
+                                        "description": "IPv6 interface identifier offset in colon-separated hex format (e.g., '200:ff:fe01:f'). Appended to the /64 network prefix to form the complete IPv6 address."
+                                      }
+                                    },
+                                    "description": "IP address offsets. For IPv4, the offset is added to the base address (e.g., base 10.0.0.0/24 + offset 25 = 10.0.0.25). For IPv6, the offset forms the interface identifier suffix appended to the /64 prefix (e.g., prefix 2001:db8::/64 + offset 'ff:fe01' = 2001:db8::ff:fe01)."
+                                  }
+                                },
+                                "description": "Address offsets added to the VLAN's base network address to form the target host address"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          },
+                          "description": "Site-specific VLANs with address offset configuration."
                         }
                       },
                       "description": "Destination criteria values (not present if 'any' is in matchCriteria)"
@@ -216918,6 +218062,17 @@
                     "applianceVlans": [
                       {
                         "interfaceId": "L_123456789012345678_vlan_200"
+                      }
+                    ],
+                    "siteSpecificVlans": [
+                      {
+                        "id": 100,
+                        "address": {
+                          "offsets": {
+                            "ipv4": 25,
+                            "ipv6": "0:ff:fe01:0"
+                          }
+                        }
                       }
                     ]
                   }
@@ -216981,6 +218136,25 @@
                     "applianceVlans": [
                       {
                         "interfaceId": "L_123456789012345678_vlan_200"
+                      }
+                    ],
+                    "countries": [
+                      {
+                        "code": "US"
+                      }
+                    ],
+                    "fqdns": [
+                      "*.example.com"
+                    ],
+                    "siteSpecificVlans": [
+                      {
+                        "id": 100,
+                        "address": {
+                          "offsets": {
+                            "ipv4": 25,
+                            "ipv6": "0:ff:fe01:0"
+                          }
+                        }
                       }
                     ]
                   }
@@ -218646,7 +219820,8 @@
                           "applianceVlans",
                           "policyObjectGroups",
                           "policyObjects",
-                          "ports"
+                          "ports",
+                          "siteSpecificVlans"
                         ]
                       },
                       "description": "Source match criteria types"
@@ -218715,6 +219890,42 @@
                             ]
                           },
                           "description": "Appliance VLANs"
+                        },
+                        "siteSpecificVlans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "VLAN ID (1-4094)"
+                              },
+                              "address": {
+                                "type": "object",
+                                "properties": {
+                                  "offsets": {
+                                    "type": "object",
+                                    "properties": {
+                                      "ipv4": {
+                                        "type": "integer",
+                                        "description": "IPv4 address offset. Added to the base network address to determine the host address within the subnet. Maximum value: 16777215 (2^24-1, covering up to /8 subnets)."
+                                      },
+                                      "ipv6": {
+                                        "type": "string",
+                                        "description": "IPv6 interface identifier offset in colon-separated hex format (e.g., '200:ff:fe01:f'). Appended to the /64 network prefix to form the complete IPv6 address."
+                                      }
+                                    },
+                                    "description": "IP address offsets. For IPv4, the offset is added to the base address (e.g., base 10.0.0.0/24 + offset 25 = 10.0.0.25). For IPv6, the offset forms the interface identifier suffix appended to the /64 prefix (e.g., prefix 2001:db8::/64 + offset 'ff:fe01' = 2001:db8::ff:fe01)."
+                                  }
+                                },
+                                "description": "Address offsets added to the VLAN's base network address to form the target host address"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          },
+                          "description": "Site-specific VLANs with address offset configuration."
                         }
                       },
                       "description": "Source criteria values (not present if 'any' is in matchCriteria)"
@@ -218738,10 +219949,13 @@
                           "applianceVlans",
                           "applicationCategories",
                           "applications",
+                          "countries",
+                          "fqdns",
                           "policyObjectGroups",
                           "policyObjects",
                           "ports",
-                          "services"
+                          "services",
+                          "siteSpecificVlans"
                         ]
                       },
                       "description": "Destination match criteria types"
@@ -218894,6 +220108,316 @@
                             ]
                           },
                           "description": "Appliance VLANs"
+                        },
+                        "countries": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "code": {
+                                "type": "string",
+                                "enum": [
+                                  "AD",
+                                  "AE",
+                                  "AF",
+                                  "AG",
+                                  "AI",
+                                  "AL",
+                                  "AM",
+                                  "AN",
+                                  "AO",
+                                  "AQ",
+                                  "AR",
+                                  "AS",
+                                  "AT",
+                                  "AU",
+                                  "AW",
+                                  "AX",
+                                  "AZ",
+                                  "BA",
+                                  "BB",
+                                  "BD",
+                                  "BE",
+                                  "BF",
+                                  "BG",
+                                  "BH",
+                                  "BI",
+                                  "BJ",
+                                  "BL",
+                                  "BM",
+                                  "BN",
+                                  "BO",
+                                  "BR",
+                                  "BS",
+                                  "BT",
+                                  "BV",
+                                  "BW",
+                                  "BY",
+                                  "BZ",
+                                  "CA",
+                                  "CC",
+                                  "CD",
+                                  "CF",
+                                  "CG",
+                                  "CH",
+                                  "CI",
+                                  "CK",
+                                  "CL",
+                                  "CM",
+                                  "CN",
+                                  "CO",
+                                  "CR",
+                                  "CU",
+                                  "CV",
+                                  "CW",
+                                  "CX",
+                                  "CY",
+                                  "CZ",
+                                  "DE",
+                                  "DJ",
+                                  "DK",
+                                  "DM",
+                                  "DO",
+                                  "DZ",
+                                  "EC",
+                                  "EE",
+                                  "EG",
+                                  "EH",
+                                  "ER",
+                                  "ES",
+                                  "ET",
+                                  "FI",
+                                  "FJ",
+                                  "FK",
+                                  "FM",
+                                  "FO",
+                                  "FR",
+                                  "GA",
+                                  "GB",
+                                  "GD",
+                                  "GE",
+                                  "GF",
+                                  "GG",
+                                  "GH",
+                                  "GI",
+                                  "GL",
+                                  "GM",
+                                  "GN",
+                                  "GP",
+                                  "GQ",
+                                  "GR",
+                                  "GS",
+                                  "GT",
+                                  "GU",
+                                  "GW",
+                                  "GY",
+                                  "HK",
+                                  "HM",
+                                  "HN",
+                                  "HR",
+                                  "HT",
+                                  "HU",
+                                  "ID",
+                                  "IE",
+                                  "IL",
+                                  "IM",
+                                  "IN",
+                                  "IO",
+                                  "IQ",
+                                  "IR",
+                                  "IS",
+                                  "IT",
+                                  "JE",
+                                  "JM",
+                                  "JO",
+                                  "JP",
+                                  "KE",
+                                  "KG",
+                                  "KH",
+                                  "KI",
+                                  "KM",
+                                  "KN",
+                                  "KP",
+                                  "KR",
+                                  "KW",
+                                  "KY",
+                                  "KZ",
+                                  "LA",
+                                  "LB",
+                                  "LC",
+                                  "LI",
+                                  "LK",
+                                  "LR",
+                                  "LS",
+                                  "LT",
+                                  "LU",
+                                  "LV",
+                                  "LY",
+                                  "MA",
+                                  "MC",
+                                  "MD",
+                                  "ME",
+                                  "MF",
+                                  "MG",
+                                  "MH",
+                                  "MK",
+                                  "ML",
+                                  "MM",
+                                  "MN",
+                                  "MO",
+                                  "MP",
+                                  "MQ",
+                                  "MR",
+                                  "MS",
+                                  "MT",
+                                  "MU",
+                                  "MV",
+                                  "MW",
+                                  "MX",
+                                  "MY",
+                                  "MZ",
+                                  "NA",
+                                  "NC",
+                                  "NE",
+                                  "NF",
+                                  "NG",
+                                  "NI",
+                                  "NL",
+                                  "NO",
+                                  "NP",
+                                  "NR",
+                                  "NU",
+                                  "NZ",
+                                  "OM",
+                                  "PA",
+                                  "PE",
+                                  "PF",
+                                  "PG",
+                                  "PH",
+                                  "PK",
+                                  "PL",
+                                  "PM",
+                                  "PN",
+                                  "PR",
+                                  "PS",
+                                  "PT",
+                                  "PW",
+                                  "PY",
+                                  "QA",
+                                  "RE",
+                                  "RO",
+                                  "RS",
+                                  "RU",
+                                  "RW",
+                                  "SA",
+                                  "SB",
+                                  "SC",
+                                  "SD",
+                                  "SE",
+                                  "SG",
+                                  "SH",
+                                  "SI",
+                                  "SJ",
+                                  "SK",
+                                  "SL",
+                                  "SM",
+                                  "SN",
+                                  "SO",
+                                  "SR",
+                                  "SS",
+                                  "ST",
+                                  "SV",
+                                  "SY",
+                                  "SZ",
+                                  "TC",
+                                  "TD",
+                                  "TF",
+                                  "TG",
+                                  "TH",
+                                  "TJ",
+                                  "TK",
+                                  "TL",
+                                  "TM",
+                                  "TN",
+                                  "TO",
+                                  "TR",
+                                  "TT",
+                                  "TV",
+                                  "TW",
+                                  "TZ",
+                                  "UA",
+                                  "UG",
+                                  "UM",
+                                  "US",
+                                  "UY",
+                                  "UZ",
+                                  "VA",
+                                  "VC",
+                                  "VE",
+                                  "VG",
+                                  "VI",
+                                  "VN",
+                                  "VU",
+                                  "WF",
+                                  "WS",
+                                  "XK",
+                                  "YE",
+                                  "YT",
+                                  "ZA",
+                                  "ZM",
+                                  "ZW"
+                                ],
+                                "description": "Country code (ISO 3166-1 alpha-2)"
+                              }
+                            },
+                            "required": [
+                              "code"
+                            ]
+                          },
+                          "description": "Countries"
+                        },
+                        "fqdns": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Fully qualified domain names or wildcard patterns."
+                        },
+                        "siteSpecificVlans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "VLAN ID (1-4094)"
+                              },
+                              "address": {
+                                "type": "object",
+                                "properties": {
+                                  "offsets": {
+                                    "type": "object",
+                                    "properties": {
+                                      "ipv4": {
+                                        "type": "integer",
+                                        "description": "IPv4 address offset. Added to the base network address to determine the host address within the subnet. Maximum value: 16777215 (2^24-1, covering up to /8 subnets)."
+                                      },
+                                      "ipv6": {
+                                        "type": "string",
+                                        "description": "IPv6 interface identifier offset in colon-separated hex format (e.g., '200:ff:fe01:f'). Appended to the /64 network prefix to form the complete IPv6 address."
+                                      }
+                                    },
+                                    "description": "IP address offsets. For IPv4, the offset is added to the base address (e.g., base 10.0.0.0/24 + offset 25 = 10.0.0.25). For IPv6, the offset forms the interface identifier suffix appended to the /64 prefix (e.g., prefix 2001:db8::/64 + offset 'ff:fe01' = 2001:db8::ff:fe01)."
+                                  }
+                                },
+                                "description": "Address offsets added to the VLAN's base network address to form the target host address"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ]
+                          },
+                          "description": "Site-specific VLANs with address offset configuration."
                         }
                       },
                       "description": "Destination criteria values (not present if 'any' is in matchCriteria)"
@@ -218942,6 +220466,17 @@
                     "applianceVlans": [
                       {
                         "interfaceId": "L_123456789012345678_vlan_200"
+                      }
+                    ],
+                    "siteSpecificVlans": [
+                      {
+                        "id": 100,
+                        "address": {
+                          "offsets": {
+                            "ipv4": 25,
+                            "ipv6": "0:ff:fe01:0"
+                          }
+                        }
                       }
                     ]
                   }
@@ -219005,6 +220540,25 @@
                     "applianceVlans": [
                       {
                         "interfaceId": "L_123456789012345678_vlan_200"
+                      }
+                    ],
+                    "countries": [
+                      {
+                        "code": "US"
+                      }
+                    ],
+                    "fqdns": [
+                      "*.example.com"
+                    ],
+                    "siteSpecificVlans": [
+                      {
+                        "id": 100,
+                        "address": {
+                          "offsets": {
+                            "ipv4": 25,
+                            "ipv6": "0:ff:fe01:0"
+                          }
+                        }
                       }
                     ]
                   }
@@ -221059,6 +222613,13 @@
             "description": "Filter assignments by assignment IDs"
           },
           {
+            "type": "boolean",
+            "x-release-stage": "beta",
+            "name": "staged",
+            "in": "query",
+            "description": "Filter assignments by whether or not they are staged"
+          },
+          {
             "type": "integer",
             "name": "perPage",
             "in": "query",
@@ -221217,12 +222778,18 @@
                   "type": "integer",
                   "description": "Priority of the ruleset assignment (lower numbers = higher priority)",
                   "default": 1
+                },
+                "staged": {
+                  "type": "boolean",
+                  "x-release-stage": "beta",
+                  "description": "Stage an assignment without applying it immediately to the policy"
                 }
               },
               "example": {
                 "rulesetId": "456",
                 "policyId": "789",
-                "priority": 1
+                "priority": 1,
+                "staged": false
               },
               "required": [
                 "rulesetId",
@@ -221289,6 +222856,83 @@
           "rulesets",
           "assignments"
         ]
+      }
+    },
+    "/organizations/{organizationId}/policies/global/group/policies/firewall/rulesets/assignments/commit": {
+      "post": {
+        "description": "Commit staged Organization-Wide Policy Ruleset Assignments",
+        "operationId": "commitOrganizationPoliciesGlobalGroupPoliciesFirewallRulesetsAssignments",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "commitOrganizationPoliciesGlobalGroupPoliciesFirewallRulesetsAssignments",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "policy": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Policy ID"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "description": "Policy in which all staged rulesets will be committed"
+                }
+              },
+              "example": {
+                "policy": {
+                  "id": "123"
+                }
+              },
+              "required": [
+                "policy"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "description": "Whether the operation was successful"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "success": true
+              }
+            }
+          }
+        },
+        "summary": "Commit staged Organization-Wide Policy Ruleset Assignments",
+        "tags": [
+          "organizations",
+          "configure",
+          "policies",
+          "global",
+          "group",
+          "firewall",
+          "rulesets",
+          "assignments"
+        ],
+        "x-release-stage": "beta"
       }
     },
     "/organizations/{organizationId}/policies/global/group/policies/firewall/rulesets/assignments/{assignmentId}": {
@@ -224631,123 +226275,133 @@
             "schema": {
               "type": "object",
               "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "pipelineId": {
-                        "type": "string",
-                        "description": "Pipeline ID"
-                      },
-                      "operation": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Operation identifier"
-                          }
-                        },
-                        "description": "Operation info"
-                      },
-                      "status": {
-                        "type": "string",
-                        "description": "Pipeline status"
-                      },
-                      "counts": {
-                        "type": "object",
-                        "properties": {
-                          "jobs": {
-                            "type": "object",
-                            "properties": {
-                              "total": {
-                                "type": "integer",
-                                "description": "Total jobs"
-                              },
-                              "byStatus": {
-                                "type": "object",
-                                "properties": {
-                                  "completed": {
-                                    "type": "integer",
-                                    "description": "Completed jobs"
-                                  },
-                                  "failed": {
-                                    "type": "integer",
-                                    "description": "Failed jobs"
-                                  },
-                                  "pending": {
-                                    "type": "integer",
-                                    "description": "Pending jobs"
-                                  }
-                                },
-                                "description": "Counts by status"
-                              }
-                            },
-                            "description": "Job count breakdown"
-                          }
-                        },
-                        "description": "Job counts"
-                      }
-                    }
-                  },
-                  "description": "Pipeline overview with aggregated job status counts"
+                "pipelineId": {
+                  "type": "string",
+                  "description": "Pipeline ID"
                 },
-                "meta": {
+                "operation": {
                   "type": "object",
                   "properties": {
-                    "counts": {
-                      "type": "object",
-                      "properties": {
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "total": {
-                              "type": "integer",
-                              "description": "The total number of available objects"
-                            },
-                            "remaining": {
-                              "type": "integer",
-                              "description": "The number of objects that are available on subsequent pages"
-                            }
-                          },
-                          "description": "Counts relating to the paginated items"
-                        }
-                      },
-                      "description": "Counts relating to the paginated dataset"
+                    "id": {
+                      "type": "string",
+                      "description": "Pipeline operation identifier"
                     }
                   },
-                  "description": "Metadata relevant to the paginated dataset"
+                  "description": "Pipeline operation info"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Pipeline status"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "jobs": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Total jobs"
+                        },
+                        "byStatus": {
+                          "type": "object",
+                          "properties": {
+                            "completed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Completed jobs"
+                            },
+                            "failed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Failed jobs"
+                            },
+                            "pending": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Pending jobs"
+                            }
+                          },
+                          "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                        }
+                      },
+                      "description": "Job count breakdown"
+                    },
+                    "byJobOperation": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "teardown CNHE SSE connector"
+                            ],
+                            "description": "Pipeline job operation display name. Values are registered operation names and may grow additively."
+                          },
+                          "total": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Total jobs for this operation"
+                          },
+                          "byStatus": {
+                            "type": "object",
+                            "properties": {
+                              "completed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Completed jobs"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Failed jobs"
+                              },
+                              "pending": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Pending jobs"
+                              }
+                            },
+                            "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                          }
+                        }
+                      },
+                      "description": "Job count breakdown by pipeline job operation. Contains at most one entry per pipeline job operation with matching jobs. New registered operations may add entries over time."
+                    }
+                  },
+                  "description": "Job counts"
                 }
               }
             },
             "examples": {
               "application/json": {
-                "items": [
-                  {
-                    "pipelineId": "1234",
-                    "operation": {
-                      "id": "enrollOrganizationSaseSites"
-                    },
-                    "status": "active",
-                    "counts": {
-                      "jobs": {
-                        "total": 3,
-                        "byStatus": {
-                          "completed": 1,
-                          "failed": 1,
-                          "pending": 1
-                        }
+                "pipelineId": "1234",
+                "operation": {
+                  "id": "batchOrganizationSaseConnectorsDelete"
+                },
+                "status": "active",
+                "counts": {
+                  "jobs": {
+                    "total": 3,
+                    "byStatus": {
+                      "completed": 1,
+                      "failed": 1,
+                      "pending": 1
+                    }
+                  },
+                  "byJobOperation": [
+                    {
+                      "name": "teardown CNHE SSE connector",
+                      "total": 2,
+                      "byStatus": {
+                        "completed": 1,
+                        "failed": 0,
+                        "pending": 1
                       }
                     }
-                  }
-                ],
-                "meta": {
-                  "counts": {
-                    "items": {
-                      "total": 100,
-                      "remaining": 10
-                    }
-                  }
+                  ]
                 }
               }
             }
@@ -225749,41 +227403,6 @@
                   },
                   "x-release-stage": "general_availability",
                   "description": "List of Meraki SD-WAN sites with the associated regions to be attached."
-                },
-                "callback": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
-                    },
-                    "sharedSecret": {
-                      "type": "string",
-                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
-                    },
-                    "httpServer": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
-                        }
-                      },
-                      "description": "The webhook receiver used for the callback webhook."
-                    },
-                    "payloadTemplate": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
-                        }
-                      },
-                      "description": "The payload template of the webhook used for the callback"
-                    }
-                  },
-                  "x-release-stage": "general_availability",
-                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
@@ -225796,17 +227415,7 @@
                       "slug": "us-west-1"
                     }
                   }
-                ],
-                "callback": {
-                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
-                  "sharedSecret": "secret",
-                  "httpServer": {
-                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
-                  },
-                  "payloadTemplate": {
-                    "id": "wpt_2100"
-                  }
-                }
+                ]
               }
             }
           }
@@ -225817,123 +227426,135 @@
             "schema": {
               "type": "object",
               "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "pipelineId": {
-                        "type": "string",
-                        "description": "Pipeline ID"
-                      },
-                      "operation": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Operation identifier"
-                          }
-                        },
-                        "description": "Operation info"
-                      },
-                      "status": {
-                        "type": "string",
-                        "description": "Pipeline status"
-                      },
-                      "counts": {
-                        "type": "object",
-                        "properties": {
-                          "jobs": {
-                            "type": "object",
-                            "properties": {
-                              "total": {
-                                "type": "integer",
-                                "description": "Total jobs"
-                              },
-                              "byStatus": {
-                                "type": "object",
-                                "properties": {
-                                  "completed": {
-                                    "type": "integer",
-                                    "description": "Completed jobs"
-                                  },
-                                  "failed": {
-                                    "type": "integer",
-                                    "description": "Failed jobs"
-                                  },
-                                  "pending": {
-                                    "type": "integer",
-                                    "description": "Pending jobs"
-                                  }
-                                },
-                                "description": "Counts by status"
-                              }
-                            },
-                            "description": "Job count breakdown"
-                          }
-                        },
-                        "description": "Job counts"
-                      }
-                    }
-                  },
-                  "description": "Pipeline overview with aggregated job status counts"
+                "pipelineId": {
+                  "type": "string",
+                  "description": "Pipeline ID"
                 },
-                "meta": {
+                "operation": {
                   "type": "object",
                   "properties": {
-                    "counts": {
-                      "type": "object",
-                      "properties": {
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "total": {
-                              "type": "integer",
-                              "description": "The total number of available objects"
-                            },
-                            "remaining": {
-                              "type": "integer",
-                              "description": "The number of objects that are available on subsequent pages"
-                            }
-                          },
-                          "description": "Counts relating to the paginated items"
-                        }
-                      },
-                      "description": "Counts relating to the paginated dataset"
+                    "id": {
+                      "type": "string",
+                      "description": "Pipeline operation identifier"
                     }
                   },
-                  "description": "Metadata relevant to the paginated dataset"
+                  "description": "Pipeline operation info"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Pipeline status"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "jobs": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Total jobs"
+                        },
+                        "byStatus": {
+                          "type": "object",
+                          "properties": {
+                            "completed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Completed jobs"
+                            },
+                            "failed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Failed jobs"
+                            },
+                            "pending": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Pending jobs"
+                            }
+                          },
+                          "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                        }
+                      },
+                      "description": "Job count breakdown"
+                    },
+                    "byJobOperation": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "complete bulk enrollment",
+                              "deploy CNHE SSE connector",
+                              "enroll wired site"
+                            ],
+                            "description": "Pipeline job operation display name. Values are registered operation names and may grow additively."
+                          },
+                          "total": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Total jobs for this operation"
+                          },
+                          "byStatus": {
+                            "type": "object",
+                            "properties": {
+                              "completed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Completed jobs"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Failed jobs"
+                              },
+                              "pending": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Pending jobs"
+                              }
+                            },
+                            "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                          }
+                        }
+                      },
+                      "description": "Job count breakdown by pipeline job operation. Contains at most one entry per pipeline job operation with matching jobs. New registered operations may add entries over time."
+                    }
+                  },
+                  "description": "Job counts"
                 }
               }
             },
             "examples": {
               "application/json": {
-                "items": [
-                  {
-                    "pipelineId": "1234",
-                    "operation": {
-                      "id": "enrollOrganizationSaseSites"
-                    },
-                    "status": "active",
-                    "counts": {
-                      "jobs": {
-                        "total": 3,
-                        "byStatus": {
-                          "completed": 1,
-                          "failed": 1,
-                          "pending": 1
-                        }
+                "pipelineId": "1234",
+                "operation": {
+                  "id": "attachOrganizationSaseSites"
+                },
+                "status": "active",
+                "counts": {
+                  "jobs": {
+                    "total": 3,
+                    "byStatus": {
+                      "completed": 1,
+                      "failed": 1,
+                      "pending": 1
+                    }
+                  },
+                  "byJobOperation": [
+                    {
+                      "name": "enroll wired site",
+                      "total": 2,
+                      "byStatus": {
+                        "completed": 1,
+                        "failed": 0,
+                        "pending": 1
                       }
                     }
-                  }
-                ],
-                "meta": {
-                  "counts": {
-                    "items": {
-                      "total": 100,
-                      "remaining": 10
-                    }
-                  }
+                  ]
                 }
               }
             }
@@ -226290,41 +227911,6 @@
                   },
                   "x-release-stage": "general_availability",
                   "description": "List of Secure Access sites to be detached."
-                },
-                "callback": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
-                    },
-                    "sharedSecret": {
-                      "type": "string",
-                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
-                    },
-                    "httpServer": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
-                        }
-                      },
-                      "description": "The webhook receiver used for the callback webhook."
-                    },
-                    "payloadTemplate": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
-                        }
-                      },
-                      "description": "The payload template of the webhook used for the callback"
-                    }
-                  },
-                  "x-release-stage": "general_availability",
-                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
                 }
               },
               "example": {
@@ -226332,17 +227918,7 @@
                   {
                     "siteId": "1234567890"
                   }
-                ],
-                "callback": {
-                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
-                  "sharedSecret": "secret",
-                  "httpServer": {
-                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
-                  },
-                  "payloadTemplate": {
-                    "id": "wpt_2100"
-                  }
-                }
+                ]
               }
             }
           }
@@ -226353,123 +227929,135 @@
             "schema": {
               "type": "object",
               "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "pipelineId": {
-                        "type": "string",
-                        "description": "Pipeline ID"
-                      },
-                      "operation": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Operation identifier"
-                          }
-                        },
-                        "description": "Operation info"
-                      },
-                      "status": {
-                        "type": "string",
-                        "description": "Pipeline status"
-                      },
-                      "counts": {
-                        "type": "object",
-                        "properties": {
-                          "jobs": {
-                            "type": "object",
-                            "properties": {
-                              "total": {
-                                "type": "integer",
-                                "description": "Total jobs"
-                              },
-                              "byStatus": {
-                                "type": "object",
-                                "properties": {
-                                  "completed": {
-                                    "type": "integer",
-                                    "description": "Completed jobs"
-                                  },
-                                  "failed": {
-                                    "type": "integer",
-                                    "description": "Failed jobs"
-                                  },
-                                  "pending": {
-                                    "type": "integer",
-                                    "description": "Pending jobs"
-                                  }
-                                },
-                                "description": "Counts by status"
-                              }
-                            },
-                            "description": "Job count breakdown"
-                          }
-                        },
-                        "description": "Job counts"
-                      }
-                    }
-                  },
-                  "description": "Pipeline overview with aggregated job status counts"
+                "pipelineId": {
+                  "type": "string",
+                  "description": "Pipeline ID"
                 },
-                "meta": {
+                "operation": {
                   "type": "object",
                   "properties": {
-                    "counts": {
-                      "type": "object",
-                      "properties": {
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "total": {
-                              "type": "integer",
-                              "description": "The total number of available objects"
-                            },
-                            "remaining": {
-                              "type": "integer",
-                              "description": "The number of objects that are available on subsequent pages"
-                            }
-                          },
-                          "description": "Counts relating to the paginated items"
-                        }
-                      },
-                      "description": "Counts relating to the paginated dataset"
+                    "id": {
+                      "type": "string",
+                      "description": "Pipeline operation identifier"
                     }
                   },
-                  "description": "Metadata relevant to the paginated dataset"
+                  "description": "Pipeline operation info"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Pipeline status"
+                },
+                "counts": {
+                  "type": "object",
+                  "properties": {
+                    "jobs": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "Total jobs"
+                        },
+                        "byStatus": {
+                          "type": "object",
+                          "properties": {
+                            "completed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Completed jobs"
+                            },
+                            "failed": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Failed jobs"
+                            },
+                            "pending": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "Pending jobs"
+                            }
+                          },
+                          "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                        }
+                      },
+                      "description": "Job count breakdown"
+                    },
+                    "byJobOperation": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "enum": [
+                              "complete bulk detachment",
+                              "detach wired site",
+                              "teardown CNHE SSE connector"
+                            ],
+                            "description": "Pipeline job operation display name. Values are registered operation names and may grow additively."
+                          },
+                          "total": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "Total jobs for this operation"
+                          },
+                          "byStatus": {
+                            "type": "object",
+                            "properties": {
+                              "completed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Completed jobs"
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Failed jobs"
+                              },
+                              "pending": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Pending jobs"
+                              }
+                            },
+                            "description": "Counts by summary status. `completed` includes jobs with raw status `complete`, `failed` includes jobs with raw status `failed`, and `pending` includes every other job status."
+                          }
+                        }
+                      },
+                      "description": "Job count breakdown by pipeline job operation. Contains at most one entry per pipeline job operation with matching jobs. New registered operations may add entries over time."
+                    }
+                  },
+                  "description": "Job counts"
                 }
               }
             },
             "examples": {
               "application/json": {
-                "items": [
-                  {
-                    "pipelineId": "1234",
-                    "operation": {
-                      "id": "enrollOrganizationSaseSites"
-                    },
-                    "status": "active",
-                    "counts": {
-                      "jobs": {
-                        "total": 3,
-                        "byStatus": {
-                          "completed": 1,
-                          "failed": 1,
-                          "pending": 1
-                        }
+                "pipelineId": "1234",
+                "operation": {
+                  "id": "detachOrganizationSaseSites"
+                },
+                "status": "active",
+                "counts": {
+                  "jobs": {
+                    "total": 3,
+                    "byStatus": {
+                      "completed": 1,
+                      "failed": 1,
+                      "pending": 1
+                    }
+                  },
+                  "byJobOperation": [
+                    {
+                      "name": "detach wired site",
+                      "total": 2,
+                      "byStatus": {
+                        "completed": 1,
+                        "failed": 0,
+                        "pending": 1
                       }
                     }
-                  }
-                ],
-                "meta": {
-                  "counts": {
-                    "items": {
-                      "total": 100,
-                      "remaining": 10
-                    }
-                  }
+                  ]
                 }
               }
             }
@@ -246459,6 +248047,7 @@
                                 "20 Gbps",
                                 "25 Gbps",
                                 "40 Gbps",
+                                "400 Gbps",
                                 "5 Gbps",
                                 "50 Gbps"
                               ],
@@ -272007,7 +273596,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-06-01T08:01:21Z"
+                    "lastEnabledAt": "2026-06-08T08:01:25Z"
                   }
                 }
               ]
@@ -273216,7 +274805,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-06-01T08:01:21Z"
+                      "lastEnabledAt": "2026-06-08T08:01:25Z"
                     }
                   }
                 ],
@@ -288662,6 +290251,12 @@
       "summary": "Update an Organization-Wide Policy Firewall Ruleset",
       "resource": "/organizations/{organizationId}/policies/global/firewall/rulesets/{rulesetId}",
       "operation": "update"
+    },
+    {
+      "group": "Frontizo/actions/owp release/ruleset assignment",
+      "summary": "Commit staged Organization-Wide Policy Ruleset Assignments",
+      "resource": "/organizations/{organizationId}/policies/global/group/policies/firewall/rulesets/assignments",
+      "operation": "commit"
     },
     {
       "group": "Frontizo/actions/owp release/ruleset assignment",
