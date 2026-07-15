@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 08 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 15 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.72.0-beta.1"
+    "version": "1.72.0-beta.2"
   },
   "servers": [
     {
@@ -10636,7 +10636,7 @@
                                     },
                                     "vrfName": {
                                       "type": "string",
-                                      "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs. Null when the Catalyst router entry has no VRF name.",
+                                      "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs and for Catalyst switch ARP table jobs when enabled. Null when the supported entry has no VRF name.",
                                       "x-release-stage": "beta",
                                       "nullable": true
                                     },
@@ -10919,7 +10919,7 @@
                           },
                           "vrfName": {
                             "type": "string",
-                            "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs. Null when the Catalyst router entry has no VRF name.",
+                            "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs and for Catalyst switch ARP table jobs when enabled. Null when the supported entry has no VRF name.",
                             "x-release-stage": "beta",
                             "nullable": true
                           },
@@ -12497,8 +12497,7 @@
                                   },
                                   "mac": {
                                     "type": "string",
-                                    "description": "MAC address used to filter MAC table entries",
-                                    "x-release-stage": "beta"
+                                    "description": "MAC address used to filter MAC table entries. Must be a colon-delimited six-octet MAC address, for example '00:11:22:a0:b1:c2'. Matching is case-insensitive."
                                   }
                                 },
                                 "description": "MAC table request parameters"
@@ -12577,7 +12576,6 @@
                 "properties": {
                   "mac": {
                     "type": "string",
-                    "x-release-stage": "beta",
                     "description": "Optional parameter to filter MAC table entries by MAC address. Must be a colon-delimited six-octet MAC address, for example '00:11:22:a0:b1:c2'. Matching is case-insensitive."
                   },
                   "callback": {
@@ -12659,8 +12657,7 @@
                         },
                         "mac": {
                           "type": "string",
-                          "description": "MAC address used to filter MAC table entries",
-                          "x-release-stage": "beta"
+                          "description": "MAC address used to filter MAC table entries. Must be a colon-delimited six-octet MAC address, for example '00:11:22:a0:b1:c2'. Matching is case-insensitive."
                         }
                       },
                       "description": "MAC table request parameters"
@@ -12780,8 +12777,7 @@
                         },
                         "mac": {
                           "type": "string",
-                          "description": "MAC address used to filter MAC table entries",
-                          "x-release-stage": "beta"
+                          "description": "MAC address used to filter MAC table entries. Must be a colon-delimited six-octet MAC address, for example '00:11:22:a0:b1:c2'. Matching is case-insensitive."
                         }
                       },
                       "description": "MAC table request parameters"
@@ -104259,25 +104255,23 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "type": "object",
+                    "properties": {
+                      "dscpTagValue": {
+                        "type": "integer",
+                        "description": "The DSCP tag value."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "The description of the DSCP tag."
+                      }
+                    }
                   }
                 },
                 "example": [
                   {
                     "dscpTagValue": 10,
                     "description": "AF11 - High Throughput, Latency Insensitive, Low Drop"
-                  },
-                  {
-                    "dscpTagValue": 12,
-                    "description": "AF12 - High Throughput, Latency Insensitive, Medium Drop"
-                  },
-                  {
-                    "dscpTagValue": 14,
-                    "description": "AF13 - High Throughput, Latency Insensitive, High Drop"
-                  },
-                  {
-                    "dscpTagValue": 18,
-                    "description": "AF21 - Low Latency Data, Low Drop"
                   }
                 ]
               }
@@ -114198,7 +114192,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-06-08T08:05:23Z"
+                    "lastEnabledAt": "2026-06-15T08:05:10Z"
                   }
                 }
               }
@@ -114497,7 +114491,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-06-08T08:05:23Z"
+                    "lastEnabledAt": "2026-06-15T08:05:10Z"
                   }
                 }
               }
@@ -126035,15 +126029,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, the SSID device type group policies are enabled."
+                    },
+                    "deviceTypePolicies": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "deviceType": {
+                            "type": "string",
+                            "description": "The device type. Can be one of 'Android', 'BlackBerry', 'Chrome OS', 'iPad', 'iPhone', 'iPod', 'Mac OS X', 'Windows', 'Windows Phone', 'B&N Nook' or 'Other OS'"
+                          },
+                          "devicePolicy": {
+                            "type": "string",
+                            "description": "The device policy. Can be one of 'Allowed', 'Blocked' or 'Group policy'"
+                          },
+                          "groupPolicyId": {
+                            "type": "integer",
+                            "description": "ID of the group policy object. Only present when the device policy is \"Group policy\"."
+                          }
+                        }
+                      },
+                      "description": "List of device type policies."
+                    }
+                  }
                 },
                 "example": {
                   "enabled": true,
                   "deviceTypePolicies": [
-                    {
-                      "deviceType": "Android",
-                      "devicePolicy": "Allowed"
-                    },
                     {
                       "deviceType": "iPhone",
                       "devicePolicy": "Group policy",
@@ -126172,15 +126189,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, the SSID device type group policies are enabled."
+                    },
+                    "deviceTypePolicies": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "deviceType": {
+                            "type": "string",
+                            "description": "The device type. Can be one of 'Android', 'BlackBerry', 'Chrome OS', 'iPad', 'iPhone', 'iPod', 'Mac OS X', 'Windows', 'Windows Phone', 'B&N Nook' or 'Other OS'"
+                          },
+                          "devicePolicy": {
+                            "type": "string",
+                            "description": "The device policy. Can be one of 'Allowed', 'Blocked' or 'Group policy'"
+                          },
+                          "groupPolicyId": {
+                            "type": "integer",
+                            "description": "ID of the group policy object. Only present when the device policy is \"Group policy\"."
+                          }
+                        }
+                      },
+                      "description": "List of device type policies."
+                    }
+                  }
                 },
                 "example": {
                   "enabled": true,
                   "deviceTypePolicies": [
-                    {
-                      "deviceType": "Android",
-                      "devicePolicy": "Allowed"
-                    },
                     {
                       "deviceType": "iPhone",
                       "devicePolicy": "Group policy",
@@ -137178,7 +137218,7 @@
     },
     "/organizations/{organizationId}/api/push/profiles": {
       "get": {
-        "description": "List the push profiles in the organization",
+        "description": "List the Push API profiles in an organization. Each profile subscribes to a topic and delivers its messages to a receiver profile.",
         "operationId": "getOrganizationApiPushProfiles",
         "parameters": [
           {
@@ -137319,7 +137359,7 @@
             }
           }
         },
-        "summary": "List the push profiles in the organization",
+        "summary": "List the Push API profiles in an organization",
         "tags": [
           "organizations",
           "configure",
@@ -137330,7 +137370,7 @@
         "x-release-stage": "beta"
       },
       "post": {
-        "description": "Create a new push profile",
+        "description": "Create a Push API profile to subscribe to a topic and send its messages to a receiver profile.",
         "operationId": "createOrganizationApiPushProfile",
         "parameters": [
           {
@@ -137467,7 +137507,7 @@
             ]
           }
         ],
-        "summary": "Create a new push profile",
+        "summary": "Create a Push API profile to subscribe to a topic and send its messages to a receiver profile.",
         "tags": [
           "organizations",
           "configure",
@@ -137480,7 +137520,7 @@
     },
     "/organizations/{organizationId}/api/push/profiles/{iname}": {
       "put": {
-        "description": "Update a push profile",
+        "description": "Update a Push API profile's name, description, topic, receiver profile or other configuration.",
         "operationId": "updateOrganizationApiPushProfile",
         "parameters": [
           {
@@ -137609,7 +137649,7 @@
             }
           }
         },
-        "summary": "Update a push profile",
+        "summary": "Update a Push API profile's name, description, topic, receiver profile or other configuration.",
         "tags": [
           "organizations",
           "configure",
@@ -137620,7 +137660,7 @@
         "x-release-stage": "beta"
       },
       "delete": {
-        "description": "Delete a push profile",
+        "description": "Delete a Push API profile to unsubscribe from a topic, ending that topic's message delivery to a receiver profile.",
         "operationId": "deleteOrganizationApiPushProfile",
         "parameters": [
           {
@@ -137654,7 +137694,7 @@
             ]
           }
         ],
-        "summary": "Delete a push profile",
+        "summary": "Delete a Push API profile to unsubscribe from a topic, ending that topic's message delivery to a receiver profile.",
         "tags": [
           "organizations",
           "configure",
@@ -137667,7 +137707,7 @@
     },
     "/organizations/{organizationId}/api/push/receivers/profiles": {
       "get": {
-        "description": "List the push receiver profiles in the organization",
+        "description": "List the Push API receiver profiles in an organization. Each receiver profile defines an external receiver that should receive messages via Push API.",
         "operationId": "getOrganizationApiPushReceiversProfiles",
         "parameters": [
           {
@@ -137793,7 +137833,7 @@
             }
           }
         },
-        "summary": "List the push receiver profiles in the organization",
+        "summary": "List the Push API receiver profiles in an organization",
         "tags": [
           "organizations",
           "configure",
@@ -137805,7 +137845,7 @@
         "x-release-stage": "beta"
       },
       "post": {
-        "description": "Create a new push receiver profile",
+        "description": "Create a Push API receiver profile to define an external receiver for Push API messages. You may re-use an existing organization-wide webhook receiver.",
         "operationId": "createOrganizationApiPushReceiversProfile",
         "parameters": [
           {
@@ -137924,7 +137964,7 @@
             ]
           }
         ],
-        "summary": "Create a new push receiver profile",
+        "summary": "Create a Push API receiver profile to define an external receiver for Push API messages",
         "tags": [
           "organizations",
           "configure",
@@ -137938,7 +137978,7 @@
     },
     "/organizations/{organizationId}/api/push/receivers/profiles/{iname}": {
       "delete": {
-        "description": "Delete a push receiver profile",
+        "description": "Delete a Push API receiver profile.",
         "operationId": "deleteOrganizationApiPushReceiversProfile",
         "parameters": [
           {
@@ -137972,7 +138012,7 @@
             ]
           }
         ],
-        "summary": "Delete a push receiver profile",
+        "summary": "Delete a Push API receiver profile.",
         "tags": [
           "organizations",
           "configure",
@@ -137984,7 +138024,7 @@
         "x-release-stage": "beta"
       },
       "put": {
-        "description": "Update a push receiver profile",
+        "description": "Update a Push API receiver profile's name, description, or receiver configuration.",
         "operationId": "updateOrganizationApiPushReceiversProfile",
         "parameters": [
           {
@@ -138096,7 +138136,7 @@
             }
           }
         },
-        "summary": "Update a push receiver profile",
+        "summary": "Update a Push API receiver profile's name, description, or receiver configuration.",
         "tags": [
           "organizations",
           "configure",
@@ -138110,7 +138150,7 @@
     },
     "/organizations/{organizationId}/api/push/topics": {
       "get": {
-        "description": "List of push topics",
+        "description": "List the topics in an organization that are eligible for message delivery via Push API.",
         "operationId": "getOrganizationApiPushTopics",
         "parameters": [
           {
@@ -138196,7 +138236,7 @@
             }
           }
         },
-        "summary": "List of push topics",
+        "summary": "List the topics in an organization that are eligible for message delivery via Push API.",
         "tags": [
           "organizations",
           "configure",
@@ -150001,13 +150041,13 @@
                         "usageBytes": 1000,
                         "outage": [
                           {
-                            "ts": 1783490703,
+                            "ts": 1784095491,
                             "isConnected": true
                           }
                         ],
                         "usageIntervals": [
                           {
-                            "ts": 1783490703,
+                            "ts": 1784095491,
                             "latency": 35.3,
                             "loss": {
                               "percentage": 50
@@ -153450,6 +153490,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "List the AI assistant's available capabilities and agents for this organization.",
         "tags": [
           "assistant",
@@ -153461,7 +153508,7 @@
     },
     "/organizations/{organizationId}/assistant/chat/completions": {
       "post": {
-        "description": "Create a chat completion with the AI assistant. Submit a natural-language query and receive a synchronous response. For multi-turn conversations or richer media support (audio, files), use the messages endpoint instead.",
+        "description": "Create a synchronous AI assistant chat completion. If 'threadId' is omitted, the request is handled as a one-off invocation and no reusable thread is created. For durable multi-turn conversations or richer media support (audio, files), create a thread and use the messages endpoint.",
         "operationId": "createOrganizationAssistantChatCompletion",
         "parameters": [
           {
@@ -153544,7 +153591,7 @@
                   },
                   "threadId": {
                     "type": "string",
-                    "description": "An existing thread ID to continue a conversation. If omitted, a new thread is created."
+                    "description": "Existing persisted thread ID to continue synchronously. If omitted, the request is handled as a one-off invocation and the response will not include a reusable thread ID."
                   },
                   "networkId": {
                     "type": "string",
@@ -153585,7 +153632,7 @@
                       }
                     }
                   ],
-                  "threadId": "thr_82a1f",
+                  "threadId": "7139232",
                   "networkId": "L_123456",
                   "platform": "MERAKI",
                   "language": "en",
@@ -153606,11 +153653,12 @@
                   "properties": {
                     "threadId": {
                       "type": "string",
-                      "description": "The thread ID the message belongs to"
+                      "description": "Reusable thread ID returned when the completion continues an existing persisted thread. Omitted for one-off completions."
                     },
                     "messageId": {
                       "type": "string",
-                      "description": "The ID of the message"
+                      "description": "Persisted assistant message ID when one was created. Null for one-off completions.",
+                      "nullable": true
                     },
                     "content": {
                       "type": "string",
@@ -153633,8 +153681,8 @@
                   }
                 },
                 "example": {
-                  "threadId": "threadId",
-                  "messageId": "messageId",
+                  "threadId": "7139232",
+                  "messageId": "15432169",
                   "content": "A dormant device is a device that has not been active for a period of time",
                   "sources": [
 
@@ -153647,7 +153695,14 @@
             }
           }
         },
-        "summary": "Create a chat completion with the AI assistant",
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
+        "summary": "Create a synchronous AI assistant chat completion",
         "tags": [
           "assistant",
           "configure",
@@ -153798,6 +153853,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "List all active conversation threads for the authenticated user.",
         "tags": [
           "assistant",
@@ -153808,7 +153870,7 @@
         "x-release-stage": "beta"
       },
       "post": {
-        "description": "Create a new conversation thread.",
+        "description": "Create a conversation thread for multi-turn AI assistant interactions.",
         "operationId": "createOrganizationAssistantChatThread",
         "parameters": [
           {
@@ -153861,7 +153923,14 @@
             }
           }
         },
-        "summary": "Create a new conversation thread.",
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
+        "summary": "Create a conversation thread for multi-turn AI assistant interactions.",
         "tags": [
           "assistant",
           "configure",
@@ -153932,6 +154001,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Return a single conversation thread.",
         "tags": [
           "assistant",
@@ -154001,6 +154077,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
         "summary": "Update the name of a conversation thread.",
         "tags": [
           "assistant",
@@ -154038,6 +154121,13 @@
             "description": "Successful operation"
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
         "summary": "Delete a conversation thread and all its messages.",
         "tags": [
           "assistant",
@@ -154229,6 +154319,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "List messages in a conversation thread.",
         "tags": [
           "assistant",
@@ -154240,7 +154337,7 @@
         "x-release-stage": "beta"
       },
       "post": {
-        "description": "Create a new chat message in a thread.",
+        "description": "Create a new chat message in an existing thread.",
         "operationId": "createOrganizationAssistantChatThreadMessage",
         "parameters": [
           {
@@ -154382,7 +154479,7 @@
                     },
                     "threadId": {
                       "type": "integer",
-                      "description": "Thread ID the message was created in. May be null in the initial response."
+                      "description": "Thread ID the message was created in. For shared organization threads, this may be a newly cloned user thread."
                     }
                   }
                 },
@@ -154395,7 +154492,14 @@
             }
           }
         },
-        "summary": "Create a new chat message in a thread.",
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
+        "summary": "Create a new chat message in an existing thread.",
         "tags": [
           "assistant",
           "configure",
@@ -154538,6 +154642,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Return a single message in a conversation thread.",
         "tags": [
           "assistant",
@@ -154641,6 +154752,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "List artifacts attached to a specific message",
         "tags": [
           "assistant",
@@ -154786,6 +154904,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Return a single artifact with its full content.",
         "tags": [
           "assistant",
@@ -154867,6 +154992,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Return all feedback entries previously submitted for a specific message in a thread.",
         "tags": [
           "assistant",
@@ -154967,6 +155099,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:telemetry:write"
+            ]
+          }
+        ],
         "summary": "Submit or replace feedback for a specific assistant message.",
         "tags": [
           "assistant",
@@ -163872,7 +164011,7 @@
                         },
                         "byContributor": [
                           {
-                            "name": "assoc",
+                            "name": "auth",
                             "successes": {
                               "count": 2
                             },
@@ -163887,7 +164026,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "Invalid Credentials",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -163897,7 +164036,7 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 101,
+                                    "code": 300,
                                     "reason": "Invalid credentials",
                                     "count": 2,
                                     "serial": "Q2AB-CDEF-1234",
@@ -164298,7 +164437,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "AP overloaded",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -164308,8 +164447,8 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 17,
-                                    "reason": "Associated denied",
+                                    "code": 300,
+                                    "reason": "Invalid credentials",
                                     "count": 1
                                   }
                                 ]
@@ -164681,7 +164820,7 @@
                         },
                         "byContributor": [
                           {
-                            "name": "assoc",
+                            "name": "auth",
                             "successes": {
                               "count": 2
                             },
@@ -164696,7 +164835,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "Invalid Credentials",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -164706,7 +164845,7 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 101,
+                                    "code": 300,
                                     "reason": "Invalid credentials",
                                     "count": 2,
                                     "serial": "Q2AB-CDEF-1234",
@@ -165105,7 +165244,7 @@
                         },
                         "byContributor": [
                           {
-                            "name": "assoc",
+                            "name": "auth",
                             "successes": {
                               "count": 2
                             },
@@ -165120,7 +165259,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "Invalid Credentials",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -165130,7 +165269,7 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 101,
+                                    "code": 300,
                                     "reason": "Invalid credentials",
                                     "count": 2,
                                     "serial": "Q2AB-CDEF-1234",
@@ -165547,7 +165686,7 @@
                         },
                         "byContributor": [
                           {
-                            "name": "assoc",
+                            "name": "auth",
                             "successes": {
                               "count": 2
                             },
@@ -165562,7 +165701,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "Invalid Credentials",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -165572,7 +165711,7 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 101,
+                                    "code": 300,
                                     "reason": "Invalid credentials",
                                     "count": 2,
                                     "serial": "Q2AB-CDEF-1234",
@@ -166200,7 +166339,7 @@
                         },
                         "byContributor": [
                           {
-                            "name": "assoc",
+                            "name": "auth",
                             "successes": {
                               "count": 2
                             },
@@ -166215,7 +166354,7 @@
                             },
                             "bySubContributor": [
                               {
-                                "name": "Invalid Credentials",
+                                "name": "Invalid credentials",
                                 "failures": {
                                   "count": 2
                                 },
@@ -166225,7 +166364,7 @@
                                 "byReason": [
                                   {
                                     "type": "Meraki reason",
-                                    "code": 101,
+                                    "code": 300,
                                     "reason": "Invalid credentials",
                                     "count": 2,
                                     "serial": "Q2AB-CDEF-1234",
@@ -166912,6 +167051,16 @@
                               },
                               "description": "Observed network traffic."
                             },
+                            "impactedClientsUsage": {
+                              "type": "object",
+                              "properties": {
+                                "bytes": {
+                                  "type": "integer",
+                                  "description": "Impacted clients traffic in bytes."
+                                }
+                              },
+                              "description": "Traffic from impacted clients."
+                            },
                             "successes": {
                               "type": "object",
                               "properties": {
@@ -167107,6 +167256,9 @@
                           }
                         },
                         "usage": {
+                          "bytes": 400
+                        },
+                        "impactedClientsUsage": {
                           "bytes": 400
                         },
                         "successes": {
@@ -167402,6 +167554,16 @@
                                     }
                                   },
                                   "description": "Client usage."
+                                },
+                                "impactedClientsUsage": {
+                                  "type": "object",
+                                  "properties": {
+                                    "totalBytes": {
+                                      "type": "integer",
+                                      "description": "Impacted clients traffic in total bytes."
+                                    }
+                                  },
+                                  "description": "Traffic from impacted clients."
                                 }
                               },
                               "description": "Client info."
@@ -167624,6 +167786,9 @@
                           "type": "wireless",
                           "os": "Meraki OS",
                           "usage": {
+                            "totalBytes": 400
+                          },
+                          "impactedClientsUsage": {
                             "totalBytes": 400
                           }
                         },
@@ -167928,6 +168093,16 @@
                               },
                               "description": "Observed network traffic."
                             },
+                            "impactedClientsUsage": {
+                              "type": "object",
+                              "properties": {
+                                "bytes": {
+                                  "type": "integer",
+                                  "description": "Impacted clients traffic in bytes."
+                                }
+                              },
+                              "description": "Traffic from impacted clients."
+                            },
                             "successes": {
                               "type": "object",
                               "properties": {
@@ -168123,6 +168298,9 @@
                           "vendor": "Intel"
                         },
                         "usage": {
+                          "bytes": 400
+                        },
+                        "impactedClientsUsage": {
                           "bytes": 400
                         },
                         "successes": {
@@ -168402,6 +168580,16 @@
                               },
                               "description": "Observed network traffic."
                             },
+                            "impactedClientsUsage": {
+                              "type": "object",
+                              "properties": {
+                                "bytes": {
+                                  "type": "integer",
+                                  "description": "Impacted clients traffic in bytes."
+                                }
+                              },
+                              "description": "Traffic from impacted clients."
+                            },
                             "successes": {
                               "type": "object",
                               "properties": {
@@ -168593,6 +168781,9 @@
                           "name": "Phone"
                         },
                         "usage": {
+                          "bytes": 400
+                        },
+                        "impactedClientsUsage": {
                           "bytes": 400
                         },
                         "successes": {
@@ -168896,6 +169087,16 @@
                                     }
                                   },
                                   "description": "Device usage."
+                                },
+                                "impactedClientsUsage": {
+                                  "type": "object",
+                                  "properties": {
+                                    "totalBytes": {
+                                      "type": "integer",
+                                      "description": "Impacted clients traffic in total bytes"
+                                    }
+                                  },
+                                  "description": "Traffic from impacted clients."
                                 }
                               },
                               "description": "Device info"
@@ -169137,6 +169338,9 @@
                           },
                           "usage": {
                             "mbps": 1000005
+                          },
+                          "impactedClientsUsage": {
+                            "totalBytes": 1000005
                           }
                         },
                         "connections": {
@@ -169741,6 +169945,16 @@
                               },
                               "description": "Observed network traffic."
                             },
+                            "impactedClientsUsage": {
+                              "type": "object",
+                              "properties": {
+                                "bytes": {
+                                  "type": "integer",
+                                  "description": "Impacted clients traffic in bytes."
+                                }
+                              },
+                              "description": "Traffic from impacted clients."
+                            },
                             "successes": {
                               "type": "object",
                               "properties": {
@@ -169943,6 +170157,9 @@
                         "usage": {
                           "bytes": 400
                         },
+                        "impactedClientsUsage": {
+                          "bytes": 400
+                        },
                         "successes": {
                           "durationInMinutes": 2,
                           "percent": 20
@@ -170112,18 +170329,6 @@
             "description": "Sub-contributor for which to retrieve insights. If not specified, returns all sub contributor insights.",
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "insights",
-            "in": "query",
-            "description": "Insights version to use. Defaults to 2.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "1",
-                "2"
-              ]
             }
           },
           {
@@ -173960,18 +174165,6 @@
             "description": "Sub-contributor for which to retrieve insights. If not specified, returns all sub contributor insights.",
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "insights",
-            "in": "query",
-            "description": "Insights version to use. Defaults to 2.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "1",
-                "2"
-              ]
             }
           },
           {
@@ -179054,18 +179247,6 @@
             }
           },
           {
-            "name": "insights",
-            "in": "query",
-            "description": "Insights version to use. Defaults to 2.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "1",
-                "2"
-              ]
-            }
-          },
-          {
             "name": "variant",
             "in": "query",
             "description": "Wireless State Machine variant to use.",
@@ -182812,18 +182993,6 @@
             "description": "Sub-contributor for which to retrieve insights. If not specified, returns all sub contributor insights.",
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "insights",
-            "in": "query",
-            "description": "Insights version to use. Defaults to 2.",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "1",
-                "2"
-              ]
             }
           },
           {
@@ -210189,76 +210358,37 @@
                     },
                     "status": {
                       "type": "string",
-                      "description": "Status of the packet analysis task"
+                      "enum": [
+                        "completed",
+                        "failed",
+                        "pending",
+                        "unknown"
+                      ],
+                      "description": "Status of the packet analysis task. Stored analysis failures may return `failed` with HTTP 200."
                     },
                     "result": {
                       "type": "object",
-                      "description": "Result of the packet analysis task"
-                    },
-                    "summary": {
-                      "type": "object",
                       "properties": {
-                        "counts": {
+                        "summary": {
                           "type": "object",
                           "properties": {
-                            "total": {
-                              "type": "integer",
-                              "description": "The total number of analyzers"
-                            },
-                            "successes": {
-                              "type": "integer",
-                              "description": "The number of analyzers that returned successful results"
-                            },
-                            "failures": {
-                              "type": "integer",
-                              "description": "The number of analyzers that returned failed results"
-                            }
-                          },
-                          "description": "Count of various analyzers run on the packet capture"
-                        },
-                        "macs": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          },
-                          "description": "MAC addresses of devices present within the packet capture"
-                        },
-                        "ips": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          },
-                          "description": "IP addresses of devices present within the packet capture"
-                        },
-                        "devices": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "name": {
-                                "type": "string",
-                                "description": "Device names"
+                            "counts": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "The total number of analyzers"
+                                },
+                                "successes": {
+                                  "type": "integer",
+                                  "description": "The number of analyzers that returned successful results"
+                                },
+                                "failures": {
+                                  "type": "integer",
+                                  "description": "The number of analyzers that returned failed results"
+                                }
                               },
-                              "url": {
-                                "type": "string",
-                                "description": "Meraki Dashboard url for the device"
-                              }
-                            }
-                          },
-                          "description": "Devices from the packet capture analysis result"
-                        }
-                      },
-                      "description": "Summary of the packet capture analysis result"
-                    },
-                    "analyzers": {
-                      "type": "object",
-                      "properties": {
-                        "analyzer": {
-                          "type": "object",
-                          "properties": {
-                            "present": {
-                              "type": "boolean",
-                              "description": "Whether the analyzer's protocols were present within the packet capture"
+                              "description": "Count of various analyzers run on the packet capture"
                             },
                             "macs": {
                               "type": "array",
@@ -210277,168 +210407,204 @@
                             "devices": {
                               "type": "array",
                               "items": {
-                                "type": "string"
-                              },
-                              "description": "Device names of devices present within the packet capture"
-                            },
-                            "testCounts": {
-                              "type": "object",
-                              "properties": {
-                                "total": {
-                                  "type": "integer",
-                                  "description": "The total number of tests run under this analyzer"
-                                },
-                                "successes": {
-                                  "type": "integer",
-                                  "description": "The number of successful tests run under this analyzer"
-                                },
-                                "failures": {
-                                  "type": "integer",
-                                  "description": "The number of failed tests run under this analyzer"
-                                }
-                              },
-                              "description": "Count of various tests from the packet capture analysis result"
-                            },
-                            "testResults": {
-                              "type": "array",
-                              "items": {
                                 "type": "object",
                                 "properties": {
-                                  "passed": {
-                                    "type": "array",
-                                    "items": {
-                                      "type": "object",
-                                      "properties": {
-                                        "name": {
-                                          "type": "string",
-                                          "description": "The name of the passed test"
-                                        },
-                                        "status": {
-                                          "type": "boolean",
-                                          "description": "Status of the passed test"
-                                        },
-                                        "details": {
-                                          "type": "array",
-                                          "items": {
-                                            "type": "string"
-                                          },
-                                          "description": "Details of passed tests ran under this analyzer (empty list)"
-                                        }
-                                      }
-                                    },
-                                    "description": "All passed tests ran under this analyzer"
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Device names"
                                   },
-                                  "failed": {
-                                    "type": "array",
-                                    "items": {
-                                      "type": "object",
-                                      "properties": {
-                                        "name": {
-                                          "type": "string",
-                                          "description": "The name of the failed test"
-                                        },
-                                        "status": {
-                                          "type": "boolean",
-                                          "description": "Status of the failed test"
-                                        },
-                                        "details": {
-                                          "type": "array",
-                                          "items": {
-                                            "type": "object",
-                                            "properties": {
-                                              "subCategory": {
-                                                "type": "string",
-                                                "description": "Test subcategory"
-                                              },
-                                              "failureCount": {
-                                                "type": "integer",
-                                                "description": "Count of packets where test failed"
-                                              },
-                                              "packets": {
-                                                "type": "array",
-                                                "items": {
-                                                  "type": "integer"
-                                                },
-                                                "description": "Packets present within the failed test"
-                                              },
-                                              "detailMessage": {
-                                                "type": "string",
-                                                "description": "Details about test"
-                                              },
-                                              "macs": {
-                                                "type": "array",
-                                                "items": {
-                                                  "type": "string"
-                                                },
-                                                "description": "MAC addresses of devices present within the test failure"
-                                              },
-                                              "ips": {
-                                                "type": "array",
-                                                "items": {
-                                                  "type": "string"
-                                                },
-                                                "description": "IP addresses of devices present within the test failure"
-                                              },
-                                              "devices": {
-                                                "type": "array",
-                                                "items": {
-                                                  "type": "string"
-                                                },
-                                                "description": "Device names of devices present within the test failure"
-                                              }
-                                            }
-                                          },
-                                          "description": "Details of failed tests ran under this analyzer"
-                                        }
-                                      }
-                                    },
-                                    "description": "All failed tests ran under this analyzer"
+                                  "url": {
+                                    "type": "string",
+                                    "description": "Meraki Dashboard url for the device"
                                   }
                                 }
                               },
-                              "description": "All tests ran under this analyzer"
+                              "description": "Devices from the packet capture analysis result"
                             }
                           },
-                          "description": "Analyzer analysis results"
+                          "description": "Summary of the packet capture analysis result"
+                        },
+                        "analyzers": {
+                          "type": "object",
+                          "properties": {
+                            "analyzer": {
+                              "type": "object",
+                              "properties": {
+                                "present": {
+                                  "type": "boolean",
+                                  "description": "Whether the analyzer's protocols were present within the packet capture"
+                                },
+                                "macs": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "MAC addresses of devices present within the packet capture"
+                                },
+                                "ips": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "IP addresses of devices present within the packet capture"
+                                },
+                                "devices": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "description": "Device names of devices present within the packet capture"
+                                },
+                                "testCounts": {
+                                  "type": "object",
+                                  "properties": {
+                                    "total": {
+                                      "type": "integer",
+                                      "description": "The total number of tests run under this analyzer"
+                                    },
+                                    "successes": {
+                                      "type": "integer",
+                                      "description": "The number of successful tests run under this analyzer"
+                                    },
+                                    "failures": {
+                                      "type": "integer",
+                                      "description": "The number of failed tests run under this analyzer"
+                                    }
+                                  },
+                                  "description": "Count of various tests from the packet capture analysis result"
+                                },
+                                "testResults": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "passed": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string",
+                                              "description": "The name of the passed test"
+                                            },
+                                            "status": {
+                                              "type": "boolean",
+                                              "description": "Status of the passed test"
+                                            },
+                                            "details": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "description": "Details of passed tests ran under this analyzer (empty list)"
+                                            }
+                                          }
+                                        },
+                                        "description": "All passed tests ran under this analyzer"
+                                      },
+                                      "failed": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": "string",
+                                              "description": "The name of the failed test"
+                                            },
+                                            "status": {
+                                              "type": "boolean",
+                                              "description": "Status of the failed test"
+                                            },
+                                            "details": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "subCategory": {
+                                                    "type": "string",
+                                                    "description": "Test subcategory"
+                                                  },
+                                                  "failureCount": {
+                                                    "type": "integer",
+                                                    "description": "Count of packets where test failed"
+                                                  },
+                                                  "packets": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "integer"
+                                                    },
+                                                    "description": "Packets present within the failed test"
+                                                  },
+                                                  "detailMessage": {
+                                                    "type": "string",
+                                                    "description": "Details about test"
+                                                  },
+                                                  "macs": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "string"
+                                                    },
+                                                    "description": "MAC addresses of devices present within the test failure"
+                                                  },
+                                                  "ips": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "string"
+                                                    },
+                                                    "description": "IP addresses of devices present within the test failure"
+                                                  },
+                                                  "devices": {
+                                                    "type": "array",
+                                                    "items": {
+                                                      "type": "string"
+                                                    },
+                                                    "description": "Device names of devices present within the test failure"
+                                                  }
+                                                }
+                                              },
+                                              "description": "Details of failed tests ran under this analyzer"
+                                            }
+                                          }
+                                        },
+                                        "description": "All failed tests ran under this analyzer"
+                                      }
+                                    }
+                                  },
+                                  "description": "All tests ran under this analyzer"
+                                }
+                              },
+                              "description": "Analyzer analysis results"
+                            }
+                          },
+                          "description": "Analysis results of the various analyzers"
+                        },
+                        "fileName": {
+                          "type": "string",
+                          "description": "File name of the packet capture"
+                        },
+                        "filePathUrl": {
+                          "type": "string",
+                          "description": "File path of the packet capture"
+                        },
+                        "error": {
+                          "type": "string",
+                          "description": "Failure details when the task status is `failed`."
                         }
                       },
-                      "description": "Analysis results of the various analyzers"
-                    },
-                    "fileName": {
-                      "type": "string",
-                      "description": "File name of the packet capture"
-                    },
-                    "filePathUrl": {
-                      "type": "string",
-                      "description": "File path of the packet capture"
+                      "description": "Result of the packet analysis task. Completed analysis tasks return the analysis payload; failed stored analysis tasks returned with HTTP 200 include `error` details."
                     }
                   }
                 },
                 "example": {
                   "task": "analysis",
                   "status": "completed",
-                  "summary": {
-                    "counts": {
-                      "total": 1,
-                      "successes": 0,
-                      "failures": 1
-                    },
-                    "macs": [
-                      "00:11:22:33:44:55"
-                    ],
-                    "ips": [
-                      "1.2.3.4"
-                    ],
-                    "devices": [
-                      {
-                        "name": "My AP",
-                        "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000"
-                      }
-                    ]
-                  },
-                  "analyzers": {
-                    "analyzer": {
-                      "present": true,
+                  "result": {
+                    "summary": {
+                      "counts": {
+                        "total": 1,
+                        "successes": 0,
+                        "failures": 1
+                      },
                       "macs": [
                         "00:11:22:33:44:55"
                       ],
@@ -210446,57 +210612,75 @@
                         "1.2.3.4"
                       ],
                       "devices": [
-                        "My AP"
-                      ],
-                      "testCounts": {
-                        "total": 1,
-                        "successes": 0,
-                        "failures": 1
-                      },
-                      "testResults": [
                         {
-                          "passed": [
-                            {
-                              "name": "Test",
-                              "status": false,
-                              "details": [
-
-                              ]
-                            }
-                          ],
-                          "failed": [
-                            {
-                              "name": "Test",
-                              "status": false,
-                              "details": [
-                                {
-                                  "subCategory": "DHCP Request not seen",
-                                  "failureCount": 3,
-                                  "packets": [
-                                    5,
-                                    6,
-                                    7
-                                  ],
-                                  "detailMessage": "Failed",
-                                  "macs": [
-                                    "00:11:22:33:44:55"
-                                  ],
-                                  "ips": [
-                                    "1.2.3.4"
-                                  ],
-                                  "devices": [
-                                    "My AP"
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
+                          "name": "My AP",
+                          "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000"
                         }
                       ]
-                    }
-                  },
-                  "fileName": "sample.pcap",
-                  "filePathUrl": "https://www.meraki.com"
+                    },
+                    "analyzers": {
+                      "analyzer": {
+                        "present": true,
+                        "macs": [
+                          "00:11:22:33:44:55"
+                        ],
+                        "ips": [
+                          "1.2.3.4"
+                        ],
+                        "devices": [
+                          "My AP"
+                        ],
+                        "testCounts": {
+                          "total": 1,
+                          "successes": 0,
+                          "failures": 1
+                        },
+                        "testResults": [
+                          {
+                            "passed": [
+                              {
+                                "name": "Test",
+                                "status": false,
+                                "details": [
+
+                                ]
+                              }
+                            ],
+                            "failed": [
+                              {
+                                "name": "Test",
+                                "status": false,
+                                "details": [
+                                  {
+                                    "subCategory": "DHCP Request not seen",
+                                    "failureCount": 3,
+                                    "packets": [
+                                      5,
+                                      6,
+                                      7
+                                    ],
+                                    "detailMessage": "Failed",
+                                    "macs": [
+                                      "00:11:22:33:44:55"
+                                    ],
+                                    "ips": [
+                                      "1.2.3.4"
+                                    ],
+                                    "devices": [
+                                      "My AP"
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "fileName": "sample.pcap",
+                    "filePathUrl": "https://www.meraki.com",
+                    "error": "No analyzable packets found in sample.pcap. The capture may contain unsupported frame types."
+                  }
                 }
               }
             }
@@ -228252,18 +228436,22 @@
                                   "properties": {
                                     "value": {
                                       "type": "string",
-                                      "description": "IPSK passphrase value. Must be 8-63 printable ASCII characters (ASCII codes 32-126). If exactly 8 characters, cannot end with a space. Cannot be blank or only whitespace."
+                                      "description": "Masked IPSK value. Responses do not expose the configured passphrase."
                                     },
                                     "type": {
                                       "type": "string",
                                       "description": "IPSK value type. Specifies how the value should be interpreted."
+                                    },
+                                    "isMasked": {
+                                      "type": "boolean",
+                                      "description": "True when the IPSK is configured but intentionally masked in the response."
                                     }
                                   },
                                   "required": [
                                     "value",
                                     "type"
                                   ],
-                                  "description": "Identity Pre-Shared Key (IPSK) used by node during client device association. The IPSK allows different PSKs to be assigned to different clients on the same SSID for enhanced security and policy enforcement."
+                                  "description": "Identity Pre-Shared Key (IPSK) used by node during client device association. Responses return a masked marker instead of the plaintext IPSK."
                                 }
                               },
                               "required": [
@@ -228334,8 +228522,9 @@
                           },
                           "result": "PERMIT",
                           "ipsk": {
-                            "value": "Moon@15",
-                            "type": "CONSTANT"
+                            "value": "",
+                            "type": "CONSTANT",
+                            "isMasked": true
                           }
                         }
                       }
@@ -228500,6 +228689,10 @@
                           "type": {
                             "type": "string",
                             "description": "IPSK value type"
+                          },
+                          "isMasked": {
+                            "type": "boolean",
+                            "description": "True when the request is preserving an already configured masked IPSK without changing it"
                           }
                         },
                         "required": [
@@ -228541,7 +228734,8 @@
                     "result": "PERMIT",
                     "ipsk": {
                       "value": "Moon@15",
-                      "type": "Constant"
+                      "type": "Constant",
+                      "isMasked": false
                     }
                   }
                 },
@@ -228784,6 +228978,10 @@
                           "type": {
                             "type": "string",
                             "description": "IPSK value type"
+                          },
+                          "isMasked": {
+                            "type": "boolean",
+                            "description": "True when the request is preserving an already configured masked IPSK without changing it"
                           }
                         },
                         "required": [
@@ -228825,7 +229023,8 @@
                     "result": "PERMIT",
                     "ipsk": {
                       "value": "Moon@15",
-                      "type": "Constant"
+                      "type": "Constant",
+                      "isMasked": false
                     }
                   }
                 },
@@ -248018,7 +248217,11 @@
                           ],
                           "description": "Region metadata for the site."
                         }
-                      }
+                      },
+                      "required": [
+                        "network",
+                        "region"
+                      ]
                     },
                     "x-release-stage": "general_availability",
                     "description": "List of Meraki SD-WAN sites with the associated regions to be attached."
@@ -248035,11 +248238,14 @@
                       }
                     }
                   ]
-                }
+                },
+                "required": [
+                  "items"
+                ]
               }
             }
           },
-          "required": false
+          "required": true
         },
         "responses": {
           "202": {
@@ -295589,6 +295795,27 @@
                             },
                             "description": "Uplink metadata for the device."
                           },
+                          "boot": {
+                            "type": "object",
+                            "properties": {
+                              "lastBootedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Time, in ISO8601 format, when the device last booted."
+                              },
+                              "uptime": {
+                                "type": "integer",
+                                "description": "Device-reported uptime, in seconds, at the time specified by reportedAt."
+                              },
+                              "reportedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Time, in ISO8601 format, when uptime was reported by the device."
+                              }
+                            },
+                            "description": "Latest known boot and uptime state for the device. This field is not filtered by the requested t0/t1 or timespan. Null when no recent valid boot state is available.",
+                            "nullable": true
+                          },
                           "metrics": {
                             "type": "array",
                             "items": {
@@ -295603,7 +295830,7 @@
                                   "items": {
                                     "type": "object"
                                   },
-                                  "description": "Metric values. Most metrics are filtered by the requested t0/t1 or timespan. Current-state metrics such as Ethernet Port Status return the latest known device state instead."
+                                  "description": "Metric values. Most metrics are filtered by the requested t0/t1 or timespan. Current-state metrics such as Ethernet Port Status return the latest known device state instead. For RADIUS Server Performance, averageLatency is reported in milliseconds."
                                 }
                               }
                             },
@@ -295665,6 +295892,11 @@
                       },
                       "uplink": {
                         "dhcpServerIp": "10.7.68.1"
+                      },
+                      "boot": {
+                        "lastBootedAt": "2026-04-10T07:30:42.123456Z",
+                        "uptime": 71342,
+                        "reportedAt": "2026-04-11T03:19:44.000000Z"
                       },
                       "metrics": [
                         {
@@ -298302,7 +298534,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-06-08T08:05:23Z"
+                      "lastEnabledAt": "2026-06-15T08:05:10Z"
                     }
                   }
                 ]
@@ -299640,7 +299872,7 @@
                       },
                       "ai": {
                         "enabled": true,
-                        "lastEnabledAt": "2026-06-08T08:05:23Z"
+                        "lastEnabledAt": "2026-06-15T08:05:10Z"
                       }
                     }
                   ],
@@ -315421,37 +315653,37 @@
     },
     {
       "group": "Api platform/actions/push api profile",
-      "summary": "Create a new push profile",
+      "summary": "Create a Push API profile to subscribe to a topic and send its messages to a receiver profile.",
       "resource": "/organizations/{organizationId}/api/push/profiles",
       "operation": "create"
     },
     {
       "group": "Api platform/actions/push api profile",
-      "summary": "Delete a push profile",
+      "summary": "Delete a Push API profile to unsubscribe from a topic, ending that topic's message delivery to a receiver profile.",
       "resource": "/organizations/{organizationId}/api/push/profiles/{iname}",
       "operation": "destroy"
     },
     {
       "group": "Api platform/actions/push api profile",
-      "summary": "Update a push profile",
+      "summary": "Update a Push API profile's name, description, topic, receiver profile or other configuration.",
       "resource": "/organizations/{organizationId}/api/push/profiles/{iname}",
       "operation": "update"
     },
     {
       "group": "Api platform/actions/push api receiver profile",
-      "summary": "Create a new push receiver profile",
+      "summary": "Create a Push API receiver profile to define an external receiver for Push API messages. You may re-use an existing organization-wide webhook receiver.",
       "resource": "/organizations/{organizationId}/api/push/receivers/profiles",
       "operation": "create"
     },
     {
       "group": "Api platform/actions/push api receiver profile",
-      "summary": "Delete a push receiver profile",
+      "summary": "Delete a Push API receiver profile.",
       "resource": "/organizations/{organizationId}/api/push/receivers/profiles/{iname}",
       "operation": "destroy"
     },
     {
       "group": "Api platform/actions/push api receiver profile",
-      "summary": "Update a push receiver profile",
+      "summary": "Update a Push API receiver profile's name, description, or receiver configuration.",
       "resource": "/organizations/{organizationId}/api/push/receivers/profiles/{iname}",
       "operation": "update"
     },
