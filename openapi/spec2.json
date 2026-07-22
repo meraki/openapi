@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.72.0-beta.2",
+    "version": "1.72.0-beta.3",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 15 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 22 July, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -45,6 +45,947 @@
     }
   ],
   "paths": {
+    "/administered/assistant/chat/completions": {
+      "post": {
+        "description": "Create a synchronous AI assistant chat completion for user-wide threads. If 'threadId' is omitted, the request is handled as a one-off invocation and no reusable thread is created. For durable multi-turn conversations or richer media support (audio, files), create a thread and use the messages endpoint.",
+        "operationId": "createAdministeredAssistantChatCompletion",
+        "parameters": [
+          {
+            "name": "createAdministeredAssistantChatCompletion",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "Simple text question or instruction to send to the AI assistant. Provide either 'query' for text-only requests or 'content' for multi-modal input."
+                },
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "image",
+                          "text"
+                        ],
+                        "description": "Content block type"
+                      },
+                      "text": {
+                        "type": "string",
+                        "description": "Text content. Required when type is 'text'."
+                      },
+                      "source": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "base64"
+                            ],
+                            "description": "Source encoding type"
+                          },
+                          "mediaType": {
+                            "type": "string",
+                            "enum": [
+                              "image/gif",
+                              "image/jpeg",
+                              "image/png",
+                              "image/webp"
+                            ],
+                            "description": "Image MIME type. SVG and other executable content types are not accepted."
+                          },
+                          "data": {
+                            "type": "string",
+                            "format": "byte",
+                            "description": "Base64-encoded image data"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "mediaType",
+                          "data"
+                        ],
+                        "description": "Base64-encoded media source. Required when type is 'image'."
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  "maxItems": 8,
+                  "description": "List of multi-modal content blocks. Use instead of 'query' to send text or images. Supports text and image types only; for audio and file support, use the messages endpoint. Maximum 8 parts."
+                },
+                "threadId": {
+                  "type": "string",
+                  "description": "Existing persisted thread ID to continue synchronously. If omitted, the request is handled as a one-off invocation and the response will not include a reusable thread ID."
+                },
+                "platform": {
+                  "type": "string",
+                  "enum": [
+                    "DIGITAL_TWIN",
+                    "DNAC",
+                    "MERAKI",
+                    "digital_twin",
+                    "dnac",
+                    "meraki"
+                  ],
+                  "x-release-stage": "beta",
+                  "description": "Platform identifier. Defaults to MERAKI when omitted. Case-insensitive."
+                },
+                "language": {
+                  "type": "string",
+                  "description": "Optional language override. Defaults to the user's preferred language."
+                },
+                "country": {
+                  "type": "string",
+                  "description": "Optional country override. Defaults to the user's country."
+                }
+              },
+              "example": {
+                "query": "What is the uplink status for my MX appliances?",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "What is the uplink status for my MX appliances?",
+                    "source": {
+                      "type": "base64",
+                      "mediaType": "image/png",
+                      "data": "iVBORw0KGgoAAAANSUhEUgAAAAUA"
+                    }
+                  }
+                ],
+                "threadId": "7139232",
+                "platform": "MERAKI",
+                "language": "en",
+                "country": "US"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "threadId": {
+                  "type": "string",
+                  "description": "Reusable thread ID returned when the completion continues an existing persisted thread. Omitted for one-off completions."
+                },
+                "messageId": {
+                  "type": "string",
+                  "description": "Persisted assistant message ID when one was created. Null for one-off completions.",
+                  "x-nullable": true
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Content of the message"
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "References or data sources used to generate the response"
+                },
+                "followUps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Suggested follow-up questions"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "threadId": "7139232",
+                "messageId": "15432169",
+                "content": "A dormant device is a device that has not been active for a period of time",
+                "sources": [
+
+                ],
+                "followUps": [
+
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Create a synchronous AI assistant chat completion for user-wide threads",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "completions"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/administered/assistant/chat/threads": {
+      "get": {
+        "description": "List all active user-wide conversation threads for the authenticated user.",
+        "operationId": "getAdministeredAssistantChatThreads",
+        "parameters": [
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "name": "perPage",
+            "in": "query",
+            "description": "Number of entries per page. Defaults to 100. Maximum 1000."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "dateModified",
+              "id",
+              "name"
+            ],
+            "name": "sort",
+            "in": "query",
+            "description": "Field to sort results by. Defaults to dateModified."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort direction for results. Defaults to desc."
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "name": "from",
+            "in": "query",
+            "description": "Filter threads modified after this timestamp."
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "name": "to",
+            "in": "query",
+            "description": "Filter threads modified before this timestamp."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "threadId": {
+                        "type": "string",
+                        "description": "Unique thread identifier."
+                      },
+                      "threadName": {
+                        "type": "string",
+                        "description": "Display name of the conversation thread."
+                      },
+                      "dateModified": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                      },
+                      "tag": {
+                        "type": "string",
+                        "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                      }
+                    }
+                  },
+                  "description": "Array of threads."
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "remaining": {
+                      "type": "integer",
+                      "description": "Number of remaining threads."
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of threads in this page."
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of threads."
+                    }
+                  },
+                  "description": "Pagination metadata."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "threadId": "7139232",
+                    "threadName": "Uplink troubleshooting - Branch office",
+                    "dateModified": 1775500697037.643,
+                    "tag": "network_engineer_agent"
+                  }
+                ],
+                "meta": {
+                  "remaining": 0,
+                  "count": 10,
+                  "total": 25
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all active user-wide conversation threads for the authenticated user.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Create a user-wide conversation thread for multi-turn AI assistant interactions.",
+        "operationId": "createAdministeredAssistantChatThread",
+        "parameters": [
+          {
+            "name": "createAdministeredAssistantChatThread",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "threadName": {
+                  "type": "string",
+                  "description": "Display name for the new thread."
+                }
+              },
+              "example": {
+                "threadName": "Uplink troubleshooting - Branch office"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "threadId": {
+                  "type": "string",
+                  "description": "Unique thread identifier."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "threadId": "7139232"
+              }
+            }
+          }
+        },
+        "summary": "Create a user-wide conversation thread for multi-turn AI assistant interactions.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/administered/assistant/chat/threads/{threadId}": {
+      "get": {
+        "description": "Return a single user-wide conversation thread.",
+        "operationId": "getAdministeredAssistantChatThread",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "threadId": {
+                  "type": "string",
+                  "description": "Unique thread identifier."
+                },
+                "threadName": {
+                  "type": "string",
+                  "description": "Display name of the conversation thread."
+                },
+                "dateModified": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                },
+                "tag": {
+                  "type": "string",
+                  "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "threadId": "7139232",
+                "threadName": "Uplink troubleshooting - Branch office",
+                "dateModified": 1775500697037.643,
+                "tag": "network_engineer_agent"
+              }
+            }
+          }
+        },
+        "summary": "Return a single user-wide conversation thread.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads"
+        ],
+        "x-release-stage": "beta"
+      },
+      "put": {
+        "description": "Update the name of a user-wide conversation thread.",
+        "operationId": "updateAdministeredAssistantChatThread",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateAdministeredAssistantChatThread",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "threadName": {
+                  "type": "string",
+                  "description": "New display name for the thread."
+                }
+              },
+              "example": {
+                "threadName": "Uplink troubleshooting - Branch office"
+              },
+              "required": [
+                "threadName"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object"
+            },
+            "examples": {
+              "application/json": {
+
+              }
+            }
+          }
+        },
+        "summary": "Update the name of a user-wide conversation thread.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads"
+        ],
+        "x-release-stage": "beta"
+      },
+      "delete": {
+        "description": "Delete a user-wide conversation thread and all its messages.",
+        "operationId": "deleteAdministeredAssistantChatThread",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a user-wide conversation thread and all its messages.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/administered/assistant/chat/threads/{threadId}/messages": {
+      "get": {
+        "description": "List messages in a user-wide conversation thread.",
+        "operationId": "getAdministeredAssistantChatThreadMessages",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000,
+            "name": "perPage",
+            "in": "query",
+            "description": "Number of entries per page. Defaults to 100. Maximum 1000."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort direction for results by timestamp. Defaults to asc."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Unique message identifier."
+                      },
+                      "sender": {
+                        "type": "string",
+                        "enum": [
+                          "SYSTEM",
+                          "USER"
+                        ],
+                        "description": "Who sent the message."
+                      },
+                      "content": {
+                        "type": "object",
+                        "additionalProperties": true,
+                        "description": "Message body text."
+                      },
+                      "timestamp": {
+                        "type": "number",
+                        "format": "float",
+                        "description": "Message creation timestamp in epoch milliseconds."
+                      },
+                      "sources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
+                      },
+                      "followUps": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
+                      },
+                      "tag": {
+                        "type": "string",
+                        "description": "Classification tag for the message."
+                      },
+                      "format": {
+                        "type": "string",
+                        "description": "Response format hint."
+                      },
+                      "feedback": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "vote": {
+                              "type": "boolean",
+                              "description": "True for positive (thumbs up), false for negative (thumbs down)."
+                            },
+                            "reason": {
+                              "type": "string",
+                              "description": "Optional structured reason for the feedback."
+                            },
+                            "comment": {
+                              "type": "string",
+                              "description": "Optional free-text comment."
+                            }
+                          }
+                        },
+                        "description": "Feedback entries previously submitted for this message."
+                      }
+                    }
+                  },
+                  "description": "Array of messages."
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "remaining": {
+                      "type": "integer",
+                      "description": "Number of remaining messages."
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of messages in this page."
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of messages matching the query."
+                    }
+                  },
+                  "description": "Pagination metadata."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "id": "14604875",
+                    "sender": "USER",
+                    "timestamp": 1777561554921.36,
+                    "sources": [
+
+                    ],
+                    "followUps": [
+
+                    ],
+                    "tag": "success",
+                    "format": "json",
+                    "feedback": [
+                      {
+                        "vote": true,
+                        "reason": "helpful",
+                        "comment": "Great answer!"
+                      }
+                    ]
+                  }
+                ],
+                "meta": {
+                  "remaining": 0,
+                  "count": 10,
+                  "total": 25
+                }
+              }
+            }
+          }
+        },
+        "summary": "List messages in a user-wide conversation thread.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads",
+          "messages"
+        ],
+        "x-release-stage": "beta"
+      },
+      "post": {
+        "description": "Create a new chat message in an existing user-wide thread.",
+        "operationId": "createAdministeredAssistantChatThreadMessage",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createAdministeredAssistantChatThreadMessage",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "audio",
+                          "file",
+                          "image",
+                          "text"
+                        ],
+                        "description": "Message part type"
+                      },
+                      "text": {
+                        "type": "string",
+                        "description": "Text content (required when type is 'text')"
+                      },
+                      "source": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "base64"
+                            ],
+                            "description": "Source encoding type"
+                          },
+                          "mediaType": {
+                            "type": "string",
+                            "enum": [
+                              "application/pdf",
+                              "audio/mpeg",
+                              "audio/ogg",
+                              "audio/wav",
+                              "image/gif",
+                              "image/jpeg",
+                              "image/png",
+                              "image/webp"
+                            ],
+                            "description": "Media MIME type. SVG and other executable content types are not accepted."
+                          },
+                          "data": {
+                            "type": "string",
+                            "format": "byte",
+                            "description": "Base64-encoded data"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "mediaType",
+                          "data"
+                        ],
+                        "description": "Base64-encoded media source (required when type is 'image', 'audio', or 'file')"
+                      }
+                    },
+                    "required": [
+                      "type"
+                    ]
+                  },
+                  "maxItems": 8,
+                  "description": "List of message content parts. Supports text, image, audio, and file types. Maximum 8 parts."
+                }
+              },
+              "example": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Show me failing devices by MAC",
+                    "source": {
+                      "type": "base64",
+                      "mediaType": "image/png",
+                      "data": "iVBORw0KGgoAAAANSUhEUgAAAAUA"
+                    }
+                  }
+                ]
+              },
+              "required": [
+                "content"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "messageId": {
+                  "type": "integer",
+                  "description": "Identifier of the created message."
+                },
+                "runId": {
+                  "type": "string",
+                  "description": "Identifier for the execution run processing this message."
+                },
+                "threadId": {
+                  "type": "integer",
+                  "description": "Thread ID the message was created in."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "messageId": 15432169,
+                "runId": "15432169",
+                "threadId": 7139232
+              }
+            }
+          }
+        },
+        "summary": "Create a new chat message in an existing user-wide thread.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads",
+          "messages"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/administered/assistant/chat/threads/{threadId}/messages/{messageId}": {
+      "get": {
+        "description": "Return a single message in a user-wide conversation thread.",
+        "operationId": "getAdministeredAssistantChatThreadMessage",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "description": "Thread ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "messageId",
+            "in": "path",
+            "description": "Message ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique message identifier."
+                },
+                "sender": {
+                  "type": "string",
+                  "enum": [
+                    "SYSTEM",
+                    "USER"
+                  ],
+                  "description": "Who sent the message."
+                },
+                "content": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "description": "Message body text."
+                },
+                "timestamp": {
+                  "type": "number",
+                  "format": "float",
+                  "description": "Message creation timestamp in epoch milliseconds."
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
+                },
+                "followUps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
+                },
+                "tag": {
+                  "type": "string",
+                  "description": "Classification tag for the message."
+                },
+                "format": {
+                  "type": "string",
+                  "description": "Response format hint."
+                },
+                "feedback": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "vote": {
+                        "type": "boolean",
+                        "description": "True for positive (thumbs up), false for negative (thumbs down)."
+                      },
+                      "reason": {
+                        "type": "string",
+                        "description": "Optional structured reason for the feedback."
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Optional free-text comment."
+                      }
+                    }
+                  },
+                  "description": "Feedback entries previously submitted for this message."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "14604875",
+                "sender": "USER",
+                "timestamp": 1777561554921.36,
+                "sources": [
+
+                ],
+                "followUps": [
+
+                ],
+                "tag": "success",
+                "format": "json",
+                "feedback": [
+                  {
+                    "vote": true,
+                    "reason": "helpful",
+                    "comment": "Great answer!"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Return a single message in a user-wide conversation thread.",
+        "tags": [
+          "assistant",
+          "configure",
+          "chat",
+          "threads",
+          "messages"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/administered/identities/me": {
       "get": {
         "description": "Returns the identity of the current user.",
@@ -8931,7 +9872,6 @@
                         "type": {
                           "type": "string",
                           "enum": [
-                            "catalyst_radsec",
                             "openroaming",
                             "radsec",
                             "zigbee"
@@ -9748,7 +10688,7 @@
                       },
                       "vrfName": {
                         "type": "string",
-                        "description": "The VRF name of the ARP table entry. Only returned for Catalyst router ARP table jobs and for Catalyst switch ARP table jobs when enabled. Null when the supported entry has no VRF name.",
+                        "description": "The VRF name of the ARP table entry. Null when the device does not support reporting VRF, or when no VRF name is available for the entry.",
                         "x-release-stage": "beta",
                         "x-nullable": true
                       },
@@ -17759,9 +18699,11 @@
                     "type": "string",
                     "enum": [
                       "Alert only",
-                      "Enforce"
+                      "Disabled",
+                      "Enforce",
+                      "N/A"
                     ],
-                    "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                    "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                   },
                   "accessPolicyType": {
                     "type": "string",
@@ -19068,9 +20010,11 @@
                   "type": "string",
                   "enum": [
                     "Alert only",
-                    "Enforce"
+                    "Disabled",
+                    "Enforce",
+                    "N/A"
                   ],
-                  "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                  "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                 },
                 "accessPolicyType": {
                   "type": "string",
@@ -19662,9 +20606,11 @@
                   "type": "string",
                   "enum": [
                     "Alert only",
-                    "Enforce"
+                    "Disabled",
+                    "Enforce",
+                    "N/A"
                   ],
-                  "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                  "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                 },
                 "accessPolicyType": {
                   "type": "string",
@@ -31277,6 +32223,265 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/ports/radius/servers": {
+      "post": {
+        "description": "Create a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. A network can have at most 3 shared servers. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "createNetworkAppliancePortsRadiusServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createNetworkAppliancePortsRadiusServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "IPv4 address or FQDN of the RADIUS server"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "UDP port the RADIUS server listens on for Access-Requests. Must be between 1 and 65535"
+                },
+                "secret": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "description": "RADIUS shared secret value to store for this server. Must be 48 characters or fewer"
+                    }
+                  },
+                  "description": "Write-only RADIUS shared secret"
+                }
+              },
+              "example": {
+                "host": "192.0.2.1",
+                "port": 1812,
+                "secret": {
+                  "value": "radius-secret"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serverId": {
+                  "type": "string",
+                  "description": "RADIUS server ID"
+                },
+                "network": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Network ID"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Network name"
+                    }
+                  },
+                  "description": "Network that owns this shared RADIUS server"
+                },
+                "host": {
+                  "type": "string",
+                  "description": "IPv4 address or FQDN of the RADIUS server"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "UDP port the RADIUS server listens on for Access-Requests. Must be between 1 and 65535"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serverId": "101",
+                "network": {
+                  "id": "N_24329156",
+                  "name": "Main Office"
+                },
+                "host": "192.0.2.1",
+                "port": 1812
+              }
+            }
+          }
+        },
+        "summary": "Create a shared MX port RADIUS server for a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "ports",
+          "radius",
+          "servers"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/networks/{networkId}/appliance/ports/radius/servers/{serverId}": {
+      "put": {
+        "description": "Update a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "updateNetworkAppliancePortsRadiusServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "serverId",
+            "in": "path",
+            "description": "Server ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateNetworkAppliancePortsRadiusServer",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "description": "IPv4 address or FQDN of the RADIUS server"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "UDP port the RADIUS server listens on for Access-Requests. Must be between 1 and 65535"
+                },
+                "secret": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "description": "RADIUS shared secret value. Omit the secret object to keep the stored secret. Must be 48 characters or fewer"
+                    }
+                  },
+                  "description": "Write-only RADIUS shared secret"
+                }
+              },
+              "example": {
+                "host": "192.0.2.1",
+                "port": 1812,
+                "secret": {
+                  "value": "radius-secret"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "serverId": {
+                  "type": "string",
+                  "description": "RADIUS server ID"
+                },
+                "network": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Network ID"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Network name"
+                    }
+                  },
+                  "description": "Network that owns this shared RADIUS server"
+                },
+                "host": {
+                  "type": "string",
+                  "description": "IPv4 address or FQDN of the RADIUS server"
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535,
+                  "description": "UDP port the RADIUS server listens on for Access-Requests. Must be between 1 and 65535"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "serverId": "101",
+                "network": {
+                  "id": "N_24329156",
+                  "name": "Main Office"
+                },
+                "host": "192.0.2.1",
+                "port": 1812
+              }
+            }
+          }
+        },
+        "summary": "Update a shared MX port RADIUS server for a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "ports",
+          "radius",
+          "servers"
+        ],
+        "x-release-stage": "beta"
+      },
+      "delete": {
+        "description": "Delete a network-owned shared MX port RADIUS server. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "deleteNetworkAppliancePortsRadiusServer",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "serverId",
+            "in": "path",
+            "description": "Server ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete a network-owned shared MX port RADIUS server",
+        "tags": [
+          "appliance",
+          "configure",
+          "ports",
+          "radius",
+          "servers"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/networks/{networkId}/appliance/ports/{portId}": {
       "get": {
         "description": "Return per-port VLAN settings for a single secure router or security appliance port.",
@@ -41620,6 +42825,11 @@
                 },
                 "mandatoryDhcp": {
                   "enabled": true
+                },
+                "vpn": {
+                  "advertisement": {
+                    "enabled": true
+                  }
                 },
                 "adaptivePolicyGroupId": "1234",
                 "sgt": {
@@ -77585,7 +78795,7 @@
     },
     "/networks/{networkId}/sm/profiles": {
       "get": {
-        "description": "List all profiles in a network",
+        "description": "List profiles in a network",
         "operationId": "getNetworkSmProfiles",
         "parameters": [
           {
@@ -77594,6 +78804,24 @@
             "description": "Network ID",
             "type": "string",
             "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 50. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
           },
           {
             "type": "array",
@@ -77646,6 +78874,12 @@
                 }
               }
             },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
             "examples": {
               "application/json": [
                 {
@@ -77666,7 +78900,7 @@
             }
           }
         },
-        "summary": "List all profiles in a network",
+        "summary": "List profiles in a network",
         "tags": [
           "sm",
           "configure",
@@ -103404,7 +104638,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-06-15T08:01:19Z"
+                  "lastEnabledAt": "2026-06-22T08:01:21Z"
                 }
               }
             }
@@ -103696,7 +104930,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-06-15T08:01:19Z"
+                  "lastEnabledAt": "2026-06-22T08:01:21Z"
                 }
               }
             }
@@ -131760,6 +132994,180 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/ports/radius/servers/byNetwork": {
+      "get": {
+        "description": "List shared MX port RADIUS servers by network. Each returned item is the network grouping itself, identified by networkId and name, with servers containing that network's shared RADIUS servers. These servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. The endpoint pages networks first, then loads RADIUS servers for that page with a single server lookup scoped by network IDs, server type, and optional serverIds. Focused Rails controller benchmarking of the documented maximum page shape, 100 networks with 300 total server objects, measured p99 0.8199 seconds across 8 runs. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "getOrganizationAppliancePortsRadiusServersByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 10."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter the results by network IDs. Matches are exact. Maximum array size is 100"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "name": "serverIds",
+            "in": "query",
+            "description": "Optional parameter to filter the results by RADIUS server IDs. Matches are exact. Maximum array size is 100"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "networkId": {
+                        "type": "string",
+                        "description": "Network ID that identifies this /byNetwork grouping"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Network name that identifies this /byNetwork grouping"
+                      },
+                      "servers": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "RADIUS server ID"
+                            },
+                            "host": {
+                              "type": "string",
+                              "description": "IPv4 address or FQDN of the RADIUS server"
+                            },
+                            "port": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 65535,
+                              "description": "UDP port the RADIUS server listens on for Access-Requests. Must be between 1 and 65535"
+                            }
+                          }
+                        },
+                        "maxItems": 3,
+                        "description": "Shared RADIUS server list used by all MX ports in the network that have '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Maximum 3 servers"
+                      }
+                    }
+                  },
+                  "maxItems": 100,
+                  "description": "List of network groupings and their shared MX port RADIUS servers. Each item is the network grouping itself. Maximum 100 networks per page, with at most 3 servers per network, for a maximum response shape of 300 server objects per page. Server rows are loaded after pagination with one lookup scoped to the page network IDs, server type, and optional serverIds. Focused Rails controller benchmarking measured p99 0.8199 seconds across 8 runs for this maximum page shape"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "The total number of matching networks. Range: 0 or greater"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "description": "The number of matching networks available on subsequent pages. Range: 0 or greater"
+                            }
+                          },
+                          "description": "Total and remaining counts for network entries in this paginated collection"
+                        }
+                      },
+                      "description": "Counts for networks returned by this paginated collection"
+                    }
+                  },
+                  "description": "Pagination metadata for the shared MX port RADIUS server network list"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "networkId": "N_24329156",
+                    "name": "Main Office",
+                    "servers": [
+                      {
+                        "id": "101",
+                        "host": "192.0.2.1",
+                        "port": 1812
+                      }
+                    ]
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 1,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List shared MX port RADIUS servers by network",
+        "tags": [
+          "appliance",
+          "configure",
+          "ports",
+          "radius",
+          "servers",
+          "byNetwork"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/appliance/routing/vrfs/settings": {
       "get": {
         "description": "Return the VRF setting for an organization.",
@@ -136741,13 +138149,13 @@
                       "usageBytes": 1000,
                       "outage": [
                         {
-                          "ts": 1784095260,
+                          "ts": 1784700060,
                           "isConnected": true
                         }
                       ],
                       "usageIntervals": [
                         {
-                          "ts": 1784095260,
+                          "ts": 1784700060,
                           "latency": 35.3,
                           "loss": {
                             "percentage": 50
@@ -141431,65 +142839,6 @@
         "x-release-stage": "beta"
       }
     },
-    "/organizations/{organizationId}/assistant/queryLimits": {
-      "get": {
-        "description": "Get query limits for the AI assistant for this organization.",
-        "operationId": "getOrganizationAssistantQueryLimits",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "description": "Organization ID",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "deepAgent": {
-                  "type": "object",
-                  "properties": {
-                    "used": {
-                      "type": "integer",
-                      "description": "Number of queries used in the current period."
-                    },
-                    "limit": {
-                      "type": "integer",
-                      "description": "Maximum number of queries allowed in the current period."
-                    },
-                    "resetsAt": {
-                      "type": "integer",
-                      "description": "Unix timestamp (seconds) when the current period resets."
-                    }
-                  },
-                  "description": "Query limits for the deep agent."
-                }
-              }
-            },
-            "examples": {
-              "application/json": {
-                "deepAgent": {
-                  "used": 5,
-                  "limit": 10,
-                  "resetsAt": 1716123456
-                }
-              }
-            }
-          }
-        },
-        "summary": "Get query limits for the AI assistant for this organization.",
-        "tags": [
-          "assistant",
-          "configure",
-          "queryLimits"
-        ],
-        "x-release-stage": "beta"
-      }
-    },
     "/organizations/{organizationId}/assurance/alerts": {
       "get": {
         "description": "Return all health alerts for an organization",
@@ -144097,6 +145446,1086 @@
           "alerts",
           "overview",
           "historical"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/assurance/alerts/profiles": {
+      "get": {
+        "description": "List the alert profiles for this organization",
+        "operationId": "getOrganizationAssuranceAlertsProfiles",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "profileId": {
+                        "type": "string",
+                        "description": "id of this alert profile"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Name of this alert profile"
+                      },
+                      "organizationId": {
+                        "type": "string",
+                        "description": "Organization ID"
+                      },
+                      "networkIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Networks associated with this alert profile"
+                      },
+                      "alertTypes": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Alert types associated with this alert profile"
+                      },
+                      "alertScheduleId": {
+                        "type": "string",
+                        "description": "ID of the alert schedule associated with this profile",
+                        "x-nullable": true
+                      },
+                      "configuration": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the alerts are enabled"
+                          },
+                          "maintenance": {
+                            "type": "object",
+                            "properties": {
+                              "silencing": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether silencing is enabled in maintenance mode"
+                                  }
+                                },
+                                "description": "Silencing configuration for maintenance"
+                              }
+                            },
+                            "description": "Maintenance configuration for this profile"
+                          },
+                          "alertDestinations": {
+                            "type": "object",
+                            "properties": {
+                              "email": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether or not the email channel is enabled for this alert type"
+                                  },
+                                  "recipients": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "List of email addresses to receive the notifications"
+                                  }
+                                },
+                                "description": "Email channel configuration"
+                              },
+                              "sms": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether or not the sms channel is enabled for this alert type"
+                                  },
+                                  "recipients": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "description": "List of sms recipient phone numbers to receive the notifications"
+                                  }
+                                },
+                                "description": "SMS channel configuration"
+                              },
+                              "webhook": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether or not the webhook channel is enabled for this alert type"
+                                  },
+                                  "recipients": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string",
+                                          "description": "The webhook http server ID"
+                                        },
+                                        "name": {
+                                          "type": "string",
+                                          "description": "The webhook recipient name"
+                                        },
+                                        "url": {
+                                          "type": "string",
+                                          "description": "The webhook recipient target URL"
+                                        }
+                                      }
+                                    },
+                                    "description": "List of webhook recipients"
+                                  }
+                                },
+                                "description": "Webhook channel configuration"
+                              }
+                            },
+                            "description": "List of alert channels and destinations for the alert type"
+                          }
+                        },
+                        "description": "Alert configuration for this profile"
+                      }
+                    }
+                  },
+                  "description": "Profiles for this organization"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total count of profiles"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "The number of items in the dataset that are available on subsequent pages"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "remaining"
+                          ],
+                          "description": "Metadata relevant to the paginated dataset"
+                        }
+                      },
+                      "required": [
+                        "items"
+                      ],
+                      "description": "Metadata relevant to the paginated dataset"
+                    }
+                  },
+                  "required": [
+                    "counts"
+                  ],
+                  "description": "Metadata relevant to the paginated dataset"
+                }
+              },
+              "required": [
+                "items",
+                "meta"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "profileId": "12761247612764",
+                    "name": "alert_profile_1",
+                    "organizationId": "1234567898",
+                    "networkIds": [
+                      "N_123657123",
+                      "N_9876143"
+                    ],
+                    "alertTypes": [
+                      "unreachable",
+                      "vlan_mismatch"
+                    ],
+                    "alertScheduleId": "9876543210",
+                    "configuration": {
+                      "enabled": true,
+                      "maintenance": {
+                        "silencing": {
+                          "enabled": true
+                        }
+                      },
+                      "alertDestinations": {
+                        "email": {
+                          "enabled": true,
+                          "recipients": [
+                            "miles@meraki.net"
+                          ]
+                        },
+                        "sms": {
+                          "enabled": true,
+                          "recipients": [
+                            "+1 (999) 999-1111"
+                          ]
+                        },
+                        "webhook": {
+                          "enabled": true,
+                          "recipients": [
+                            {
+                              "id": "aHR0cHM6Ly9nb29nbGUuY29tL2Zha2U=",
+                              "name": "Meraki",
+                              "url": "http://www.example.org"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 1,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List the alert profiles for this organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "post": {
+        "description": "Create an alert profile",
+        "operationId": "createOrganizationAssuranceAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationAssuranceAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the alert profile"
+                },
+                "networkIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks associated with this alert profile"
+                },
+                "alertTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Alert types associated with this alert profile"
+                },
+                "alertScheduleId": {
+                  "type": "string",
+                  "x-nullable": true,
+                  "description": "ID of the alert schedule associated with this profile"
+                },
+                "configuration": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the alerts are enabled"
+                    },
+                    "maintenance": {
+                      "type": "object",
+                      "properties": {
+                        "silencing": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether silencing is enabled in maintenance mode"
+                            }
+                          },
+                          "description": "Silencing configuration for maintenance"
+                        }
+                      },
+                      "description": "Maintenance configuration for this profile"
+                    },
+                    "alertDestinations": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the email channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of email addresses to receive the notifications"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "Email channel configuration"
+                        },
+                        "sms": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the sms channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of sms recipient phone numbers to receive the notifications"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "SMS channel configuration"
+                        },
+                        "webhook": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the webhook channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of webhook recipient ids"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "Webhook channel configuration"
+                        }
+                      },
+                      "required": [
+                        "email",
+                        "webhook"
+                      ],
+                      "description": "List of alert channels and destinations for the alert type"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "alertDestinations"
+                  ],
+                  "description": "Alert configuration for this profile"
+                }
+              },
+              "example": {
+                "name": "alert_profile_1",
+                "networkIds": [
+                  "N_123657123",
+                  "N_9876143"
+                ],
+                "alertTypes": [
+                  "unreachable",
+                  "vlan_mismatch"
+                ],
+                "alertScheduleId": "9876543210",
+                "configuration": {
+                  "enabled": true,
+                  "maintenance": {
+                    "silencing": {
+                      "enabled": true
+                    }
+                  },
+                  "alertDestinations": {
+                    "email": {
+                      "enabled": true,
+                      "recipients": [
+                        "miles@meraki.net"
+                      ]
+                    },
+                    "sms": {
+                      "enabled": true,
+                      "recipients": [
+                        "+1 (999) 999-1111"
+                      ]
+                    },
+                    "webhook": {
+                      "enabled": true,
+                      "recipients": [
+                        "aHR0cHM6Ly9nb29nbGUuY29tL2Zha2U="
+                      ]
+                    }
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "networkIds",
+                "alertTypes",
+                "configuration"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "id of this alert profile"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of this alert profile"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "networkIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks associated with this alert profile"
+                },
+                "alertTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Alert types associated with this alert profile"
+                },
+                "alertScheduleId": {
+                  "type": "string",
+                  "description": "ID of the alert schedule associated with this profile",
+                  "x-nullable": true
+                },
+                "configuration": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the alerts are enabled"
+                    },
+                    "maintenance": {
+                      "type": "object",
+                      "properties": {
+                        "silencing": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether silencing is enabled in maintenance mode"
+                            }
+                          },
+                          "description": "Silencing configuration for maintenance"
+                        }
+                      },
+                      "description": "Maintenance configuration for this profile"
+                    },
+                    "alertDestinations": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the email channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of email addresses to receive the notifications"
+                            }
+                          },
+                          "description": "Email channel configuration"
+                        },
+                        "sms": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the sms channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of sms recipient phone numbers to receive the notifications"
+                            }
+                          },
+                          "description": "SMS channel configuration"
+                        },
+                        "webhook": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the webhook channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "The webhook http server ID"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "The webhook recipient name"
+                                  },
+                                  "url": {
+                                    "type": "string",
+                                    "description": "The webhook recipient target URL"
+                                  }
+                                }
+                              },
+                              "description": "List of webhook recipients"
+                            }
+                          },
+                          "description": "Webhook channel configuration"
+                        }
+                      },
+                      "description": "List of alert channels and destinations for the alert type"
+                    }
+                  },
+                  "description": "Alert configuration for this profile"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "12761247612764",
+                "name": "alert_profile_1",
+                "organizationId": "1234567898",
+                "networkIds": [
+                  "N_123657123",
+                  "N_9876143"
+                ],
+                "alertTypes": [
+                  "unreachable",
+                  "vlan_mismatch"
+                ],
+                "alertScheduleId": "9876543210",
+                "configuration": {
+                  "enabled": true,
+                  "maintenance": {
+                    "silencing": {
+                      "enabled": true
+                    }
+                  },
+                  "alertDestinations": {
+                    "email": {
+                      "enabled": true,
+                      "recipients": [
+                        "miles@meraki.net"
+                      ]
+                    },
+                    "sms": {
+                      "enabled": true,
+                      "recipients": [
+                        "+1 (999) 999-1111"
+                      ]
+                    },
+                    "webhook": {
+                      "enabled": true,
+                      "recipients": [
+                        {
+                          "id": "aHR0cHM6Ly9nb29nbGUuY29tL2Zha2U=",
+                          "name": "Meraki",
+                          "url": "http://www.example.org"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create an alert profile",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/assurance/alerts/profiles/{profileId}": {
+      "put": {
+        "description": "Update an alert profile",
+        "operationId": "updateOrganizationAssuranceAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationAssuranceAlertsProfile",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the alert profile"
+                },
+                "networkIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks associated with this alert profile"
+                },
+                "alertTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Alert types associated with this alert profile"
+                },
+                "alertScheduleId": {
+                  "type": "string",
+                  "x-nullable": true,
+                  "description": "ID of the alert schedule associated with this profile"
+                },
+                "configuration": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the alerts are enabled"
+                    },
+                    "maintenance": {
+                      "type": "object",
+                      "properties": {
+                        "silencing": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether silencing is enabled in maintenance mode"
+                            }
+                          },
+                          "description": "Silencing configuration for maintenance"
+                        }
+                      },
+                      "description": "Maintenance configuration for this profile"
+                    },
+                    "alertDestinations": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the email channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of email addresses to receive the notifications"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "Email channel configuration"
+                        },
+                        "sms": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the sms channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of sms recipient phone numbers to receive the notifications"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "SMS channel configuration"
+                        },
+                        "webhook": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the webhook channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of webhook recipient ids"
+                            }
+                          },
+                          "required": [
+                            "enabled"
+                          ],
+                          "description": "Webhook channel configuration"
+                        }
+                      },
+                      "required": [
+                        "email",
+                        "webhook"
+                      ],
+                      "description": "List of alert channels and destinations for the alert type"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "alertDestinations"
+                  ],
+                  "description": "Alert configuration for this profile"
+                }
+              },
+              "example": {
+                "name": "alert_profile_1",
+                "networkIds": [
+                  "N_123657123",
+                  "N_9876143"
+                ],
+                "alertTypes": [
+                  "unreachable",
+                  "vlan_mismatch"
+                ],
+                "alertScheduleId": "9876543210",
+                "configuration": {
+                  "enabled": true,
+                  "maintenance": {
+                    "silencing": {
+                      "enabled": true
+                    }
+                  },
+                  "alertDestinations": {
+                    "email": {
+                      "enabled": true,
+                      "recipients": [
+                        "miles@meraki.net"
+                      ]
+                    },
+                    "sms": {
+                      "enabled": true,
+                      "recipients": [
+                        "+1 (999) 999-1111"
+                      ]
+                    },
+                    "webhook": {
+                      "enabled": true,
+                      "recipients": [
+                        "aHR0cHM6Ly9nb29nbGUuY29tL2Zha2U="
+                      ]
+                    }
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "networkIds",
+                "alertTypes",
+                "configuration"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "profileId": {
+                  "type": "string",
+                  "description": "id of this alert profile"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name of this alert profile"
+                },
+                "organizationId": {
+                  "type": "string",
+                  "description": "Organization ID"
+                },
+                "networkIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Networks associated with this alert profile"
+                },
+                "alertTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Alert types associated with this alert profile"
+                },
+                "alertScheduleId": {
+                  "type": "string",
+                  "description": "ID of the alert schedule associated with this profile",
+                  "x-nullable": true
+                },
+                "configuration": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the alerts are enabled"
+                    },
+                    "maintenance": {
+                      "type": "object",
+                      "properties": {
+                        "silencing": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether silencing is enabled in maintenance mode"
+                            }
+                          },
+                          "description": "Silencing configuration for maintenance"
+                        }
+                      },
+                      "description": "Maintenance configuration for this profile"
+                    },
+                    "alertDestinations": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the email channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of email addresses to receive the notifications"
+                            }
+                          },
+                          "description": "Email channel configuration"
+                        },
+                        "sms": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the sms channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of sms recipient phone numbers to receive the notifications"
+                            }
+                          },
+                          "description": "SMS channel configuration"
+                        },
+                        "webhook": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Whether or not the webhook channel is enabled for this alert type"
+                            },
+                            "recipients": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "The webhook http server ID"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "The webhook recipient name"
+                                  },
+                                  "url": {
+                                    "type": "string",
+                                    "description": "The webhook recipient target URL"
+                                  }
+                                }
+                              },
+                              "description": "List of webhook recipients"
+                            }
+                          },
+                          "description": "Webhook channel configuration"
+                        }
+                      },
+                      "description": "List of alert channels and destinations for the alert type"
+                    }
+                  },
+                  "description": "Alert configuration for this profile"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "profileId": "12761247612764",
+                "name": "alert_profile_1",
+                "organizationId": "1234567898",
+                "networkIds": [
+                  "N_123657123",
+                  "N_9876143"
+                ],
+                "alertTypes": [
+                  "unreachable",
+                  "vlan_mismatch"
+                ],
+                "alertScheduleId": "9876543210",
+                "configuration": {
+                  "enabled": true,
+                  "maintenance": {
+                    "silencing": {
+                      "enabled": true
+                    }
+                  },
+                  "alertDestinations": {
+                    "email": {
+                      "enabled": true,
+                      "recipients": [
+                        "miles@meraki.net"
+                      ]
+                    },
+                    "sms": {
+                      "enabled": true,
+                      "recipients": [
+                        "+1 (999) 999-1111"
+                      ]
+                    },
+                    "webhook": {
+                      "enabled": true,
+                      "recipients": [
+                        {
+                          "id": "aHR0cHM6Ly9nb29nbGUuY29tL2Zha2U=",
+                          "name": "Meraki",
+                          "url": "http://www.example.org"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an alert profile",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
+        ]
+      },
+      "delete": {
+        "description": "Delete an alert profile for this organization",
+        "operationId": "deleteOrganizationAssuranceAlertsProfile",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "profileId",
+            "in": "path",
+            "description": "Profile ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation"
+          }
+        },
+        "summary": "Delete an alert profile for this organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "alerts",
+          "profiles"
         ]
       }
     },
@@ -178342,7 +180771,6 @@
                           "type": {
                             "type": "string",
                             "enum": [
-                              "catalyst_radsec",
                               "openroaming",
                               "radsec",
                               "zigbee"
@@ -178617,7 +181045,6 @@
                     "type": {
                       "type": "string",
                       "enum": [
-                        "catalyst_radsec",
                         "openroaming",
                         "radsec",
                         "zigbee"
@@ -178912,7 +181339,6 @@
                     "type": {
                       "type": "string",
                       "enum": [
-                        "catalyst_radsec",
                         "openroaming",
                         "radsec",
                         "zigbee"
@@ -182782,7 +185208,7 @@
                       "Alert only",
                       "Enforce"
                     ],
-                    "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                    "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                   },
                   "accessPolicyType": {
                     "type": "string",
@@ -183493,7 +185919,7 @@
                     "Alert only",
                     "Enforce"
                   ],
-                  "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                  "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                 },
                 "accessPolicyType": {
                   "type": "string",
@@ -184064,7 +186490,7 @@
                     "Alert only",
                     "Enforce"
                   ],
-                  "description": "The action to take when Unidirectional Link is detected (Alert only, Enforce). Default configuration is Alert only."
+                  "description": "The action to take when Unidirectional Link is detected. For monitor-only Catalyst ports, N/A indicates UDLD is not configured and Disabled indicates UDLD is explicitly disabled. Default configuration is Alert only."
                 },
                 "accessPolicyType": {
                   "type": "string",
@@ -188462,7 +190888,6 @@
             "items": {
               "type": "string",
               "enum": [
-                "catalyst_radsec",
                 "openroaming",
                 "radsec",
                 "zigbee"
@@ -188533,7 +190958,6 @@
                           "type": {
                             "type": "string",
                             "enum": [
-                              "catalyst_radsec",
                               "openroaming",
                               "radsec",
                               "zigbee"
@@ -193579,7 +196003,8 @@
                                 "status",
                                 "scheduler"
                               ],
-                              "description": "Details about the last software update for the product type"
+                              "description": "Details about the last software update for the product type",
+                              "x-nullable": true
                             },
                             "nextUpdate": {
                               "type": "object",
@@ -193699,12 +196124,15 @@
                                 "status",
                                 "scheduler"
                               ],
-                              "description": "Details about the next software update for the product type"
+                              "description": "Details about the next software update for the product type",
+                              "x-nullable": true
                             }
                           },
                           "required": [
                             "productType",
-                            "currentVersion"
+                            "currentVersion",
+                            "lastUpdate",
+                            "nextUpdate"
                           ]
                         },
                         "description": "A list of product types present in the network"
@@ -199339,6 +201767,190 @@
           "iam",
           "admins",
           "accessGroups"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/iam/admins/administrators/logins/history": {
+      "get": {
+        "description": "List administrator login attempts for the organization (Dashboard Login Attempts)",
+        "operationId": "getOrganizationIamAdminsAdministratorsLoginsHistory",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 90 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 90 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "maximum": 7776000,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 90 days. The default is 7 days."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 10 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sorted order of entries. Order options are 'ascending' and 'descending'. Default is 'descending'."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "description": "Email address"
+                      },
+                      "sourceIp": {
+                        "type": "string",
+                        "description": "IP address"
+                      },
+                      "location": {
+                        "type": "string",
+                        "description": "Approximate location derived from an IP geolocation service, may be inaccurate"
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "CCI",
+                          "CUI",
+                          "SAML",
+                          "login",
+                          "re-auth",
+                          "two factor auth"
+                        ],
+                        "description": "Auth type: login, SAML, CUI, CCI, two factor auth, or re-auth"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "failed",
+                          "succeeded"
+                        ],
+                        "description": "Attempt outcome: succeeded or failed"
+                      },
+                      "ts": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp of the attempt (UTC)"
+                      }
+                    }
+                  },
+                  "description": "Login attempt"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "The total number of available objects"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "The number of objects that are available on subsequent pages"
+                            }
+                          },
+                          "description": "Counts relating to the paginated items"
+                        }
+                      },
+                      "description": "Counts relating to the paginated dataset"
+                    }
+                  },
+                  "description": "Metadata relevant to the paginated dataset"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "email": "miles@meraki.com",
+                    "sourceIp": "192.0.2.1",
+                    "location": "San Francisco, CA",
+                    "type": "login",
+                    "status": "succeeded",
+                    "ts": "2018-02-11T00:00:00Z"
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 100,
+                      "remaining": 10
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List administrator login attempts for the organization (Dashboard Login Attempts)",
+        "tags": [
+          "organizations",
+          "monitor",
+          "iam",
+          "admins",
+          "administrators",
+          "logins",
+          "history"
         ],
         "x-release-stage": "beta"
       }
@@ -212542,7 +215154,7 @@
             "type": "integer",
             "name": "perPage",
             "in": "query",
-            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+            "description": "The number of entries per page returned. Acceptable range is 3 - 3000. Default is 1000."
           },
           {
             "type": "string",
@@ -240140,6 +242752,16 @@
                     },
                     "description": "Network device information"
                   },
+                  "permissions": {
+                    "type": "object",
+                    "properties": {
+                      "canWrite": {
+                        "type": "boolean",
+                        "description": "Whether the current user can write this network"
+                      }
+                    },
+                    "description": "Current user's network-level permissions"
+                  },
                   "productTypes": {
                     "type": "array",
                     "items": {
@@ -240199,6 +242821,9 @@
                         "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000"
                       }
                     ]
+                  },
+                  "permissions": {
+                    "canWrite": true
                   },
                   "productTypes": [
                     "appliance",
@@ -240744,7 +243369,11 @@
                 "properties": {
                   "id": {
                     "type": "string",
-                    "description": "Config template id"
+                    "description": "Legacy switch template ID; this is the raw switch node group ID"
+                  },
+                  "configTemplateId": {
+                    "type": "string",
+                    "description": "Canonical config template ID"
                   },
                   "name": {
                     "type": "string",
@@ -240757,6 +243386,7 @@
               "application/json": [
                 {
                   "id": "4567",
+                  "configTemplateId": "N_4567",
                   "name": "A Simple Switch Template"
                 }
               ]
@@ -241264,13 +243894,21 @@
                 },
                 "templateNodeGroupId": {
                   "type": "string",
-                  "description": "Destination template network ID"
+                  "description": "Canonical destination configuration template ID, as returned by getOrganizationConfigTemplates. Legacy numeric switch node group IDs are also accepted"
                 }
               },
               "example": {
-
-              }
-            }
+                "profileIds": [
+                  "1234"
+                ],
+                "templateNodeGroupId": "N_4567"
+              },
+              "required": [
+                "profileIds",
+                "templateNodeGroupId"
+              ]
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -241288,7 +243926,7 @@
                 },
                 "templateNodeGroupId": {
                   "type": "string",
-                  "description": "Destination template network ID"
+                  "description": "Destination config template ID as provided in the request"
                 },
                 "clonedProfileIds": {
                   "type": "array",
@@ -241304,7 +243942,7 @@
                 "profileIds": [
                   "1234"
                 ],
-                "templateNodeGroupId": "4567",
+                "templateNodeGroupId": "N_4567",
                 "clonedProfileIds": [
                   "1234"
                 ]
@@ -273740,7 +276378,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-06-15T08:01:19Z"
+                    "lastEnabledAt": "2026-06-22T08:01:21Z"
                   }
                 }
               ]
@@ -274949,7 +277587,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-06-15T08:01:19Z"
+                      "lastEnabledAt": "2026-06-22T08:01:21Z"
                     }
                   }
                 ],
@@ -276462,6 +279100,189 @@
         ]
       }
     },
+    "/organizations/{organizationId}/wireless/ssids/owe/byNetwork": {
+      "get": {
+        "description": "Returns an array of objects, each containing OWE transition pairs for the corresponding network",
+        "operationId": "getOrganizationWirelessSsidsOweByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 1000."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter OWE transition configuration by Network Id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The network id"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The network name"
+                          }
+                        },
+                        "description": "The network information"
+                      },
+                      "transitions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "ssids": {
+                              "type": "object",
+                              "properties": {
+                                "legacy": {
+                                  "type": "object",
+                                  "properties": {
+                                    "number": {
+                                      "type": "integer",
+                                      "description": "SSID number"
+                                    }
+                                  },
+                                  "description": "The legacy (Open) SSID"
+                                },
+                                "encrypted": {
+                                  "type": "object",
+                                  "properties": {
+                                    "number": {
+                                      "type": "integer",
+                                      "description": "SSID number"
+                                    }
+                                  },
+                                  "description": "The encrypted (OWE) SSID"
+                                }
+                              },
+                              "description": "The paired SSIDs in this transition"
+                            }
+                          }
+                        },
+                        "description": "OWE transition pairs for the network"
+                      }
+                    }
+                  },
+                  "description": "The paginated dataset"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "The total number of items in the dataset"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "The number of items in the dataset that are available on subsequent pages"
+                            }
+                          },
+                          "description": "Counts relating to the paginated items"
+                        }
+                      },
+                      "description": "Counts relating to the paginated dataset"
+                    }
+                  },
+                  "description": "Metadata relating to the paginated dataset"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "network": {
+                      "id": "N_1234",
+                      "name": "MR wireless 1"
+                    },
+                    "transitions": [
+                      {
+                        "ssids": {
+                          "legacy": {
+                            "number": 2
+                          },
+                          "encrypted": {
+                            "number": 0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 100,
+                      "remaining": 25
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns an array of objects, each containing OWE transition pairs for the corresponding network",
+        "tags": [
+          "wireless",
+          "configure",
+          "ssids",
+          "owe",
+          "byNetwork"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/wireless/ssids/policies/clientExclusion/bySsid": {
       "get": {
         "description": "Returns an array of objects, each containing client exclusion enablement statuses for one SSID",
@@ -276510,11 +279331,14 @@
           {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14
             },
+            "maxItems": 15,
             "name": "ssidNumbers",
             "in": "query",
-            "description": "Optional parameter to filter by SSID numbers."
+            "description": "Optional parameter to filter by SSID numbers. Valid values are 0-14. Maximum 15 SSID numbers."
           }
         ],
         "responses": {
@@ -276729,11 +279553,14 @@
           {
             "type": "array",
             "items": {
-              "type": "integer"
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14
             },
+            "maxItems": 15,
             "name": "ssidNumbers",
             "in": "query",
-            "description": "Optional parameter to filter by SSID numbers."
+            "description": "Optional parameter to filter by SSID numbers. Valid values are 0-14. Maximum 15 SSID numbers."
           }
         ],
         "responses": {
@@ -289012,6 +291839,9 @@
       "name": "loginSecurity"
     },
     {
+      "name": "logins"
+    },
+    {
       "name": "logs"
     },
     {
@@ -289195,6 +292025,9 @@
       "name": "overviews"
     },
     {
+      "name": "owe"
+    },
+    {
       "name": "package"
     },
     {
@@ -289328,9 +292161,6 @@
     },
     {
       "name": "qualityRetentionProfiles"
-    },
-    {
-      "name": "queryLimits"
     },
     {
       "name": "queues"
@@ -290088,6 +292918,24 @@
       "group": "Appliance ssid",
       "summary": "Update the attributes of an MX SSID",
       "resource": "/networks/{networkId}/appliance/ssids/{number}",
+      "operation": "update"
+    },
+    {
+      "group": "Assurance/actions/alerts/profile",
+      "summary": "Create an alert profile",
+      "resource": "/organizations/{organizationId}/assurance/alerts/profiles",
+      "operation": "create"
+    },
+    {
+      "group": "Assurance/actions/alerts/profile",
+      "summary": "Delete an alert profile for this organization",
+      "resource": "/organizations/{organizationId}/assurance/alerts/profiles/{profileId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Assurance/actions/alerts/profile",
+      "summary": "Update an alert profile",
+      "resource": "/organizations/{organizationId}/assurance/alerts/profiles/{profileId}",
       "operation": "update"
     },
     {
@@ -291690,6 +294538,24 @@
       "group": "Mx port",
       "summary": "Update configurations for an appliance's specified port",
       "resource": "/devices/{serial}/appliance/interfaces/ports/{number}",
+      "operation": "update"
+    },
+    {
+      "group": "Mx port radius server",
+      "summary": "Create a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. A network can have at most 3 shared servers. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "resource": "/networks/{networkId}/appliance/ports/radius/servers",
+      "operation": "create"
+    },
+    {
+      "group": "Mx port radius server",
+      "summary": "Delete a network-owned shared MX port RADIUS server. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "resource": "/networks/{networkId}/appliance/ports/radius/servers/{serverId}",
+      "operation": "destroy"
+    },
+    {
+      "group": "Mx port radius server",
+      "summary": "Update a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "resource": "/networks/{networkId}/appliance/ports/radius/servers/{serverId}",
       "operation": "update"
     },
     {
