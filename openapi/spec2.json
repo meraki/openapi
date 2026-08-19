@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.73.0-beta.1",
+    "version": "1.73.0-beta.2",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 12 August, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 19 August, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -15554,6 +15554,20 @@
                               "type": "string",
                               "description": "The IP address of the next hop"
                             },
+                            "vlan": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "VLAN ID"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "VLAN name"
+                                }
+                              },
+                              "description": "The VLAN associated with this next hop"
+                            },
                             "vpn": {
                               "type": "object",
                               "properties": {
@@ -15643,6 +15657,10 @@
                       {
                         "number": 1,
                         "address": "10.10.0.1",
+                        "vlan": {
+                          "id": "1",
+                          "name": "Data"
+                        },
                         "vpn": {
                           "peer": {
                             "id": "N_12345678",
@@ -21723,7 +21741,7 @@
                     "routed",
                     "vlan"
                   ],
-                  "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback'. Default is 'vlan'. CS 17.18 or higher is required for 'routed' mode. "
+                  "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback', or 'oob_management'. Default is 'vlan'. IOS XE firmware 17.18 or higher is required for 'routed' mode; IOS XE firmware 26.1.2 or higher is required for 'oob_management' mode."
                 },
                 "subnet": {
                   "type": "string",
@@ -21733,7 +21751,7 @@
                 "switchPortId": {
                   "type": "string",
                   "x-nullable": true,
-                  "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                  "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                 },
                 "interfaceIp": {
                   "type": "string",
@@ -22485,7 +22503,7 @@
                 "switchPortId": {
                   "type": "string",
                   "x-nullable": true,
-                  "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                  "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                 },
                 "interfaceIp": {
                   "type": "string",
@@ -60046,6 +60064,32 @@
                         }
                       },
                       "description": "The Switch network to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the Catalyst Version being upgraded to"
+                                },
+                                "shortName": {
+                                  "type": "string",
+                                  "description": "Catalyst firmware version short name"
+                                }
+                              },
+                              "description": "Details of the version the device will upgrade to"
+                            }
+                          },
+                          "description": "Details of the next firmware upgrade"
+                        }
+                      },
+                      "description": "The Catalyst Switch network to be updated"
                     }
                   },
                   "description": "The network devices to be updated"
@@ -60142,6 +60186,14 @@
                       "toVersion": {
                         "id": "1234",
                         "shortName": "MS 15.2.1"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321",
+                        "shortName": "CS 1.0"
                       }
                     }
                   }
@@ -60359,6 +60411,32 @@
                         }
                       },
                       "description": "The Switch network to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the Catalyst Version being upgraded to"
+                                },
+                                "shortName": {
+                                  "type": "string",
+                                  "description": "Catalyst firmware version short name"
+                                }
+                              },
+                              "description": "Details of the version the device will upgrade to"
+                            }
+                          },
+                          "description": "Details of the next firmware upgrade"
+                        }
+                      },
+                      "description": "The Catalyst Switch network to be updated"
                     }
                   },
                   "description": "The network devices to be updated"
@@ -60455,6 +60533,14 @@
                       "toVersion": {
                         "id": "1234",
                         "shortName": "MS 15.2.1"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321",
+                        "shortName": "CS 1.0"
                       }
                     }
                   }
@@ -60511,6 +60597,22 @@
             "schema": {
               "type": "object",
               "properties": {
+                "products": {
+                  "type": "object",
+                  "properties": {
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "description": "Settings for the next switch Catalyst upgrade"
+                        }
+                      },
+                      "description": "Settings for the switch Catalyst network being upgraded"
+                    }
+                  },
+                  "description": "Contains firmware upgrade settings"
+                },
                 "stages": {
                   "type": "array",
                   "items": {
@@ -60548,6 +60650,11 @@
                 }
               },
               "example": {
+                "products": {
+                  "switchCatalyst": {
+
+                  }
+                },
                 "stages": [
                   {
                     "group": {
@@ -60600,6 +60707,32 @@
                         }
                       },
                       "description": "The Switch network to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the Catalyst Version being upgraded to"
+                                },
+                                "shortName": {
+                                  "type": "string",
+                                  "description": "Catalyst firmware version short name"
+                                }
+                              },
+                              "description": "Details of the version the device will upgrade to"
+                            }
+                          },
+                          "description": "Details of the next firmware upgrade"
+                        }
+                      },
+                      "description": "The Catalyst Switch network to be updated"
                     }
                   },
                   "description": "The network devices to be updated"
@@ -60696,6 +60829,14 @@
                       "toVersion": {
                         "id": "1234",
                         "shortName": "MS 15.2.1"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321",
+                        "shortName": "CS 1.0"
                       }
                     }
                   }
@@ -60783,6 +60924,32 @@
                         }
                       },
                       "description": "The Switch network to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the Catalyst Version being upgraded to"
+                                },
+                                "shortName": {
+                                  "type": "string",
+                                  "description": "Catalyst firmware version short name"
+                                }
+                              },
+                              "description": "Details of the version the device will upgrade to"
+                            }
+                          },
+                          "description": "Details of the next firmware upgrade"
+                        }
+                      },
+                      "description": "The Catalyst Switch network to be updated"
                     }
                   },
                   "description": "The network devices to be updated"
@@ -60879,6 +61046,14 @@
                       "toVersion": {
                         "id": "1234",
                         "shortName": "MS 15.2.1"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321",
+                        "shortName": "CS 1.0"
                       }
                     }
                   }
@@ -61061,6 +61236,32 @@
                         }
                       },
                       "description": "The Switch network to be updated"
+                    },
+                    "switchCatalyst": {
+                      "type": "object",
+                      "properties": {
+                        "nextUpgrade": {
+                          "type": "object",
+                          "properties": {
+                            "toVersion": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "Id of the Catalyst Version being upgraded to"
+                                },
+                                "shortName": {
+                                  "type": "string",
+                                  "description": "Catalyst firmware version short name"
+                                }
+                              },
+                              "description": "Details of the version the device will upgrade to"
+                            }
+                          },
+                          "description": "Details of the next firmware upgrade"
+                        }
+                      },
+                      "description": "The Catalyst Switch network to be updated"
                     }
                   },
                   "description": "The network devices to be updated"
@@ -61157,6 +61358,14 @@
                       "toVersion": {
                         "id": "1234",
                         "shortName": "MS 15.2.1"
+                      }
+                    }
+                  },
+                  "switchCatalyst": {
+                    "nextUpgrade": {
+                      "toVersion": {
+                        "id": "4321",
+                        "shortName": "CS 1.0"
                       }
                     }
                   }
@@ -83884,6 +84093,11 @@
                   "type": "boolean",
                   "description": "Boolean value to enable or disable AMI configuration. If enabled, VLAN and protocols must be set"
                 },
+                "useOobMgmt": {
+                  "type": "boolean",
+                  "x-release-stage": "beta",
+                  "description": "Boolean value to use out-of-band management interface when configured"
+                },
                 "vlanId": {
                   "type": "integer",
                   "description": "Alternate management VLAN, must be between 1 and 4094"
@@ -83932,6 +84146,7 @@
               },
               "example": {
                 "enabled": true,
+                "useOobMgmt": false,
                 "vlanId": 100,
                 "protocols": [
                   "radius",
@@ -92512,7 +92727,7 @@
                     "routed",
                     "vlan"
                   ],
-                  "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback'. Default is 'vlan'. CS 17.18 or higher is required for 'routed' mode. "
+                  "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback', or 'oob_management'. Default is 'vlan'. IOS XE firmware 17.18 or higher is required for 'routed' mode; IOS XE firmware 26.1.2 or higher is required for 'oob_management' mode."
                 },
                 "subnet": {
                   "type": "string",
@@ -92522,7 +92737,7 @@
                 "switchPortId": {
                   "type": "string",
                   "x-nullable": true,
-                  "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                  "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                 },
                 "interfaceIp": {
                   "type": "string",
@@ -93290,7 +93505,7 @@
                 "switchPortId": {
                   "type": "string",
                   "x-nullable": true,
-                  "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                  "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                 },
                 "interfaceIp": {
                   "type": "string",
@@ -105267,7 +105482,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-07-12T08:01:24Z"
+                  "lastEnabledAt": "2026-07-19T08:01:17Z"
                 }
               }
             }
@@ -105559,7 +105774,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-07-12T08:01:24Z"
+                  "lastEnabledAt": "2026-07-19T08:01:17Z"
                 }
               }
             }
@@ -106441,7 +106656,7 @@
                     }
                   },
                   "description": "802.11be settings",
-                  "x-release-stage": "beta"
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -107785,7 +108000,7 @@
                       "description": "802.11be settings for SSIDs"
                     }
                   },
-                  "x-release-stage": "beta",
+                  "x-release-stage": "general_availability",
                   "description": "802.11be settings"
                 }
               },
@@ -108982,7 +109197,7 @@
                     }
                   },
                   "description": "802.11be settings",
-                  "x-release-stage": "beta"
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -110343,7 +110558,7 @@
                       "description": "802.11be settings for SSIDs"
                     }
                   },
-                  "x-release-stage": "beta",
+                  "x-release-stage": "general_availability",
                   "description": "802.11be settings"
                 }
               },
@@ -111537,7 +111752,7 @@
                     }
                   },
                   "description": "802.11be settings",
-                  "x-release-stage": "beta"
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -112779,7 +112994,7 @@
                     }
                   },
                   "description": "802.11be settings",
-                  "x-release-stage": "beta"
+                  "x-release-stage": "general_availability"
                 }
               }
             },
@@ -139480,13 +139695,13 @@
                       "usageBytes": 1000,
                       "outage": [
                         {
-                          "ts": 1786514462,
+                          "ts": 1787119257,
                           "isConnected": true
                         }
                       ],
                       "usageIntervals": [
                         {
-                          "ts": 1786514462,
+                          "ts": 1787119257,
                           "latency": 35.3,
                           "loss": {
                             "percentage": 50
@@ -152123,6 +152338,10 @@
                                 }
                               },
                               "description": "Failed network server attempts"
+                            },
+                            "latencyMs": {
+                              "type": "integer",
+                              "description": "Average latency in milliseconds"
                             }
                           }
                         },
@@ -152182,7 +152401,8 @@
                         "failures": {
                           "count": 2,
                           "percent": 1.27
-                        }
+                        },
+                        "latencyMs": 25
                       }
                     ]
                   }
@@ -152722,6 +152942,70 @@
           "organizations",
           "configure",
           "productAnnouncements"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/assurance/rca/defaultContent/{alertType}": {
+      "get": {
+        "description": "Return default RCA content for an Assurance alert type",
+        "operationId": "getOrganizationAssuranceRcaDefaultContent",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "alertType",
+            "in": "path",
+            "description": "Alert type",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Default RCA content title"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "Default RCA plain text content"
+                },
+                "markdown": {
+                  "type": "string",
+                  "description": "Default RCA markdown content"
+                }
+              },
+              "required": [
+                "title",
+                "text",
+                "markdown"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "title": "aaa new-model not enabled",
+                "text": "Alert triggers\n\nThis is a Configuration Source: Device error.",
+                "markdown": "## Alert triggers\n\nThis is a Configuration Source: Device error."
+              }
+            }
+          }
+        },
+        "summary": "Return default RCA content for an Assurance alert type",
+        "tags": [
+          "organizations",
+          "monitor",
+          "rca",
+          "defaultContent"
         ],
         "x-release-stage": "beta"
       }
@@ -165271,16 +165555,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -165663,16 +165937,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -166077,16 +166341,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -166514,16 +166768,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -166959,16 +167203,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -167378,16 +167612,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -167813,16 +168037,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -168071,16 +168285,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -168498,16 +168702,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -168956,16 +169150,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -169275,16 +169459,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -169590,16 +169764,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -169927,16 +170091,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -170304,16 +170458,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -170669,16 +170813,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -171011,16 +171145,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -171369,16 +171493,6 @@
           },
           {
             "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
-          },
-          {
-            "type": "string",
             "name": "t0",
             "in": "query",
             "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
@@ -171627,16 +171741,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -171977,16 +172081,6 @@
             "name": "bands",
             "in": "query",
             "description": "Filter results by band."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -172355,16 +172449,6 @@
             "name": "subContributor",
             "in": "query",
             "description": "Sub-contributor for which to retrieve insights. If not specified, returns all sub contributor insights."
-          },
-          {
-            "type": "string",
-            "enum": [
-              "A",
-              "B"
-            ],
-            "name": "variant",
-            "in": "query",
-            "description": "Wireless State Machine variant to use."
           },
           {
             "type": "string",
@@ -180466,6 +180550,211 @@
         ]
       }
     },
+    "/organizations/{organizationId}/campusGateway/clusters/tunneling/batchUpdate": {
+      "post": {
+        "description": "Update MCG cluster-network tunnel settings for multiple networks",
+        "operationId": "batchOrganizationCampusGatewayClustersTunnelingUpdate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "batchOrganizationCampusGatewayClustersTunnelingUpdate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cluster": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Cluster ID"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "description": "MCG cluster information"
+                      },
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "description": "Network information"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "encryption": {
+                            "type": "object",
+                            "properties": {
+                              "enabled": {
+                                "type": "boolean",
+                                "description": "Whether or not tunnel traffic should be encrypted"
+                              }
+                            },
+                            "required": [
+                              "enabled"
+                            ],
+                            "description": "Encryption settings of the data plane to be configured"
+                          }
+                        },
+                        "required": [
+                          "encryption"
+                        ],
+                        "description": "Attributes related to the data plane"
+                      }
+                    },
+                    "required": [
+                      "cluster",
+                      "network",
+                      "data"
+                    ]
+                  },
+                  "description": "MCG cluster-network tunnel settings"
+                }
+              },
+              "example": {
+                "items": [
+                  {
+                    "cluster": {
+                      "id": "10"
+                    },
+                    "network": {
+                      "id": "N_1"
+                    },
+                    "data": {
+                      "encryption": {
+                        "enabled": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cluster": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Cluster ID"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "description": "MCG cluster information"
+                      },
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID"
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "description": "Network information"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "encryption": {
+                            "type": "object",
+                            "properties": {
+                              "enabled": {
+                                "type": "boolean",
+                                "description": "Whether or not tunnel traffic should be encrypted"
+                              }
+                            },
+                            "required": [
+                              "enabled"
+                            ],
+                            "description": "Configured encryption settings of the data plane"
+                          }
+                        },
+                        "required": [
+                          "encryption"
+                        ],
+                        "description": "Attributes related to the data plane"
+                      }
+                    },
+                    "required": [
+                      "cluster",
+                      "network",
+                      "data"
+                    ]
+                  },
+                  "description": "Dashboard settings configured between MCG clusters and networks"
+                }
+              },
+              "required": [
+                "items"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "cluster": {
+                      "id": "1205"
+                    },
+                    "network": {
+                      "id": "N_1"
+                    },
+                    "data": {
+                      "encryption": {
+                        "enabled": true
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Update MCG cluster-network tunnel settings for multiple networks",
+        "tags": [
+          "campusGateway",
+          "configure",
+          "clusters",
+          "tunneling"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/organizations/{organizationId}/campusGateway/clusters/tunneling/byCluster/byNetwork": {
       "get": {
         "description": "List all the MCG cluster-network tunnel settings",
@@ -180686,215 +180975,7 @@
           "tunneling",
           "byCluster",
           "byNetwork"
-        ],
-        "x-release-stage": "beta"
-      }
-    },
-    "/organizations/{organizationId}/campusGateway/clusters/tunneling/byCluster/byNetwork/batchUpdate": {
-      "post": {
-        "description": "Update MCG cluster-network tunnel settings for multiple networks",
-        "operationId": "batchOrganizationCampusGatewayClustersTunnelingByClusterByNetworkUpdate",
-        "parameters": [
-          {
-            "name": "organizationId",
-            "in": "path",
-            "description": "Organization ID",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "batchOrganizationCampusGatewayClustersTunnelingByClusterByNetworkUpdate",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "cluster": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Cluster ID"
-                          }
-                        },
-                        "required": [
-                          "id"
-                        ],
-                        "description": "MCG cluster information"
-                      },
-                      "network": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Network ID"
-                          }
-                        },
-                        "required": [
-                          "id"
-                        ],
-                        "description": "Network information"
-                      },
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "encryption": {
-                            "type": "object",
-                            "properties": {
-                              "enabled": {
-                                "type": "boolean",
-                                "description": "Whether or not tunnel traffic should be encrypted"
-                              }
-                            },
-                            "required": [
-                              "enabled"
-                            ],
-                            "description": "Encryption settings of the data plane to be configured"
-                          }
-                        },
-                        "required": [
-                          "encryption"
-                        ],
-                        "description": "Attributes related to the data plane"
-                      }
-                    },
-                    "required": [
-                      "cluster",
-                      "network",
-                      "data"
-                    ]
-                  },
-                  "description": "MCG cluster-network tunnel settings"
-                }
-              },
-              "example": {
-                "items": [
-                  {
-                    "cluster": {
-                      "id": "10"
-                    },
-                    "network": {
-                      "id": "N_1"
-                    },
-                    "data": {
-                      "encryption": {
-                        "enabled": true
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "cluster": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Cluster ID"
-                          }
-                        },
-                        "required": [
-                          "id"
-                        ],
-                        "description": "MCG cluster information"
-                      },
-                      "network": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "Network ID"
-                          }
-                        },
-                        "required": [
-                          "id"
-                        ],
-                        "description": "Network information"
-                      },
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "encryption": {
-                            "type": "object",
-                            "properties": {
-                              "enabled": {
-                                "type": "boolean",
-                                "description": "Whether or not tunnel traffic should be encrypted"
-                              }
-                            },
-                            "required": [
-                              "enabled"
-                            ],
-                            "description": "Configured encryption settings of the data plane"
-                          }
-                        },
-                        "required": [
-                          "encryption"
-                        ],
-                        "description": "Attributes related to the data plane"
-                      }
-                    },
-                    "required": [
-                      "cluster",
-                      "network",
-                      "data"
-                    ]
-                  },
-                  "description": "Dashboard settings configured between MCG clusters and networks"
-                }
-              },
-              "required": [
-                "items"
-              ]
-            },
-            "examples": {
-              "application/json": {
-                "items": [
-                  {
-                    "cluster": {
-                      "id": "1205"
-                    },
-                    "network": {
-                      "id": "N_1"
-                    },
-                    "data": {
-                      "encryption": {
-                        "enabled": true
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "summary": "Update MCG cluster-network tunnel settings for multiple networks",
-        "tags": [
-          "campusGateway",
-          "configure",
-          "clusters",
-          "tunneling",
-          "byCluster",
-          "byNetwork"
-        ],
-        "x-release-stage": "beta"
+        ]
       }
     },
     "/organizations/{organizationId}/campusGateway/connections": {
@@ -198869,6 +198950,25 @@
                             "lastUpdate": {
                               "type": "object",
                               "properties": {
+                                "rollback": {
+                                  "type": "object",
+                                  "properties": {
+                                    "isAvailable": {
+                                      "type": "boolean",
+                                      "description": "Whether the last software update can be rolled back."
+                                    },
+                                    "reason": {
+                                      "type": "string",
+                                      "description": "Reason rollback is unavailable. This field is null when rollback is available.",
+                                      "x-nullable": true
+                                    }
+                                  },
+                                  "required": [
+                                    "isAvailable",
+                                    "reason"
+                                  ],
+                                  "description": "Details about whether the last software update can be rolled back"
+                                },
                                 "time": {
                                   "type": "string",
                                   "description": "The time of the software update"
@@ -198978,6 +199078,7 @@
                                 }
                               },
                               "required": [
+                                "rollback",
                                 "time",
                                 "fromVersion",
                                 "toVersion",
@@ -199188,6 +199289,10 @@
                           "status": "good"
                         },
                         "lastUpdate": {
+                          "rollback": {
+                            "isAvailable": true,
+                            "reason": "The last update for this network cannot be rolled back."
+                          },
                           "time": "2020-03-17T17:22:52Z",
                           "fromVersion": {
                             "id": "1234",
@@ -230405,6 +230510,19 @@
                           "index": {
                             "type": "string",
                             "description": "The index of the VRF on the WAN appliance if enabled"
+                          },
+                          "vpn": {
+                            "type": "object",
+                            "properties": {
+                              "enabled": {
+                                "type": "boolean",
+                                "description": "Whether the appliance VRF participates in VPN"
+                              }
+                            },
+                            "required": [
+                              "enabled"
+                            ],
+                            "description": "VPN settings for the appliance VRF"
                           }
                         },
                         "required": [
@@ -230458,7 +230576,10 @@
                     "switchFabricId": "123",
                     "appliance": {
                       "enabled": true,
-                      "index": "1"
+                      "index": "1",
+                      "vpn": {
+                        "enabled": false
+                      }
                     }
                   }
                 ],
@@ -230596,6 +230717,19 @@
                     "index": {
                       "type": "string",
                       "description": "The index of the VRF on the WAN appliance if enabled"
+                    },
+                    "vpn": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether the appliance VRF participates in VPN"
+                        }
+                      },
+                      "required": [
+                        "enabled"
+                      ],
+                      "description": "VPN settings for the appliance VRF"
                     }
                   },
                   "required": [
@@ -230621,7 +230755,10 @@
                 "switchFabricId": "123",
                 "appliance": {
                   "enabled": true,
-                  "index": "1"
+                  "index": "1",
+                  "vpn": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -230924,6 +231061,19 @@
                     "index": {
                       "type": "string",
                       "description": "The index of the VRF on the WAN appliance if enabled"
+                    },
+                    "vpn": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether the appliance VRF participates in VPN"
+                        }
+                      },
+                      "required": [
+                        "enabled"
+                      ],
+                      "description": "VPN settings for the appliance VRF"
                     }
                   },
                   "required": [
@@ -230949,7 +231099,10 @@
                 "switchFabricId": "123",
                 "appliance": {
                   "enabled": true,
-                  "index": "1"
+                  "index": "1",
+                  "vpn": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -241928,18 +242081,6 @@
                             "format": "float",
                             "description": "Longitude of the resource location in decimal degrees."
                           },
-                          "address": {
-                            "type": "string",
-                            "description": "Street address for the resource location."
-                          },
-                          "city": {
-                            "type": "string",
-                            "description": "City for the resource location."
-                          },
-                          "postalCode": {
-                            "type": "string",
-                            "description": "Postal or ZIP code for the resource location."
-                          },
                           "country": {
                             "type": "string",
                             "description": "Country for the resource location."
@@ -242021,9 +242162,6 @@
                     "geolocation": {
                       "latitude": 37.7749,
                       "longitude": -122.4194,
-                      "address": "500 Terry A Francois Blvd",
-                      "city": "San Francisco",
-                      "postalCode": "94158",
                       "country": "United States"
                     }
                   }
@@ -257123,6 +257261,22 @@
                         "type": "string",
                         "description": "Object ID for the filter list"
                       },
+                      "esiMhPair": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The ESI-MH pair object ID",
+                            "x-nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The ESI-MH pair name",
+                            "x-nullable": true
+                          }
+                        },
+                        "description": "Information regarding the ESI-MH pair the filter list belongs to, if applicable"
+                      },
                       "network": {
                         "type": "object",
                         "properties": {
@@ -257205,6 +257359,10 @@
                 "items": [
                   {
                     "listId": "123",
+                    "esiMhPair": {
+                      "id": "123",
+                      "name": "Pair 1"
+                    },
                     "network": {
                       "id": "L_123",
                       "name": "My network name"
@@ -257385,6 +257543,22 @@
                   },
                   "description": "Information regarding the filter list"
                 },
+                "esiMhPair": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ESI-MH pair object ID",
+                      "x-nullable": true
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The ESI-MH pair name",
+                      "x-nullable": true
+                    }
+                  },
+                  "description": "Information regarding the ESI-MH pair the filter list belongs to, if applicable"
+                },
                 "network": {
                   "type": "object",
                   "properties": {
@@ -257454,6 +257628,10 @@
                   "id": "123",
                   "name": "1",
                   "description": "Sample filter list description"
+                },
+                "esiMhPair": {
+                  "id": "123",
+                  "name": "Pair 1"
                 },
                 "network": {
                   "id": "L_123",
@@ -257745,6 +257923,22 @@
                         "type": "string",
                         "description": "Object ID for the filter list rule"
                       },
+                      "esiMhPair": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The ESI-MH pair object ID",
+                            "x-nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The ESI-MH pair name",
+                            "x-nullable": true
+                          }
+                        },
+                        "description": "Information regarding the ESI-MH pair the filter list belongs to, if applicable"
+                      },
                       "filterList": {
                         "type": "object",
                         "properties": {
@@ -257850,6 +258044,10 @@
                 "items": [
                   {
                     "ruleId": "123",
+                    "esiMhPair": {
+                      "id": "123",
+                      "name": "Pair 1"
+                    },
                     "filterList": {
                       "id": "456",
                       "name": "3"
@@ -258008,6 +258206,22 @@
                         "type": "string",
                         "description": "The IP protocol family for the prefix list. Can be \"ipv4\" or \"ipv6\""
                       },
+                      "esiMhPair": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The ESI-MH pair object ID",
+                            "x-nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The ESI-MH pair name",
+                            "x-nullable": true
+                          }
+                        },
+                        "description": "Information regarding the ESI-MH pair the prefix list belongs to, if applicable"
+                      },
                       "network": {
                         "type": "object",
                         "properties": {
@@ -258084,6 +258298,10 @@
                     "name": "SamplePrefixListName",
                     "description": "Sample prefix list description",
                     "protocol": "ipv4",
+                    "esiMhPair": {
+                      "id": "123",
+                      "name": "Pair 1"
+                    },
                     "network": {
                       "id": "L_123",
                       "name": "My network name"
@@ -258263,6 +258481,22 @@
             "schema": {
               "type": "object",
               "properties": {
+                "esiMhPair": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ESI-MH pair object ID",
+                      "x-nullable": true
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The ESI-MH pair name",
+                      "x-nullable": true
+                    }
+                  },
+                  "description": "Information regarding the ESI-MH pair the prefix list belongs to, if applicable"
+                },
                 "network": {
                   "type": "object",
                   "properties": {
@@ -258371,6 +258605,10 @@
             },
             "examples": {
               "application/json": {
+                "esiMhPair": {
+                  "id": "123",
+                  "name": "Pair 1"
+                },
                 "network": {
                   "id": "L_123",
                   "name": "My network name"
@@ -258671,6 +258909,22 @@
                         "type": "string",
                         "description": "Object ID for the prefix list rule"
                       },
+                      "esiMhPair": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The ESI-MH pair object ID",
+                            "x-nullable": true
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The ESI-MH pair name",
+                            "x-nullable": true
+                          }
+                        },
+                        "description": "Information regarding the ESI-MH pair the prefix list belongs to, if applicable"
+                      },
                       "prefixList": {
                         "type": "object",
                         "properties": {
@@ -258796,6 +259050,10 @@
                 "items": [
                   {
                     "ruleId": "123",
+                    "esiMhPair": {
+                      "id": "123",
+                      "name": "Pair 1"
+                    },
                     "prefixList": {
                       "id": "456",
                       "name": "my-prefix-list"
@@ -280389,7 +280647,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-07-12T08:01:24Z"
+                    "lastEnabledAt": "2026-07-19T08:01:17Z"
                   }
                 }
               ]
@@ -280844,6 +281102,32 @@
                   },
                   "description": "Paginated list of radio overrides for specified devices",
                   "x-release-stage": "general_availability"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of devices matching all filters."
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "Number of devices remaining after this page."
+                            }
+                          },
+                          "description": "Total and remaining device counts across the full filtered collection"
+                        }
+                      },
+                      "description": "Collection-wide size information covering all pages"
+                    }
+                  },
+                  "description": "Response metadata containing collection-wide counts (not page-local)"
                 }
               }
             },
@@ -280875,7 +281159,15 @@
                       }
                     ]
                   }
-                ]
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 42,
+                      "remaining": 0
+                    }
+                  }
+                }
               }
             }
           }
@@ -281878,7 +282170,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-07-12T08:01:24Z"
+                      "lastEnabledAt": "2026-07-19T08:01:17Z"
                     }
                   }
                 ],
@@ -295736,6 +296028,9 @@
       "name": "dataRateHistory"
     },
     {
+      "name": "defaultContent"
+    },
+    {
       "name": "delegated"
     },
     {
@@ -296466,6 +296761,9 @@
     },
     {
       "name": "ratePlans"
+    },
+    {
+      "name": "rca"
     },
     {
       "name": "readings"
@@ -297903,7 +298201,7 @@
     {
       "group": "Mcg/actions/tunnel settings batch",
       "summary": "Update MCG cluster-network tunnel settings for multiple networks",
-      "resource": "/organizations/{organizationId}/campusGateway/clusters/tunneling/byCluster/byNetwork",
+      "resource": "/organizations/{organizationId}/campusGateway/clusters/tunneling",
       "operation": "batch_update"
     },
     {
