@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 05 August, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 02 September, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.73.0"
+    "version": "1.74.0"
   },
   "servers": [
     {
@@ -278,6 +278,18 @@
               "items": {
                 "type": "string"
               }
+            }
+          },
+          {
+            "name": "subscriptionType",
+            "in": "query",
+            "description": "Filter entitlements by subscription type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "termed",
+                "unified"
+              ]
             }
           }
         ],
@@ -2295,6 +2307,7 @@
                                 "enum": [
                                   "802.1X",
                                   "MAC RADIUS",
+                                  "access-manager",
                                   "hybrid",
                                   "open"
                                 ],
@@ -2319,7 +2332,7 @@
                             "items": {
                               "type": "string"
                             },
-                            "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set"
+                            "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set. For Secure Router Layer 2 trunk ports, ['all'] dynamically allows configured VLANs that are not reserved by Layer 3 VLAN/subinterface ports."
                           },
                           "sgt": {
                             "type": "object",
@@ -2515,6 +2528,7 @@
                                   "enum": [
                                     "802.1X",
                                     "MAC RADIUS",
+                                    "access-manager",
                                     "hybrid",
                                     "open"
                                   ],
@@ -2539,7 +2553,7 @@
                               "items": {
                                 "type": "string"
                               },
-                              "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set"
+                              "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set. For Secure Router Layer 2 trunk ports, ['all'] dynamically allows configured VLANs that are not reserved by Layer 3 VLAN/subinterface ports."
                             },
                             "sgt": {
                               "type": "object",
@@ -3859,7 +3873,7 @@
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority."
+                                        "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority. The addresses must be unique."
                                       }
                                     },
                                     "description": "The nameserver settings for this SVI."
@@ -3987,7 +4001,7 @@
                                         "items": {
                                           "type": "string"
                                         },
-                                        "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority."
+                                        "description": "Up to 2 nameserver addresses to use, ordered in priority from highest to lowest priority. The addresses must be unique."
                                       }
                                     },
                                     "description": "The nameserver settings for this SVI."
@@ -7770,7 +7784,7 @@
     },
     "/devices/{serial}/clients": {
       "get": {
-        "description": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null.",
+        "description": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null. Wireless connection metadata reflects the latest available successful association event in the selected period.",
         "operationId": "getDeviceClients",
         "parameters": [
           {
@@ -12803,6 +12817,19 @@
                                       }
                                     },
                                     "description": "VPN related search criteria"
+                                  },
+                                  "vrf": {
+                                    "type": "object",
+                                    "properties": {
+                                      "names": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "description": "Names of VRFs to include in the lookup. Values must match VRFs configured for the device. Omit this field to search all VRFs."
+                                      }
+                                    },
+                                    "description": "Virtual routing and forwarding (VRF) search criteria"
                                   }
                                 },
                                 "description": "Routing table lookup request parameters"
@@ -12861,6 +12888,20 @@
                                           "address": {
                                             "type": "string",
                                             "description": "The IP address of the next hop"
+                                          },
+                                          "vlan": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string",
+                                                "description": "VLAN ID"
+                                              },
+                                              "name": {
+                                                "type": "string",
+                                                "description": "VLAN name"
+                                              }
+                                            },
+                                            "description": "The VLAN associated with this next hop"
                                           },
                                           "vpn": {
                                             "type": "object",
@@ -13011,6 +13052,19 @@
                     },
                     "description": "VPN related search criteria"
                   },
+                  "vrf": {
+                    "type": "object",
+                    "properties": {
+                      "names": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Names of VRFs to include in the lookup. Values must match VRFs configured for the device. Omit this field to search all VRFs."
+                      }
+                    },
+                    "description": "Virtual routing and forwarding (VRF) search criteria"
+                  },
                   "callback": {
                     "type": "object",
                     "properties": {
@@ -13060,6 +13114,11 @@
                     "peer": {
                       "id": "N_12345678"
                     }
+                  },
+                  "vrf": {
+                    "names": [
+                      "default"
+                    ]
                   },
                   "callback": {
                     "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
@@ -13160,6 +13219,19 @@
                             }
                           },
                           "description": "VPN related search criteria"
+                        },
+                        "vrf": {
+                          "type": "object",
+                          "properties": {
+                            "names": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Names of VRFs to include in the lookup. Values must match VRFs configured for the device. Omit this field to search all VRFs."
+                            }
+                          },
+                          "description": "Virtual routing and forwarding (VRF) search criteria"
                         }
                       },
                       "description": "Routing table lookup request parameters"
@@ -13214,6 +13286,11 @@
                       "peer": {
                         "id": "N_12345678"
                       }
+                    },
+                    "vrf": {
+                      "names": [
+                        "default"
+                      ]
                     }
                   },
                   "status": "scheduled",
@@ -13350,6 +13427,19 @@
                             }
                           },
                           "description": "VPN related search criteria"
+                        },
+                        "vrf": {
+                          "type": "object",
+                          "properties": {
+                            "names": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Names of VRFs to include in the lookup. Values must match VRFs configured for the device. Omit this field to search all VRFs."
+                            }
+                          },
+                          "description": "Virtual routing and forwarding (VRF) search criteria"
                         }
                       },
                       "description": "Routing table lookup request parameters"
@@ -13408,6 +13498,20 @@
                                 "address": {
                                   "type": "string",
                                   "description": "The IP address of the next hop"
+                                },
+                                "vlan": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "VLAN ID"
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "VLAN name"
+                                    }
+                                  },
+                                  "description": "The VLAN associated with this next hop"
                                 },
                                 "vpn": {
                                   "type": "object",
@@ -13481,6 +13585,11 @@
                       "peer": {
                         "id": "N_12345678"
                       }
+                    },
+                    "vrf": {
+                      "names": [
+                        "default"
+                      ]
                     }
                   },
                   "status": "scheduled",
@@ -13492,6 +13601,10 @@
                         {
                           "number": 1,
                           "address": "10.10.0.1",
+                          "vlan": {
+                            "id": "1",
+                            "name": "Data"
+                          },
                           "vpn": {
                             "peer": {
                               "id": "N_12345678",
@@ -16423,6 +16536,26 @@
                         "type": "boolean",
                         "description": "The PoE status of the switch port."
                       },
+                      "perpetualPoe": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Perpetual PoE is enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                          }
+                        },
+                        "description": "Perpetual PoE settings for the switch port."
+                      },
+                      "fastPoe": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether Fast PoE is enabled. Fast PoE requires Perpetual PoE to be enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                          }
+                        },
+                        "description": "Fast PoE settings for the switch port."
+                      },
                       "type": {
                         "type": "string",
                         "enum": [
@@ -16662,6 +16795,12 @@
                     ],
                     "enabled": true,
                     "poeEnabled": true,
+                    "perpetualPoe": {
+                      "enabled": true
+                    },
+                    "fastPoe": {
+                      "enabled": true
+                    },
                     "type": "access",
                     "vlan": 10,
                     "voiceVlan": 20,
@@ -17437,6 +17576,26 @@
                       "type": "boolean",
                       "description": "The PoE status of the switch port."
                     },
+                    "perpetualPoe": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether Perpetual PoE is enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                        }
+                      },
+                      "description": "Perpetual PoE settings for the switch port."
+                    },
+                    "fastPoe": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether Fast PoE is enabled. Fast PoE requires Perpetual PoE to be enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                        }
+                      },
+                      "description": "Fast PoE settings for the switch port."
+                    },
                     "type": {
                       "type": "string",
                       "enum": [
@@ -17674,6 +17833,12 @@
                   ],
                   "enabled": true,
                   "poeEnabled": true,
+                  "perpetualPoe": {
+                    "enabled": true
+                  },
+                  "fastPoe": {
+                    "enabled": true
+                  },
                   "type": "access",
                   "vlan": 10,
                   "voiceVlan": 20,
@@ -17800,6 +17965,26 @@
                   "poeEnabled": {
                     "type": "boolean",
                     "description": "The PoE status of the switch port."
+                  },
+                  "perpetualPoe": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether Perpetual PoE is enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                      }
+                    },
+                    "description": "Perpetual PoE settings for the switch port."
+                  },
+                  "fastPoe": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether Fast PoE is enabled. Fast PoE requires Perpetual PoE to be enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                      }
+                    },
+                    "description": "Fast PoE settings for the switch port."
                   },
                   "type": {
                     "type": "string",
@@ -17973,6 +18158,12 @@
                   ],
                   "enabled": true,
                   "poeEnabled": true,
+                  "perpetualPoe": {
+                    "enabled": true
+                  },
+                  "fastPoe": {
+                    "enabled": true
+                  },
                   "type": "access",
                   "vlan": 10,
                   "voiceVlan": 20,
@@ -18048,6 +18239,26 @@
                     "poeEnabled": {
                       "type": "boolean",
                       "description": "The PoE status of the switch port."
+                    },
+                    "perpetualPoe": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether Perpetual PoE is enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                        }
+                      },
+                      "description": "Perpetual PoE settings for the switch port."
+                    },
+                    "fastPoe": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether Fast PoE is enabled. Fast PoE requires Perpetual PoE to be enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                        }
+                      },
+                      "description": "Fast PoE settings for the switch port."
                     },
                     "type": {
                       "type": "string",
@@ -18286,6 +18497,12 @@
                   ],
                   "enabled": true,
                   "poeEnabled": true,
+                  "perpetualPoe": {
+                    "enabled": true
+                  },
+                  "fastPoe": {
+                    "enabled": true
+                  },
                   "type": "access",
                   "vlan": 10,
                   "voiceVlan": 20,
@@ -18654,7 +18871,7 @@
                       "routed",
                       "vlan"
                     ],
-                    "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback'. Default is 'vlan'. CS 17.18 or higher is required for 'routed' mode. "
+                    "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback', or 'oob_management'. Default is 'vlan'. IOS XE firmware 17.18 or higher is required for 'routed' mode; IOS XE firmware 26.1.2 or higher is required for 'oob_management' mode."
                   },
                   "subnet": {
                     "type": "string",
@@ -18664,7 +18881,7 @@
                   "switchPortId": {
                     "type": "string",
                     "nullable": true,
-                    "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                    "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                   },
                   "interfaceIp": {
                     "type": "string",
@@ -19282,7 +19499,7 @@
                   "switchPortId": {
                     "type": "string",
                     "nullable": true,
-                    "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                    "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                   },
                   "interfaceIp": {
                     "type": "string",
@@ -21873,6 +22090,314 @@
           "wireless",
           "monitor",
           "latencyStats"
+        ]
+      }
+    },
+    "/devices/{serial}/wireless/radio/overrides": {
+      "get": {
+        "description": "Return the radio overrides of a device",
+        "operationId": "getDeviceWirelessRadioOverrides",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "The device serial"
+                    },
+                    "network": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The network identifier"
+                        }
+                      },
+                      "description": "The device's network"
+                    },
+                    "rfProfile": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "RF Profile ID"
+                        }
+                      },
+                      "description": "The device's RF profile"
+                    },
+                    "radios": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Radio enabled"
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "Radio identifier for the device"
+                          },
+                          "band": {
+                            "type": "string",
+                            "enum": [
+                              "2.4",
+                              "5",
+                              "6"
+                            ],
+                            "description": "Radio band: one of '2.4', '5' or '6'"
+                          },
+                          "channel": {
+                            "type": "integer",
+                            "description": "Radio channel: Valid channels depend on the radio band."
+                          },
+                          "channelWidth": {
+                            "type": "integer",
+                            "description": "Radio channel width: Valid widths depend on the radio band."
+                          },
+                          "targetPower": {
+                            "type": "integer",
+                            "description": "Radio target power: Valid target power depends on the radio band."
+                          }
+                        }
+                      },
+                      "description": "Individual radios on the device"
+                    }
+                  }
+                },
+                "example": {
+                  "serial": "Q234-ABCD-5678",
+                  "network": {
+                    "id": "N_24329156"
+                  },
+                  "rfProfile": {
+                    "id": "1234"
+                  },
+                  "radios": [
+                    {
+                      "enabled": true,
+                      "index": "1",
+                      "band": "5",
+                      "channel": 149,
+                      "channelWidth": 20,
+                      "targetPower": 15
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the radio overrides of a device",
+        "tags": [
+          "wireless",
+          "configure",
+          "radio",
+          "overrides"
+        ]
+      },
+      "put": {
+        "description": "Update 2.4 GHz, 5 GHz, and 6 GHz radio settings (channel, channel width, power, and enable/disable) that override RF profiles. Read-only fields returned by this endpoint, such as 'serial', 'network', and 'radios[].band', may be included when sending a previously returned object back to this PUT endpoint and will be ignored.",
+        "operationId": "updateDeviceWirelessRadioOverrides",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rfProfile": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "The ID of an RF profile to assign to the device. If this field is omitted, the device's existing RF profile assignment will remain unchanged. If the value of this parameter is null, the appropriate basic RF profile (indoor or outdoor) will be assigned to the device. Assigning an RF profile will clear ALL manually configured overrides on the device (channel width, channel, power).",
+                        "nullable": true
+                      }
+                    },
+                    "description": "This device's RF profile. If omitted, the existing RF profile assignment remains unchanged."
+                  },
+                  "radios": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Enable radio. Setting to false will set tx power to -1."
+                        },
+                        "index": {
+                          "type": "string",
+                          "description": "Indicates which radio to override"
+                        },
+                        "channel": {
+                          "type": "integer",
+                          "description": "Sets a radio override channel. Can be null to use auto channel.",
+                          "nullable": true
+                        },
+                        "targetPower": {
+                          "type": "integer",
+                          "description": "Set a radio override target power (dBm). Can be null to use auto power range.",
+                          "nullable": true
+                        },
+                        "channelWidth": {
+                          "type": "integer",
+                          "description": "Set a radio override channel width. Can be null to use auto channel width.",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "index"
+                      ]
+                    },
+                    "description": "Radio overrides. If omitted, existing per-radio override settings remain unchanged. If provided, only the radios included in the array are updated; the array does not replace the device's full existing set of radio overrides. Read-only response fields for each radio, such as 'band', may be included in the request body and are ignored."
+                  }
+                },
+                "example": {
+                  "rfProfile": {
+                    "id": "1234"
+                  },
+                  "radios": [
+                    {
+                      "enabled": true,
+                      "index": "1",
+                      "channel": 149,
+                      "targetPower": 15,
+                      "channelWidth": 20
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "The device serial"
+                    },
+                    "network": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The network identifier"
+                        }
+                      },
+                      "description": "The device's network"
+                    },
+                    "rfProfile": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "RF Profile ID"
+                        }
+                      },
+                      "description": "The device's RF profile"
+                    },
+                    "radios": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Radio enabled"
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "Radio identifier for the device"
+                          },
+                          "band": {
+                            "type": "string",
+                            "enum": [
+                              "2.4",
+                              "5",
+                              "6"
+                            ],
+                            "description": "Radio band: one of '2.4', '5' or '6'"
+                          },
+                          "channel": {
+                            "type": "integer",
+                            "description": "Radio channel: Valid channels depend on the radio band."
+                          },
+                          "channelWidth": {
+                            "type": "integer",
+                            "description": "Radio channel width: Valid widths depend on the radio band."
+                          },
+                          "targetPower": {
+                            "type": "integer",
+                            "description": "Radio target power: Valid target power depends on the radio band."
+                          }
+                        }
+                      },
+                      "description": "Individual radios on the device"
+                    }
+                  }
+                },
+                "example": {
+                  "serial": "Q234-ABCD-5678",
+                  "network": {
+                    "id": "N_24329156"
+                  },
+                  "rfProfile": {
+                    "id": "1234"
+                  },
+                  "radios": [
+                    {
+                      "enabled": true,
+                      "index": "1",
+                      "band": "5",
+                      "channel": 149,
+                      "channelWidth": 20,
+                      "targetPower": 15
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update 2.4 GHz, 5 GHz, and 6 GHz radio settings (channel, channel width, power, and enable/disable) that override RF profiles",
+        "tags": [
+          "wireless",
+          "configure",
+          "radio",
+          "overrides"
         ]
       }
     },
@@ -28554,7 +29079,8 @@
                         "description": "Structured interface identifier for the port being modified"
                       }
                     },
-                    "description": "Port configuration"
+                    "nullable": true,
+                    "description": "Port configuration. Set to null to remove the port association."
                   },
                   "ipv4": {
                     "type": "object",
@@ -32257,6 +32783,21 @@
                         }
                       },
                       "description": "IPv6 configuration on the single LAN"
+                    },
+                    "vrf": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "VRF ID. Use 0 for the default VRF."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "VRF name"
+                        }
+                      },
+                      "description": "VRF configuration on the single LAN",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -32281,6 +32822,10 @@
                         }
                       }
                     ]
+                  },
+                  "vrf": {
+                    "id": "1000",
+                    "name": "VRF BLUE"
                   }
                 }
               }
@@ -32402,10 +32947,45 @@
                       }
                     },
                     "description": "Mandatory DHCP will enforce that clients connecting to this LAN must use the IP address assigned by the DHCP server. Clients who use a static IP address won't be able to associate. Only available on firmware versions 17.0 and above"
+                  },
+                  "vrf": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "VRF ID. Use 0 for the default VRF."
+                      }
+                    },
+                    "x-release-stage": "general_availability",
+                    "description": "VRF configuration on the Single LAN. Omit this field to preserve the current VRF."
                   }
                 },
                 "example": {
-
+                  "subnet": "192.168.1.0/24",
+                  "applianceIp": "192.168.1.2",
+                  "ipv6": {
+                    "enabled": true,
+                    "prefixAssignments": [
+                      {
+                        "autonomous": true,
+                        "disabled": true,
+                        "staticPrefix": "2001:db8:3c4d:15::/64",
+                        "staticApplianceIp6": "2001:db8:3c4d:15::1",
+                        "origin": {
+                          "type": "internet",
+                          "interfaces": [
+                            "wan0"
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "mandatoryDhcp": {
+                    "enabled": true
+                  },
+                  "vrf": {
+                    "id": "1000"
+                  }
                 }
               }
             }
@@ -32489,6 +33069,21 @@
                         }
                       },
                       "description": "IPv6 configuration on the single LAN"
+                    },
+                    "vrf": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "VRF ID. Use 0 for the default VRF."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "VRF name"
+                        }
+                      },
+                      "description": "VRF configuration on the single LAN",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -32513,6 +33108,10 @@
                         }
                       }
                     ]
+                  },
+                  "vrf": {
+                    "id": "1000",
+                    "name": "VRF BLUE"
                   }
                 }
               }
@@ -32810,11 +33409,12 @@
                     "type": "string",
                     "enum": [
                       "8021x-meraki",
+                      "8021x-nac",
                       "8021x-radius",
                       "open",
                       "psk"
                     ],
-                    "description": "The association control method for the SSID ('open', 'psk', '8021x-meraki' or '8021x-radius')."
+                    "description": "The association control method for the SSID ('open', 'psk', '8021x-meraki', '8021x-radius' or '8021x-nac')."
                   },
                   "psk": {
                     "type": "string",
@@ -32857,7 +33457,7 @@
                       "WPA3 Transition Mode",
                       "WPA3 only"
                     ],
-                    "description": "The types of WPA encryption. ('WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode' or 'WPA3 only'). This param is only valid if (1) the authMode is 'psk' & the encryptionMode is 'wpa' OR (2) the authMode is '8021x-meraki' OR (3) the authMode is '8021x-radius'"
+                    "description": "The types of WPA encryption. ('WPA1 and WPA2', 'WPA2 only', 'WPA3 Transition Mode' or 'WPA3 only'). This param is only valid if (1) the authMode is 'psk' & the encryptionMode is 'wpa' OR (2) the authMode is '8021x-meraki' OR (3) the authMode is '8021x-radius' OR (4) the authMode is '8021x-nac'"
                   },
                   "visible": {
                     "type": "boolean",
@@ -35244,6 +35844,25 @@
                           "preferredUplink": {
                             "type": "string",
                             "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1' or 'wan2', or any other valid uplink (wanX, cellular) if it applies to the network"
+                          },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for this uplink preference rule."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "VRF settings for this uplink preference rule. Only included when VRF is enabled for the organization. If a non-default VRF is not set for the rule, this value is the default VRF.",
+                            "x-release-stage": "general_availability"
                           }
                         },
                         "required": [
@@ -35361,6 +35980,25 @@
                             "type": "string",
                             "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1', 'wan2', 'bestForVoIP', 'loadBalancing', 'defaultUplink' or 'cellular', or any other valid uplink (wanX, cellular) if it applies to the network"
                           },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for this uplink preference rule."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "VRF settings for this uplink preference rule. Only included when VRF is enabled for the organization. Uses the default VRF when no non-default VRF is set for the rule.",
+                            "x-release-stage": "general_availability"
+                          },
                           "failOverCriterion": {
                             "type": "string",
                             "enum": [
@@ -35443,7 +36081,11 @@
                           }
                         }
                       ],
-                      "preferredUplink": "wan1"
+                      "preferredUplink": "wan1",
+                      "vrf": {
+                        "id": "12345",
+                        "name": "Blue"
+                      }
                     }
                   ],
                   "vpnTrafficUplinkPreferences": [
@@ -35473,6 +36115,10 @@
                         }
                       ],
                       "preferredUplink": "bestForVoIP",
+                      "vrf": {
+                        "id": "12345",
+                        "name": "Blue"
+                      },
                       "failOverCriterion": "poorPerformance",
                       "performanceClass": {
                         "type": "custom",
@@ -35636,6 +36282,20 @@
                         "preferredUplink": {
                           "type": "string",
                           "description": "Preferred uplink for this uplink preference rule. Must be one of: 'wan1' or 'wan2', or any other valid uplink(wanX) if it applies to the network"
+                        },
+                        "vrf": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "description": "VRF settings for this uplink preference rule. Omit this field to use the default VRF for the rule. Only 'vrf.id' may be set by the client.",
+                          "x-release-stage": "general_availability"
                         }
                       },
                       "required": [
@@ -35753,6 +36413,20 @@
                           "type": "string",
                           "description": "Preferred uplink for this uplink preference rule. Must be one of: 'wan1', 'wan2', 'bestForVoIP', 'loadBalancing', 'defaultUplink' or 'cellular', or any other valid uplink(wanX) if it applies to the network"
                         },
+                        "vrf": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "description": "VRF settings for this uplink preference rule. Omit this field to use the default VRF for the rule. Only 'vrf.id' may be set by the client.",
+                          "x-release-stage": "general_availability"
+                        },
                         "failOverCriterion": {
                           "type": "string",
                           "enum": [
@@ -35827,7 +36501,10 @@
                           }
                         }
                       ],
-                      "preferredUplink": "wan1"
+                      "preferredUplink": "wan1",
+                      "vrf": {
+                        "id": "12345"
+                      }
                     }
                   ],
                   "vpnTrafficUplinkPreferences": [
@@ -35857,6 +36534,9 @@
                         }
                       ],
                       "preferredUplink": "bestForVoIP",
+                      "vrf": {
+                        "id": "12345"
+                      },
                       "failOverCriterion": "poorPerformance",
                       "performanceClass": {
                         "type": "custom",
@@ -36019,6 +36699,25 @@
                           "preferredUplink": {
                             "type": "string",
                             "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1' or 'wan2', or any other valid uplink (wanX, cellular) if it applies to the network"
+                          },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for this uplink preference rule."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "VRF settings for this uplink preference rule. Only included when VRF is enabled for the organization. If a non-default VRF is not set for the rule, this value is the default VRF.",
+                            "x-release-stage": "general_availability"
                           }
                         },
                         "required": [
@@ -36136,6 +36835,25 @@
                             "type": "string",
                             "description": "Preferred uplink for uplink preference rule. Must be one of: 'wan1', 'wan2', 'bestForVoIP', 'loadBalancing', 'defaultUplink' or 'cellular', or any other valid uplink (wanX, cellular) if it applies to the network"
                           },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for this uplink preference rule. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for this uplink preference rule."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "VRF settings for this uplink preference rule. Only included when VRF is enabled for the organization. Uses the default VRF when no non-default VRF is set for the rule.",
+                            "x-release-stage": "general_availability"
+                          },
                           "failOverCriterion": {
                             "type": "string",
                             "enum": [
@@ -36218,7 +36936,11 @@
                           }
                         }
                       ],
-                      "preferredUplink": "wan1"
+                      "preferredUplink": "wan1",
+                      "vrf": {
+                        "id": "12345",
+                        "name": "Blue"
+                      }
                     }
                   ],
                   "vpnTrafficUplinkPreferences": [
@@ -36248,6 +36970,10 @@
                         }
                       ],
                       "preferredUplink": "bestForVoIP",
+                      "vrf": {
+                        "id": "12345",
+                        "name": "Blue"
+                      },
                       "failOverCriterion": "poorPerformance",
                       "performanceClass": {
                         "type": "custom",
@@ -37673,7 +38399,7 @@
                             },
                             "disabled": {
                               "type": "boolean",
-                              "description": "Disable the prefix assignment"
+                              "description": "Disable the prefix assignment. Required when IPv6 is enabled on the VLAN."
                             },
                             "staticPrefix": {
                               "type": "string",
@@ -37709,10 +38435,7 @@
                               ],
                               "description": "The origin of the prefix"
                             }
-                          },
-                          "required": [
-                            "disabled"
-                          ]
+                          }
                         },
                         "description": "Prefix assignments on the VLAN"
                       }
@@ -39510,6 +40233,21 @@
                               "type": "string"
                             },
                             "description": "List of BGP communities tagged to the routes advertised to an eBGP neighbor."
+                          },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for the eBGP neighbor. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for the eBGP neighbor."
+                              }
+                            },
+                            "description": "VRF settings for the neighbor",
+                            "x-release-stage": "general_availability"
                           }
                         }
                       },
@@ -39554,7 +40292,11 @@
                       "communityOut": [
                         "64515:100",
                         "NO_EXPORT"
-                      ]
+                      ],
+                      "vrf": {
+                        "id": "12345",
+                        "name": "VRF Blue"
+                      }
                     }
                   ]
                 }
@@ -39697,7 +40439,7 @@
                         },
                         "weight": {
                           "type": "integer",
-                          "description": "Sets the local weight for routes received from the remote peer. Routes from peers with higher weights will be preferred. Must be an integer between 0 and 49."
+                          "description": "Sets the local weight for routes received from the remote peer. Routes from peers with higher weights will be preferred. Must be an integer between 0 and 49 for Secure Appliance or between 0 and 65535 for Secure Router."
                         },
                         "filterIn": {
                           "type": "array",
@@ -39891,6 +40633,21 @@
                               "type": "string"
                             },
                             "description": "List of BGP communities tagged to the routes advertised to an eBGP neighbor."
+                          },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID for the eBGP neighbor. Use 0 for the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name for the eBGP neighbor."
+                              }
+                            },
+                            "description": "VRF settings for the neighbor",
+                            "x-release-stage": "general_availability"
                           }
                         }
                       },
@@ -39935,7 +40692,11 @@
                       "communityOut": [
                         "64515:100",
                         "NO_EXPORT"
-                      ]
+                      ],
+                      "vrf": {
+                        "id": "12345",
+                        "name": "VRF Blue"
+                      }
                     }
                   ]
                 }
@@ -45534,6 +46295,163 @@
           "campusGateway",
           "configure",
           "clusters"
+        ]
+      }
+    },
+    "/networks/{networkId}/campusGateway/ssids/{number}/mdns": {
+      "put": {
+        "description": "Update the mDNS gateway settings and rules for a SSID and cluster",
+        "operationId": "updateNetworkCampusGatewaySsidMdns",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "number",
+            "in": "path",
+            "description": "Number",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "If true, mDNS gateway is enabled for this SSID and cluster."
+                  },
+                  "rules": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "services": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "afp",
+                              "airplay",
+                              "apple_screen_share",
+                              "bittorrent",
+                              "ftp",
+                              "google_chromecast",
+                              "ichat",
+                              "itunes",
+                              "printers",
+                              "samba",
+                              "scanner",
+                              "spotify",
+                              "ssh"
+                            ]
+                          },
+                          "description": "Names of the configured services"
+                        }
+                      }
+                    },
+                    "description": "List of mDNS forwarding rules."
+                  }
+                },
+                "example": {
+                  "enabled": true,
+                  "rules": [
+                    {
+                      "services": [
+                        "airplay"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "If true, mDNS gateway settings is enabled for the ssid."
+                    },
+                    "rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "services": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "afp",
+                                "airplay",
+                                "apple_screen_share",
+                                "bittorrent",
+                                "ftp",
+                                "google_chromecast",
+                                "ichat",
+                                "itunes",
+                                "printers",
+                                "samba",
+                                "scanner",
+                                "spotify",
+                                "ssh"
+                              ]
+                            },
+                            "description": "Names of the configured services"
+                          }
+                        },
+                        "required": [
+                          "services"
+                        ]
+                      },
+                      "description": "All the settings configured by the user"
+                    }
+                  },
+                  "required": [
+                    "enabled",
+                    "rules"
+                  ]
+                },
+                "example": {
+                  "enabled": true,
+                  "rules": [
+                    {
+                      "services": [
+                        "airplay",
+                        "ftp"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update the mDNS gateway settings and rules for a SSID and cluster",
+        "tags": [
+          "campusGateway",
+          "configure",
+          "ssids",
+          "mdns"
         ]
       }
     },
@@ -55368,6 +56286,32 @@
                             }
                           },
                           "description": "The Switch network to be updated"
+                        },
+                        "switchCatalyst": {
+                          "type": "object",
+                          "properties": {
+                            "nextUpgrade": {
+                              "type": "object",
+                              "properties": {
+                                "toVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Id of the Catalyst Version being upgraded to"
+                                    },
+                                    "shortName": {
+                                      "type": "string",
+                                      "description": "Catalyst firmware version short name"
+                                    }
+                                  },
+                                  "description": "Details of the version the device will upgrade to"
+                                }
+                              },
+                              "description": "Details of the next firmware upgrade"
+                            }
+                          },
+                          "description": "The Catalyst Switch network to be updated"
                         }
                       },
                       "description": "The network devices to be updated"
@@ -55463,6 +56407,14 @@
                         "toVersion": {
                           "id": "1234",
                           "shortName": "MS 15.2.1"
+                        }
+                      }
+                    },
+                    "switchCatalyst": {
+                      "nextUpgrade": {
+                        "toVersion": {
+                          "id": "4321",
+                          "shortName": "CS 1.0"
                         }
                       }
                     }
@@ -55694,6 +56646,32 @@
                             }
                           },
                           "description": "The Switch network to be updated"
+                        },
+                        "switchCatalyst": {
+                          "type": "object",
+                          "properties": {
+                            "nextUpgrade": {
+                              "type": "object",
+                              "properties": {
+                                "toVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Id of the Catalyst Version being upgraded to"
+                                    },
+                                    "shortName": {
+                                      "type": "string",
+                                      "description": "Catalyst firmware version short name"
+                                    }
+                                  },
+                                  "description": "Details of the version the device will upgrade to"
+                                }
+                              },
+                              "description": "Details of the next firmware upgrade"
+                            }
+                          },
+                          "description": "The Catalyst Switch network to be updated"
                         }
                       },
                       "description": "The network devices to be updated"
@@ -55789,6 +56767,14 @@
                         "toVersion": {
                           "id": "1234",
                           "shortName": "MS 15.2.1"
+                        }
+                      }
+                    },
+                    "switchCatalyst": {
+                      "nextUpgrade": {
+                        "toVersion": {
+                          "id": "4321",
+                          "shortName": "CS 1.0"
                         }
                       }
                     }
@@ -55856,6 +56842,22 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "products": {
+                    "type": "object",
+                    "properties": {
+                      "switchCatalyst": {
+                        "type": "object",
+                        "properties": {
+                          "nextUpgrade": {
+                            "type": "object",
+                            "description": "Settings for the next switch Catalyst upgrade"
+                          }
+                        },
+                        "description": "Settings for the switch Catalyst network being upgraded"
+                      }
+                    },
+                    "description": "Contains firmware upgrade settings"
+                  },
                   "stages": {
                     "type": "array",
                     "items": {
@@ -55893,6 +56895,11 @@
                   }
                 },
                 "example": {
+                  "products": {
+                    "switchCatalyst": {
+
+                    }
+                  },
                   "stages": [
                     {
                       "group": {
@@ -55948,6 +56955,32 @@
                             }
                           },
                           "description": "The Switch network to be updated"
+                        },
+                        "switchCatalyst": {
+                          "type": "object",
+                          "properties": {
+                            "nextUpgrade": {
+                              "type": "object",
+                              "properties": {
+                                "toVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Id of the Catalyst Version being upgraded to"
+                                    },
+                                    "shortName": {
+                                      "type": "string",
+                                      "description": "Catalyst firmware version short name"
+                                    }
+                                  },
+                                  "description": "Details of the version the device will upgrade to"
+                                }
+                              },
+                              "description": "Details of the next firmware upgrade"
+                            }
+                          },
+                          "description": "The Catalyst Switch network to be updated"
                         }
                       },
                       "description": "The network devices to be updated"
@@ -56043,6 +57076,14 @@
                         "toVersion": {
                           "id": "1234",
                           "shortName": "MS 15.2.1"
+                        }
+                      }
+                    },
+                    "switchCatalyst": {
+                      "nextUpgrade": {
+                        "toVersion": {
+                          "id": "4321",
+                          "shortName": "CS 1.0"
                         }
                       }
                     }
@@ -56142,6 +57183,32 @@
                             }
                           },
                           "description": "The Switch network to be updated"
+                        },
+                        "switchCatalyst": {
+                          "type": "object",
+                          "properties": {
+                            "nextUpgrade": {
+                              "type": "object",
+                              "properties": {
+                                "toVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Id of the Catalyst Version being upgraded to"
+                                    },
+                                    "shortName": {
+                                      "type": "string",
+                                      "description": "Catalyst firmware version short name"
+                                    }
+                                  },
+                                  "description": "Details of the version the device will upgrade to"
+                                }
+                              },
+                              "description": "Details of the next firmware upgrade"
+                            }
+                          },
+                          "description": "The Catalyst Switch network to be updated"
                         }
                       },
                       "description": "The network devices to be updated"
@@ -56237,6 +57304,14 @@
                         "toVersion": {
                           "id": "1234",
                           "shortName": "MS 15.2.1"
+                        }
+                      }
+                    },
+                    "switchCatalyst": {
+                      "nextUpgrade": {
+                        "toVersion": {
+                          "id": "4321",
+                          "shortName": "CS 1.0"
                         }
                       }
                     }
@@ -56433,6 +57508,32 @@
                             }
                           },
                           "description": "The Switch network to be updated"
+                        },
+                        "switchCatalyst": {
+                          "type": "object",
+                          "properties": {
+                            "nextUpgrade": {
+                              "type": "object",
+                              "properties": {
+                                "toVersion": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Id of the Catalyst Version being upgraded to"
+                                    },
+                                    "shortName": {
+                                      "type": "string",
+                                      "description": "Catalyst firmware version short name"
+                                    }
+                                  },
+                                  "description": "Details of the version the device will upgrade to"
+                                }
+                              },
+                              "description": "Details of the next firmware upgrade"
+                            }
+                          },
+                          "description": "The Catalyst Switch network to be updated"
                         }
                       },
                       "description": "The network devices to be updated"
@@ -56528,6 +57629,14 @@
                         "toVersion": {
                           "id": "1234",
                           "shortName": "MS 15.2.1"
+                        }
+                      }
+                    },
+                    "switchCatalyst": {
+                      "nextUpgrade": {
+                        "toVersion": {
+                          "id": "4321",
+                          "shortName": "CS 1.0"
                         }
                       }
                     }
@@ -78752,11 +79861,11 @@
                           },
                           "subnetMask": {
                             "type": "string",
-                            "description": "Switch subnet mask must be in IP format. Required for MS130/150/290/390 and C9 switches"
+                            "description": "Switch subnet mask in IP format. Required for some switch models when configuring a static alternate management IP"
                           },
                           "gateway": {
                             "type": "string",
-                            "description": "Switch gateway must be in IP format. Required for MS130/150/290/390 and C9 switches"
+                            "description": "Switch gateway in IP format. Required for some switch models when configuring a static alternate management IP"
                           }
                         }
                       },
@@ -78855,11 +79964,11 @@
                         },
                         "subnetMask": {
                           "type": "string",
-                          "description": "Switch subnet mask must be in IP format. Only and must be specified for Polaris switches"
+                          "description": "Switch subnet mask in IP format. Required for some switch models when configuring a static alternate management IP"
                         },
                         "gateway": {
                           "type": "string",
-                          "description": "Switch gateway must be in IP format. Only and must be specified for Polaris switches"
+                          "description": "Switch gateway in IP format. Required for some switch models when configuring a static alternate management IP"
                         }
                       },
                       "required": [
@@ -78934,11 +80043,11 @@
                           },
                           "subnetMask": {
                             "type": "string",
-                            "description": "Switch subnet mask must be in IP format. Required for MS130/150/290/390 and C9 switches"
+                            "description": "Switch subnet mask in IP format. Required for some switch models when configuring a static alternate management IP"
                           },
                           "gateway": {
                             "type": "string",
-                            "description": "Switch gateway must be in IP format. Required for MS130/150/290/390 and C9 switches"
+                            "description": "Switch gateway in IP format. Required for some switch models when configuring a static alternate management IP"
                           }
                         }
                       },
@@ -84810,7 +85919,7 @@
                       {
                         "serial": "QBZY-XWVU-TSRQ",
                         "name": "switch 1",
-                        "model": "MS350-24-HW",
+                        "model": "C9300-24T",
                         "mac": "00:18:0a:00:00:09",
                         "role": "active"
                       }
@@ -85084,7 +86193,7 @@
                     {
                       "serial": "QBZY-XWVU-TSRQ",
                       "name": "switch 1",
-                      "model": "MS350-24-HW",
+                      "model": "C9300-24T",
                       "mac": "00:18:0a:00:00:09",
                       "role": "active"
                     }
@@ -85211,7 +86320,7 @@
                     {
                       "serial": "QBZY-XWVU-TSRQ",
                       "name": "switch 1",
-                      "model": "MS350-24-HW",
+                      "model": "C9300-24T",
                       "mac": "00:18:0a:00:00:09",
                       "role": "active"
                     }
@@ -85404,7 +86513,7 @@
                     {
                       "serial": "QBZY-XWVU-TSRQ",
                       "name": "switch 1",
-                      "model": "MS350-24-HW",
+                      "model": "C9300-24T",
                       "mac": "00:18:0a:00:00:09",
                       "role": "active"
                     }
@@ -85555,7 +86664,7 @@
                     {
                       "serial": "QBZY-XWVU-TSRQ",
                       "name": "switch 1",
-                      "model": "MS350-24-HW",
+                      "model": "C9300-24T",
                       "mac": "00:18:0a:00:00:09",
                       "role": "active"
                     }
@@ -85888,7 +86997,7 @@
                       "routed",
                       "vlan"
                     ],
-                    "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback'. Default is 'vlan'. CS 17.18 or higher is required for 'routed' mode. "
+                    "description": "L3 Interface mode, can be one of 'vlan', 'routed', 'loopback', or 'oob_management'. Default is 'vlan'. IOS XE firmware 17.18 or higher is required for 'routed' mode; IOS XE firmware 26.1.2 or higher is required for 'oob_management' mode."
                   },
                   "subnet": {
                     "type": "string",
@@ -85898,7 +87007,7 @@
                   "switchPortId": {
                     "type": "string",
                     "nullable": true,
-                    "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                    "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                   },
                   "interfaceIp": {
                     "type": "string",
@@ -86536,7 +87645,7 @@
                   "switchPortId": {
                     "type": "string",
                     "nullable": true,
-                    "description": "Switch Port ID when in Routed mode (CS 17.18 or higher required)"
+                    "description": "Switch Port ID when in Routed mode (IOS XE firmware 17.18 or higher required)"
                   },
                   "interfaceIp": {
                     "type": "string",
@@ -91909,7 +93018,7 @@
         ]
       },
       "delete": {
-        "description": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003', 'wpt_00004', 'wpt_00005', 'wpt_00006', 'wpt_00007' or 'wpt_00008')",
+        "description": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003', 'wpt_00004', 'wpt_00005', 'wpt_00006', 'wpt_00007', 'wpt_00008' or 'wpt_00009')",
         "operationId": "deleteNetworkWebhooksPayloadTemplate",
         "parameters": [
           {
@@ -98382,7 +99491,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-07-05T08:07:39Z"
+                    "lastEnabledAt": "2026-08-02T08:06:48Z"
                   }
                 }
               }
@@ -98505,7 +99614,17 @@
                         },
                         "axEnabled": {
                           "type": "boolean",
-                          "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead. Defaults to true."
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         },
                         "rxsop": {
                           "type": "integer",
@@ -98545,6 +99664,16 @@
                           "type": "integer",
                           "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default.",
                           "nullable": true
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         }
                       },
                       "description": "Settings related to 5Ghz band"
@@ -99236,6 +100365,17 @@
                     "isOutdoorDefault": {
                       "type": "boolean",
                       "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor', then a new profile will be created from the respective ID and set as the default"
+                    },
+                    "dot11be": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                        }
+                      },
+                      "description": "802.11be settings",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -99266,6 +100406,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -99300,7 +100443,10 @@
                       165
                     ],
                     "channelWidth": "auto",
-                    "rxsop": -95
+                    "rxsop": -95,
+                    "dot11ax": {
+                      "enabled": true
+                    }
                   },
                   "sixGhzSettings": {
                     "maxPower": 30,
@@ -99556,7 +100702,10 @@
                     }
                   },
                   "isIndoorDefault": false,
-                  "isOutdoorDefault": false
+                  "isOutdoorDefault": false,
+                  "dot11be": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -99685,7 +100834,17 @@
                       },
                       "axEnabled": {
                         "type": "boolean",
-                        "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                        "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead. Defaults to true."
+                      },
+                      "dot11ax": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          }
+                        },
+                        "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                       },
                       "rxsop": {
                         "type": "integer",
@@ -99720,6 +100879,16 @@
                       "channelWidth": {
                         "type": "string",
                         "description": "Sets channel width (MHz) for 5Ghz band. Can be one of 'auto', '20', '40' or '80'. Defaults to auto."
+                      },
+                      "dot11ax": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          }
+                        },
+                        "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                       },
                       "rxsop": {
                         "type": "integer",
@@ -100485,6 +101654,77 @@
                       }
                     },
                     "description": "Flex radio settings."
+                  },
+                  "dot11be": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "all SSIDs",
+                          "per SSID group"
+                        ],
+                        "description": "802.11be is enabled for all SSIDs or per SSID group"
+                      },
+                      "ssids": {
+                        "type": "object",
+                        "properties": {
+                          "groups": {
+                            "type": "object",
+                            "properties": {
+                              "1": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 1 includes SSIDs number 0-3"
+                              },
+                              "2": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 2 includes SSIDs number 4-7"
+                              },
+                              "3": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 3 includes SSIDs number 8-11"
+                              },
+                              "4": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 4 includes SSIDs number 12-14"
+                              }
+                            },
+                            "description": "802.11be settings for SSID groups"
+                          }
+                        },
+                        "description": "802.11be settings for SSIDs"
+                      }
+                    },
+                    "x-release-stage": "general_availability",
+                    "description": "802.11be settings"
                   }
                 },
                 "example": {
@@ -100512,6 +101752,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -100546,6 +101789,9 @@
                       165
                     ],
                     "channelWidth": "auto",
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "sixGhzSettings": {
@@ -100795,6 +102041,26 @@
                         ]
                       }
                     ]
+                  },
+                  "dot11be": {
+                    "enabled": false,
+                    "mode": "all SSIDs",
+                    "ssids": {
+                      "groups": {
+                        "1": {
+                          "enabled": true
+                        },
+                        "2": {
+                          "enabled": false
+                        },
+                        "3": {
+                          "enabled": true
+                        },
+                        "4": {
+                          "enabled": false
+                        }
+                      }
+                    }
                   }
                 },
                 "required": [
@@ -100890,7 +102156,17 @@
                         },
                         "axEnabled": {
                           "type": "boolean",
-                          "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead. Defaults to true."
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         },
                         "rxsop": {
                           "type": "integer",
@@ -100930,6 +102206,16 @@
                           "type": "integer",
                           "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default.",
                           "nullable": true
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         }
                       },
                       "description": "Settings related to 5Ghz band"
@@ -101621,6 +102907,17 @@
                     "isOutdoorDefault": {
                       "type": "boolean",
                       "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor', then a new profile will be created from the respective ID and set as the default"
+                    },
+                    "dot11be": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                        }
+                      },
+                      "description": "802.11be settings",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -101651,6 +102948,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -101685,7 +102985,10 @@
                       165
                     ],
                     "channelWidth": "auto",
-                    "rxsop": -95
+                    "rxsop": -95,
+                    "dot11ax": {
+                      "enabled": true
+                    }
                   },
                   "sixGhzSettings": {
                     "maxPower": 30,
@@ -101941,7 +103244,10 @@
                     }
                   },
                   "isIndoorDefault": false,
-                  "isOutdoorDefault": false
+                  "isOutdoorDefault": false,
+                  "dot11be": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -102089,7 +103395,17 @@
                       },
                       "axEnabled": {
                         "type": "boolean",
-                        "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering."
+                        "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead."
+                      },
+                      "dot11ax": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. If omitted, the existing 2.4 GHz IEEE 802.11ax setting is preserved."
+                          }
+                        },
+                        "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                       },
                       "rxsop": {
                         "type": "integer",
@@ -102124,6 +103440,16 @@
                       "channelWidth": {
                         "type": "string",
                         "description": "Sets channel width (MHz) for 5Ghz band. Can be one of 'auto', '20', '40' or '80'."
+                      },
+                      "dot11ax": {
+                        "type": "object",
+                        "properties": {
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. If omitted, the existing 5 GHz IEEE 802.11ax setting is preserved."
+                          }
+                        },
+                        "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                       },
                       "rxsop": {
                         "type": "integer",
@@ -102889,6 +104215,77 @@
                       }
                     },
                     "description": "Flex radio settings."
+                  },
+                  "dot11be": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                      },
+                      "mode": {
+                        "type": "string",
+                        "enum": [
+                          "all SSIDs",
+                          "per SSID group"
+                        ],
+                        "description": "802.11be is enabled for all SSIDs or per SSID group"
+                      },
+                      "ssids": {
+                        "type": "object",
+                        "properties": {
+                          "groups": {
+                            "type": "object",
+                            "properties": {
+                              "1": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 1 includes SSIDs number 0-3"
+                              },
+                              "2": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 2 includes SSIDs number 4-7"
+                              },
+                              "3": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 3 includes SSIDs number 8-11"
+                              },
+                              "4": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether 802.11be is enabled for the SSID group"
+                                  }
+                                },
+                                "description": "SSID group 4 includes SSIDs number 12-14"
+                              }
+                            },
+                            "description": "802.11be settings for SSID groups"
+                          }
+                        },
+                        "description": "802.11be settings for SSIDs"
+                      }
+                    },
+                    "x-release-stage": "general_availability",
+                    "description": "802.11be settings"
                   }
                 },
                 "example": {
@@ -102918,6 +104315,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -102952,6 +104352,9 @@
                       165
                     ],
                     "channelWidth": "auto",
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "sixGhzSettings": {
@@ -103201,6 +104604,26 @@
                         ]
                       }
                     ]
+                  },
+                  "dot11be": {
+                    "enabled": false,
+                    "mode": "all SSIDs",
+                    "ssids": {
+                      "groups": {
+                        "1": {
+                          "enabled": true
+                        },
+                        "2": {
+                          "enabled": false
+                        },
+                        "3": {
+                          "enabled": true
+                        },
+                        "4": {
+                          "enabled": false
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -103292,7 +104715,17 @@
                         },
                         "axEnabled": {
                           "type": "boolean",
-                          "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead. Defaults to true."
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         },
                         "rxsop": {
                           "type": "integer",
@@ -103332,6 +104765,16 @@
                           "type": "integer",
                           "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default.",
                           "nullable": true
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         }
                       },
                       "description": "Settings related to 5Ghz band"
@@ -104023,6 +105466,17 @@
                     "isOutdoorDefault": {
                       "type": "boolean",
                       "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor', then a new profile will be created from the respective ID and set as the default"
+                    },
+                    "dot11be": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                        }
+                      },
+                      "description": "802.11be settings",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -104053,6 +105507,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -104087,7 +105544,10 @@
                       165
                     ],
                     "channelWidth": "auto",
-                    "rxsop": -95
+                    "rxsop": -95,
+                    "dot11ax": {
+                      "enabled": true
+                    }
                   },
                   "sixGhzSettings": {
                     "maxPower": 30,
@@ -104343,7 +105803,10 @@
                     }
                   },
                   "isIndoorDefault": false,
-                  "isOutdoorDefault": false
+                  "isOutdoorDefault": false,
+                  "dot11be": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -104512,7 +105975,17 @@
                         },
                         "axEnabled": {
                           "type": "boolean",
-                          "description": "Determines whether ax radio on 2.4Ghz band is on or off. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                          "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Deprecated; use dot11ax.enabled instead. Defaults to true."
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 2.4 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         },
                         "rxsop": {
                           "type": "integer",
@@ -104552,6 +106025,16 @@
                           "type": "integer",
                           "description": "The RX-SOP level controls the sensitivity of the radio. It is strongly recommended to use RX-SOP only after consulting a wireless expert. RX-SOP can be configured in the range of -65 to -95 (dBm). A value of null will reset this to the default.",
                           "nullable": true
+                        },
+                        "dot11ax": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean",
+                              "description": "Determines whether IEEE 802.11ax (Wi-Fi 6) on the 5 GHz band is enabled. Can be either true or false. If false, we highly recommend disabling band steering. Defaults to true."
+                            }
+                          },
+                          "description": "IEEE 802.11ax (Wi-Fi 6) settings."
                         }
                       },
                       "description": "Settings related to 5Ghz band"
@@ -105243,6 +106726,17 @@
                     "isOutdoorDefault": {
                       "type": "boolean",
                       "description": "Set this profile as the default outdoor rf profile. If the profile ID is one of 'indoor' or 'outdoor', then a new profile will be created from the respective ID and set as the default"
+                    },
+                    "dot11be": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether 802.11be is enabled on Wi-Fi 7 capable APs"
+                        }
+                      },
+                      "description": "802.11be settings",
+                      "x-release-stage": "general_availability"
                     }
                   }
                 },
@@ -105273,6 +106767,9 @@
                       11
                     ],
                     "axEnabled": true,
+                    "dot11ax": {
+                      "enabled": true
+                    },
                     "rxsop": -95
                   },
                   "fiveGhzSettings": {
@@ -105307,7 +106804,10 @@
                       165
                     ],
                     "channelWidth": "auto",
-                    "rxsop": -95
+                    "rxsop": -95,
+                    "dot11ax": {
+                      "enabled": true
+                    }
                   },
                   "sixGhzSettings": {
                     "maxPower": 30,
@@ -105563,7 +107063,10 @@
                     }
                   },
                   "isIndoorDefault": false,
-                  "isOutdoorDefault": false
+                  "isOutdoorDefault": false,
+                  "dot11be": {
+                    "enabled": false
+                  }
                 }
               }
             }
@@ -120783,6 +122286,7 @@
                                         "attach spoke to connectors",
                                         "bulk detachment workflow",
                                         "bulk enrollment workflow",
+                                        "bulk update region workflow",
                                         "complete bulk detachment",
                                         "complete bulk enrollment",
                                         "complete connector deployment",
@@ -122111,6 +123615,7 @@
                                               "enum": [
                                                 "802.1X",
                                                 "MAC RADIUS",
+                                                "access-manager",
                                                 "hybrid",
                                                 "open"
                                               ],
@@ -122135,7 +123640,7 @@
                                           "items": {
                                             "type": "string"
                                           },
-                                          "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set"
+                                          "description": "The VLANs for which this port will accept and pass traffic in 'trunk' mode. This must include the Native VLAN if one is set. For Secure Router Layer 2 trunk ports, ['all'] dynamically allows configured VLANs that are not reserved by Layer 3 VLAN/subinterface ports."
                                         },
                                         "sgt": {
                                           "type": "object",
@@ -127744,6 +129249,15 @@
                           },
                           "ipsecPoliciesPreset": {
                             "type": "string",
+                            "enum": [
+                              "aws",
+                              "azure",
+                              "default",
+                              "secure",
+                              "umbrella",
+                              "umbrella_short_lived",
+                              "zscaler"
+                            ],
                             "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
                           },
                           "ikeVersion": {
@@ -128191,6 +129705,15 @@
                         },
                         "ipsecPoliciesPreset": {
                           "type": "string",
+                          "enum": [
+                            "aws",
+                            "azure",
+                            "default",
+                            "secure",
+                            "umbrella",
+                            "umbrella_short_lived",
+                            "zscaler"
+                          ],
                           "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
                         },
                         "slaPolicy": {
@@ -128622,6 +130145,15 @@
                           },
                           "ipsecPoliciesPreset": {
                             "type": "string",
+                            "enum": [
+                              "aws",
+                              "azure",
+                              "default",
+                              "secure",
+                              "umbrella",
+                              "umbrella_short_lived",
+                              "zscaler"
+                            ],
                             "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
                           },
                           "ikeVersion": {
@@ -129316,6 +130848,7 @@
                   "configuration_change",
                   "console_error_authorization",
                   "console_error_timeout",
+                  "copp_drops",
                   "country_mismatch",
                   "crc_errors",
                   "dashboard_config_generation_failure",
@@ -129334,6 +130867,7 @@
                   "ethernet_negotiation_failure",
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
+                  "fan_tray_failure",
                   "faulty_cable",
                   "firewall",
                   "firmware_version",
@@ -129357,6 +130891,7 @@
                   "known_hardware_problem",
                   "l3_dynamic_routes_overflow",
                   "l3_hosts_overflow",
+                  "line_card_insufficient_power_shutdown",
                   "line_vty_conflict",
                   "line_vty_error",
                   "low_power",
@@ -129413,6 +130948,7 @@
                   "probe_cable_unknown",
                   "push_api_device_availability",
                   "radar_detection",
+                  "radius_ca_certificate_installation",
                   "reboot_count",
                   "reboot_count_no_xmit_mon",
                   "reboot_count_panic",
@@ -129990,6 +131526,7 @@
                   "configuration_change",
                   "console_error_authorization",
                   "console_error_timeout",
+                  "copp_drops",
                   "country_mismatch",
                   "crc_errors",
                   "dashboard_config_generation_failure",
@@ -130008,6 +131545,7 @@
                   "ethernet_negotiation_failure",
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
+                  "fan_tray_failure",
                   "faulty_cable",
                   "firewall",
                   "firmware_version",
@@ -130031,6 +131569,7 @@
                   "known_hardware_problem",
                   "l3_dynamic_routes_overflow",
                   "l3_hosts_overflow",
+                  "line_card_insufficient_power_shutdown",
                   "line_vty_conflict",
                   "line_vty_error",
                   "low_power",
@@ -130087,6 +131626,7 @@
                   "probe_cable_unknown",
                   "push_api_device_availability",
                   "radar_detection",
+                  "radius_ca_certificate_installation",
                   "reboot_count",
                   "reboot_count_no_xmit_mon",
                   "reboot_count_panic",
@@ -130485,6 +132025,7 @@
                   "configuration_change",
                   "console_error_authorization",
                   "console_error_timeout",
+                  "copp_drops",
                   "country_mismatch",
                   "crc_errors",
                   "dashboard_config_generation_failure",
@@ -130503,6 +132044,7 @@
                   "ethernet_negotiation_failure",
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
+                  "fan_tray_failure",
                   "faulty_cable",
                   "firewall",
                   "firmware_version",
@@ -130526,6 +132068,7 @@
                   "known_hardware_problem",
                   "l3_dynamic_routes_overflow",
                   "l3_hosts_overflow",
+                  "line_card_insufficient_power_shutdown",
                   "line_vty_conflict",
                   "line_vty_error",
                   "low_power",
@@ -130582,6 +132125,7 @@
                   "probe_cable_unknown",
                   "push_api_device_availability",
                   "radar_detection",
+                  "radius_ca_certificate_installation",
                   "reboot_count",
                   "reboot_count_no_xmit_mon",
                   "reboot_count_panic",
@@ -131036,6 +132580,7 @@
                   "configuration_change",
                   "console_error_authorization",
                   "console_error_timeout",
+                  "copp_drops",
                   "country_mismatch",
                   "crc_errors",
                   "dashboard_config_generation_failure",
@@ -131054,6 +132599,7 @@
                   "ethernet_negotiation_failure",
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
+                  "fan_tray_failure",
                   "faulty_cable",
                   "firewall",
                   "firmware_version",
@@ -131077,6 +132623,7 @@
                   "known_hardware_problem",
                   "l3_dynamic_routes_overflow",
                   "l3_hosts_overflow",
+                  "line_card_insufficient_power_shutdown",
                   "line_vty_conflict",
                   "line_vty_error",
                   "low_power",
@@ -131133,6 +132680,7 @@
                   "probe_cable_unknown",
                   "push_api_device_availability",
                   "radar_detection",
+                  "radius_ca_certificate_installation",
                   "reboot_count",
                   "reboot_count_no_xmit_mon",
                   "reboot_count_panic",
@@ -131632,6 +133180,7 @@
                   "configuration_change",
                   "console_error_authorization",
                   "console_error_timeout",
+                  "copp_drops",
                   "country_mismatch",
                   "crc_errors",
                   "dashboard_config_generation_failure",
@@ -131650,6 +133199,7 @@
                   "ethernet_negotiation_failure",
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
+                  "fan_tray_failure",
                   "faulty_cable",
                   "firewall",
                   "firmware_version",
@@ -131673,6 +133223,7 @@
                   "known_hardware_problem",
                   "l3_dynamic_routes_overflow",
                   "l3_hosts_overflow",
+                  "line_card_insufficient_power_shutdown",
                   "line_vty_conflict",
                   "line_vty_error",
                   "low_power",
@@ -131729,6 +133280,7 @@
                   "probe_cable_unknown",
                   "push_api_device_availability",
                   "radar_detection",
+                  "radius_ca_certificate_installation",
                   "reboot_count",
                   "reboot_count_no_xmit_mon",
                   "reboot_count_panic",
@@ -140495,6 +142047,468 @@
           "configure",
           "clusters",
           "tunnelable"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/campusGateway/clusters/tunneling/batchUpdate": {
+      "post": {
+        "description": "Update MCG cluster-network tunnel settings for multiple networks",
+        "operationId": "batchOrganizationCampusGatewayClustersTunnelingUpdate",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "cluster": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Cluster ID"
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "description": "MCG cluster information"
+                        },
+                        "network": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Network ID"
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "description": "Network information"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "encryption": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Whether or not tunnel traffic should be encrypted"
+                                }
+                              },
+                              "required": [
+                                "enabled"
+                              ],
+                              "description": "Encryption settings of the data plane to be configured"
+                            }
+                          },
+                          "required": [
+                            "encryption"
+                          ],
+                          "description": "Attributes related to the data plane"
+                        }
+                      },
+                      "required": [
+                        "cluster",
+                        "network",
+                        "data"
+                      ]
+                    },
+                    "description": "MCG cluster-network tunnel settings"
+                  }
+                },
+                "example": {
+                  "items": [
+                    {
+                      "cluster": {
+                        "id": "10"
+                      },
+                      "network": {
+                        "id": "N_1"
+                      },
+                      "data": {
+                        "encryption": {
+                          "enabled": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "required": [
+                  "items"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cluster": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Cluster ID"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "description": "MCG cluster information"
+                          },
+                          "network": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Network ID"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "description": "Network information"
+                          },
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "encryption": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether or not tunnel traffic should be encrypted"
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ],
+                                "description": "Configured encryption settings of the data plane"
+                              }
+                            },
+                            "required": [
+                              "encryption"
+                            ],
+                            "description": "Attributes related to the data plane"
+                          }
+                        },
+                        "required": [
+                          "cluster",
+                          "network",
+                          "data"
+                        ]
+                      },
+                      "description": "Dashboard settings configured between MCG clusters and networks"
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "cluster": {
+                        "id": "1205"
+                      },
+                      "network": {
+                        "id": "N_1"
+                      },
+                      "data": {
+                        "encryption": {
+                          "enabled": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update MCG cluster-network tunnel settings for multiple networks",
+        "tags": [
+          "campusGateway",
+          "configure",
+          "clusters",
+          "tunneling"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/campusGateway/clusters/tunneling/byCluster/byNetwork": {
+      "get": {
+        "description": "List all the MCG cluster-network tunnel settings",
+        "operationId": "getOrganizationCampusGatewayClustersTunnelingByClusterByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "clusterIds",
+            "in": "query",
+            "description": "Optional parameter to filter MCG clusters. This filter uses multiple exact matches",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "dataEncryptionEnabled",
+            "in": "query",
+            "description": "Optional parameter to filter cluster-network tunnel settings by data encryption configuration",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter networks. This filter uses multiple exact matches",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 50.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "cluster": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "cluster ID"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "cluster name"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "MCG cluster information"
+                          },
+                          "network": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Network ID"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Network Name"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "Network information and its configured settings"
+                          },
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "encryption": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "If true, indicates that data encryption is enabled"
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ],
+                                "description": "Configured encryption settings of the data plane"
+                              }
+                            },
+                            "required": [
+                              "encryption"
+                            ],
+                            "description": "Attributes related to the data plane"
+                          }
+                        },
+                        "required": [
+                          "cluster",
+                          "network",
+                          "data"
+                        ]
+                      },
+                      "description": "Dashboard settings configured between MCG clusters and networks"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total"
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Remaining"
+                                }
+                              },
+                              "required": [
+                                "total",
+                                "remaining"
+                              ],
+                              "description": "Items"
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "description": "Counts"
+                        }
+                      },
+                      "required": [
+                        "counts"
+                      ],
+                      "description": "Metadata about the response"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "meta"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "cluster": {
+                        "id": "1205",
+                        "name": "SFO Cluster"
+                      },
+                      "network": {
+                        "id": "N_1",
+                        "name": "SFO wireless"
+                      },
+                      "data": {
+                        "encryption": {
+                          "enabled": true
+                        }
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 1,
+                        "remaining": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
+        "summary": "List all the MCG cluster-network tunnel settings",
+        "tags": [
+          "campusGateway",
+          "configure",
+          "clusters",
+          "tunneling",
+          "byCluster",
+          "byNetwork"
         ]
       }
     },
@@ -158979,6 +160993,11 @@
                         "type": "string",
                         "description": "Name of the device"
                       },
+                      "address": {
+                        "type": "string",
+                        "description": "Physical address of the device",
+                        "nullable": true
+                      },
                       "model": {
                         "type": "string",
                         "description": "Model type of the device"
@@ -159071,6 +161090,7 @@
                     "mac": "00:11:22:33:44:55",
                     "serial": "Q234-ABCD-5678",
                     "name": "My AP",
+                    "address": "500 Terry A Francois Blvd, San Francisco, CA 94158",
                     "model": "MR34",
                     "sku": "MR34-HW",
                     "networkId": "N_24329156",
@@ -159737,6 +161757,11 @@
                       "type": "string",
                       "description": "Name of the device"
                     },
+                    "address": {
+                      "type": "string",
+                      "description": "Physical address of the device",
+                      "nullable": true
+                    },
                     "model": {
                       "type": "string",
                       "description": "Model type of the device"
@@ -159827,6 +161852,7 @@
                   "mac": "00:11:22:33:44:55",
                   "serial": "Q234-ABCD-5678",
                   "name": "My AP",
+                  "address": "500 Terry A Francois Blvd, San Francisco, CA 94158",
                   "model": "MR34",
                   "sku": "MR34-HW",
                   "networkId": "N_24329156",
@@ -160104,7 +162130,12 @@
                       "properties": {
                         "submissionStrategy": {
                           "type": "string",
-                          "description": "The synchronous submission path allowed for this preview"
+                          "enum": [
+                            "bulk_claim_required",
+                            "sync_claim",
+                            "sync_order_claim"
+                          ],
+                          "description": "The submission strategy required for this preview"
                         },
                         "supportsSubscriptionSelection": {
                           "type": "boolean",
@@ -174507,7 +176538,7 @@
     },
     "/organizations/{organizationId}/sase/sites/attach": {
       "post": {
-        "description": "Attach sites in this organization to Secure Access. For an organization, a maximum of 2500 sites can be attached if they are in spoke mode or a maximum of 10 sites can be attached in hub mode.",
+        "description": "Attach sites in this organization to Secure Access. For an organization, a maximum of 2500 sites can be attached if they are in spoke mode or a maximum of 100 sites can be attached in hub mode.",
         "operationId": "attachOrganizationSaseSites",
         "parameters": [
           {
@@ -181206,6 +183237,26 @@
                               "type": "boolean",
                               "description": "The PoE status of the switch port."
                             },
+                            "perpetualPoe": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Whether Perpetual PoE is enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                                }
+                              },
+                              "description": "Perpetual PoE settings for the switch port."
+                            },
+                            "fastPoe": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Whether Fast PoE is enabled. Fast PoE requires Perpetual PoE to be enabled. This field is returned for all physical switch ports, but can only be enabled on ports that support PoE HA."
+                                }
+                              },
+                              "description": "Fast PoE settings for the switch port."
+                            },
                             "type": {
                               "type": "string",
                               "enum": [
@@ -181278,6 +183329,8 @@
                             "tags",
                             "enabled",
                             "poeEnabled",
+                            "perpetualPoe",
+                            "fastPoe",
                             "type",
                             "vlan",
                             "voiceVlan",
@@ -181321,6 +183374,12 @@
                         ],
                         "enabled": true,
                         "poeEnabled": true,
+                        "perpetualPoe": {
+                          "enabled": true
+                        },
+                        "fastPoe": {
+                          "enabled": true
+                        },
                         "type": "access",
                         "vlan": 10,
                         "voiceVlan": 20,
@@ -192184,6 +194243,228 @@
         ]
       }
     },
+    "/organizations/{organizationId}/wireless/radio/overrides/byDevice": {
+      "get": {
+        "description": "Return a list of radio overrides",
+        "operationId": "getOrganizationWirelessRadioOverridesByDevice",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "networkIds",
+            "in": "query",
+            "description": "A list of network IDs. The returned radio overrides will be filtered to only include these networks.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "serials",
+            "in": "query",
+            "description": "A list of serial numbers. The returned radio overrides will be filtered to only include these serials.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "serial": {
+                            "type": "string",
+                            "description": "The device serial"
+                          },
+                          "network": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "The network identifier"
+                              }
+                            },
+                            "description": "The device's network"
+                          },
+                          "rfProfile": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "RF Profile ID"
+                              }
+                            },
+                            "description": "The device's RF profile"
+                          },
+                          "radios": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean",
+                                  "description": "Radio enabled"
+                                },
+                                "index": {
+                                  "type": "string",
+                                  "description": "Radio identifier for the device"
+                                },
+                                "band": {
+                                  "type": "string",
+                                  "enum": [
+                                    "2.4",
+                                    "5",
+                                    "6"
+                                  ],
+                                  "description": "Radio band: one of '2.4', '5' or '6'"
+                                },
+                                "channel": {
+                                  "type": "integer",
+                                  "description": "Radio channel: Valid channels depend on the radio band."
+                                },
+                                "channelWidth": {
+                                  "type": "integer",
+                                  "description": "Radio channel width: Valid widths depend on the radio band."
+                                },
+                                "targetPower": {
+                                  "type": "integer",
+                                  "description": "Radio target power: Valid target power depends on the radio band."
+                                }
+                              }
+                            },
+                            "description": "Individual radios on the device"
+                          }
+                        }
+                      },
+                      "description": "Paginated list of radio overrides for specified devices",
+                      "x-release-stage": "general_availability"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of devices matching all filters."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of devices remaining after this page."
+                                }
+                              },
+                              "description": "Total and remaining device counts across the full filtered collection"
+                            }
+                          },
+                          "description": "Collection-wide size information covering all pages"
+                        }
+                      },
+                      "description": "Response metadata containing collection-wide counts (not page-local)"
+                    }
+                  }
+                },
+                "example": {
+                  "items": [
+                    {
+                      "serial": "Q234-ABCD-5678",
+                      "network": {
+                        "id": "N_24329156"
+                      },
+                      "rfProfile": {
+                        "id": "1234"
+                      },
+                      "radios": [
+                        {
+                          "enabled": true,
+                          "index": "1",
+                          "band": "5",
+                          "channel": 149,
+                          "channelWidth": 20,
+                          "targetPower": 15
+                        }
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 42,
+                        "remaining": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "summary": "Return a list of radio overrides",
+        "tags": [
+          "wireless",
+          "configure",
+          "radio",
+          "overrides",
+          "byDevice"
+        ]
+      }
+    },
     "/organizations/{organizationId}/wireless/radio/rrm/byNetwork": {
       "get": {
         "description": "List the AutoRF settings of an organization by network",
@@ -192433,7 +194714,7 @@
                       },
                       "ai": {
                         "enabled": true,
-                        "lastEnabledAt": "2026-07-05T08:07:39Z"
+                        "lastEnabledAt": "2026-08-02T08:06:48Z"
                       }
                     }
                   ],
@@ -205553,6 +207834,9 @@
       "name": "masks"
     },
     {
+      "name": "mdns"
+    },
+    {
       "name": "me"
     },
     {
@@ -205641,6 +207925,9 @@
     },
     {
       "name": "ospf"
+    },
+    {
+      "name": "overrides"
     },
     {
       "name": "overview"
@@ -206012,6 +208299,9 @@
       "name": "tunnelable"
     },
     {
+      "name": "tunneling"
+    },
+    {
       "name": "types"
     },
     {
@@ -206198,7 +208488,7 @@
     },
     {
       "group": "Api platform/actions/webhook payload",
-      "summary": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003', 'wpt_00004', 'wpt_00005', 'wpt_00006', 'wpt_00007' or 'wpt_00008')",
+      "summary": "Destroy a webhook payload template for a network. Does not work for included templates ('wpt_00001', 'wpt_00002', 'wpt_00003', 'wpt_00004', 'wpt_00005', 'wpt_00006', 'wpt_00007', 'wpt_00008' or 'wpt_00009')",
       "resource": "/networks/{networkId}/webhooks/payloadTemplates/{payloadTemplateId}",
       "operation": "destroy"
     },
@@ -206230,12 +208520,6 @@
       "group": "Appliance radio settings",
       "summary": "Update the radio settings of an appliance",
       "resource": "/devices/{serial}/appliance/radio/settings",
-      "operation": "update"
-    },
-    {
-      "group": "Appliance ssid",
-      "summary": "Update the attributes of an MX SSID",
-      "resource": "/networks/{networkId}/appliance/ssids/{number}",
       "operation": "update"
     },
     {
@@ -206503,12 +208787,6 @@
       "operation": "destroy"
     },
     {
-      "group": "Frontizo/actions/site",
-      "summary": "Attach sites in this organization to Secure Access. For an organization, a maximum of 2500 sites can be attached if they are in spoke mode or a maximum of 10 sites can be attached in hub mode.",
-      "resource": "/organizations/{organizationId}/sase/sites",
-      "operation": "create"
-    },
-    {
       "group": "Frontizo/actions/umbrella integration/account",
       "summary": "Connect a Cisco Umbrella account to this network",
       "resource": "/networks/{networkId}/appliance/umbrella/account",
@@ -206543,18 +208821,6 @@
       "summary": "Enable or disable umbrella protection for an appliance network. When 'enabled' is false, 'umbrella.organization.id' and 'umbrella.origin.id' are null in the response.",
       "resource": "/networks/{networkId}/appliance/umbrella",
       "operation": "action"
-    },
-    {
-      "group": "Frontizo/sse sites/actions/connectors batch",
-      "summary": "Delete SSE Connectors by ID",
-      "resource": "/organizations/{organizationId}/sase/connectors",
-      "operation": "teardown"
-    },
-    {
-      "group": "Frontizo/sse sites/actions/sites",
-      "summary": "Detach sites in this organization from Secure Access. This will remove the sites from Secure Access.",
-      "resource": "/organizations/{organizationId}/sase/sites",
-      "operation": "detach"
     },
     {
       "group": "Frontizo/sse sites/actions/sites",
@@ -206605,7 +208871,7 @@
       "operation": "update"
     },
     {
-      "group": "Inventory/actions/device",
+      "group": "Inventory/actions/action batch device",
       "summary": "Claim devices into a network. (Note: for recently claimed devices, it may take a few minutes for API requests against that device to succeed). This operation can be used up to ten times within a single five minute window.",
       "resource": "/networks/{networkId}/devices/claim",
       "operation": "claim"
@@ -206717,6 +208983,18 @@
       "summary": "Provisions a cluster,adds campus gateways to it and associate/dissociate failover targets.",
       "resource": "/organizations/{organizationId}/campusGateway/clusters",
       "operation": "provision"
+    },
+    {
+      "group": "Mcg/actions/mdns",
+      "summary": "Update the mDNS gateway settings and rules for a SSID and cluster",
+      "resource": "/networks/{networkId}/campusGateway/ssids/{number}/mdns",
+      "operation": "update"
+    },
+    {
+      "group": "Mcg/actions/tunnel settings batch",
+      "summary": "Update MCG cluster-network tunnel settings for multiple networks",
+      "resource": "/organizations/{organizationId}/campusGateway/clusters/tunneling",
+      "operation": "batch_update"
     },
     {
       "group": "Monitored media server",
@@ -206842,6 +209120,12 @@
       "group": "Mr/actions/iot/esl node settings",
       "summary": "Update the ESL settings of a device",
       "resource": "/devices/{serial}/wireless/electronicShelfLabel",
+      "operation": "update"
+    },
+    {
+      "group": "Mr/actions/radio overrides",
+      "summary": "Update 2.4 GHz, 5 GHz, and 6 GHz radio settings (channel, channel width, power, and enable/disable) that override RF profiles. Read-only fields returned by this endpoint, such as 'serial', 'network', and 'radios[].band', may be included when sending a previously returned object back to this PUT endpoint and will be ignored.",
+      "resource": "/devices/{serial}/wireless/radio/overrides",
       "operation": "update"
     },
     {
@@ -207109,6 +209393,12 @@
       "operation": "update"
     },
     {
+      "group": "Ms/actions/switch port schedule",
+      "summary": "Add a switch port schedule",
+      "resource": "/networks/{networkId}/switch/portSchedules",
+      "operation": "create"
+    },
+    {
       "group": "Ms/actions/switch profile port",
       "summary": "Update a switch template port",
       "resource": "/organizations/{organizationId}/configTemplates/{configTemplateId}/switch/profiles/{profileId}/ports/{portId}",
@@ -207173,12 +209463,6 @@
       "summary": "Update layer 3 OSPF routing configuration",
       "resource": "/networks/{networkId}/switch/routing/ospf",
       "operation": "update"
-    },
-    {
-      "group": "Ms/switch",
-      "summary": "Update switch network settings",
-      "resource": "/networks/{networkId}/switch/settings",
-      "operation": "settings/actions/update"
     },
     {
       "group": "Ms/switch",
@@ -207613,6 +209897,12 @@
       "operation": "update"
     },
     {
+      "group": "Switch settings",
+      "summary": "Update switch network settings",
+      "resource": "/networks/{networkId}/switch/settings",
+      "operation": "update"
+    },
+    {
       "group": "Switch warm spare settings",
       "summary": "Update warm spare configuration for a switch. The spare will use the same L3 configuration as the primary. Note that this will irreversibly destroy any existing L3 configuration on the spare.",
       "resource": "/devices/{serial}/switch/warmSpare",
@@ -207826,6 +210116,12 @@
       "group": "Wired/appliance RF profile",
       "summary": "Updates specified RF profile for this network",
       "resource": "/networks/{networkId}/appliance/rfProfiles/{rfProfileId}",
+      "operation": "update"
+    },
+    {
+      "group": "Wired/appliance/actions/appliance ssid",
+      "summary": "Update the attributes of an MX SSID",
+      "resource": "/networks/{networkId}/appliance/ssids/{number}",
       "operation": "update"
     },
     {
