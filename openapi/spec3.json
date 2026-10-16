@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 14 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 16 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.75.0-beta.1"
+    "version": "v1.75.1-beta.0"
   },
   "servers": [
     {
@@ -258,6 +258,11 @@
                     "response": {
                       "type": "string",
                       "description": "Assistant response text. Currently mirrors 'content'."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Neo outcome classification for this completion, so callers can distinguish outcomes without parsing the response text.",
+                      "nullable": true
                     }
                   }
                 },
@@ -267,7 +272,8 @@
                   "content": "A dormant device is a device that has not been active for a period of time",
                   "sources": [],
                   "status": "success",
-                  "response": "A dormant device is a device that has not been active for a period of time"
+                  "response": "A dormant device is a device that has not been active for a period of time",
+                  "tag": "success"
                 }
               }
             }
@@ -371,13 +377,14 @@
                             "description": "Display name of the conversation thread."
                           },
                           "dateModified": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                            "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                            "nullable": true
                           }
                         }
                       },
@@ -386,17 +393,25 @@
                     "meta": {
                       "type": "object",
                       "properties": {
-                        "remaining": {
-                          "type": "integer",
-                          "description": "Number of remaining threads."
-                        },
-                        "count": {
-                          "type": "integer",
-                          "description": "Number of threads in this page."
-                        },
-                        "total": {
-                          "type": "integer",
-                          "description": "Total number of threads."
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of threads matching the query."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of threads remaining after this page."
+                                }
+                              },
+                              "description": "Thread counts for this query."
+                            }
+                          },
+                          "description": "Resource counts for this query."
                         }
                       },
                       "description": "Pagination metadata."
@@ -408,14 +423,17 @@
                     {
                       "threadId": "7139232",
                       "threadName": "Uplink troubleshooting - Branch office",
-                      "dateModified": 1775500697037.643,
+                      "dateModified": "2026-04-01T12:00:00+00:00",
                       "tag": "network_engineer_agent"
                     }
                   ],
                   "meta": {
-                    "remaining": 0,
-                    "count": 10,
-                    "total": 25
+                    "counts": {
+                      "items": {
+                        "total": 25,
+                        "remaining": 0
+                      }
+                    }
                   }
                 }
               }
@@ -530,20 +548,21 @@
                       "description": "Display name of the conversation thread."
                     },
                     "dateModified": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
                   "threadId": "7139232",
                   "threadName": "Uplink troubleshooting - Branch office",
-                  "dateModified": 1775500697037.643,
+                  "dateModified": "2026-04-01T12:00:00+00:00",
                   "tag": "network_engineer_agent"
                 }
               }
@@ -717,7 +736,7 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": {
+                          "messageId": {
                             "type": "string",
                             "description": "Unique message identifier."
                           },
@@ -735,9 +754,9 @@
                             "description": "Message body text."
                           },
                           "timestamp": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "Message creation timestamp in epoch milliseconds."
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Message creation timestamp (ISO 8601)."
                           },
                           "sources": {
                             "type": "array",
@@ -755,11 +774,13 @@
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Classification tag for the message."
+                            "description": "Classification tag for the message. Null for user messages.",
+                            "nullable": true
                           },
                           "format": {
                             "type": "string",
-                            "description": "Response format hint."
+                            "description": "Response format hint. Null for user messages.",
+                            "nullable": true
                           },
                           "feedback": {
                             "type": "array",
@@ -789,17 +810,25 @@
                     "meta": {
                       "type": "object",
                       "properties": {
-                        "remaining": {
-                          "type": "integer",
-                          "description": "Number of remaining messages."
-                        },
-                        "count": {
-                          "type": "integer",
-                          "description": "Number of messages in this page."
-                        },
-                        "total": {
-                          "type": "integer",
-                          "description": "Total number of messages matching the query."
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of messages matching the query."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of messages remaining after this page."
+                                }
+                              },
+                              "description": "Message counts for this query."
+                            }
+                          },
+                          "description": "Resource counts for this query."
                         }
                       },
                       "description": "Pagination metadata."
@@ -809,9 +838,9 @@
                 "example": {
                   "items": [
                     {
-                      "id": "14604875",
+                      "messageId": "14604875",
                       "sender": "USER",
-                      "timestamp": 1777561554921.36,
+                      "timestamp": "2026-04-01T12:00:00+00:00",
                       "sources": [],
                       "followUps": [],
                       "tag": "success",
@@ -826,9 +855,12 @@
                     }
                   ],
                   "meta": {
-                    "remaining": 0,
-                    "count": 10,
-                    "total": 25
+                    "counts": {
+                      "items": {
+                        "total": 25,
+                        "remaining": 0
+                      }
+                    }
                   }
                 }
               }
@@ -980,7 +1012,7 @@
                   "type": "object",
                   "properties": {
                     "messageId": {
-                      "type": "integer",
+                      "type": "string",
                       "description": "Identifier of the created message."
                     },
                     "runId": {
@@ -988,15 +1020,16 @@
                       "description": "Identifier for the execution run processing this message."
                     },
                     "threadId": {
-                      "type": "integer",
-                      "description": "Thread ID the message was created in."
+                      "type": "string",
+                      "description": "Thread ID the message was created in.",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
-                  "messageId": 15432169,
+                  "messageId": "15432169",
                   "runId": "15432169",
-                  "threadId": 7139232
+                  "threadId": "7139232"
                 }
               }
             }
@@ -1052,7 +1085,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": {
+                    "messageId": {
                       "type": "string",
                       "description": "Unique message identifier."
                     },
@@ -1070,9 +1103,9 @@
                       "description": "Message body text."
                     },
                     "timestamp": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "Message creation timestamp in epoch milliseconds."
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Message creation timestamp (ISO 8601)."
                     },
                     "sources": {
                       "type": "array",
@@ -1090,11 +1123,13 @@
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Classification tag for the message."
+                      "description": "Classification tag for the message. Null for user messages.",
+                      "nullable": true
                     },
                     "format": {
                       "type": "string",
-                      "description": "Response format hint."
+                      "description": "Response format hint. Null for user messages.",
+                      "nullable": true
                     },
                     "feedback": {
                       "type": "array",
@@ -1120,9 +1155,9 @@
                   }
                 },
                 "example": {
-                  "id": "14604875",
+                  "messageId": "14604875",
                   "sender": "USER",
-                  "timestamp": 1777561554921.36,
+                  "timestamp": "2026-04-01T12:00:00+00:00",
                   "sources": [],
                   "followUps": [],
                   "tag": "success",
@@ -53343,7 +53378,7 @@
                           },
                           "sourceInterface": {
                             "type": "string",
-                            "description": "The output interface the appliance uses to establish a peering relationship with the neighbor"
+                            "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                           },
                           "nextHopIp": {
                             "type": "string",
@@ -53650,7 +53685,7 @@
                         },
                         "sourceInterface": {
                           "type": "string",
-                          "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') for Secure Router L3 interfaces."
+                          "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                         },
                         "nextHopIp": {
                           "type": "string",
@@ -53916,7 +53951,7 @@
                           },
                           "sourceInterface": {
                             "type": "string",
-                            "description": "The output interface the appliance uses to establish a peering relationship with the neighbor"
+                            "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                           },
                           "nextHopIp": {
                             "type": "string",
@@ -92940,6 +92975,11 @@
                       "type": "string",
                       "description": "The name of the building"
                     },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO 8601 timestamp when the building was last updated."
+                    },
                     "bounds": {
                       "type": "object",
                       "properties": {
@@ -93030,6 +93070,7 @@
                     "name": "Main Office"
                   },
                   "name": "Headquarters",
+                  "updatedAt": "2026-09-28T00:00:00Z",
                   "bounds": {
                     "northeast": {
                       "latitude": 37.77157860210302,
@@ -93204,6 +93245,11 @@
                       "type": "string",
                       "description": "The name of the building"
                     },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The ISO 8601 timestamp when the building was last updated."
+                    },
                     "bounds": {
                       "type": "object",
                       "properties": {
@@ -93294,6 +93340,7 @@
                     "name": "Main Office"
                   },
                   "name": "Headquarters",
+                  "updatedAt": "2026-09-28T00:00:00Z",
                   "bounds": {
                     "northeast": {
                       "latitude": 37.77157860210302,
@@ -94159,7 +94206,8 @@
                           },
                           "preAuthenticationGroupPolicyId": {
                             "type": "string",
-                            "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                            "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                            "nullable": true
                           }
                         },
                         "description": "Object for RADIUS Settings"
@@ -94912,7 +94960,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -95311,7 +95360,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -96065,7 +96115,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -118733,7 +118784,7 @@
                               },
                               "value": {
                                 "type": "string",
-                                "description": "PSK key value"
+                                "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                               }
                             },
                             "description": "PSK credentials"
@@ -118780,7 +118831,7 @@
                       "mode": "PSK with MACSec",
                       "psk": {
                         "name": "abcdef123456",
-                        "value": "abcdef123456789"
+                        "value": "abcdef0123456789abcdef0123456789"
                       },
                       "macsec": {
                         "replayWindow": 0
@@ -118909,7 +118960,7 @@
                           },
                           "value": {
                             "type": "string",
-                            "description": "PSK key value"
+                            "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                           }
                         },
                         "description": "PSK credentials"
@@ -118950,7 +119001,7 @@
                     "mode": "MACSec with PSK",
                     "psk": {
                       "name": "123abc",
-                      "value": "7890def"
+                      "value": "abcdef0123456789abcdef0123456789"
                     },
                     "macsec": {
                       "replayWindow": 0
@@ -119052,7 +119103,7 @@
                             },
                             "value": {
                               "type": "string",
-                              "description": "PSK key value"
+                              "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                             }
                           },
                           "description": "PSK credentials"
@@ -119097,7 +119148,7 @@
                     "mode": "PSK with MACSec",
                     "psk": {
                       "name": "abcdef123456",
-                      "value": "abcdef123456789"
+                      "value": "abcdef0123456789abcdef0123456789"
                     },
                     "macsec": {
                       "replayWindow": 0
@@ -119412,7 +119463,7 @@
                             },
                             "value": {
                               "type": "string",
-                              "description": "PSK key value"
+                              "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                             }
                           },
                           "description": "PSK credentials"
@@ -119457,7 +119508,7 @@
                     "mode": "PSK with MACSec",
                     "psk": {
                       "name": "abcdef123456",
-                      "value": "abcdef123456789"
+                      "value": "abcdef0123456789abcdef0123456789"
                     },
                     "macsec": {
                       "replayWindow": 0
@@ -119594,7 +119645,7 @@
                           },
                           "value": {
                             "type": "string",
-                            "description": "PSK key value"
+                            "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                           }
                         },
                         "description": "PSK credentials"
@@ -119706,7 +119757,7 @@
                             },
                             "value": {
                               "type": "string",
-                              "description": "PSK key value"
+                              "description": "PSK key value. Must be exactly 32 or 64 hexadecimal characters"
                             }
                           },
                           "description": "PSK credentials"
@@ -119751,7 +119802,7 @@
                     "mode": "PSK with MACSec",
                     "psk": {
                       "name": "abcdef123456",
-                      "value": "abcdef123456789"
+                      "value": "abcdef0123456789abcdef0123456789"
                     },
                     "macsec": {
                       "replayWindow": 0
@@ -122023,7 +122074,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-09-14T08:05:57Z"
+                    "lastEnabledAt": "2026-09-16T08:06:26Z"
                   }
                 }
               }
@@ -122372,7 +122423,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-09-14T08:05:57Z"
+                    "lastEnabledAt": "2026-09-16T08:06:26Z"
                   }
                 }
               }
@@ -159309,13 +159360,13 @@
                         "usageBytes": 1000,
                         "outage": [
                           {
-                            "ts": 1791957933,
+                            "ts": 1792130761,
                             "isConnected": true
                           }
                         ],
                         "usageIntervals": [
                           {
-                            "ts": 1791957933,
+                            "ts": 1792130761,
                             "latency": 35.3,
                             "loss": {
                               "percentage": 50
@@ -163416,6 +163467,11 @@
                     "response": {
                       "type": "string",
                       "description": "Assistant response text. Currently mirrors 'content'."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Neo outcome classification for this completion, so callers can distinguish outcomes without parsing the response text.",
+                      "nullable": true
                     }
                   }
                 },
@@ -163425,7 +163481,8 @@
                   "content": "A dormant device is a device that has not been active for a period of time",
                   "sources": [],
                   "status": "success",
-                  "response": "A dormant device is a device that has not been active for a period of time"
+                  "response": "A dormant device is a device that has not been active for a period of time",
+                  "tag": "success"
                 }
               }
             }
@@ -163538,13 +163595,14 @@
                             "description": "Display name of the conversation thread."
                           },
                           "dateModified": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                            "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                            "nullable": true
                           }
                         }
                       },
@@ -163553,17 +163611,25 @@
                     "meta": {
                       "type": "object",
                       "properties": {
-                        "remaining": {
-                          "type": "integer",
-                          "description": "Number of remaining threads."
-                        },
-                        "count": {
-                          "type": "integer",
-                          "description": "Number of threads in this page."
-                        },
-                        "total": {
-                          "type": "integer",
-                          "description": "Total number of threads."
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of threads matching the query."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of threads remaining after this page."
+                                }
+                              },
+                              "description": "Thread counts for this query."
+                            }
+                          },
+                          "description": "Resource counts for this query."
                         }
                       },
                       "description": "Pagination metadata."
@@ -163575,14 +163641,17 @@
                     {
                       "threadId": "7139232",
                       "threadName": "Uplink troubleshooting - Branch office",
-                      "dateModified": 1775500697037.643,
+                      "dateModified": "2026-04-01T12:00:00+00:00",
                       "tag": "network_engineer_agent"
                     }
                   ],
                   "meta": {
-                    "remaining": 0,
-                    "count": 10,
-                    "total": 25
+                    "counts": {
+                      "items": {
+                        "total": 25,
+                        "remaining": 0
+                      }
+                    }
                   }
                 }
               }
@@ -163717,20 +163786,21 @@
                       "description": "Display name of the conversation thread."
                     },
                     "dateModified": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "Timestamp of the most recent activity in the thread (epoch milliseconds)."
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type)."
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
                   "threadId": "7139232",
                   "threadName": "Uplink troubleshooting - Branch office",
-                  "dateModified": 1775500697037.643,
+                  "dateModified": "2026-04-01T12:00:00+00:00",
                   "tag": "network_engineer_agent"
                 }
               }
@@ -163931,7 +164001,7 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": {
+                          "messageId": {
                             "type": "string",
                             "description": "Unique message identifier."
                           },
@@ -163949,9 +164019,9 @@
                             "description": "Message body text."
                           },
                           "timestamp": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "Message creation timestamp in epoch milliseconds."
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Message creation timestamp (ISO 8601)."
                           },
                           "sources": {
                             "type": "array",
@@ -163969,11 +164039,13 @@
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Classification tag for the message."
+                            "description": "Classification tag for the message. Null for user messages.",
+                            "nullable": true
                           },
                           "format": {
                             "type": "string",
-                            "description": "Response format hint."
+                            "description": "Response format hint. Null for user messages.",
+                            "nullable": true
                           },
                           "feedback": {
                             "type": "array",
@@ -164003,17 +164075,25 @@
                     "meta": {
                       "type": "object",
                       "properties": {
-                        "remaining": {
-                          "type": "integer",
-                          "description": "Number of remaining messages."
-                        },
-                        "count": {
-                          "type": "integer",
-                          "description": "Number of messages in this page."
-                        },
-                        "total": {
-                          "type": "integer",
-                          "description": "Total number of messages matching the query."
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of messages matching the query."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of messages remaining after this page."
+                                }
+                              },
+                              "description": "Message counts for this query."
+                            }
+                          },
+                          "description": "Resource counts for this query."
                         }
                       },
                       "description": "Pagination metadata."
@@ -164023,9 +164103,9 @@
                 "example": {
                   "items": [
                     {
-                      "id": "14604875",
+                      "messageId": "14604875",
                       "sender": "USER",
-                      "timestamp": 1777561554921.36,
+                      "timestamp": "2026-04-01T12:00:00+00:00",
                       "sources": [],
                       "followUps": [],
                       "tag": "success",
@@ -164040,9 +164120,12 @@
                     }
                   ],
                   "meta": {
-                    "remaining": 0,
-                    "count": 10,
-                    "total": 25
+                    "counts": {
+                      "items": {
+                        "total": 25,
+                        "remaining": 0
+                      }
+                    }
                   }
                 }
               }
@@ -164213,7 +164296,7 @@
                   "type": "object",
                   "properties": {
                     "messageId": {
-                      "type": "integer",
+                      "type": "string",
                       "description": "Identifier of the created message."
                     },
                     "runId": {
@@ -164221,15 +164304,16 @@
                       "description": "Identifier for the execution run processing this message."
                     },
                     "threadId": {
-                      "type": "integer",
-                      "description": "Thread ID the message was created in. For shared organization threads, this may be a newly cloned user thread."
+                      "type": "string",
+                      "description": "Thread ID the message was created in. For shared organization threads, this may be a newly cloned user thread.",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
-                  "messageId": 15432169,
+                  "messageId": "15432169",
                   "runId": "15432169",
-                  "threadId": 7139232
+                  "threadId": "7139232"
                 }
               }
             }
@@ -164294,7 +164378,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": {
+                    "messageId": {
                       "type": "string",
                       "description": "Unique message identifier."
                     },
@@ -164312,9 +164396,9 @@
                       "description": "Message body text."
                     },
                     "timestamp": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "Message creation timestamp in epoch milliseconds."
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Message creation timestamp (ISO 8601)."
                     },
                     "sources": {
                       "type": "array",
@@ -164332,11 +164416,13 @@
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Classification tag for the message."
+                      "description": "Classification tag for the message. Null for user messages.",
+                      "nullable": true
                     },
                     "format": {
                       "type": "string",
-                      "description": "Response format hint."
+                      "description": "Response format hint. Null for user messages.",
+                      "nullable": true
                     },
                     "feedback": {
                       "type": "array",
@@ -164362,9 +164448,9 @@
                   }
                 },
                 "example": {
-                  "id": "14604875",
+                  "messageId": "14604875",
                   "sender": "USER",
-                  "timestamp": 1777561554921.36,
+                  "timestamp": "2026-04-01T12:00:00+00:00",
                   "sources": [],
                   "followUps": [],
                   "tag": "success",
@@ -164430,6 +164516,25 @@
               "type": "string"
             },
             "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Number of entries per page. Defaults to 100.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of artifacts to skip before returning results. Defaults to 0.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
           }
         ],
         "responses": {
@@ -164440,21 +164545,17 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "messageId": {
-                      "type": "integer",
-                      "description": "The message this artifact list belongs to."
-                    },
-                    "artifacts": {
+                    "items": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": {
-                            "type": "integer",
+                          "artifactId": {
+                            "type": "string",
                             "description": "Unique artifact identifier."
                           },
                           "messageId": {
-                            "type": "integer",
+                            "type": "string",
                             "description": "Parent message identifier."
                           },
                           "type": {
@@ -164472,20 +164573,53 @@
                         }
                       },
                       "description": "Array of artifact metadata objects."
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of artifacts on this message."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of artifacts remaining after this page."
+                                }
+                              },
+                              "description": "Artifact counts for this message."
+                            }
+                          },
+                          "description": "Resource counts for this query."
+                        }
+                      },
+                      "description": "Pagination metadata."
                     }
                   }
                 },
                 "example": {
-                  "messageId": 456,
-                  "artifacts": [
+                  "items": [
                     {
-                      "id": 123,
-                      "messageId": 456,
+                      "artifactId": "123",
+                      "messageId": "456",
                       "type": "processed_tool_response",
                       "createdAt": "2026-04-01T12:00:00+00:00",
                       "updatedAt": "2026-04-01T12:05:00+00:00"
                     }
-                  ]
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 25,
+                        "remaining": 0
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -165089,10 +165223,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
                   "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -165776,10 +165914,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
                   "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -166284,10 +166426,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
                   "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -166848,10 +166994,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
                   "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -167457,10 +167607,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
                   "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -172491,6 +172645,10 @@
                               "type": {
                                 "type": "string",
                                 "description": "Server type"
+                              },
+                              "traffic": {
+                                "type": "string",
+                                "description": "Server traffic source"
                               }
                             },
                             "description": "Server details"
@@ -172598,7 +172756,8 @@
                       },
                       "server": {
                         "ip": "1.2.3.4",
-                        "type": "radius"
+                        "type": "radius",
+                        "traffic": "Wireless"
                       },
                       "successes": {
                         "count": 523,
@@ -175402,6 +175561,16 @@
                                 "username": {
                                   "type": "string",
                                   "description": "Client username."
+                                },
+                                "accessPoint": {
+                                  "type": "object",
+                                  "properties": {
+                                    "serial": {
+                                      "type": "string",
+                                      "description": "Serial number of the access point."
+                                    }
+                                  },
+                                  "description": "Access point whose own MAC matches this client in network inventory the caller can read. Omitted when no readable access point matches."
                                 }
                               },
                               "description": "Client info."
@@ -175599,7 +175768,10 @@
                           "id": "abcdefgh",
                           "mac": "00:11:22:33:44:55",
                           "name": "Miles's iPhone",
-                          "username": "miles@example.com"
+                          "username": "miles@example.com",
+                          "accessPoint": {
+                            "serial": "Q234-ABCD-5678"
+                          }
                         },
                         "clientType": {
                           "name": "Phone"
@@ -243938,18 +244110,9 @@
                     "status": {
                       "type": "string",
                       "enum": [
-                        "new",
-                        "subscription",
-                        "subscription_commit_exceeded",
-                        "subscription_expired",
-                        "subscription_grace_period",
-                        "trial",
-                        "trial_credit_90_percent_used",
-                        "trial_credit_exceeded",
-                        "trial_credit_half_used",
-                        "trial_expired"
+                        "trial"
                       ],
-                      "description": "Current billing lifecycle status for the organization."
+                      "description": "`trial` identifies an organization currently recorded in the initial trial state. Omitted for all other organization lifecycle states."
                     },
                     "trial": {
                       "type": "object",
@@ -243966,45 +244129,9 @@
                         "tcVersion": {
                           "type": "string",
                           "description": "Terms and conditions version accepted for the trial."
-                        },
-                        "creditAmount": {
-                          "type": "integer",
-                          "description": "Total trial credit allocated to the organization, expressed as an integer number of USD cents."
-                        },
-                        "trialUsage": {
-                          "type": "integer",
-                          "description": "Trial credit consumed by the organization, expressed as an integer number of USD cents."
-                        },
-                        "trialEndsAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time when the trial ends."
-                        },
-                        "usage": {
-                          "type": "object",
-                          "properties": {
-                            "azToAzBytes": {
-                              "type": "integer",
-                              "description": "Az to az bytes"
-                            },
-                            "regionToRegionBytes": {
-                              "type": "integer",
-                              "description": "Region to region bytes"
-                            },
-                            "egressBytes": {
-                              "type": "integer",
-                              "description": "Egress bytes"
-                            }
-                          },
-                          "description": "Trial traffic usage totals in bytes."
-                        },
-                        "lastRollupAt": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Time through which usage has been rolled up."
                         }
                       },
-                      "description": "Free-trial agreement and usage, when the organization is participating in a trial."
+                      "description": "Free-trial agreement for an organization in a trial lifecycle state, including trials with credit thresholds reached or trials that have expired. The agreement can be present when `status` is omitted."
                     },
                     "createdAt": {
                       "type": "string",
@@ -244026,16 +244153,7 @@
                   "trial": {
                     "email": "user@example.com",
                     "acceptedAt": "2026-08-19T15:00:00Z",
-                    "tcVersion": "1.0",
-                    "creditAmount": 500000,
-                    "trialUsage": 0,
-                    "trialEndsAt": "2026-11-15T00:00:00Z",
-                    "usage": {
-                      "azToAzBytes": 0,
-                      "regionToRegionBytes": 0,
-                      "egressBytes": 0
-                    },
-                    "lastRollupAt": "2026-08-19T15:00:00Z"
+                    "tcVersion": "1.0"
                   },
                   "createdAt": "2021-01-01T00:00:00Z",
                   "updatedAt": "2021-01-01T00:00:00Z"
@@ -244274,6 +244392,1078 @@
           "configure",
           "mcf",
           "accounts"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/connectors": {
+      "get": {
+        "description": "Lists the organization's MCN AutoVPN connectors.",
+        "operationId": "listAutovpnConnectors",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "multiCloudConnectors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Dashboard connector record ID."
+                          },
+                          "regionId": {
+                            "type": "string",
+                            "description": "MCN region identifier."
+                          },
+                          "regionName": {
+                            "type": "string",
+                            "description": "MCN region name."
+                          },
+                          "provider": {
+                            "type": "string",
+                            "description": "Cloud provider for the connector."
+                          },
+                          "state": {
+                            "type": "string",
+                            "description": "Connector lifecycle state."
+                          }
+                        }
+                      },
+                      "description": "MCN AutoVPN connectors."
+                    }
+                  }
+                },
+                "example": {
+                  "multiCloudConnectors": [
+                    {
+                      "id": "1234",
+                      "regionId": "us-west",
+                      "regionName": "US West",
+                      "provider": "aws",
+                      "state": "deployed"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lists the organization's MCN AutoVPN connectors.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "connectors"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/connectors/sync": {
+      "post": {
+        "description": "Starts asynchronous reconciliation of MCN AutoVPN connectors and available regions.",
+        "operationId": "syncAutovpnConnectors",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether connector synchronization was accepted."
+                    },
+                    "batchId": {
+                      "type": "string",
+                      "description": "Synchronization pipeline ID."
+                    },
+                    "missingRegionCount": {
+                      "type": "integer",
+                      "description": "Number of regions that required deployment."
+                    },
+                    "missingRegionIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "MCN region identifiers that required deployment."
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "batchId": "1234",
+                  "missingRegionCount": 1,
+                  "missingRegionIds": [
+                    "us-west"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Starts asynchronous reconciliation of MCN AutoVPN connectors and available regions.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "connectors"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/siteToCloud": {
+      "delete": {
+        "description": "Starts asynchronous organization-wide AutoVPN site-to-cloud offboarding.",
+        "operationId": "disableAutovpnSiteToCloud",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pipelineId": {
+                      "type": "string",
+                      "description": "Asynchronous pipeline ID."
+                    },
+                    "operation": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Pipeline operation identifier."
+                        }
+                      },
+                      "description": "Pipeline operation."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Pipeline status."
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "jobs": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of jobs."
+                            },
+                            "byStatus": {
+                              "type": "object",
+                              "properties": {
+                                "completed": {
+                                  "type": "integer",
+                                  "description": "Completed jobs."
+                                },
+                                "failed": {
+                                  "type": "integer",
+                                  "description": "Failed jobs."
+                                },
+                                "pending": {
+                                  "type": "integer",
+                                  "description": "Pending jobs."
+                                }
+                              },
+                              "description": "Job counts by status."
+                            }
+                          },
+                          "description": "Pipeline job count breakdown."
+                        },
+                        "byJobOperation": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Job operation display name."
+                              },
+                              "total": {
+                                "type": "integer",
+                                "description": "Total jobs for the operation."
+                              },
+                              "byStatus": {
+                                "type": "object",
+                                "properties": {
+                                  "completed": {
+                                    "type": "integer",
+                                    "description": "Completed jobs."
+                                  },
+                                  "failed": {
+                                    "type": "integer",
+                                    "description": "Failed jobs."
+                                  },
+                                  "pending": {
+                                    "type": "integer",
+                                    "description": "Pending jobs."
+                                  }
+                                },
+                                "description": "Operation job counts by status."
+                              }
+                            }
+                          },
+                          "description": "Job counts grouped by operation."
+                        }
+                      },
+                      "description": "Aggregated pipeline job counts."
+                    }
+                  }
+                },
+                "example": {
+                  "pipelineId": "1234",
+                  "operation": {
+                    "id": "onboardMultiCloudSites"
+                  },
+                  "status": "active",
+                  "counts": {
+                    "jobs": {
+                      "total": 1,
+                      "byStatus": {
+                        "completed": 0,
+                        "failed": 0,
+                        "pending": 1
+                      }
+                    },
+                    "byJobOperation": [
+                      {
+                        "name": "deploy region",
+                        "total": 1,
+                        "byStatus": {
+                          "completed": 0,
+                          "failed": 0,
+                          "pending": 1
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Starts asynchronous organization-wide AutoVPN site-to-cloud offboarding.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/sites": {
+      "get": {
+        "description": "Lists Meraki networks discoverable for AutoVPN site-to-cloud connectivity.",
+        "operationId": "listAutovpnSites",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "networks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Meraki network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Meraki network name."
+                          },
+                          "vpnType": {
+                            "type": "string",
+                            "enum": [
+                              "hub",
+                              "spoke"
+                            ],
+                            "description": "Whether the network is a hub or spoke in the Meraki AutoVPN topology."
+                          },
+                          "vpnPeerNumber": {
+                            "type": "integer",
+                            "description": "Meraki AutoVPN peer number.",
+                            "nullable": true
+                          },
+                          "vlans": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "VLAN identifier."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "VLAN name."
+                                },
+                                "cidr": {
+                                  "type": "string",
+                                  "description": "VLAN CIDR."
+                                }
+                              }
+                            },
+                            "description": "VPN-enabled VLANs associated with the network."
+                          },
+                          "regions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "MCN region identifier."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "MCN region name."
+                                },
+                                "provider": {
+                                  "type": "string",
+                                  "description": "Cloud provider for the region."
+                                }
+                              }
+                            },
+                            "description": "MCN regions available to or selected for the network."
+                          },
+                          "isTemplate": {
+                            "type": "boolean",
+                            "description": "Whether the network is a configuration template."
+                          },
+                          "isTemplated": {
+                            "type": "boolean",
+                            "description": "Whether the network is derived from an enrolled configuration template."
+                          },
+                          "templateNetworkId": {
+                            "type": "string",
+                            "description": "Parent configuration-template network ID."
+                          },
+                          "mxCount": {
+                            "type": "integer",
+                            "description": "Number of MX devices in the template."
+                          },
+                          "subnetCount": {
+                            "type": "integer",
+                            "description": "Number of VPN-enabled subnets in the template."
+                          },
+                          "currentHubCount": {
+                            "type": "integer",
+                            "description": "Current number of AutoVPN hubs attached to the spoke."
+                          },
+                          "hubLimit": {
+                            "type": "integer",
+                            "description": "Maximum number of AutoVPN hubs allowed for the spoke."
+                          }
+                        }
+                      },
+                      "description": "Discoverable Meraki networks."
+                    }
+                  }
+                },
+                "example": {
+                  "networks": [
+                    {
+                      "id": "N_12345",
+                      "name": "San Francisco branch",
+                      "vpnType": "hub",
+                      "vpnPeerNumber": 1,
+                      "vlans": [
+                        {
+                          "id": "10",
+                          "name": "Users",
+                          "cidr": "10.20.10.0/24"
+                        }
+                      ],
+                      "regions": [
+                        {
+                          "id": "us-west",
+                          "name": "US West",
+                          "provider": "aws"
+                        }
+                      ],
+                      "isTemplate": false,
+                      "isTemplated": false,
+                      "templateNetworkId": "N_12345",
+                      "mxCount": 2,
+                      "subnetCount": 3,
+                      "currentHubCount": 1,
+                      "hubLimit": 4
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lists Meraki networks discoverable for AutoVPN site-to-cloud connectivity.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "sites"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/sites/enrollable": {
+      "get": {
+        "description": "Lists Meraki networks eligible for AutoVPN site-to-cloud onboarding.",
+        "operationId": "listAutovpnEnrollableSites",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "networks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Meraki network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Meraki network name."
+                          },
+                          "vpnType": {
+                            "type": "string",
+                            "enum": [
+                              "hub",
+                              "spoke"
+                            ],
+                            "description": "Whether the network is a hub or spoke in the Meraki AutoVPN topology."
+                          },
+                          "vpnPeerNumber": {
+                            "type": "integer",
+                            "description": "Meraki AutoVPN peer number.",
+                            "nullable": true
+                          },
+                          "vlans": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "VLAN identifier."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "VLAN name."
+                                },
+                                "cidr": {
+                                  "type": "string",
+                                  "description": "VLAN CIDR."
+                                }
+                              }
+                            },
+                            "description": "VPN-enabled VLANs associated with the network."
+                          },
+                          "regions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "MCN region identifier."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "MCN region name."
+                                },
+                                "provider": {
+                                  "type": "string",
+                                  "description": "Cloud provider for the region."
+                                }
+                              }
+                            },
+                            "description": "MCN regions available to or selected for the network."
+                          },
+                          "isTemplate": {
+                            "type": "boolean",
+                            "description": "Whether the network is a configuration template."
+                          },
+                          "isTemplated": {
+                            "type": "boolean",
+                            "description": "Whether the network is derived from an enrolled configuration template."
+                          },
+                          "templateNetworkId": {
+                            "type": "string",
+                            "description": "Parent configuration-template network ID."
+                          },
+                          "mxCount": {
+                            "type": "integer",
+                            "description": "Number of MX devices in the template."
+                          },
+                          "subnetCount": {
+                            "type": "integer",
+                            "description": "Number of VPN-enabled subnets in the template."
+                          },
+                          "currentHubCount": {
+                            "type": "integer",
+                            "description": "Current number of AutoVPN hubs attached to the spoke."
+                          },
+                          "hubLimit": {
+                            "type": "integer",
+                            "description": "Maximum number of AutoVPN hubs allowed for the spoke."
+                          }
+                        }
+                      },
+                      "description": "Meraki networks eligible for onboarding."
+                    }
+                  }
+                },
+                "example": {
+                  "networks": [
+                    {
+                      "id": "N_12345",
+                      "name": "San Francisco branch",
+                      "vpnType": "hub",
+                      "vpnPeerNumber": 1,
+                      "vlans": [
+                        {
+                          "id": "10",
+                          "name": "Users",
+                          "cidr": "10.20.10.0/24"
+                        }
+                      ],
+                      "regions": [
+                        {
+                          "id": "us-west",
+                          "name": "US West",
+                          "provider": "aws"
+                        }
+                      ],
+                      "isTemplate": false,
+                      "isTemplated": false,
+                      "templateNetworkId": "N_12345",
+                      "mxCount": 2,
+                      "subnetCount": 3,
+                      "currentHubCount": 1,
+                      "hubLimit": 4
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lists Meraki networks eligible for AutoVPN site-to-cloud onboarding.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "sites",
+          "enrollable"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/sites/onboard": {
+      "post": {
+        "description": "Starts asynchronous AutoVPN site-to-cloud onboarding for the requested spoke networks.",
+        "operationId": "onboardAutovpnSites",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "spokes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "networkId": {
+                          "type": "string",
+                          "description": "Meraki spoke network ID."
+                        },
+                        "regionIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "MCN region identifiers to attach."
+                        }
+                      },
+                      "required": [
+                        "networkId",
+                        "regionIds"
+                      ]
+                    },
+                    "description": "Optional spoke networks and their desired MCN regions. Omit this field to perform hub-only onboarding."
+                  }
+                },
+                "example": {
+                  "spokes": [
+                    {
+                      "networkId": "N_12345",
+                      "regionIds": [
+                        "us-west"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pipelineId": {
+                      "type": "string",
+                      "description": "Asynchronous pipeline ID."
+                    },
+                    "operation": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Pipeline operation identifier."
+                        }
+                      },
+                      "description": "Pipeline operation."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Pipeline status."
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "jobs": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of jobs."
+                            },
+                            "byStatus": {
+                              "type": "object",
+                              "properties": {
+                                "completed": {
+                                  "type": "integer",
+                                  "description": "Completed jobs."
+                                },
+                                "failed": {
+                                  "type": "integer",
+                                  "description": "Failed jobs."
+                                },
+                                "pending": {
+                                  "type": "integer",
+                                  "description": "Pending jobs."
+                                }
+                              },
+                              "description": "Job counts by status."
+                            }
+                          },
+                          "description": "Pipeline job count breakdown."
+                        },
+                        "byJobOperation": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Job operation display name."
+                              },
+                              "total": {
+                                "type": "integer",
+                                "description": "Total jobs for the operation."
+                              },
+                              "byStatus": {
+                                "type": "object",
+                                "properties": {
+                                  "completed": {
+                                    "type": "integer",
+                                    "description": "Completed jobs."
+                                  },
+                                  "failed": {
+                                    "type": "integer",
+                                    "description": "Failed jobs."
+                                  },
+                                  "pending": {
+                                    "type": "integer",
+                                    "description": "Pending jobs."
+                                  }
+                                },
+                                "description": "Operation job counts by status."
+                              }
+                            }
+                          },
+                          "description": "Job counts grouped by operation."
+                        }
+                      },
+                      "description": "Aggregated pipeline job counts."
+                    },
+                    "spokeCount": {
+                      "type": "integer",
+                      "description": "Number of spokes included in the onboarding request."
+                    }
+                  }
+                },
+                "example": {
+                  "pipelineId": "1234",
+                  "operation": {
+                    "id": "onboardMultiCloudSites"
+                  },
+                  "status": "active",
+                  "counts": {
+                    "jobs": {
+                      "total": 1,
+                      "byStatus": {
+                        "completed": 0,
+                        "failed": 0,
+                        "pending": 1
+                      }
+                    },
+                    "byJobOperation": [
+                      {
+                        "name": "deploy region",
+                        "total": 1,
+                        "byStatus": {
+                          "completed": 0,
+                          "failed": 0,
+                          "pending": 1
+                        }
+                      }
+                    ]
+                  },
+                  "spokeCount": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Starts asynchronous AutoVPN site-to-cloud onboarding for the requested spoke networks.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "sites"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/spokes/{networkId}": {
+      "delete": {
+        "description": "Detaches a Meraki AutoVPN spoke from its MCN regions.",
+        "operationId": "offboardAutovpnSpoke",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the spoke was detached."
+                    },
+                    "networkId": {
+                      "type": "string",
+                      "description": "Meraki spoke network ID."
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "networkId": "N_12345"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Detaches a Meraki AutoVPN spoke from its MCN regions.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "spokes"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/spokes/{networkId}/hubBudget": {
+      "get": {
+        "description": "Returns the AutoVPN hub budget for a Meraki spoke network.",
+        "operationId": "getAutovpnSpokeHubBudget",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "networkId": {
+                      "type": "string",
+                      "description": "Meraki spoke network ID."
+                    },
+                    "hubLimit": {
+                      "type": "integer",
+                      "description": "Maximum number of AutoVPN hubs allowed."
+                    },
+                    "currentHubCount": {
+                      "type": "integer",
+                      "description": "Current number of attached AutoVPN hubs."
+                    }
+                  }
+                },
+                "example": {
+                  "networkId": "N_12345",
+                  "hubLimit": 4,
+                  "currentHubCount": 1
+                }
+              }
+            }
+          }
+        },
+        "summary": "Returns the AutoVPN hub budget for a Meraki spoke network.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "spokes",
+          "hubBudget"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/mcf/autovpn/spokes/{networkId}/regions": {
+      "put": {
+        "description": "Replaces the complete desired MCN region set for a Meraki AutoVPN spoke.",
+        "operationId": "replaceAutovpnSpokeRegions",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "regionIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Complete desired set of MCN region identifiers."
+                  }
+                },
+                "example": {
+                  "regionIds": [
+                    "us-west"
+                  ]
+                },
+                "required": [
+                  "regionIds"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "networkId": {
+                      "type": "string",
+                      "description": "Meraki spoke network ID."
+                    },
+                    "regionIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Final MCN region set attached to the spoke."
+                    }
+                  }
+                },
+                "example": {
+                  "networkId": "N_12345",
+                  "regionIds": [
+                    "us-west"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "summary": "Replaces the complete desired MCN region set for a Meraki AutoVPN spoke.",
+        "tags": [
+          "organizations",
+          "configure",
+          "mcf",
+          "autovpn",
+          "spokes",
+          "regions"
         ],
         "x-release-stage": "beta"
       }
@@ -244705,7 +245895,7 @@
           {
             "name": "entityType",
             "in": "query",
-            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\n`integration`, `account`, or `subnet` drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
+            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `organization` — Organization or action spanning multiple resources.\n- `tag` — Canonical network tag subject.\n- `ztr_intent` — ZTR connection rule subject.\n- `sites` — Organization-owned Manual IPsec Site subject with no account or integration parent.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\nanother subject type drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
             "schema": {
               "type": "array",
               "items": {
@@ -244922,7 +246112,7 @@
                           },
                           "entityType": {
                             "type": "string",
-                            "description": "Identifies the primary subject represented by `entityId`.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `network` — Legacy response subject representing either a VPC or Site.\n- `subnet` — Discovered subnet or VLAN subject.\n\nResponses retain `network`; use the populated `vpcId`/`vpcName` or\n`siteId`/`siteName` fields to determine the resource family. Responses\ncontain only these values; the schema remains an unconstrained string\nfor compatibility."
+                            "description": "Identifies the primary subject represented by `entityId`.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `network` — Legacy response subject representing either a VPC or Site.\n- `subnet` — Discovered subnet or VLAN subject.\n- `organization` — Organization or action spanning multiple resources.\n- `tag` — Canonical network tag subject.\n- `ztr_intent` — ZTR connection rule subject.\n- `sites` — Organization-owned Manual IPsec Site subject with no account or integration parent.\n\nResponses retain `network`; use the populated `vpcId`/`vpcName` or\n`siteId`/`siteName` fields to determine the resource family. Responses\ncontain only these values; the schema remains an unconstrained string\nfor compatibility. Manual IPsec Site responses use `sites` and\n`entityId`; `entityName` is included when available. Resource parent\nfields are omitted."
                           },
                           "entityId": {
                             "type": "string",
@@ -245134,7 +246324,7 @@
           {
             "name": "entityType",
             "in": "query",
-            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\n`integration`, `account`, or `subnet` drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
+            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `organization` — Organization or action spanning multiple resources.\n- `tag` — Canonical network tag subject.\n- `ztr_intent` — ZTR connection rule subject.\n- `sites` — Organization-owned Manual IPsec Site subject with no account or integration parent.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\nanother subject type drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
             "schema": {
               "type": "array",
               "items": {
@@ -245436,7 +246626,7 @@
           {
             "name": "entityType",
             "in": "query",
-            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\n`integration`, `account`, or `subnet` drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
+            "description": "Restricts results by primary event subject. Repeat the parameter to OR values.\n\n- `integration` — Cloud integration subject.\n- `account` — Discovered cloud-account subject.\n- `subnet` — Discovered subnet or VLAN subject.\n- `organization` — Organization or action spanning multiple resources.\n- `tag` — Canonical network tag subject.\n- `ztr_intent` — ZTR connection rule subject.\n- `sites` — Organization-owned Manual IPsec Site subject with no account or integration parent.\n- `vpc` — Request alias for a public-cloud `network` subject.\n- `site` — Request alias for a Meraki `network` subject.\n- `network` — Deprecated legacy subject spanning VPCs and Sites.\n\nThe `vpc` and `site` aliases constrain provider family only when this\nfilter contains family aliases exclusively. Mixing either alias with\nanother subject type drops that constraint\nand can broaden matching `network` events. Unknown values return HTTP 400.",
             "schema": {
               "type": "array",
               "items": {
@@ -248699,7 +249889,7 @@
     },
     "/organizations/{organizationId}/mcf/sites": {
       "get": {
-        "description": "Returns Meraki network records represented as MCN Sites for site-to-cloud connectivity in the specified organization. Sites are distinct from public-cloud VPCs. Supplied filters are combined. All matching Sites are returned; pagination parameters are accepted but do not limit the response. Results have no guaranteed order, and `items` is empty when no Site matches.",
+        "description": "Returns Meraki and Manual IPsec records represented as MCN Sites for site-to-cloud connectivity in the specified organization. Sites are distinct from public-cloud VPCs. Supplied filters are combined. Account and integration filters match only account-backed Meraki Sites, so accountless Manual IPsec Sites are omitted when either filter is present. All matching Sites are returned; pagination parameters are accepted but do not limit the response. Results have no guaranteed order, and `items` is empty when no Site matches.",
         "operationId": "listSites",
         "parameters": [
           {
@@ -248714,7 +249904,7 @@
           {
             "name": "onboarded",
             "in": "query",
-            "description": "When `true`, return only Sites currently marked as onboarded. When `false`, return only Sites not currently marked as onboarded. Omit to include both.",
+            "description": "When `true`, return only Sites currently marked as onboarded. When `false`, return only Sites not currently marked as onboarded, including a Manual IPsec Site whose lifecycle record does not yet exist. Omit to include both.",
             "schema": {
               "type": "boolean"
             }
@@ -248722,7 +249912,7 @@
           {
             "name": "accountId",
             "in": "query",
-            "description": "MCN-assigned UUID of the MCN-managed Meraki account whose Sites are returned.",
+            "description": "MCN-assigned UUID of the MCN-managed Meraki account whose Sites are returned. Because Manual IPsec Sites are accountless, supplying this filter excludes them.",
             "schema": {
               "type": "string"
             }
@@ -248730,7 +249920,7 @@
           {
             "name": "integrationId",
             "in": "query",
-            "description": "MCN-assigned UUID of the MCN-managed Meraki integration whose Sites are returned.",
+            "description": "MCN-assigned UUID of the MCN-managed Meraki integration whose Sites are returned. Because Manual IPsec Sites have no integration, supplying this filter excludes them.",
             "schema": {
               "type": "string"
             }
@@ -248779,26 +249969,34 @@
                           },
                           "name": {
                             "type": "string",
-                            "description": "Display name of the Meraki Dashboard network represented by the Site."
+                            "description": "Display name recorded for the Site."
+                          },
+                          "siteType": {
+                            "type": "string",
+                            "enum": [
+                              "manual_ipsec",
+                              "meraki"
+                            ],
+                            "description": "Site technology. `meraki` identifies a Meraki Dashboard network and is independent of its AutoVPN role. `manual_ipsec` identifies an accountless, manually configured IPsec Site."
                           },
                           "externalId": {
                             "type": "string",
-                            "description": "Meraki Dashboard network ID represented by the Site."
+                            "description": "Meraki Dashboard network ID represented by a `meraki` Site. The field is null for a `manual_ipsec` Site."
                           },
                           "externalDisplayId": {
                             "type": "string",
-                            "description": "Provider-friendly Site identifier; falls back to `externalId` when no separate value is available."
+                            "description": "Provider-friendly identifier for a `meraki` Site; falls back to `externalId` when no separate value is available. The field is omitted for a `manual_ipsec` Site."
                           },
                           "cidr": {
                             "type": "string",
-                            "description": "Primary IPv4 CIDR recorded for the Site."
+                            "description": "Primary IPv4 CIDR recorded for a `meraki` Site. The field is null for a `manual_ipsec` Site."
                           },
                           "cidrs": {
                             "type": "array",
                             "items": {
                               "type": "string"
                             },
-                            "description": "All IPv4 CIDR ranges recorded for the Site."
+                            "description": "All IPv4 CIDR ranges recorded for a `meraki` Site. The field is null for a `manual_ipsec` Site."
                           },
                           "tags": {
                             "type": "array",
@@ -248819,7 +250017,7 @@
                                 }
                               }
                             },
-                            "description": "Tags associated with the Site. Included when tag details were loaded; otherwise the field is omitted and `tagsCount` remains available."
+                            "description": "Tags associated with a `meraki` Site. Included when tag details were loaded; otherwise the field is omitted and `tagsCount` remains available. The field is omitted for a `manual_ipsec` Site."
                           },
                           "subnets": {
                             "type": "array",
@@ -248884,37 +250082,58 @@
                                 }
                               }
                             },
-                            "description": "Subnets recorded for the Site. Included on detail responses and omitted when subnet details were not loaded."
+                            "description": "Subnets recorded for a `meraki` Site. Included on detail responses and omitted when subnet details were not loaded. The field is omitted for a `manual_ipsec` Site."
                           },
                           "provider": {
                             "type": "string",
                             "enum": [
                               "meraki"
                             ],
-                            "description": "Site provider. `meraki` means the resource represents a Meraki Dashboard network; this is the only value returned for an MCN Site."
+                            "description": "Provider represented by a `meraki` Site. The field is null for a `manual_ipsec` Site, whose selected regions identify their cloud providers individually."
                           },
                           "accountId": {
                             "type": "string",
-                            "description": "MCN-assigned UUID of the MCN-managed Meraki account that contains the Site."
+                            "description": "MCN-assigned UUID of the MCN-managed Meraki account that contains a `meraki` Site. The field is null for an accountless `manual_ipsec` Site."
                           },
                           "accountName": {
                             "type": "string",
-                            "description": "Display name of the MCN-managed Meraki account that contains the Site."
+                            "description": "Display name of the MCN-managed Meraki account that contains a `meraki` Site. The field is null for an accountless `manual_ipsec` Site."
                           },
                           "region": {
                             "type": "string",
-                            "description": "Name of the MCN region selected for the Site, when a region is associated."
+                            "description": "Name of the MCN region associated with a `meraki` Site, when available. The field is omitted for a `manual_ipsec` Site; use `regions` for its selected regions."
+                          },
+                          "regions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "MCN-assigned UUID of the selected region."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Display name of the selected region."
+                                },
+                                "provider": {
+                                  "type": "string",
+                                  "description": "Lowercase cloud-provider name for the selected region, such as `aws`, `azure`, or `gcp`."
+                                }
+                              }
+                            },
+                            "description": "Selected MCN regions for a `manual_ipsec` Site. Each item contains region identity and provider metadata without tunnel configuration or secrets. The field is omitted for a `meraki` Site."
                           },
                           "integrationId": {
                             "type": "string",
-                            "description": "MCN-assigned UUID of the MCN-managed Meraki integration through which the Site is represented."
+                            "description": "MCN-assigned UUID of the MCN-managed Meraki integration through which a `meraki` Site is represented. The field is null for a `manual_ipsec` Site."
                           },
                           "onboarding": {
                             "type": "object",
                             "properties": {
                               "onboarded": {
                                 "type": "boolean",
-                                "description": "Whether MCN currently marks the Site as onboarded through Meraki AutoVPN. This flag does not by itself report device or tunnel health."
+                                "description": "Whether MCN currently marks the Site as onboarded. This flag does not by itself report device, tunnel, or provider health."
                               },
                               "siteOnboardingId": {
                                 "type": "string",
@@ -248922,7 +250141,7 @@
                               },
                               "state": {
                                 "type": "string",
-                                "description": "Current MCN workflow state. The field is omitted when no onboarding record exists:\n\n- `new` — Defined initial or restartable state; Site discovery normally creates its `meraki_autovpn` onboarding record directly in `onboarded`.\n- `pending` — The onboarding request was accepted and is waiting for provisioning.\n- `provision_in_progress` — Provider-side provisioning is running.\n- `provision_in_progress_retry` — Provider-side provisioning is being retried.\n- `provisioned` — Provider-side onboarding resources were created.\n- `data_plane_configured` — MCN data-plane configuration completed.\n- `onboarded` — Onboarding completed. Site discovery creates the `meraki_autovpn` record in this state; it does not prove tunnel health.\n- `pending_removal` — Offboarding was accepted and is waiting for teardown.\n- `provision_in_progress_removal` — Provider-side teardown is running.\n- `provision_in_progress_retry_removal` — Provider-side teardown is being retried.\n- `provision_removed` — Provider-side onboarding resources were removed.\n- `data_plane_configuration_removed` — MCN data-plane configuration was removed.\n- `failed` — The active onboarding or offboarding attempt failed."
+                                "description": "Current MCN workflow state. The field is omitted when no onboarding record exists:\n\nManual IPsec Sites return `pending`, `onboarded`, or `failed`. Meraki Sites can return\nany state below:\n\n- `new` — Defined initial or restartable state; Site discovery normally creates its `meraki_autovpn` onboarding record directly in `onboarded`.\n- `pending` — The onboarding request was accepted and is waiting for provisioning.\n- `provision_in_progress` — Provider-side provisioning is running.\n- `provision_in_progress_retry` — Provider-side provisioning is being retried.\n- `provisioned` — Provider-side onboarding resources were created.\n- `data_plane_configured` — MCN data-plane configuration completed.\n- `onboarded` — Onboarding completed. Site discovery creates the `meraki_autovpn` record in this state; it does not prove tunnel health.\n- `pending_removal` — Offboarding was accepted and is waiting for teardown.\n- `provision_in_progress_removal` — Provider-side teardown is running.\n- `provision_in_progress_retry_removal` — Provider-side teardown is being retried.\n- `provision_removed` — Provider-side onboarding resources were removed.\n- `data_plane_configuration_removed` — MCN data-plane configuration was removed.\n- `failed` — The active onboarding or offboarding attempt failed."
                               },
                               "stateMessage": {
                                 "type": "string",
@@ -248933,7 +250152,7 @@
                           },
                           "subnetsCount": {
                             "type": "integer",
-                            "description": "Number of subnet records currently associated with the Site."
+                            "description": "Number of subnet records currently associated with a `meraki` Site. The field is null for a `manual_ipsec` Site."
                           },
                           "tagsCount": {
                             "type": "integer",
@@ -248966,6 +250185,7 @@
                     {
                       "siteId": "823e4567-e89b-12d3-a456-426614174000",
                       "name": "San Francisco branch",
+                      "siteType": "meraki",
                       "externalId": "N_12345",
                       "externalDisplayId": "San Francisco branch",
                       "cidr": "10.20.0.0/16",
@@ -249005,6 +250225,13 @@
                       "accountId": "923e4567-e89b-12d3-a456-426614174000",
                       "accountName": "Meraki Dashboard",
                       "region": "us-west",
+                      "regions": [
+                        {
+                          "id": "d23e4567-e89b-12d3-a456-426614174000",
+                          "name": "us-west-2",
+                          "provider": "aws"
+                        }
+                      ],
                       "integrationId": "a23e4567-e89b-12d3-a456-426614174000",
                       "onboarding": {
                         "onboarded": true,
@@ -249024,7 +250251,7 @@
             }
           }
         },
-        "summary": "Returns Meraki network records represented as MCN Sites for site-to-cloud connectivity in the specified organization",
+        "summary": "Returns Meraki and Manual IPsec records represented as MCN Sites for site-to-cloud connectivity in the specified organization",
         "tags": [
           "organizations",
           "configure",
@@ -249339,7 +250566,7 @@
     },
     "/organizations/{organizationId}/mcf/sites/{siteId}": {
       "get": {
-        "description": "Returns one organization-owned Meraki network represented as an MCN Site, including subnet and tag associations stored by MCN. This operation does not query Meraki Dashboard. Public-cloud VPC identifiers are not accepted by this endpoint.",
+        "description": "Returns one organization-owned Meraki or Manual IPsec record represented as an MCN Site. A Meraki response can include subnet and tag associations stored by MCN. A Manual IPsec response includes selected-region summaries without tunnel configuration or pre-shared keys. This operation does not query a provider, and public-cloud VPC identifiers are not accepted.",
         "operationId": "getSite",
         "parameters": [
           {
@@ -249375,26 +250602,34 @@
                     },
                     "name": {
                       "type": "string",
-                      "description": "Display name of the Meraki Dashboard network represented by the Site."
+                      "description": "Display name recorded for the Site."
+                    },
+                    "siteType": {
+                      "type": "string",
+                      "enum": [
+                        "manual_ipsec",
+                        "meraki"
+                      ],
+                      "description": "Site technology. `meraki` identifies a Meraki Dashboard network and is independent of its AutoVPN role. `manual_ipsec` identifies an accountless, manually configured IPsec Site."
                     },
                     "externalId": {
                       "type": "string",
-                      "description": "Meraki Dashboard network ID represented by the Site."
+                      "description": "Meraki Dashboard network ID represented by a `meraki` Site. The field is null for a `manual_ipsec` Site."
                     },
                     "externalDisplayId": {
                       "type": "string",
-                      "description": "Provider-friendly Site identifier; falls back to `externalId` when no separate value is available."
+                      "description": "Provider-friendly identifier for a `meraki` Site; falls back to `externalId` when no separate value is available. The field is omitted for a `manual_ipsec` Site."
                     },
                     "cidr": {
                       "type": "string",
-                      "description": "Primary IPv4 CIDR recorded for the Site."
+                      "description": "Primary IPv4 CIDR recorded for a `meraki` Site. The field is null for a `manual_ipsec` Site."
                     },
                     "cidrs": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "description": "All IPv4 CIDR ranges recorded for the Site."
+                      "description": "All IPv4 CIDR ranges recorded for a `meraki` Site. The field is null for a `manual_ipsec` Site."
                     },
                     "tags": {
                       "type": "array",
@@ -249415,7 +250650,7 @@
                           }
                         }
                       },
-                      "description": "Tags associated with the Site. Included when tag details were loaded; otherwise the field is omitted and `tagsCount` remains available."
+                      "description": "Tags associated with a `meraki` Site. Included when tag details were loaded; otherwise the field is omitted and `tagsCount` remains available. The field is omitted for a `manual_ipsec` Site."
                     },
                     "subnets": {
                       "type": "array",
@@ -249480,37 +250715,58 @@
                           }
                         }
                       },
-                      "description": "Subnets recorded for the Site. Included on detail responses and omitted when subnet details were not loaded."
+                      "description": "Subnets recorded for a `meraki` Site. Included on detail responses and omitted when subnet details were not loaded. The field is omitted for a `manual_ipsec` Site."
                     },
                     "provider": {
                       "type": "string",
                       "enum": [
                         "meraki"
                       ],
-                      "description": "Site provider. `meraki` means the resource represents a Meraki Dashboard network; this is the only value returned for an MCN Site."
+                      "description": "Provider represented by a `meraki` Site. The field is null for a `manual_ipsec` Site, whose selected regions identify their cloud providers individually."
                     },
                     "accountId": {
                       "type": "string",
-                      "description": "MCN-assigned UUID of the MCN-managed Meraki account that contains the Site."
+                      "description": "MCN-assigned UUID of the MCN-managed Meraki account that contains a `meraki` Site. The field is null for an accountless `manual_ipsec` Site."
                     },
                     "accountName": {
                       "type": "string",
-                      "description": "Display name of the MCN-managed Meraki account that contains the Site."
+                      "description": "Display name of the MCN-managed Meraki account that contains a `meraki` Site. The field is null for an accountless `manual_ipsec` Site."
                     },
                     "region": {
                       "type": "string",
-                      "description": "Name of the MCN region selected for the Site, when a region is associated."
+                      "description": "Name of the MCN region associated with a `meraki` Site, when available. The field is omitted for a `manual_ipsec` Site; use `regions` for its selected regions."
+                    },
+                    "regions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "MCN-assigned UUID of the selected region."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Display name of the selected region."
+                          },
+                          "provider": {
+                            "type": "string",
+                            "description": "Lowercase cloud-provider name for the selected region, such as `aws`, `azure`, or `gcp`."
+                          }
+                        }
+                      },
+                      "description": "Selected MCN regions for a `manual_ipsec` Site. Each item contains region identity and provider metadata without tunnel configuration or secrets. The field is omitted for a `meraki` Site."
                     },
                     "integrationId": {
                       "type": "string",
-                      "description": "MCN-assigned UUID of the MCN-managed Meraki integration through which the Site is represented."
+                      "description": "MCN-assigned UUID of the MCN-managed Meraki integration through which a `meraki` Site is represented. The field is null for a `manual_ipsec` Site."
                     },
                     "onboarding": {
                       "type": "object",
                       "properties": {
                         "onboarded": {
                           "type": "boolean",
-                          "description": "Whether MCN currently marks the Site as onboarded through Meraki AutoVPN. This flag does not by itself report device or tunnel health."
+                          "description": "Whether MCN currently marks the Site as onboarded. This flag does not by itself report device, tunnel, or provider health."
                         },
                         "siteOnboardingId": {
                           "type": "string",
@@ -249518,7 +250774,7 @@
                         },
                         "state": {
                           "type": "string",
-                          "description": "Current MCN workflow state. The field is omitted when no onboarding record exists:\n\n- `new` — Defined initial or restartable state; Site discovery normally creates its `meraki_autovpn` onboarding record directly in `onboarded`.\n- `pending` — The onboarding request was accepted and is waiting for provisioning.\n- `provision_in_progress` — Provider-side provisioning is running.\n- `provision_in_progress_retry` — Provider-side provisioning is being retried.\n- `provisioned` — Provider-side onboarding resources were created.\n- `data_plane_configured` — MCN data-plane configuration completed.\n- `onboarded` — Onboarding completed. Site discovery creates the `meraki_autovpn` record in this state; it does not prove tunnel health.\n- `pending_removal` — Offboarding was accepted and is waiting for teardown.\n- `provision_in_progress_removal` — Provider-side teardown is running.\n- `provision_in_progress_retry_removal` — Provider-side teardown is being retried.\n- `provision_removed` — Provider-side onboarding resources were removed.\n- `data_plane_configuration_removed` — MCN data-plane configuration was removed.\n- `failed` — The active onboarding or offboarding attempt failed."
+                          "description": "Current MCN workflow state. The field is omitted when no onboarding record exists:\n\nManual IPsec Sites return `pending`, `onboarded`, or `failed`. Meraki Sites can return\nany state below:\n\n- `new` — Defined initial or restartable state; Site discovery normally creates its `meraki_autovpn` onboarding record directly in `onboarded`.\n- `pending` — The onboarding request was accepted and is waiting for provisioning.\n- `provision_in_progress` — Provider-side provisioning is running.\n- `provision_in_progress_retry` — Provider-side provisioning is being retried.\n- `provisioned` — Provider-side onboarding resources were created.\n- `data_plane_configured` — MCN data-plane configuration completed.\n- `onboarded` — Onboarding completed. Site discovery creates the `meraki_autovpn` record in this state; it does not prove tunnel health.\n- `pending_removal` — Offboarding was accepted and is waiting for teardown.\n- `provision_in_progress_removal` — Provider-side teardown is running.\n- `provision_in_progress_retry_removal` — Provider-side teardown is being retried.\n- `provision_removed` — Provider-side onboarding resources were removed.\n- `data_plane_configuration_removed` — MCN data-plane configuration was removed.\n- `failed` — The active onboarding or offboarding attempt failed."
                         },
                         "stateMessage": {
                           "type": "string",
@@ -249529,7 +250785,7 @@
                     },
                     "subnetsCount": {
                       "type": "integer",
-                      "description": "Number of subnet records currently associated with the Site."
+                      "description": "Number of subnet records currently associated with a `meraki` Site. The field is null for a `manual_ipsec` Site."
                     },
                     "tagsCount": {
                       "type": "integer",
@@ -249540,6 +250796,7 @@
                 "example": {
                   "siteId": "823e4567-e89b-12d3-a456-426614174000",
                   "name": "San Francisco branch",
+                  "siteType": "meraki",
                   "externalId": "N_12345",
                   "externalDisplayId": "San Francisco branch",
                   "cidr": "10.20.0.0/16",
@@ -249579,6 +250836,13 @@
                   "accountId": "923e4567-e89b-12d3-a456-426614174000",
                   "accountName": "Meraki Dashboard",
                   "region": "us-west",
+                  "regions": [
+                    {
+                      "id": "d23e4567-e89b-12d3-a456-426614174000",
+                      "name": "us-west-2",
+                      "provider": "aws"
+                    }
+                  ],
                   "integrationId": "a23e4567-e89b-12d3-a456-426614174000",
                   "onboarding": {
                     "onboarded": true,
@@ -249593,7 +250857,7 @@
             }
           }
         },
-        "summary": "Returns one organization-owned Meraki network represented as an MCN Site, including subnet and tag associations stored by MCN",
+        "summary": "Returns one organization-owned Meraki or Manual IPsec record represented as an MCN Site",
         "tags": [
           "organizations",
           "configure",
@@ -256121,6 +257385,14 @@
             }
           },
           {
+            "name": "excludeGroups",
+            "in": "query",
+            "description": "When true, omit the items array from each client's groups association while preserving totalCount and nextLink metadata.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "classification",
             "in": "query",
             "description": "Classification filters for client retrieval",
@@ -257458,6 +258730,14 @@
               "items": {
                 "type": "string"
               }
+            }
+          },
+          {
+            "name": "excludeMembers",
+            "in": "query",
+            "description": "When true, omit the items array from each client group's members association while preserving totalCount and nextLink metadata.",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -286867,6 +288147,11 @@
                             "type": "string",
                             "description": "The name of the building"
                           },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The ISO 8601 timestamp when the building was last updated."
+                          },
                           "bounds": {
                             "type": "object",
                             "properties": {
@@ -286991,6 +288276,7 @@
                         "name": "Main Office"
                       },
                       "name": "Headquarters",
+                      "updatedAt": "2026-09-28T00:00:00Z",
                       "bounds": {
                         "northeast": {
                           "latitude": 37.77157860210302,
@@ -305692,14 +306978,20 @@
                                   "type": "string",
                                   "description": "The range of IP addresses this listen range responds to (CLI: 'bgp listen range <cidr>')"
                                 },
-                                "enabled": {
-                                  "type": "boolean",
-                                  "description": "A boolean value determining whether this listen range is enabled for BGP"
-                                },
                                 "description": {
                                   "type": "string",
                                   "description": "A description for the listen range",
                                   "nullable": true
+                                },
+                                "peering": {
+                                  "type": "object",
+                                  "properties": {
+                                    "enabled": {
+                                      "type": "boolean",
+                                      "description": "Flag to indicate if the listen range should be activated"
+                                    }
+                                  },
+                                  "description": "Information regarding peering for the listen range"
                                 }
                               }
                             },
@@ -306048,8 +307340,10 @@
                         {
                           "id": "999",
                           "cidr": "192.0.2.0/24",
-                          "enabled": true,
-                          "description": "Campus-Bldg-1"
+                          "description": "Campus-Bldg-1",
+                          "peering": {
+                            "enabled": true
+                          }
                         }
                       ],
                       "neighbors": [
@@ -308075,10 +309369,6 @@
                             "type": "string",
                             "description": "The range of IP addresses this listen range responds to (CLI: 'bgp listen range <cidr>')"
                           },
-                          "enabled": {
-                            "type": "boolean",
-                            "description": "A boolean value determining whether this listen range is enabled for BGP"
-                          },
                           "description": {
                             "type": "string",
                             "description": "A description for the listen range",
@@ -308140,7 +309430,6 @@
                         "name": "Fabric 1"
                       },
                       "cidr": "192.0.2.0/24",
-                      "enabled": true,
                       "description": "Campus-Bldg-1"
                     }
                   ],
@@ -311782,13 +313071,19 @@
                                 "type": "string",
                                 "description": "The range of IP addresses this listen range responds to (CLI: 'bgp listen range <cidr>')"
                               },
-                              "enabled": {
-                                "type": "boolean",
-                                "description": "A boolean value determining whether this listen range is enabled for BGP"
-                              },
                               "description": {
                                 "type": "string",
                                 "description": "A description for the listen range"
+                              },
+                              "peering": {
+                                "type": "object",
+                                "properties": {
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Flag to indicate if the listen range should be activated"
+                                  }
+                                },
+                                "description": "Information regarding peering for the listen range"
                               },
                               "destroy": {
                                 "type": "boolean",
@@ -311857,8 +313152,10 @@
                         {
                           "id": "999",
                           "cidr": "192.0.2.0/24",
-                          "enabled": true,
                           "description": "Campus-Bldg-1",
+                          "peering": {
+                            "enabled": true
+                          },
                           "destroy": true
                         }
                       ],
@@ -311961,14 +313258,20 @@
                                   "type": "string",
                                   "description": "The range of IP addresses this listen range responds to (CLI: 'bgp listen range <cidr>')"
                                 },
-                                "enabled": {
-                                  "type": "boolean",
-                                  "description": "A boolean value determining whether this listen range is enabled for BGP"
-                                },
                                 "description": {
                                   "type": "string",
                                   "description": "A description for the listen range",
                                   "nullable": true
+                                },
+                                "peering": {
+                                  "type": "object",
+                                  "properties": {
+                                    "enabled": {
+                                      "type": "boolean",
+                                      "description": "Flag to indicate if the listen range should be activated"
+                                    }
+                                  },
+                                  "description": "Information regarding peering for the listen range"
                                 }
                               }
                             },
@@ -312058,8 +313361,10 @@
                         {
                           "id": "999",
                           "cidr": "192.0.2.0/24",
-                          "enabled": true,
-                          "description": "Campus-Bldg-1"
+                          "description": "Campus-Bldg-1",
+                          "peering": {
+                            "enabled": true
+                          }
                         }
                       ],
                       "neighbors": [
@@ -320386,7 +321691,7 @@
     },
     "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
       "get": {
-        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
+        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices. Power draw and per-port PoE negotiation values are the latest stored snapshot collected by Dashboard. The reportedAt field identifies when that snapshot was collected; an offline or unsupported device may return null values or an older timestamp within the three-day retention window.",
         "operationId": "getOrganizationWirelessDevicesEthernetStatuses",
         "parameters": [
           {
@@ -320469,6 +321774,19 @@
                             "type": "string",
                             "description": "The PoE power mode for the AP. Can be 'full' or 'low'"
                           },
+                          "reportedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 timestamp when Dashboard collected the latest stored power snapshot. Null when no snapshot is available within the three-day retention window.",
+                            "nullable": true
+                          },
+                          "draw": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0,
+                            "description": "Latest instantaneous device-wide power draw in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when the device did not report a valid current value.",
+                            "nullable": true
+                          },
                           "ac": {
                             "type": "object",
                             "properties": {
@@ -320507,6 +321825,35 @@
                                 "standard": {
                                   "type": "string",
                                   "description": "The PoE Standard for the port. Can be '802.3at', '802.3af', '802.3bt', or null"
+                                },
+                                "isActive": {
+                                  "type": "boolean",
+                                  "description": "Whether this port is the active PoE source. Null when no power-source record is available for the port.",
+                                  "nullable": true
+                                },
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "CDP",
+                                    "LLDP",
+                                    "hardware"
+                                  ],
+                                  "description": "The firmware-selected PoE negotiation protocol: hardware classification, IEEE 802.1AB LLDP, or Cisco Discovery Protocol (CDP). This read-only value has no default. Null when unavailable or unknown.",
+                                  "nullable": true
+                                },
+                                "requested": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "description": "Power requested through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null for hardware classification or when unavailable.",
+                                  "nullable": true
+                                },
+                                "granted": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "description": "Power granted through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when unavailable.",
+                                  "nullable": true
                                 }
                               },
                               "description": "PoE details object for the port"
@@ -320527,7 +321874,8 @@
                             }
                           }
                         },
-                        "description": "List of port details"
+                        "maxItems": 5,
+                        "description": "List of up to five port details"
                       },
                       "aggregation": {
                         "type": "object",
@@ -320555,6 +321903,8 @@
                     },
                     "power": {
                       "mode": "full",
+                      "reportedAt": "2026-09-12T18:43:31Z",
+                      "draw": 18.7,
                       "ac": {
                         "isConnected": false
                       },
@@ -320566,7 +321916,11 @@
                       {
                         "name": "Ethernet 0",
                         "poe": {
-                          "standard": "802.3at"
+                          "standard": "802.3at",
+                          "isActive": true,
+                          "protocol": "LLDP",
+                          "requested": 33.0,
+                          "granted": 33.0
                         },
                         "linkNegotiation": {
                           "duplex": "full",
@@ -320599,7 +321953,7 @@
             ]
           }
         ],
-        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
+        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices",
         "tags": [
           "wireless",
           "monitor",
@@ -330183,7 +331537,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-09-14T08:05:57Z"
+                      "lastEnabledAt": "2026-09-16T08:06:26Z"
                     }
                   }
                 ]
@@ -331889,7 +333243,7 @@
                       },
                       "ai": {
                         "enabled": true,
-                        "lastEnabledAt": "2026-09-14T08:05:57Z"
+                        "lastEnabledAt": "2026-09-16T08:06:26Z"
                       }
                     }
                   ],
@@ -346426,6 +347780,9 @@
       "name": "autonomousSystems"
     },
     {
+      "name": "autovpn"
+    },
+    {
       "name": "availabilities"
     },
     {
@@ -346927,6 +348284,9 @@
       "name": "eligible"
     },
     {
+      "name": "enrollable"
+    },
+    {
       "name": "enrollments"
     },
     {
@@ -347066,6 +348426,9 @@
     },
     {
       "name": "httpsi"
+    },
+    {
+      "name": "hubBudget"
     },
     {
       "name": "hubs"
@@ -347843,6 +349206,9 @@
     },
     {
       "name": "split"
+    },
+    {
+      "name": "spokes"
     },
     {
       "name": "ssids"
@@ -348784,6 +350150,36 @@
       "summary": "Enable or disable umbrella protection for an appliance network. When 'enabled' is false, 'umbrella.organization.id' and 'umbrella.origin.id' are null in the response.",
       "resource": "/networks/{networkId}/appliance/umbrella/protection",
       "operation": "update"
+    },
+    {
+      "group": "Frontizo/multi cloud/actions/mcf action",
+      "summary": "Starts asynchronous organization-wide AutoVPN site-to-cloud offboarding.",
+      "resource": "/organizations/{organizationId}/mcf/autovpn",
+      "operation": "batch"
+    },
+    {
+      "group": "Frontizo/multi cloud/actions/mcf action",
+      "summary": "Starts asynchronous reconciliation of MCN AutoVPN connectors and available regions.",
+      "resource": "/organizations/{organizationId}/mcf/autovpn/connectors",
+      "operation": "batch"
+    },
+    {
+      "group": "Frontizo/multi cloud/actions/mcf action",
+      "summary": "Starts asynchronous AutoVPN site-to-cloud onboarding for the requested spoke networks.",
+      "resource": "/organizations/{organizationId}/mcf/autovpn/sites",
+      "operation": "batch"
+    },
+    {
+      "group": "Frontizo/multi cloud/actions/mcf action",
+      "summary": "Detaches a Meraki AutoVPN spoke from its MCN regions.",
+      "resource": "/organizations/{organizationId}/mcf/autovpn/spokes/{networkId}",
+      "operation": "batch"
+    },
+    {
+      "group": "Frontizo/multi cloud/actions/mcf action",
+      "summary": "Replaces the complete desired MCN region set for a Meraki AutoVPN spoke.",
+      "resource": "/organizations/{organizationId}/mcf/autovpn/spokes/{networkId}/regions",
+      "operation": "batch"
     },
     {
       "group": "Frontizo/multi cloud/actions/mcf action",
