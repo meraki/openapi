@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 07 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 16 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "1.75.0"
+    "version": "v1.75.1"
   },
   "servers": [
     {
@@ -30,6 +30,64 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "API Key"
+      },
+      "oauth2": {
+        "type": "oauth2",
+        "description": "This API uses OAuth 2 with the authorization code grant flow. [More info](https://developer.cisco.com/meraki/api-v1/authorization/)",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://as.meraki.com/oauth/authorize",
+            "tokenUrl": "https://as.meraki.com/oauth/token",
+            "scopes": {
+              "camera:config:read": "Cameras (MV)",
+              "camera:config:write": "Cameras (MV)",
+              "camera:telemetry:read": "Cameras (MV)",
+              "camera:telemetry:write": "Cameras (MV)",
+              "dashboard:general:config:read": "Entire dashboard, excluding identity and access management",
+              "dashboard:general:config:write": "Entire dashboard, excluding identity and access management",
+              "dashboard:general:telemetry:read": "Entire dashboard, excluding identity and access management",
+              "dashboard:general:telemetry:write": "Entire dashboard, excluding identity and access management",
+              "dashboard:iam:config:read": "Dashboard related to identity and access management, including early access features",
+              "dashboard:iam:config:write": "Dashboard related to identity and access management, including early access features",
+              "dashboard:iam:telemetry:read": "Dashboard related to identity and access management, including early access features",
+              "dashboard:iam:telemetry:write": "Dashboard related to identity and access management, including early access features",
+              "dashboard:licensing:config:read": "Licensing",
+              "dashboard:licensing:config:write": "Licensing",
+              "dashboard:licensing:telemetry:read": "Licensing",
+              "dashboard:licensing:telemetry:write": "Licensing",
+              "iot:gateway:general:config:read": "Sensor Connect (IoT Control)",
+              "iot:gateway:general:config:write": "Sensor Connect (IoT Control)",
+              "iot:gateway:general:telemetry:read": "Sensor Connect (IoT Control)",
+              "iot:gateway:general:telemetry:write": "Sensor Connect (IoT Control)",
+              "iot:gateway:onboarding:config:read": "Sensor Connect (IoT Onboarding)",
+              "iot:gateway:onboarding:config:write": "Sensor Connect (IoT Onboarding)",
+              "policy:config:read": "Provides granular authorization over all global policy resources including policy objects, adaptive policy, and Organization Group Policy",
+              "policy:config:write": "Provides granular authorization over all global policy resources including policy objects, adaptive policy, and Organization Group Policy",
+              "policy:telemetry:read": "Provides granular authorization over all global policy resources including policy objects, adaptive policy, and Organization Group Policy",
+              "policy:telemetry:write": "Provides granular authorization over all global policy resources including policy objects, adaptive policy, and Organization Group Policy",
+              "sdwan:config:read": "Secure SD-WAN (MX including MXIGZ)",
+              "sdwan:config:write": "Secure SD-WAN (MX including MXIGZ)",
+              "sdwan:telemetry:read": "Secure SD-WAN (MX including MXIGZ)",
+              "sdwan:telemetry:write": "Secure SD-WAN (MX including MXIGZ)",
+              "sensor:config:read": "Sensors (MT)",
+              "sensor:config:write": "Sensors (MT)",
+              "sensor:telemetry:read": "Sensors (MT)",
+              "sensor:telemetry:write": "Sensors (MT)",
+              "sm:config:read": "Endpoint Management (SM)",
+              "sm:config:write": "Endpoint Management (SM)",
+              "sm:telemetry:read": "Endpoint Management (SM)",
+              "sm:telemetry:write": "Endpoint Management (SM)",
+              "switch:config:read": "Switches (MS)",
+              "switch:config:write": "Switches (MS)",
+              "switch:telemetry:read": "Switches (MS)",
+              "switch:telemetry:write": "Switches (MS)",
+              "wireless:config:read": "Wireless (MR)",
+              "wireless:config:write": "Wireless (MR)",
+              "wireless:telemetry:read": "Wireless (MR)",
+              "wireless:telemetry:write": "Wireless (MR)"
+            }
+          }
+        }
       }
     }
   },
@@ -4008,7 +4066,7 @@
                                     },
                                     "address": {
                                       "type": "string",
-                                      "description": "Static address that will override the one(s) received by SLAAC."
+                                      "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                     },
                                     "gateway": {
                                       "type": "string",
@@ -4334,7 +4392,7 @@
                                     },
                                     "address": {
                                       "type": "string",
-                                      "description": "Static address that will override the one(s) received by SLAAC."
+                                      "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                     },
                                     "gateway": {
                                       "type": "string",
@@ -4589,6 +4647,29 @@
                           "description": "WAN 2 settings."
                         }
                       },
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "mtu": {
+                            "type": "object",
+                            "properties": {
+                              "limit": {
+                                "type": "integer",
+                                "minimum": 1280,
+                                "maximum": 1500,
+                                "description": "The MTU limit for the uplink interface, in bytes, from 1280 through 1500. A null value clears the configured limit.",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "limit"
+                            ],
+                            "description": "Configuration options for MTU.",
+                            "x-release-stage": "alpha"
+                          }
+                        },
+                        "description": "Settings for an additional wired WAN interface."
+                      },
                       "description": "Interface settings."
                     }
                   }
@@ -4614,7 +4695,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -4704,7 +4785,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -4773,6 +4854,11 @@
                             "enabled": false
                           }
                         }
+                      }
+                    },
+                    "wan3": {
+                      "mtu": {
+                        "limit": 1500
                       }
                     }
                   }
@@ -4891,7 +4977,7 @@
                                   },
                                   "address": {
                                     "type": "string",
-                                    "description": "Static address that will override the one(s) received by SLAAC."
+                                    "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                   },
                                   "gateway": {
                                     "type": "string",
@@ -5248,7 +5334,7 @@
                                   },
                                   "address": {
                                     "type": "string",
-                                    "description": "Static address that will override the one(s) received by SLAAC."
+                                    "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                   },
                                   "gateway": {
                                     "type": "string",
@@ -5534,6 +5620,29 @@
                         "description": "WAN 2 settings."
                       }
                     },
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "mtu": {
+                          "type": "object",
+                          "properties": {
+                            "limit": {
+                              "type": "integer",
+                              "minimum": 1280,
+                              "maximum": 1500,
+                              "description": "The MTU limit for the uplink interface, in bytes, from 1280 through 1500. A null value clears the configured limit.",
+                              "nullable": true
+                            }
+                          },
+                          "required": [
+                            "limit"
+                          ],
+                          "description": "Configuration options for MTU.",
+                          "x-release-stage": "alpha"
+                        }
+                      },
+                      "description": "Settings for an additional wired WAN interface."
+                    },
                     "description": "Interface settings."
                   }
                 },
@@ -5558,7 +5667,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -5650,7 +5759,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -5721,6 +5830,11 @@
                             "enabled": false
                           }
                         }
+                      }
+                    },
+                    "wan3": {
+                      "mtu": {
+                        "limit": 1500
                       }
                     }
                   }
@@ -5816,7 +5930,7 @@
                                     },
                                     "address": {
                                       "type": "string",
-                                      "description": "Static address that will override the one(s) received by SLAAC."
+                                      "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                     },
                                     "gateway": {
                                       "type": "string",
@@ -6142,7 +6256,7 @@
                                     },
                                     "address": {
                                       "type": "string",
-                                      "description": "Static address that will override the one(s) received by SLAAC."
+                                      "description": "Static IPv6 address in CIDR notation that overrides addresses received by SLAAC when PPPoE is disabled. With PPPoE enabled, use a bare IPv6 address without a prefix."
                                     },
                                     "gateway": {
                                       "type": "string",
@@ -6397,6 +6511,29 @@
                           "description": "WAN 2 settings."
                         }
                       },
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "mtu": {
+                            "type": "object",
+                            "properties": {
+                              "limit": {
+                                "type": "integer",
+                                "minimum": 1280,
+                                "maximum": 1500,
+                                "description": "The MTU limit for the uplink interface, in bytes, from 1280 through 1500. A null value clears the configured limit.",
+                                "nullable": true
+                              }
+                            },
+                            "required": [
+                              "limit"
+                            ],
+                            "description": "Configuration options for MTU.",
+                            "x-release-stage": "alpha"
+                          }
+                        },
+                        "description": "Settings for an additional wired WAN interface."
+                      },
                       "description": "Interface settings."
                     }
                   }
@@ -6422,7 +6559,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -6512,7 +6649,7 @@
                         },
                         "ipv6": {
                           "assignmentMode": "static",
-                          "address": "1:2:3::4",
+                          "address": "1:2:3::4/64",
                           "gateway": "1:2:3::5",
                           "nameservers": {
                             "addresses": [
@@ -6581,6 +6718,11 @@
                             "enabled": false
                           }
                         }
+                      }
+                    },
+                    "wan3": {
+                      "mtu": {
+                        "limit": 1500
                       }
                     }
                   }
@@ -8680,6 +8822,38 @@
                             },
                             "description": "APN configurations. If empty, the default APN will be used.",
                             "default": []
+                          },
+                          "ips": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "translation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "464XLAT"
+                                      ],
+                                      "description": "IP translation mechanism. Only '464XLAT' is currently supported."
+                                    },
+                                    "status": {
+                                      "type": "string",
+                                      "enum": [
+                                        "active",
+                                        "inactive",
+                                        "unknown"
+                                      ],
+                                      "description": "Observed runtime 464XLAT state for this cellular data connection."
+                                    }
+                                  },
+                                  "description": "IP translation state for this cellular data connection."
+                                }
+                              }
+                            },
+                            "description": "IP configurations for each cellular data connection.",
+                            "default": []
                           }
                         }
                       },
@@ -8728,6 +8902,14 @@
                             "type": "pap",
                             "username": "milesmeraki",
                             "password": "secret"
+                          }
+                        }
+                      ],
+                      "ips": [
+                        {
+                          "translation": {
+                            "type": "464XLAT",
+                            "status": "active"
                           }
                         }
                       ]
@@ -9007,6 +9189,38 @@
                             },
                             "description": "APN configurations. If empty, the default APN will be used.",
                             "default": []
+                          },
+                          "ips": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "translation": {
+                                  "type": "object",
+                                  "properties": {
+                                    "type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "464XLAT"
+                                      ],
+                                      "description": "IP translation mechanism. Only '464XLAT' is currently supported."
+                                    },
+                                    "status": {
+                                      "type": "string",
+                                      "enum": [
+                                        "active",
+                                        "inactive",
+                                        "unknown"
+                                      ],
+                                      "description": "Observed runtime 464XLAT state for this cellular data connection."
+                                    }
+                                  },
+                                  "description": "IP translation state for this cellular data connection."
+                                }
+                              }
+                            },
+                            "description": "IP configurations for each cellular data connection.",
+                            "default": []
                           }
                         }
                       },
@@ -9055,6 +9269,14 @@
                             "type": "pap",
                             "username": "milesmeraki",
                             "password": "secret"
+                          }
+                        }
+                      ],
+                      "ips": [
+                        {
+                          "translation": {
+                            "type": "464XLAT",
+                            "status": "active"
                           }
                         }
                       ]
@@ -34260,6 +34482,221 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/security/httpsInspection": {
+      "put": {
+        "description": "Update HTTPS inspection configuration for a network.",
+        "operationId": "updateNetworkApplianceSecurityHttpsInspection",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether HTTPS inspection is enabled."
+                  },
+                  "allowLists": {
+                    "type": "object",
+                    "properties": {
+                      "l3": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 600,
+                        "description": "Layer 3 allow list of source IP addresses excluded from inspection. Maximum 600 entries."
+                      },
+                      "l7": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "maxItems": 600,
+                        "description": "Layer 7 allow list of domains excluded from inspection. Maximum 600 entries."
+                      },
+                      "applications": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Application ID."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Application name."
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ]
+                        },
+                        "maxItems": 600,
+                        "description": "Specific applications to be excluded from inspection. Maximum 600 entries."
+                      }
+                    },
+                    "description": "Allow lists for HTTPS inspection exclusions."
+                  }
+                },
+                "example": {
+                  "enabled": true,
+                  "allowLists": {
+                    "l3": [
+                      "192.0.2.10"
+                    ],
+                    "l7": [
+                      "*.example.com"
+                    ],
+                    "applications": [
+                      {
+                        "id": "meraki:layer7/application/5",
+                        "name": "Advertising.com"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "enabled"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "network": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Network ID"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "description": "Network information"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether HTTPS inspection is enabled."
+                    },
+                    "allowLists": {
+                      "type": "object",
+                      "properties": {
+                        "l3": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "maxItems": 600,
+                          "description": "Layer 3 allow list of source IP addresses excluded from inspection. Maximum 600 entries."
+                        },
+                        "l7": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "maxItems": 600,
+                          "description": "Layer 7 allow list of domains excluded from inspection. Maximum 600 entries."
+                        },
+                        "applications": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Application ID."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Application name."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ]
+                          },
+                          "maxItems": 600,
+                          "description": "Specific applications to be excluded from inspection. Maximum 600 entries."
+                        }
+                      },
+                      "required": [
+                        "l3",
+                        "l7",
+                        "applications"
+                      ],
+                      "description": "Allow lists for HTTPS inspection exclusions."
+                    }
+                  },
+                  "required": [
+                    "network",
+                    "enabled",
+                    "allowLists"
+                  ]
+                },
+                "example": {
+                  "network": {
+                    "id": "N_24329156"
+                  },
+                  "enabled": true,
+                  "allowLists": {
+                    "l3": [
+                      "192.0.2.10"
+                    ],
+                    "l7": [
+                      "*.example.com"
+                    ],
+                    "applications": [
+                      {
+                        "id": "meraki:layer7/application/5",
+                        "name": "Advertising.com"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:write"
+            ]
+          }
+        ],
+        "summary": "Update HTTPS inspection configuration for a network.",
+        "tags": [
+          "appliance",
+          "configure",
+          "security",
+          "httpsInspection"
+        ]
+      }
+    },
     "/networks/{networkId}/appliance/security/intrusion": {
       "get": {
         "description": "Returns all supported intrusion settings for an MX network",
@@ -42747,7 +43184,7 @@
                           },
                           "sourceInterface": {
                             "type": "string",
-                            "description": "The output interface the appliance uses to establish a peering relationship with the neighbor"
+                            "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                           },
                           "nextHopIp": {
                             "type": "string",
@@ -43054,7 +43491,7 @@
                         },
                         "sourceInterface": {
                           "type": "string",
-                          "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') for Secure Router L3 interfaces."
+                          "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                         },
                         "nextHopIp": {
                           "type": "string",
@@ -43320,7 +43757,7 @@
                           },
                           "sourceInterface": {
                             "type": "string",
-                            "description": "The output interface the appliance uses to establish a peering relationship with the neighbor"
+                            "description": "The output interface for peering with the remote BGP peer. Valid values are: 'wan{NUMBER}' (e.g. 'wan3') or 'vlan{VLAN ID}' (e.g. 'vlan123') for MX; 'l3lan{ID}' (e.g. 'l3lan123') or an eligible 'wan{NUMBER}' for Secure/Catalyst Router. Secure/Catalyst Router WAN interfaces must be enabled, non-cellular uplinks on supported AutoVPN hub networks. NAT and no-NAT uplinks are supported."
                           },
                           "nextHopIp": {
                             "type": "string",
@@ -80627,7 +81064,8 @@
                           },
                           "preAuthenticationGroupPolicyId": {
                             "type": "string",
-                            "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                            "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                            "nullable": true
                           }
                         },
                         "description": "Object for RADIUS Settings"
@@ -81380,7 +81818,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -81779,7 +82218,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -82533,7 +82973,8 @@
                         },
                         "preAuthenticationGroupPolicyId": {
                           "type": "string",
-                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)"
+                          "description": "Group policy Number for pre-authentication group policy (Requires MS 18 or higher)",
+                          "nullable": true
                         }
                       },
                       "description": "Object for RADIUS Settings"
@@ -100613,6 +101054,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Return the ESL settings of a wireless network",
         "tags": [
           "wireless",
@@ -102811,7 +103259,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-09-07T08:09:02Z"
+                    "lastEnabledAt": "2026-09-16T08:08:54Z"
                   }
                 }
               }
@@ -111322,7 +111770,7 @@
                       },
                       "radiusAuthenticationNasId": {
                         "type": "string",
-                        "description": "The template of the NAS identifier to be used for RADIUS authentication (ex. $NODE_MAC$:$VAP_NUM$). Only present when configured and the SSID uses RADIUS-based auth."
+                        "description": "The configured NAS identifier used for RADIUS authentication. May include custom text and template variables. Only present when configured and the SSID uses RADIUS-based authentication."
                       },
                       "radiusServerTimeout": {
                         "type": "integer",
@@ -112303,7 +112751,7 @@
                     },
                     "radiusAuthenticationNasId": {
                       "type": "string",
-                      "description": "The template of the NAS identifier to be used for RADIUS authentication (ex. $NODE_MAC$:$VAP_NUM$). Only present when configured and the SSID uses RADIUS-based auth."
+                      "description": "The configured NAS identifier used for RADIUS authentication. May include custom text and template variables. Only present when configured and the SSID uses RADIUS-based authentication."
                     },
                     "radiusServerTimeout": {
                       "type": "integer",
@@ -113106,7 +113554,7 @@
                   },
                   "radiusAuthenticationNasId": {
                     "type": "string",
-                    "description": "The template of the NAS identifier to be used for RADIUS authentication (ex. $NODE_MAC$:$VAP_NUM$)."
+                    "description": "The NAS identifier to use for RADIUS authentication. With 802.11r enabled or adaptive, custom text is available only to organizations enabled for this feature; otherwise, use only $NODE_MAC$, $VAP_NUM$, and $VAP_NAME$. When this feature is enabled, the complete rendered NAS identifier must be 1–48 bytes."
                   },
                   "radiusServerTimeout": {
                     "type": "integer",
@@ -114062,7 +114510,7 @@
                     },
                     "radiusAuthenticationNasId": {
                       "type": "string",
-                      "description": "The template of the NAS identifier to be used for RADIUS authentication (ex. $NODE_MAC$:$VAP_NUM$). Only present when configured and the SSID uses RADIUS-based auth."
+                      "description": "The configured NAS identifier used for RADIUS authentication. May include custom text and template variables. Only present when configured and the SSID uses RADIUS-based authentication."
                     },
                     "radiusServerTimeout": {
                       "type": "integer",
@@ -126432,7 +126880,8 @@
                     "properties": {
                       "adminId": {
                         "type": "string",
-                        "description": "Database ID for the admin user who made the API request."
+                        "description": "Database ID for the admin user who made the API request. Null for OAuth requests.",
+                        "nullable": true
                       },
                       "method": {
                         "type": "string",
@@ -126515,8 +126964,8 @@
                     "version": 1,
                     "operationId": "getOrganizationApiRequests",
                     "client": {
-                      "id": "0hoXjtjX6C-Nk4Nr6kEbCJJFRmIgycaG1HBE572hlIc",
-                      "type": "oauth"
+                      "id": null,
+                      "type": "api_key"
                     }
                   }
                 ]
@@ -131357,6 +131806,396 @@
         ]
       }
     },
+    "/organizations/{organizationId}/appliance/security/httpsInspection/byNetwork": {
+      "get": {
+        "description": "List HTTPS inspection status and configuration for appliances in the organization.",
+        "operationId": "getOrganizationApplianceSecurityHttpsInspectionByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "networkIds",
+            "in": "query",
+            "description": "A list of network IDs. The returned list will be filtered to only include these networks.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "network": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Network ID"
+                              }
+                            },
+                            "required": [
+                              "id"
+                            ],
+                            "description": "Network information"
+                          },
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether HTTPS inspection is enabled."
+                          },
+                          "allowLists": {
+                            "type": "object",
+                            "properties": {
+                              "l3": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 600,
+                                "description": "Layer 3 allow list of source IP addresses excluded from inspection. Maximum 600 entries."
+                              },
+                              "l7": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "maxItems": 600,
+                                "description": "Layer 7 allow list of domains excluded from inspection. Maximum 600 entries."
+                              },
+                              "applications": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "Application ID."
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "Application name."
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name"
+                                  ]
+                                },
+                                "maxItems": 600,
+                                "description": "Specific applications to be excluded from inspection. Maximum 600 entries."
+                              }
+                            },
+                            "required": [
+                              "l3",
+                              "l7",
+                              "applications"
+                            ],
+                            "description": "Allow lists for HTTPS inspection exclusions."
+                          }
+                        },
+                        "required": [
+                          "network",
+                          "enabled",
+                          "allowLists"
+                        ]
+                      },
+                      "description": "Paginated list of HTTPS inspection configurations for specified networks"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "The total number of items in the dataset"
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "The number of items in the dataset that are available on subsequent pages"
+                                }
+                              },
+                              "description": "Counts relating to the paginated items"
+                            }
+                          },
+                          "description": "Counts relating to the paginated dataset"
+                        }
+                      },
+                      "description": "Metadata relevant to the paginated dataset"
+                    }
+                  }
+                },
+                "example": {
+                  "items": [
+                    {
+                      "network": {
+                        "id": "N_24329156"
+                      },
+                      "enabled": true,
+                      "allowLists": {
+                        "l3": [
+                          "192.0.2.10"
+                        ],
+                        "l7": [
+                          "*.example.com"
+                        ],
+                        "applications": [
+                          {
+                            "id": "meraki:layer7/application/5",
+                            "name": "Advertising.com"
+                          }
+                        ]
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 10,
+                        "remaining": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
+        "summary": "List HTTPS inspection status and configuration for appliances in the organization.",
+        "tags": [
+          "appliance",
+          "configure",
+          "security",
+          "httpsInspection",
+          "byNetwork"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/appliance/security/httpsi": {
+      "get": {
+        "description": "Retrieve the HTTPS Inspection state for all security appliances in an organization.",
+        "operationId": "httpsiOrganizationApplianceSecurity",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the device"
+                      },
+                      "mac": {
+                        "type": "string",
+                        "description": "MAC address of the device"
+                      },
+                      "serial": {
+                        "type": "string",
+                        "description": "Serial number of the device"
+                      },
+                      "certificateInstalled": {
+                        "type": "boolean",
+                        "description": "Whether a valid HTTPS Inspection certificate is installed"
+                      },
+                      "httpsiSupported": {
+                        "type": "boolean",
+                        "description": "Whether the device supports HTTPS Inspection"
+                      }
+                    }
+                  }
+                },
+                "example": [
+                  {
+                    "name": "My AP",
+                    "mac": "00:11:22:33:44:55",
+                    "serial": "Q234-ABCD-5678",
+                    "certificateInstalled": true,
+                    "httpsiSupported": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
+        "summary": "Retrieve the HTTPS Inspection state for all security appliances in an organization.",
+        "tags": [
+          "appliance",
+          "configure",
+          "security"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/appliance/security/httpsi/certificates": {
+      "post": {
+        "description": "Upload an HTTPS Inspection certificate to MX devices in the same organization. HTTPS Inspection must be supported.",
+        "operationId": "certificatesOrganizationApplianceSecurityHttpsi",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contents": {
+                    "type": "string",
+                    "description": "The private key and certificate used to inspect HTTPS traffic. The certificate must be in .pem format."
+                  },
+                  "serials": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Serial numbers of the security appliances that will receive the new HTTPS certificate for HTTPS Inspection"
+                  }
+                },
+                "example": {
+                  "contents": "---BEGIN PRIVATE KEY---\nhello world\n---END PRIVATE KEY---\n---BEGIN CERTIFICATE---\nhello world\n---END CERTIFICATE---\n",
+                  "serials": [
+                    "Q234-ABCD-0001",
+                    "Q234-ABCD-0002",
+                    "Q234-ABCD-0003"
+                  ]
+                },
+                "required": [
+                  "contents",
+                  "serials"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "Whether the certificate upload was successful"
+                    }
+                  }
+                },
+                "example": {
+                  "success": true
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:write"
+            ]
+          }
+        ],
+        "summary": "Upload an HTTPS Inspection certificate to MX devices in the same organization",
+        "tags": [
+          "appliance",
+          "configure",
+          "security",
+          "httpsi"
+        ]
+      }
+    },
     "/organizations/{organizationId}/appliance/security/intrusion": {
       "get": {
         "description": "Returns all supported intrusion settings for an organization",
@@ -135038,6 +135877,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
         "summary": "Fetch uplink NAT settings of each network in the organization",
         "tags": [
           "appliance",
@@ -135382,6 +136228,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
         "summary": "Get the list of available IPsec SLA policies for an organization",
         "tags": [
           "appliance",
@@ -136364,6 +137217,21 @@
                                 "type": "string",
                                 "description": "Source IP of eBGP neighbor"
                               },
+                              "vrf": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "VRF ID for the Catalyst BGP neighbor. Use 0 for the default VRF."
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "VRF name for the Catalyst BGP neighbor."
+                                  }
+                                },
+                                "description": "The VRF associated with the BGP neighbor. Required for Catalyst BGP peers, including an explicit default VRF (id 0); optional for existing MX peers, which use the default VRF when omitted.",
+                                "x-release-stage": "general_availability"
+                              },
                               "ttlSecurity": {
                                 "type": "object",
                                 "properties": {
@@ -136495,7 +137363,7 @@
                                       "description": "Source IP of eBGP neighbor"
                                     }
                                   },
-                                  "description": "[optional] The eBGP neighbor configuration associated with this ECMP uplink configuration."
+                                  "description": "[optional] The eBGP neighbor configuration associated with this ECMP uplink configuration. Catalyst uplinks inherit the VRF association from the parent ebgpNeighbor."
                                 }
                               }
                             },
@@ -136602,6 +137470,10 @@
                         "ebgpHoldTimer": 180,
                         "ebgpMultihop": 2,
                         "sourceIp": "10.10.10.22",
+                        "vrf": {
+                          "id": "12345",
+                          "name": "VRF Blue"
+                        },
                         "ttlSecurity": {
                           "enabled": false
                         },
@@ -136918,6 +137790,24 @@
                               "type": "string",
                               "description": "Source IP of eBGP neighbor"
                             },
+                            "vrf": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "description": "VRF ID for the Catalyst BGP neighbor. Use 0 for the default VRF."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "VRF name for the Catalyst BGP neighbor."
+                                }
+                              },
+                              "required": [
+                                "id"
+                              ],
+                              "description": "The VRF associated with the BGP neighbor. Required for Catalyst BGP peers, including an explicit default VRF (id 0); optional for existing MX peers, which use the default VRF when omitted.",
+                              "x-release-stage": "general_availability"
+                            },
                             "pathPrepend": {
                               "type": "array",
                               "items": {
@@ -137080,6 +137970,10 @@
                         "ebgpHoldTimer": 180,
                         "ebgpMultihop": 2,
                         "sourceIp": "10.10.10.22",
+                        "vrf": {
+                          "id": "12345",
+                          "name": "VRF Blue"
+                        },
                         "pathPrepend": [
                           1,
                           2
@@ -137355,6 +138249,21 @@
                                 "type": "string",
                                 "description": "Source IP of eBGP neighbor"
                               },
+                              "vrf": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "description": "VRF ID for the Catalyst BGP neighbor. Use 0 for the default VRF."
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "description": "VRF name for the Catalyst BGP neighbor."
+                                  }
+                                },
+                                "description": "The VRF associated with the BGP neighbor. Required for Catalyst BGP peers, including an explicit default VRF (id 0); optional for existing MX peers, which use the default VRF when omitted.",
+                                "x-release-stage": "general_availability"
+                              },
                               "ttlSecurity": {
                                 "type": "object",
                                 "properties": {
@@ -137486,7 +138395,7 @@
                                       "description": "Source IP of eBGP neighbor"
                                     }
                                   },
-                                  "description": "[optional] The eBGP neighbor configuration associated with this ECMP uplink configuration."
+                                  "description": "[optional] The eBGP neighbor configuration associated with this ECMP uplink configuration. Catalyst uplinks inherit the VRF association from the parent ebgpNeighbor."
                                 }
                               }
                             },
@@ -137593,6 +138502,10 @@
                         "ebgpHoldTimer": 180,
                         "ebgpMultihop": 2,
                         "sourceIp": "10.10.10.22",
+                        "vrf": {
+                          "id": "12345",
+                          "name": "VRF Blue"
+                        },
                         "ttlSecurity": {
                           "enabled": false
                         },
@@ -138087,7 +139000,7 @@
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
                   "fan_tray_failure",
-                  "faulty_cable",
+                  "fast_retrain",
                   "firewall",
                   "firmware_version",
                   "frags_errors",
@@ -138166,6 +139079,7 @@
                   "poe_overload",
                   "poe_power_error",
                   "port_channel_mixed_speed_ports",
+                  "port_error_disabled",
                   "primary_uplink_status",
                   "probe_cable_unknown",
                   "push_api_device_availability",
@@ -138189,9 +139103,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
+                  "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -138772,7 +139691,7 @@
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
                   "fan_tray_failure",
-                  "faulty_cable",
+                  "fast_retrain",
                   "firewall",
                   "firmware_version",
                   "frags_errors",
@@ -138851,6 +139770,7 @@
                   "poe_overload",
                   "poe_power_error",
                   "port_channel_mixed_speed_ports",
+                  "port_error_disabled",
                   "primary_uplink_status",
                   "probe_cable_unknown",
                   "push_api_device_availability",
@@ -138874,9 +139794,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
+                  "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -139278,7 +140203,7 @@
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
                   "fan_tray_failure",
-                  "faulty_cable",
+                  "fast_retrain",
                   "firewall",
                   "firmware_version",
                   "frags_errors",
@@ -139357,6 +140282,7 @@
                   "poe_overload",
                   "poe_power_error",
                   "port_channel_mixed_speed_ports",
+                  "port_error_disabled",
                   "primary_uplink_status",
                   "probe_cable_unknown",
                   "push_api_device_availability",
@@ -139380,9 +140306,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
+                  "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -139840,7 +140771,7 @@
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
                   "fan_tray_failure",
-                  "faulty_cable",
+                  "fast_retrain",
                   "firewall",
                   "firmware_version",
                   "frags_errors",
@@ -139919,6 +140850,7 @@
                   "poe_overload",
                   "poe_power_error",
                   "port_channel_mixed_speed_ports",
+                  "port_error_disabled",
                   "primary_uplink_status",
                   "probe_cable_unknown",
                   "push_api_device_availability",
@@ -139942,9 +140874,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
+                  "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -140447,7 +141384,7 @@
                   "eu_regulatory_firmware_mismatch",
                   "fan_down",
                   "fan_tray_failure",
-                  "faulty_cable",
+                  "fast_retrain",
                   "firewall",
                   "firmware_version",
                   "frags_errors",
@@ -140526,6 +141463,7 @@
                   "poe_overload",
                   "poe_power_error",
                   "port_channel_mixed_speed_ports",
+                  "port_error_disabled",
                   "primary_uplink_status",
                   "probe_cable_unknown",
                   "push_api_device_availability",
@@ -140549,9 +141487,14 @@
                   "ssh_port_rotary_conflict",
                   "ssid_radius_server",
                   "stack_cable_auth_failure",
+                  "stack_link_flaps",
                   "stack_misconfigured",
                   "stack_not_configured",
                   "stack_platform_mismatch",
+                  "stack_port_errors",
+                  "stack_power_priority_conflict",
+                  "stack_power_supply_count_unbalanced",
+                  "stack_power_topology",
                   "stack_version_mismatch",
                   "start_monitoring_provisioning",
                   "sticky_client",
@@ -157463,6 +158406,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
         "summary": "List cellular data management profiles in this organization",
         "tags": [
           "organizations",
@@ -158039,6 +158989,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
         "summary": "List Cellular Data Management Profile assignments in this organization",
         "tags": [
           "organizations",
@@ -167365,6 +168322,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
         "summary": "List the monitored media servers for this organization",
         "tags": [
           "insight",
@@ -175189,6 +176153,16 @@
                     "type": "string",
                     "description": "Description of the firewall rule"
                   },
+                  "logging": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether logging is enabled for traffic matching this rule"
+                      }
+                    },
+                    "description": "Logging settings for the rule"
+                  },
                   "sources": {
                     "type": "object",
                     "properties": {
@@ -175829,6 +176803,9 @@
                   "enabled": true,
                   "priority": 100,
                   "description": "This is rule 1",
+                  "logging": {
+                    "enabled": false
+                  },
                   "sources": {
                     "matchCriteria": [
                       "addressRanges",
@@ -176009,6 +176986,16 @@
                     "description": {
                       "type": "string",
                       "description": "Description of the firewall rule"
+                    },
+                    "logging": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether logging is enabled for traffic matching this rule"
+                        }
+                      },
+                      "description": "Logging settings for the rule"
                     },
                     "sources": {
                       "type": "object",
@@ -176574,6 +177561,9 @@
                   "enabled": true,
                   "priority": 100,
                   "description": "This is rule 1",
+                  "logging": {
+                    "enabled": false
+                  },
                   "sources": {
                     "matchCriteria": [
                       "addressRanges",
@@ -176824,6 +177814,16 @@
                           "description": {
                             "type": "string",
                             "description": "Description of the firewall rule"
+                          },
+                          "logging": {
+                            "type": "object",
+                            "properties": {
+                              "enabled": {
+                                "type": "boolean",
+                                "description": "Whether logging is enabled for traffic matching this rule"
+                              }
+                            },
+                            "description": "Logging settings for the rule"
                           },
                           "sources": {
                             "type": "object",
@@ -177421,6 +178421,9 @@
                       "enabled": true,
                       "priority": 100,
                       "description": "This is rule 1",
+                      "logging": {
+                        "enabled": false
+                      },
                       "sources": {
                         "matchCriteria": [
                           "addressRanges",
@@ -177693,6 +178696,16 @@
                   "description": {
                     "type": "string",
                     "description": "Description of the firewall rule"
+                  },
+                  "logging": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether logging is enabled for traffic matching this rule"
+                      }
+                    },
+                    "description": "Logging settings for the rule"
                   },
                   "sources": {
                     "type": "object",
@@ -178334,6 +179347,9 @@
                   "enabled": true,
                   "priority": 100,
                   "description": "This is rule 1",
+                  "logging": {
+                    "enabled": false
+                  },
                   "sources": {
                     "matchCriteria": [
                       "addressRanges",
@@ -178507,6 +179523,16 @@
                     "description": {
                       "type": "string",
                       "description": "Description of the firewall rule"
+                    },
+                    "logging": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean",
+                          "description": "Whether logging is enabled for traffic matching this rule"
+                        }
+                      },
+                      "description": "Logging settings for the rule"
                     },
                     "sources": {
                       "type": "object",
@@ -179072,6 +180098,9 @@
                   "enabled": true,
                   "priority": 100,
                   "description": "This is rule 1",
+                  "logging": {
+                    "enabled": false
+                  },
                   "sources": {
                     "matchCriteria": [
                       "addressRanges",
@@ -188582,6 +189611,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:read"
+            ]
+          }
+        ],
         "summary": "List the Limited Access Roles for an organization",
         "tags": [
           "sm",
@@ -190332,6 +191368,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "dashboard:general:config:read"
+            ]
+          }
+        ],
         "summary": "List Splash Themes",
         "tags": [
           "organizations",
@@ -196713,6 +197756,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Returns the current Air Marshal settings for this network",
         "tags": [
           "wireless",
@@ -199197,7 +200247,7 @@
     },
     "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
       "get": {
-        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
+        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices. Power draw and per-port PoE negotiation values are the latest stored snapshot collected by Dashboard. The reportedAt field identifies when that snapshot was collected; an offline or unsupported device may return null values or an older timestamp within the three-day retention window.",
         "operationId": "getOrganizationWirelessDevicesEthernetStatuses",
         "parameters": [
           {
@@ -199280,6 +200330,19 @@
                             "type": "string",
                             "description": "The PoE power mode for the AP. Can be 'full' or 'low'"
                           },
+                          "reportedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO 8601 timestamp when Dashboard collected the latest stored power snapshot. Null when no snapshot is available within the three-day retention window.",
+                            "nullable": true
+                          },
+                          "draw": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0,
+                            "description": "Latest instantaneous device-wide power draw in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when the device did not report a valid current value.",
+                            "nullable": true
+                          },
                           "ac": {
                             "type": "object",
                             "properties": {
@@ -199318,6 +200381,35 @@
                                 "standard": {
                                   "type": "string",
                                   "description": "The PoE Standard for the port. Can be '802.3at', '802.3af', '802.3bt', or null"
+                                },
+                                "isActive": {
+                                  "type": "boolean",
+                                  "description": "Whether this port is the active PoE source. Null when no power-source record is available for the port.",
+                                  "nullable": true
+                                },
+                                "protocol": {
+                                  "type": "string",
+                                  "enum": [
+                                    "CDP",
+                                    "LLDP",
+                                    "hardware"
+                                  ],
+                                  "description": "The firmware-selected PoE negotiation protocol: hardware classification, IEEE 802.1AB LLDP, or Cisco Discovery Protocol (CDP). This read-only value has no default. Null when unavailable or unknown.",
+                                  "nullable": true
+                                },
+                                "requested": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "description": "Power requested through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null for hardware classification or when unavailable.",
+                                  "nullable": true
+                                },
+                                "granted": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "description": "Power granted through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when unavailable.",
+                                  "nullable": true
                                 }
                               },
                               "description": "PoE details object for the port"
@@ -199338,7 +200430,8 @@
                             }
                           }
                         },
-                        "description": "List of port details"
+                        "maxItems": 5,
+                        "description": "List of up to five port details"
                       },
                       "aggregation": {
                         "type": "object",
@@ -199366,6 +200459,8 @@
                     },
                     "power": {
                       "mode": "full",
+                      "reportedAt": "2026-09-12T18:43:31Z",
+                      "draw": 18.7,
                       "ac": {
                         "isConnected": false
                       },
@@ -199377,7 +200472,11 @@
                       {
                         "name": "Ethernet 0",
                         "poe": {
-                          "standard": "802.3at"
+                          "standard": "802.3at",
+                          "isActive": true,
+                          "protocol": "LLDP",
+                          "requested": 33.0,
+                          "granted": 33.0
                         },
                         "linkNegotiation": {
                           "duplex": "full",
@@ -199410,7 +200509,7 @@
             ]
           }
         ],
-        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
+        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices",
         "tags": [
           "wireless",
           "monitor",
@@ -205128,7 +206227,7 @@
                       },
                       "ai": {
                         "enabled": true,
-                        "lastEnabledAt": "2026-09-07T08:09:02Z"
+                        "lastEnabledAt": "2026-09-16T08:08:54Z"
                       }
                     }
                   ],
@@ -205145,6 +206244,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "List the AutoRF settings of an organization by network",
         "tags": [
           "wireless",
@@ -205677,6 +206783,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "List the L2 isolation allow list MAC entry in an organization",
         "tags": [
           "wireless",
@@ -206998,24 +208111,9 @@
                                       "services": {
                                         "type": "array",
                                         "items": {
-                                          "type": "string",
-                                          "enum": [
-                                            "afp",
-                                            "airplay",
-                                            "apple_screen_share",
-                                            "bittorrent",
-                                            "ftp",
-                                            "google_chromecast",
-                                            "ichat",
-                                            "itunes",
-                                            "printers",
-                                            "samba",
-                                            "scanner",
-                                            "spotify",
-                                            "ssh"
-                                          ]
+                                          "type": "string"
                                         },
-                                        "description": "Name of configured services"
+                                        "description": "Predefined or same-organization custom mDNS service keys"
                                       }
                                     }
                                   },
@@ -207476,6 +208574,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Returns the SSID profiles for an organization",
         "tags": [
           "wireless",
@@ -207913,24 +209018,9 @@
                                     "services": {
                                       "type": "array",
                                       "items": {
-                                        "type": "string",
-                                        "enum": [
-                                          "afp",
-                                          "airplay",
-                                          "apple_screen_share",
-                                          "bittorrent",
-                                          "ftp",
-                                          "google_chromecast",
-                                          "ichat",
-                                          "itunes",
-                                          "printers",
-                                          "samba",
-                                          "scanner",
-                                          "spotify",
-                                          "ssh"
-                                        ]
+                                        "type": "string"
                                       },
-                                      "description": "Name of configured services"
+                                      "description": "Predefined or same-organization custom mDNS service keys"
                                     }
                                   }
                                 },
@@ -208301,7 +209391,8 @@
                         "rules": [
                           {
                             "services": [
-                              "airplay"
+                              "airplay",
+                              "custom_42"
                             ]
                           }
                         ]
@@ -208802,24 +209893,9 @@
                                       "services": {
                                         "type": "array",
                                         "items": {
-                                          "type": "string",
-                                          "enum": [
-                                            "afp",
-                                            "airplay",
-                                            "apple_screen_share",
-                                            "bittorrent",
-                                            "ftp",
-                                            "google_chromecast",
-                                            "ichat",
-                                            "itunes",
-                                            "printers",
-                                            "samba",
-                                            "scanner",
-                                            "spotify",
-                                            "ssh"
-                                          ]
+                                          "type": "string"
                                         },
-                                        "description": "Name of configured services"
+                                        "description": "Predefined or same-organization custom mDNS service keys"
                                       }
                                     }
                                   },
@@ -209488,6 +210564,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "List the SSID profile assignments in an organization",
         "tags": [
           "wireless",
@@ -210536,24 +211619,9 @@
                                       "services": {
                                         "type": "array",
                                         "items": {
-                                          "type": "string",
-                                          "enum": [
-                                            "afp",
-                                            "airplay",
-                                            "apple_screen_share",
-                                            "bittorrent",
-                                            "ftp",
-                                            "google_chromecast",
-                                            "ichat",
-                                            "itunes",
-                                            "printers",
-                                            "samba",
-                                            "scanner",
-                                            "spotify",
-                                            "ssh"
-                                          ]
+                                          "type": "string"
                                         },
-                                        "description": "Name of configured services"
+                                        "description": "Predefined or same-organization custom mDNS service keys"
                                       }
                                     }
                                   },
@@ -211453,24 +212521,9 @@
                                     "services": {
                                       "type": "array",
                                       "items": {
-                                        "type": "string",
-                                        "enum": [
-                                          "afp",
-                                          "airplay",
-                                          "apple_screen_share",
-                                          "bittorrent",
-                                          "ftp",
-                                          "google_chromecast",
-                                          "ichat",
-                                          "itunes",
-                                          "printers",
-                                          "samba",
-                                          "scanner",
-                                          "spotify",
-                                          "ssh"
-                                        ]
+                                        "type": "string"
                                       },
-                                      "description": "Name of configured services"
+                                      "description": "Predefined or same-organization custom mDNS service keys"
                                     }
                                   }
                                 },
@@ -211837,7 +212890,8 @@
                         "rules": [
                           {
                             "services": [
-                              "airplay"
+                              "airplay",
+                              "custom_42"
                             ]
                           }
                         ]
@@ -212334,24 +213388,9 @@
                                       "services": {
                                         "type": "array",
                                         "items": {
-                                          "type": "string",
-                                          "enum": [
-                                            "afp",
-                                            "airplay",
-                                            "apple_screen_share",
-                                            "bittorrent",
-                                            "ftp",
-                                            "google_chromecast",
-                                            "ichat",
-                                            "itunes",
-                                            "printers",
-                                            "samba",
-                                            "scanner",
-                                            "spotify",
-                                            "ssh"
-                                          ]
+                                          "type": "string"
                                         },
-                                        "description": "Name of configured services"
+                                        "description": "Predefined or same-organization custom mDNS service keys"
                                       }
                                     }
                                   },
@@ -213307,6 +214346,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Return list of Zigbee configs",
         "tags": [
           "wireless",
@@ -213531,6 +214577,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:telemetry:read"
+            ]
+          }
+        ],
         "summary": "List the Zigbee wireless devices for an organization or the supplied network(s)",
         "tags": [
           "wireless",
@@ -214112,6 +215165,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Return the list of door locks for a network",
         "tags": [
           "wireless",
@@ -218344,6 +219404,12 @@
       "name": "httpServers"
     },
     {
+      "name": "httpsInspection"
+    },
+    {
+      "name": "httpsi"
+    },
+    {
       "name": "identities"
     },
     {
@@ -220693,6 +221759,12 @@
       "summary": "Enqueue a routing table summary job for a device. The job fetches summary data such as route counts by VRF and protocol. Only Cisco Secure Routers are supported.",
       "resource": "/devices/{serial}/liveTools/routingTable/summaries",
       "operation": "summary"
+    },
+    {
+      "group": "Wired/actions/https inspection",
+      "summary": "Update HTTPS inspection configuration for a network.",
+      "resource": "/networks/{networkId}/appliance/security/httpsInspection",
+      "operation": "update"
     },
     {
       "group": "Wired/actions/network appliance settings",
