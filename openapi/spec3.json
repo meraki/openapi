@@ -2,12 +2,12 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Meraki Dashboard API",
-    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 16 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "A RESTful API to programmatically manage and monitor Cisco Meraki networks at scale.\n\n> Date: 21 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
     },
-    "version": "v1.75.1-beta.0"
+    "version": "1.75.1-beta.1"
   },
   "servers": [
     {
@@ -184,12 +184,9 @@
                     "enum": [
                       "DIGITAL_TWIN",
                       "DNAC",
-                      "MERAKI",
-                      "digital_twin",
-                      "dnac",
-                      "meraki"
+                      "MERAKI"
                     ],
-                    "description": "Platform identifier. Defaults to MERAKI when omitted. Case-insensitive."
+                    "description": "Platform identifier. Defaults to MERAKI when omitted. Values are matched case-insensitively."
                   },
                   "language": {
                     "type": "string",
@@ -233,16 +230,18 @@
                   "properties": {
                     "threadId": {
                       "type": "string",
-                      "description": "Reusable thread ID returned when the completion continues an existing persisted thread. Omitted for one-off completions."
+                      "description": "Reusable thread ID, returned only when the completion continues an existing persisted thread. One-off completions persist no thread.",
+                      "nullable": true
                     },
                     "messageId": {
                       "type": "string",
-                      "description": "Persisted assistant message ID when one was created. Null for one-off completions.",
+                      "description": "Persisted assistant message ID, returned only when a message was created.",
                       "nullable": true
                     },
                     "content": {
                       "type": "string",
-                      "description": "Content of the message"
+                      "description": "Content of the message, when the assistant returns formatted content.",
+                      "nullable": true
                     },
                     "sources": {
                       "type": "array",
@@ -257,7 +256,8 @@
                     },
                     "response": {
                       "type": "string",
-                      "description": "Assistant response text. Currently mirrors 'content'."
+                      "description": "Assistant response text. Currently mirrors 'content'.",
+                      "nullable": true
                     },
                     "tag": {
                       "type": "string",
@@ -314,13 +314,13 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Field to sort results by. Defaults to dateModified.",
+            "description": "Field to sort results by. Defaults to updatedAt.",
             "schema": {
               "type": "string",
               "enum": [
-                "dateModified",
                 "id",
-                "name"
+                "name",
+                "updatedAt"
               ]
             }
           },
@@ -376,7 +376,7 @@
                             "type": "string",
                             "description": "Display name of the conversation thread."
                           },
-                          "dateModified": {
+                          "updatedAt": {
                             "type": "string",
                             "format": "date-time",
                             "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
@@ -423,7 +423,7 @@
                     {
                       "threadId": "7139232",
                       "threadName": "Uplink troubleshooting - Branch office",
-                      "dateModified": "2026-04-01T12:00:00+00:00",
+                      "updatedAt": "2026-04-01T12:00:00+00:00",
                       "tag": "network_engineer_agent"
                     }
                   ],
@@ -489,11 +489,28 @@
                     "threadId": {
                       "type": "string",
                       "description": "Unique thread identifier."
+                    },
+                    "threadName": {
+                      "type": "string",
+                      "description": "Display name of the conversation thread."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
-                  "threadId": "7139232"
+                  "threadId": "7139232",
+                  "threadName": "Uplink troubleshooting - Branch office",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
+                  "tag": "network_engineer_agent"
                 }
               }
             }
@@ -547,7 +564,7 @@
                       "type": "string",
                       "description": "Display name of the conversation thread."
                     },
-                    "dateModified": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
@@ -562,7 +579,7 @@
                 "example": {
                   "threadId": "7139232",
                   "threadName": "Uplink troubleshooting - Branch office",
-                  "dateModified": "2026-04-01T12:00:00+00:00",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
                   "tag": "network_engineer_agent"
                 }
               }
@@ -627,9 +644,34 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string",
+                      "description": "Unique thread identifier."
+                    },
+                    "threadName": {
+                      "type": "string",
+                      "description": "Display name of the conversation thread."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
+                    }
+                  }
                 },
-                "example": {}
+                "example": {
+                  "threadId": "7139232",
+                  "threadName": "Uplink troubleshooting - Branch office",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
+                  "tag": "network_engineer_agent"
+                }
               }
             }
           }
@@ -751,7 +793,7 @@
                           "content": {
                             "type": "object",
                             "additionalProperties": true,
-                            "description": "Message body text."
+                            "description": "Message body. An array of typed blocks for USER messages, or a JSON-encoded string for SYSTEM messages, whose encoding 'format' reports."
                           },
                           "timestamp": {
                             "type": "string",
@@ -763,6 +805,7 @@
                             "items": {
                               "type": "string"
                             },
+                            "maxItems": 50,
                             "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
                           },
                           "followUps": {
@@ -770,16 +813,17 @@
                             "items": {
                               "type": "string"
                             },
+                            "maxItems": 10,
                             "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Classification tag for the message. Null for user messages.",
+                            "description": "Classification tag for the message, returned for assistant messages.",
                             "nullable": true
                           },
                           "format": {
                             "type": "string",
-                            "description": "Response format hint. Null for user messages.",
+                            "description": "Response format hint, returned for assistant messages.",
                             "nullable": true
                           },
                           "feedback": {
@@ -793,14 +837,17 @@
                                 },
                                 "reason": {
                                   "type": "string",
-                                  "description": "Optional structured reason for the feedback."
+                                  "description": "Optional structured reason for the feedback.",
+                                  "nullable": true
                                 },
                                 "comment": {
                                   "type": "string",
-                                  "description": "Optional free-text comment."
+                                  "description": "Optional free-text comment.",
+                                  "nullable": true
                                 }
                               }
                             },
+                            "maxItems": 20,
                             "description": "Feedback entries previously submitted for this message."
                           }
                         }
@@ -966,19 +1013,16 @@
                       ]
                     },
                     "maxItems": 8,
-                    "description": "List of message content parts. Supports text, image, audio, and file types. Maximum 8 parts."
+                    "description": "List of message content parts. A 'text' part sets 'text'; 'image', 'audio' and 'file' parts set 'source'. Maximum 8 parts."
                   },
                   "platform": {
                     "type": "string",
                     "enum": [
                       "DIGITAL_TWIN",
                       "DNAC",
-                      "MERAKI",
-                      "digital_twin",
-                      "dnac",
-                      "meraki"
+                      "MERAKI"
                     ],
-                    "description": "Platform identifier. Defaults to MERAKI when omitted. Case-insensitive."
+                    "description": "Platform identifier. Defaults to MERAKI when omitted. Values are matched case-insensitively."
                   }
                 },
                 "example": {
@@ -1100,7 +1144,7 @@
                     "content": {
                       "type": "object",
                       "additionalProperties": true,
-                      "description": "Message body text."
+                      "description": "Message body. An array of typed blocks for USER messages, or a JSON-encoded string for SYSTEM messages, whose encoding 'format' reports."
                     },
                     "timestamp": {
                       "type": "string",
@@ -1112,6 +1156,7 @@
                       "items": {
                         "type": "string"
                       },
+                      "maxItems": 50,
                       "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
                     },
                     "followUps": {
@@ -1119,16 +1164,17 @@
                       "items": {
                         "type": "string"
                       },
+                      "maxItems": 10,
                       "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Classification tag for the message. Null for user messages.",
+                      "description": "Classification tag for the message, returned for assistant messages.",
                       "nullable": true
                     },
                     "format": {
                       "type": "string",
-                      "description": "Response format hint. Null for user messages.",
+                      "description": "Response format hint, returned for assistant messages.",
                       "nullable": true
                     },
                     "feedback": {
@@ -1142,14 +1188,17 @@
                           },
                           "reason": {
                             "type": "string",
-                            "description": "Optional structured reason for the feedback."
+                            "description": "Optional structured reason for the feedback.",
+                            "nullable": true
                           },
                           "comment": {
                             "type": "string",
-                            "description": "Optional free-text comment."
+                            "description": "Optional free-text comment.",
+                            "nullable": true
                           }
                         }
                       },
+                      "maxItems": 20,
                       "description": "Feedback entries previously submitted for this message."
                     }
                   }
@@ -5167,8 +5216,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "1800",
-              "maximum": "1209600"
+              "minimum": 1800,
+              "maximum": 1209600
             }
           }
         ],
@@ -9022,7 +9071,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -9328,7 +9377,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "50400"
+              "maximum": 50400
             }
           },
           {
@@ -12262,7 +12311,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -24238,7 +24287,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -24996,7 +25045,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -26496,7 +26545,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -32428,7 +32477,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -32613,6 +32662,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Return the ESL settings of a device",
         "tags": [
           "wireless",
@@ -32709,6 +32765,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:write"
+            ]
+          }
+        ],
         "summary": "Update the ESL settings of a device",
         "tags": [
           "wireless",
@@ -32787,6 +32850,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Fetch the health scores for a given AP on this network",
         "tags": [
           "wireless",
@@ -32833,7 +32903,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -36285,6 +36355,298 @@
         ]
       }
     },
+    "/networks/{networkId}/appliance/alternateManagementInterface": {
+      "put": {
+        "description": "Update Secure Router alternate management interface settings for a network. Omitted properties remain unchanged. The request contains only editable properties; the response includes network identity and resolved VRF name. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "updateNetworkApplianceAlternateManagementInterface",
+        "parameters": [
+          {
+            "name": "networkId",
+            "in": "path",
+            "description": "Network ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether the alternate management interface is enabled"
+                  },
+                  "primary": {
+                    "type": "object",
+                    "properties": {
+                      "addresses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "protocol": {
+                              "type": "string",
+                              "enum": [
+                                "ipv4",
+                                "ipv6"
+                              ],
+                              "description": "IP protocol for the address"
+                            },
+                            "address": {
+                              "type": "string",
+                              "description": "IP address for the alternate management interface"
+                            }
+                          }
+                        },
+                        "description": "Configured primary alternate management interface addresses"
+                      }
+                    },
+                    "description": "Primary alternate management interface addresses"
+                  },
+                  "addressPool": {
+                    "type": "object",
+                    "properties": {
+                      "addresses": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "protocol": {
+                              "type": "string",
+                              "enum": [
+                                "ipv4",
+                                "ipv6"
+                              ],
+                              "description": "IP protocol for the address"
+                            },
+                            "address": {
+                              "type": "string",
+                              "description": "CIDR block reserved for alternate management interface addresses. Host-bit CIDRs are accepted and normalized to the network CIDR before being stored and returned. For example, 10.1.1.1/24 is returned as 10.1.1.0/24."
+                            }
+                          }
+                        },
+                        "description": "Configured address pools reserved for alternate management interface addresses"
+                      }
+                    },
+                    "description": "Address pool reserved for alternate management interface addresses"
+                  },
+                  "vrf": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "VRF ID. This beta operation currently ignores this value and always uses 0 for the default VRF."
+                      }
+                    },
+                    "description": "VRF assignment for the alternate management interface. This beta operation currently ignores the requested VRF ID and always uses the default VRF."
+                  }
+                },
+                "example": {
+                  "enabled": true,
+                  "primary": {
+                    "addresses": [
+                      {
+                        "protocol": "ipv4",
+                        "address": "192.168.1.2"
+                      }
+                    ]
+                  },
+                  "addressPool": {
+                    "addresses": [
+                      {
+                        "protocol": "ipv4",
+                        "address": "192.168.1.0/24"
+                      }
+                    ]
+                  },
+                  "vrf": {
+                    "id": "0"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "network": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Network ID"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Network name"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "description": "Network that owns this alternate management interface configuration"
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the alternate management interface is enabled"
+                    },
+                    "primary": {
+                      "type": "object",
+                      "properties": {
+                        "addresses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "protocol": {
+                                "type": "string",
+                                "enum": [
+                                  "ipv4",
+                                  "ipv6"
+                                ],
+                                "description": "IP protocol for the address"
+                              },
+                              "address": {
+                                "type": "string",
+                                "description": "IP address for the alternate management interface"
+                              }
+                            },
+                            "required": [
+                              "protocol",
+                              "address"
+                            ]
+                          },
+                          "description": "Configured primary alternate management interface addresses"
+                        }
+                      },
+                      "required": [
+                        "addresses"
+                      ],
+                      "description": "Primary alternate management interface addresses",
+                      "nullable": true
+                    },
+                    "addressPool": {
+                      "type": "object",
+                      "properties": {
+                        "addresses": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "protocol": {
+                                "type": "string",
+                                "enum": [
+                                  "ipv4",
+                                  "ipv6"
+                                ],
+                                "description": "IP protocol for the address"
+                              },
+                              "address": {
+                                "type": "string",
+                                "description": "CIDR block reserved for alternate management interface addresses"
+                              }
+                            },
+                            "required": [
+                              "protocol",
+                              "address"
+                            ]
+                          },
+                          "description": "Configured address pools reserved for alternate management interface addresses"
+                        }
+                      },
+                      "required": [
+                        "addresses"
+                      ],
+                      "description": "Address pool reserved for alternate management interface addresses",
+                      "nullable": true
+                    },
+                    "vrf": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "VRF ID. 0 identifies the default VRF."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "VRF name."
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "description": "VRF assignment for the alternate management interface. The default VRF is returned when no explicit VRF is assigned.",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "network",
+                    "enabled",
+                    "primary",
+                    "addressPool",
+                    "vrf"
+                  ]
+                },
+                "example": {
+                  "network": {
+                    "id": "N_24329156",
+                    "name": "Main Office"
+                  },
+                  "enabled": true,
+                  "primary": {
+                    "addresses": [
+                      {
+                        "protocol": "ipv4",
+                        "address": "192.168.1.2"
+                      }
+                    ]
+                  },
+                  "addressPool": {
+                    "addresses": [
+                      {
+                        "protocol": "ipv4",
+                        "address": "192.168.1.0/24"
+                      }
+                    ]
+                  },
+                  "vrf": {
+                    "id": "0",
+                    "name": "Default"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:write"
+            ]
+          }
+        ],
+        "summary": "Update Secure Router alternate management interface settings for a network",
+        "tags": [
+          "appliance",
+          "configure",
+          "alternateManagementInterface"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
     "/networks/{networkId}/appliance/clients/{clientId}/security/events": {
       "get": {
         "description": "List the security events for a client. Clients can be identified by a client key or either the MAC or IP depending on whether the network uses Track-by-IP.",
@@ -36331,7 +36693,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "68342400"
+              "maximum": 68342400
             }
           },
           {
@@ -41221,7 +41583,7 @@
     },
     "/networks/{networkId}/appliance/ports/radius/servers": {
       "post": {
-        "description": "Create a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. A network can have at most 3 shared servers. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "description": "Create a shared Security Appliance or Secure Router port RADIUS server for a network. These network-owned servers are shared by all eligible Security Appliance or Secure Router ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. A network can have at most 3 shared servers. Servers are returned in priority order, using the server ID as a deterministic tie-breaker. Newly created servers are appended to the end of the pool. Explicit reordering is not supported. This beta operation is available only to organizations with beta API access and may change before GA.",
         "operationId": "createNetworkAppliancePortsRadiusServer",
         "parameters": [
           {
@@ -41331,7 +41693,7 @@
             ]
           }
         ],
-        "summary": "Create a shared MX port RADIUS server for a network",
+        "summary": "Create a shared Security Appliance or Secure Router port RADIUS server for a network",
         "tags": [
           "appliance",
           "configure",
@@ -41344,7 +41706,7 @@
     },
     "/networks/{networkId}/appliance/ports/radius/servers/{serverId}": {
       "put": {
-        "description": "Update a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "description": "Update a shared Security Appliance or Secure Router port RADIUS server for a network. These network-owned servers are shared by all eligible Security Appliance or Secure Router ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
         "operationId": "updateNetworkAppliancePortsRadiusServer",
         "parameters": [
           {
@@ -41463,7 +41825,7 @@
             ]
           }
         ],
-        "summary": "Update a shared MX port RADIUS server for a network",
+        "summary": "Update a shared Security Appliance or Secure Router port RADIUS server for a network",
         "tags": [
           "appliance",
           "configure",
@@ -41474,7 +41836,7 @@
         "x-release-stage": "beta"
       },
       "delete": {
-        "description": "Delete a network-owned shared MX port RADIUS server. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "description": "Delete a network-owned shared Security Appliance or Secure Router port RADIUS server. Remaining server priorities are compacted after deletion. Deleting the final server is allowed. This beta operation is available only to organizations with beta API access and may change before GA.",
         "operationId": "deleteNetworkAppliancePortsRadiusServer",
         "parameters": [
           {
@@ -41508,7 +41870,7 @@
             ]
           }
         ],
-        "summary": "Delete a network-owned shared MX port RADIUS server",
+        "summary": "Delete a network-owned shared Security Appliance or Secure Router port RADIUS server",
         "tags": [
           "appliance",
           "configure",
@@ -43699,8 +44061,10 @@
                               "description": "VRF ID for the policy. Use 0 for the default VRF."
                             }
                           },
-                          "description": "VRF settings for the policy. Omit this field to use the default VRF for the policy.",
-                          "x-release-stage": "beta"
+                          "required": [
+                            "id"
+                          ],
+                          "description": "VRF settings for the policy. Omit this field to use the default VRF for the policy."
                         }
                       },
                       "required": [
@@ -43927,8 +44291,7 @@
                                 "description": "VRF name for the policy."
                               }
                             },
-                            "description": "VRF settings for the policy. If a non-default VRF is not set for the policy, this value is the default VRF.",
-                            "x-release-stage": "beta"
+                            "description": "VRF settings for the policy. If a non-default VRF is not set for the policy, this value is the default VRF."
                           }
                         },
                         "required": [
@@ -44039,7 +44402,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "31536000"
+              "maximum": 31536000
             }
           },
           {
@@ -50986,7 +51349,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -55389,7 +55752,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -61402,7 +61765,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -61834,7 +62197,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -61963,7 +62326,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -62097,7 +62460,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -62853,7 +63216,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -79687,7 +80050,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -81911,7 +82274,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -82903,7 +83266,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -87950,6 +88313,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:write"
+            ]
+          }
+        ],
         "summary": "Bypass activation lock attempt",
         "tags": [
           "sm",
@@ -88009,6 +88379,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:read"
+            ]
+          }
+        ],
         "summary": "Bypass activation lock attempt status",
         "tags": [
           "sm",
@@ -89016,6 +89393,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:write"
+            ]
+          }
+        ],
         "summary": "Reboot a set of endpoints",
         "tags": [
           "sm",
@@ -89125,6 +89509,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:write"
+            ]
+          }
+        ],
         "summary": "Shutdown a set of endpoints",
         "tags": [
           "sm",
@@ -89972,6 +90363,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:write"
+            ]
+          }
+        ],
         "summary": "Install applications on a device",
         "tags": [
           "sm",
@@ -90789,6 +91187,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "sm:config:write"
+            ]
+          }
+        ],
         "summary": "Uninstall applications on a device",
         "tags": [
           "sm",
@@ -92884,18 +93289,20 @@
                             "format": "float",
                             "minimum": -90,
                             "maximum": 90,
-                            "description": "Latitude in decimal degrees. Range -90 to 90. Null when unavailable.",
-                            "nullable": true
+                            "description": "Latitude in decimal degrees. Range -90 to 90."
                           },
                           "longitude": {
                             "type": "number",
                             "format": "float",
                             "minimum": -180,
                             "maximum": 180,
-                            "description": "Longitude in decimal degrees. Range -180 to 180. Null when unavailable.",
-                            "nullable": true
+                            "description": "Longitude in decimal degrees. Range -180 to 180."
                           }
                         },
+                        "required": [
+                          "latitude",
+                          "longitude"
+                        ],
                         "description": "North-east corner coordinates for the building bounds."
                       },
                       "southwest": {
@@ -92906,18 +93313,20 @@
                             "format": "float",
                             "minimum": -90,
                             "maximum": 90,
-                            "description": "Latitude in decimal degrees. Range -90 to 90. Null when unavailable.",
-                            "nullable": true
+                            "description": "Latitude in decimal degrees. Range -90 to 90."
                           },
                           "longitude": {
                             "type": "number",
                             "format": "float",
                             "minimum": -180,
                             "maximum": 180,
-                            "description": "Longitude in decimal degrees. Range -180 to 180. Null when unavailable.",
-                            "nullable": true
+                            "description": "Longitude in decimal degrees. Range -180 to 180."
                           }
                         },
+                        "required": [
+                          "latitude",
+                          "longitude"
+                        ],
                         "description": "South-west corner coordinates for the building bounds."
                       }
                     },
@@ -92938,7 +93347,8 @@
                   }
                 },
                 "required": [
-                  "name"
+                  "name",
+                  "bounds"
                 ]
               }
             }
@@ -96722,7 +97132,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -103822,6 +104232,16 @@
                       },
                       "description": "MAC blocklist"
                     },
+                    "clientTracking": {
+                      "type": "object",
+                      "properties": {
+                        "deviceConfigMode": {
+                          "type": "object",
+                          "description": "Device Config mode settings."
+                        }
+                      },
+                      "description": "Client tracking settings."
+                    },
                     "portChannelFallback": {
                       "type": "boolean",
                       "description": "Enable port channel fallback on Catalyst MS switches."
@@ -103863,6 +104283,7 @@
                   "macBlocklist": {
                     "enabled": true
                   },
+                  "clientTracking": {},
                   "portChannelFallback": true,
                   "uplinkSelection": {
                     "failback": {
@@ -103963,6 +104384,16 @@
                     },
                     "description": "MAC blocklist"
                   },
+                  "clientTracking": {
+                    "type": "object",
+                    "properties": {
+                      "deviceConfigMode": {
+                        "type": "object",
+                        "description": "Device Config mode settings."
+                      }
+                    },
+                    "description": "Client tracking settings."
+                  },
                   "portChannelFallback": {
                     "type": "boolean",
                     "description": "Port channel fallback"
@@ -104059,6 +104490,16 @@
                       },
                       "description": "MAC blocklist"
                     },
+                    "clientTracking": {
+                      "type": "object",
+                      "properties": {
+                        "deviceConfigMode": {
+                          "type": "object",
+                          "description": "Device Config mode settings."
+                        }
+                      },
+                      "description": "Client tracking settings."
+                    },
                     "portChannelFallback": {
                       "type": "boolean",
                       "description": "Enable port channel fallback on Catalyst MS switches."
@@ -104100,6 +104541,7 @@
                   "macBlocklist": {
                     "enabled": true
                   },
+                  "clientTracking": {},
                   "portChannelFallback": true,
                   "uplinkSelection": {
                     "failback": {
@@ -110523,7 +110965,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           },
           {
@@ -113662,7 +114104,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -115366,7 +115808,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -115625,7 +116067,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -116114,7 +116556,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -116623,6 +117065,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Fetch the health scores for a given client on this network",
         "tags": [
           "wireless",
@@ -116679,7 +117128,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "68342400"
+              "maximum": 68342400
             }
           },
           {
@@ -117084,7 +117533,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -117341,7 +117790,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -117538,7 +117987,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -117846,7 +118295,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -118046,6 +118495,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:telemetry:read"
+            ]
+          }
+        ],
         "summary": "Fetch the health scores of all APs on this network",
         "tags": [
           "wireless",
@@ -118227,7 +118683,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -118599,6 +119055,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:write"
+            ]
+          }
+        ],
         "summary": "Update the ESL settings of a wireless network",
         "tags": [
           "wireless",
@@ -118672,6 +119135,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Get a list of all ESL eligible devices of a network",
         "tags": [
           "wireless",
@@ -119911,7 +120381,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -120518,7 +120988,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -122074,7 +122544,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-09-16T08:06:26Z"
+                    "lastEnabledAt": "2026-09-21T08:06:03Z"
                   }
                 }
               }
@@ -122423,7 +122893,7 @@
                   },
                   "ai": {
                     "enabled": true,
-                    "lastEnabledAt": "2026-09-16T08:06:26Z"
+                    "lastEnabledAt": "2026-09-21T08:06:03Z"
                   }
                 }
               }
@@ -132754,7 +133224,7 @@
                   },
                   "radiusAuthenticationNasId": {
                     "type": "string",
-                    "description": "The NAS identifier to use for RADIUS authentication. With 802.11r enabled or adaptive, custom text is available only to organizations enabled for this feature; otherwise, use only $NODE_MAC$, $VAP_NUM$, and $VAP_NAME$. When this feature is enabled, the complete rendered NAS identifier must be 1–48 bytes."
+                    "description": "The NAS identifier to use for RADIUS authentication. With 802.11r enabled or adaptive, use $NODE_MAC$, $VAP_NUM$, $VAP_NAME$, and/or custom text. The complete rendered NAS identifier must be 1–48 bytes."
                   },
                   "radiusServerTimeout": {
                     "type": "integer",
@@ -136928,6 +137398,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:read"
+            ]
+          }
+        ],
         "summary": "Display the overrides for this SSID",
         "tags": [
           "wireless",
@@ -136999,6 +137476,13 @@
             }
           }
         },
+        "security": [
+          {
+            "oauth2": [
+              "wireless:config:write"
+            ]
+          }
+        ],
         "summary": "Update the overrides for this SSID",
         "tags": [
           "wireless",
@@ -147566,7 +148050,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -147836,7 +148320,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -148333,7 +148817,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -148466,7 +148950,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -148594,7 +149078,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -148717,7 +149201,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -148799,6 +149283,305 @@
           "responseCodes",
           "history",
           "bySourceIp"
+        ],
+        "x-release-stage": "beta"
+      }
+    },
+    "/organizations/{organizationId}/appliance/alternateManagementInterfaces/byNetwork": {
+      "get": {
+        "description": "List Secure Router alternate management interface settings by network. Each returned item is the network grouping itself, identified by network ID and name, with the editable alternate management interface settings for that network. The endpoint pages readable appliance networks before loading settings for the page. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "operationId": "getOrganizationApplianceAlternateManagementInterfacesByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 10.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "networkIds",
+            "in": "query",
+            "description": "Optional parameter to filter the results by network IDs. Matches are exact. Maximum array size is 100",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "network": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Network ID"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Network name"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "Network that owns this alternate management interface configuration"
+                          },
+                          "enabled": {
+                            "type": "boolean",
+                            "description": "Whether the alternate management interface is enabled"
+                          },
+                          "primary": {
+                            "type": "object",
+                            "properties": {
+                              "addresses": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "protocol": {
+                                      "type": "string",
+                                      "enum": [
+                                        "ipv4",
+                                        "ipv6"
+                                      ],
+                                      "description": "IP protocol for the address"
+                                    },
+                                    "address": {
+                                      "type": "string",
+                                      "description": "IP address for the alternate management interface"
+                                    }
+                                  },
+                                  "required": [
+                                    "protocol",
+                                    "address"
+                                  ]
+                                },
+                                "description": "Configured primary alternate management interface addresses"
+                              }
+                            },
+                            "required": [
+                              "addresses"
+                            ],
+                            "description": "Primary alternate management interface addresses",
+                            "nullable": true
+                          },
+                          "addressPool": {
+                            "type": "object",
+                            "properties": {
+                              "addresses": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "protocol": {
+                                      "type": "string",
+                                      "enum": [
+                                        "ipv4",
+                                        "ipv6"
+                                      ],
+                                      "description": "IP protocol for the address"
+                                    },
+                                    "address": {
+                                      "type": "string",
+                                      "description": "CIDR block reserved for alternate management interface addresses"
+                                    }
+                                  },
+                                  "required": [
+                                    "protocol",
+                                    "address"
+                                  ]
+                                },
+                                "description": "Configured address pools reserved for alternate management interface addresses"
+                              }
+                            },
+                            "required": [
+                              "addresses"
+                            ],
+                            "description": "Address pool reserved for alternate management interface addresses",
+                            "nullable": true
+                          },
+                          "vrf": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "VRF ID. 0 identifies the default VRF."
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "VRF name."
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name"
+                            ],
+                            "description": "VRF assignment for the alternate management interface. The default VRF is returned when no explicit VRF is assigned.",
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "network",
+                          "enabled",
+                          "primary",
+                          "addressPool",
+                          "vrf"
+                        ]
+                      },
+                      "maxItems": 100,
+                      "description": "List of network groupings and their alternate management interface settings"
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "The total number of matching networks. Range: 0 or greater"
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "description": "The number of matching networks available on subsequent pages. Range: 0 or greater"
+                                }
+                              },
+                              "required": [
+                                "total",
+                                "remaining"
+                              ],
+                              "description": "Total and remaining counts for network entries in this paginated collection"
+                            }
+                          },
+                          "required": [
+                            "items"
+                          ],
+                          "description": "Counts for networks returned by this paginated collection"
+                        }
+                      },
+                      "required": [
+                        "counts"
+                      ],
+                      "description": "Pagination metadata for the alternate management interface network list"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "meta"
+                  ]
+                },
+                "example": {
+                  "items": [
+                    {
+                      "network": {
+                        "id": "N_24329156",
+                        "name": "Main Office"
+                      },
+                      "enabled": true,
+                      "primary": {
+                        "addresses": [
+                          {
+                            "protocol": "ipv4",
+                            "address": "192.168.1.2"
+                          }
+                        ]
+                      },
+                      "addressPool": {
+                        "addresses": [
+                          {
+                            "protocol": "ipv4",
+                            "address": "192.168.1.0/24"
+                          }
+                        ]
+                      },
+                      "vrf": {
+                        "id": "0",
+                        "name": "Default"
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 1,
+                        "remaining": 0
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "oauth2": [
+              "sdwan:config:read"
+            ]
+          }
+        ],
+        "summary": "List Secure Router alternate management interface settings by network",
+        "tags": [
+          "appliance",
+          "configure",
+          "alternateManagementInterfaces",
+          "byNetwork"
         ],
         "x-release-stage": "beta"
       }
@@ -150491,7 +151274,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -152901,7 +153684,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "1209600"
+              "maximum": 1209600
             }
           },
           {
@@ -153174,7 +153957,7 @@
     },
     "/organizations/{organizationId}/appliance/ports/radius/byNetwork": {
       "get": {
-        "description": "List MX appliance port RADIUS settings by network. Each returned item is the network grouping itself, identified by networkId and name, with servers containing that network's shared RADIUS servers and coa containing that network's Change of Authorization state when eligible. These servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. The endpoint pages networks first, then loads RADIUS servers for that page with a single server lookup scoped by network IDs, server type, and optional serverIds. Focused endpoint benchmarking of the documented maximum page shape, 100 networks with 300 total server objects, measured p99 0.8199 seconds across 8 runs. This beta operation is available only to organizations with beta API access and may change before GA.",
+        "description": "List Security Appliance and Secure Router port RADIUS settings by network. Each returned item is the network grouping itself, identified by networkId and name, with servers containing that network's shared RADIUS servers and coa containing that network's Change of Authorization state when eligible. These servers are shared by all eligible Security Appliance and Secure Router ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. The endpoint pages networks first, then loads RADIUS servers for that page with a single server lookup scoped by network IDs, server type, and optional serverIds. Focused endpoint benchmarking of the documented maximum page shape, 100 networks with 300 total server objects, measured p99 0.8199 seconds across 8 runs. This beta operation is available only to organizations with beta API access and may change before GA.",
         "operationId": "getOrganizationAppliancePortsRadiusByNetwork",
         "parameters": [
           {
@@ -153278,12 +154061,12 @@
                               }
                             },
                             "maxItems": 3,
-                            "description": "Shared RADIUS server list used by all MX ports in the network that have '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Maximum 3 servers"
+                            "description": "Shared RADIUS server list used by all eligible Security Appliance and Secure Router ports in the network that have '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. Maximum 3 servers. Servers are returned in priority order, using the server ID as a deterministic tie-breaker. Newly created servers are appended to the end of the pool. Explicit reordering is not supported"
                           }
                         }
                       },
                       "maxItems": 100,
-                      "description": "List of network groupings and their MX appliance port RADIUS settings. Each item is the network grouping itself. Maximum 100 networks per page, with at most 3 servers per network, for a maximum response shape of 300 server objects per page. Server rows are loaded after pagination with one lookup scoped to the page network IDs, server type, and optional serverIds. Focused endpoint benchmarking measured p99 0.8199 seconds across 8 runs for this maximum page shape"
+                      "description": "List of network groupings and their Security Appliance and Secure Router port RADIUS settings. Each item is the network grouping itself. Maximum 100 networks per page, with at most 3 servers per network, for a maximum response shape of 300 server objects per page. Server rows are loaded after pagination with one lookup scoped to the page network IDs, server type, and optional serverIds. Focused endpoint benchmarking measured p99 0.8199 seconds across 8 runs for this maximum page shape"
                     },
                     "meta": {
                       "type": "object",
@@ -153311,7 +154094,7 @@
                           "description": "Counts for networks returned by this paginated collection"
                         }
                       },
-                      "description": "Pagination metadata for the shared MX port RADIUS server network list"
+                      "description": "Pagination metadata for the shared Security Appliance and Secure Router port RADIUS server network list"
                     }
                   }
                 },
@@ -153357,7 +154140,7 @@
             ]
           }
         ],
-        "summary": "List MX appliance port RADIUS settings by network",
+        "summary": "List Security Appliance and Secure Router port RADIUS settings by network",
         "tags": [
           "appliance",
           "configure",
@@ -153694,8 +154477,10 @@
                         "description": "VRF ID for the policy. Use 0 for the default VRF."
                       }
                     },
-                    "description": "VRF settings for the policy. Omit this field to use the default VRF for the policy.",
-                    "x-release-stage": "beta"
+                    "required": [
+                      "id"
+                    ],
+                    "description": "VRF settings for the policy. Omit this field to use the default VRF for the policy."
                   }
                 },
                 "required": [
@@ -153876,8 +154661,7 @@
                                 "description": "VRF name for the policy."
                               }
                             },
-                            "description": "VRF settings for the policy. If a non-default VRF is not set for the policy, this value is the default VRF.",
-                            "x-release-stage": "beta"
+                            "description": "VRF settings for the policy. If a non-default VRF is not set for the policy, this value is the default VRF."
                           }
                         },
                         "required": [
@@ -153990,7 +154774,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "31536000"
+              "maximum": 31536000
             }
           },
           {
@@ -158645,7 +159429,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "1209600"
+              "maximum": 1209600
             }
           }
         ],
@@ -159360,13 +160144,13 @@
                         "usageBytes": 1000,
                         "outage": [
                           {
-                            "ts": 1792130761,
+                            "ts": 1792562740,
                             "isConnected": true
                           }
                         ],
                         "usageIntervals": [
                           {
-                            "ts": 1792130761,
+                            "ts": 1792562740,
                             "latency": 35.3,
                             "loss": {
                               "percentage": 50
@@ -159448,8 +160232,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -159589,7 +160373,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           }
         ],
@@ -159742,7 +160526,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           }
         ],
@@ -160809,7 +161593,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -161463,15 +162247,19 @@
                           "ipsecPoliciesPreset": {
                             "type": "string",
                             "enum": [
-                              "aws",
-                              "azure",
-                              "default",
+                              "aws (insecure)",
+                              "aws_v2",
+                              "azure (insecure)",
+                              "azure_v2",
+                              "default (insecure)",
                               "secure",
-                              "umbrella",
-                              "umbrella_short_lived",
-                              "zscaler"
+                              "umbrella (deprecated)",
+                              "umbrella (insecure)",
+                              "umbrella_v2",
+                              "zscaler (insecure)",
+                              "zscaler_v2"
                             ],
-                            "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                            "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                           },
                           "ikeVersion": {
                             "type": "string",
@@ -161775,7 +162563,7 @@
                       "slaPolicy": {
                         "id": "1234"
                       },
-                      "ipsecPoliciesPreset": "default",
+                      "ipsecPoliciesPreset": "default (insecure)",
                       "ikeVersion": "1",
                       "networkTags": [
                         "all"
@@ -162033,15 +162821,19 @@
                         "ipsecPoliciesPreset": {
                           "type": "string",
                           "enum": [
-                            "aws",
-                            "azure",
-                            "default",
+                            "aws (insecure)",
+                            "aws_v2",
+                            "azure (insecure)",
+                            "azure_v2",
+                            "default (insecure)",
                             "secure",
-                            "umbrella",
-                            "umbrella_short_lived",
-                            "zscaler"
+                            "umbrella (deprecated)",
+                            "umbrella (insecure)",
+                            "umbrella_v2",
+                            "zscaler (insecure)",
+                            "zscaler_v2"
                           ],
-                          "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                          "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                         },
                         "slaPolicy": {
                           "type": "object",
@@ -162277,7 +163069,7 @@
                         ],
                         "childLifetime": 28800
                       },
-                      "ipsecPoliciesPreset": "default",
+                      "ipsecPoliciesPreset": "default (insecure)",
                       "slaPolicy": {
                         "id": "1234"
                       },
@@ -162495,15 +163287,19 @@
                           "ipsecPoliciesPreset": {
                             "type": "string",
                             "enum": [
-                              "aws",
-                              "azure",
-                              "default",
+                              "aws (insecure)",
+                              "aws_v2",
+                              "azure (insecure)",
+                              "azure_v2",
+                              "default (insecure)",
                               "secure",
-                              "umbrella",
-                              "umbrella_short_lived",
-                              "zscaler"
+                              "umbrella (deprecated)",
+                              "umbrella (insecure)",
+                              "umbrella_v2",
+                              "zscaler (insecure)",
+                              "zscaler_v2"
                             ],
-                            "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                            "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                           },
                           "ikeVersion": {
                             "type": "string",
@@ -162807,7 +163603,7 @@
                       "slaPolicy": {
                         "id": "1234"
                       },
-                      "ipsecPoliciesPreset": "default",
+                      "ipsecPoliciesPreset": "default (insecure)",
                       "ikeVersion": "1",
                       "networkTags": [
                         "all"
@@ -163228,7 +164024,7 @@
                       "items": {
                         "type": "object",
                         "properties": {
-                          "id": {
+                          "capabilityId": {
                             "type": "string",
                             "description": "Machine-readable identifier for the capability."
                           },
@@ -163263,7 +164059,7 @@
                 "example": {
                   "items": [
                     {
-                      "id": "network_engineer_agent",
+                      "capabilityId": "network_engineer_agent",
                       "name": "Network Engineer",
                       "description": "Assists with Meraki network management, device configuration, and retrieving network/device information.",
                       "capabilities": [
@@ -163392,12 +164188,9 @@
                     "enum": [
                       "DIGITAL_TWIN",
                       "DNAC",
-                      "MERAKI",
-                      "digital_twin",
-                      "dnac",
-                      "meraki"
+                      "MERAKI"
                     ],
-                    "description": "Platform identifier. Defaults to MERAKI when omitted. Case-insensitive."
+                    "description": "Platform identifier. Defaults to MERAKI when omitted. Values are matched case-insensitively."
                   },
                   "language": {
                     "type": "string",
@@ -163442,16 +164235,18 @@
                   "properties": {
                     "threadId": {
                       "type": "string",
-                      "description": "Reusable thread ID returned when the completion continues an existing persisted thread. Omitted for one-off completions."
+                      "description": "Reusable thread ID, returned only when the completion continues an existing persisted thread. One-off completions persist no thread.",
+                      "nullable": true
                     },
                     "messageId": {
                       "type": "string",
-                      "description": "Persisted assistant message ID when one was created. Null for one-off completions.",
+                      "description": "Persisted assistant message ID, returned only when a message was created.",
                       "nullable": true
                     },
                     "content": {
                       "type": "string",
-                      "description": "Content of the message"
+                      "description": "Content of the message, when the assistant returns formatted content.",
+                      "nullable": true
                     },
                     "sources": {
                       "type": "array",
@@ -163466,7 +164261,8 @@
                     },
                     "response": {
                       "type": "string",
-                      "description": "Assistant response text. Currently mirrors 'content'."
+                      "description": "Assistant response text. Currently mirrors 'content'.",
+                      "nullable": true
                     },
                     "tag": {
                       "type": "string",
@@ -163532,13 +164328,13 @@
           {
             "name": "sort",
             "in": "query",
-            "description": "Field to sort results by. Defaults to dateModified.",
+            "description": "Field to sort results by. Defaults to updatedAt.",
             "schema": {
               "type": "string",
               "enum": [
-                "dateModified",
                 "id",
-                "name"
+                "name",
+                "updatedAt"
               ]
             }
           },
@@ -163594,7 +164390,7 @@
                             "type": "string",
                             "description": "Display name of the conversation thread."
                           },
-                          "dateModified": {
+                          "updatedAt": {
                             "type": "string",
                             "format": "date-time",
                             "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
@@ -163641,7 +164437,7 @@
                     {
                       "threadId": "7139232",
                       "threadName": "Uplink troubleshooting - Branch office",
-                      "dateModified": "2026-04-01T12:00:00+00:00",
+                      "updatedAt": "2026-04-01T12:00:00+00:00",
                       "tag": "network_engineer_agent"
                     }
                   ],
@@ -163718,11 +164514,28 @@
                     "threadId": {
                       "type": "string",
                       "description": "Unique thread identifier."
+                    },
+                    "threadName": {
+                      "type": "string",
+                      "description": "Display name of the conversation thread."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
                     }
                   }
                 },
                 "example": {
-                  "threadId": "7139232"
+                  "threadId": "7139232",
+                  "threadName": "Uplink troubleshooting - Branch office",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
+                  "tag": "network_engineer_agent"
                 }
               }
             }
@@ -163785,7 +164598,7 @@
                       "type": "string",
                       "description": "Display name of the conversation thread."
                     },
-                    "dateModified": {
+                    "updatedAt": {
                       "type": "string",
                       "format": "date-time",
                       "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
@@ -163800,7 +164613,7 @@
                 "example": {
                   "threadId": "7139232",
                   "threadName": "Uplink troubleshooting - Branch office",
-                  "dateModified": "2026-04-01T12:00:00+00:00",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
                   "tag": "network_engineer_agent"
                 }
               }
@@ -163874,9 +164687,34 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string",
+                      "description": "Unique thread identifier."
+                    },
+                    "threadName": {
+                      "type": "string",
+                      "description": "Display name of the conversation thread."
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the most recent activity in the thread (ISO 8601)."
+                    },
+                    "tag": {
+                      "type": "string",
+                      "description": "Optional classification label assigned to the thread by the backend (e.g., agent type).",
+                      "nullable": true
+                    }
+                  }
                 },
-                "example": {}
+                "example": {
+                  "threadId": "7139232",
+                  "threadName": "Uplink troubleshooting - Branch office",
+                  "updatedAt": "2026-04-01T12:00:00+00:00",
+                  "tag": "network_engineer_agent"
+                }
               }
             }
           }
@@ -164016,7 +164854,7 @@
                           "content": {
                             "type": "object",
                             "additionalProperties": true,
-                            "description": "Message body text."
+                            "description": "Message body. An array of typed blocks for USER messages, or a JSON-encoded string for SYSTEM messages, whose encoding 'format' reports."
                           },
                           "timestamp": {
                             "type": "string",
@@ -164028,6 +164866,7 @@
                             "items": {
                               "type": "string"
                             },
+                            "maxItems": 50,
                             "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
                           },
                           "followUps": {
@@ -164035,16 +164874,17 @@
                             "items": {
                               "type": "string"
                             },
+                            "maxItems": 10,
                             "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
                           },
                           "tag": {
                             "type": "string",
-                            "description": "Classification tag for the message. Null for user messages.",
+                            "description": "Classification tag for the message, returned for assistant messages.",
                             "nullable": true
                           },
                           "format": {
                             "type": "string",
-                            "description": "Response format hint. Null for user messages.",
+                            "description": "Response format hint, returned for assistant messages.",
                             "nullable": true
                           },
                           "feedback": {
@@ -164058,14 +164898,17 @@
                                 },
                                 "reason": {
                                   "type": "string",
-                                  "description": "Optional structured reason for the feedback."
+                                  "description": "Optional structured reason for the feedback.",
+                                  "nullable": true
                                 },
                                 "comment": {
                                   "type": "string",
-                                  "description": "Optional free-text comment."
+                                  "description": "Optional free-text comment.",
+                                  "nullable": true
                                 }
                               }
                             },
+                            "maxItems": 20,
                             "description": "Feedback entries previously submitted for this message."
                           }
                         }
@@ -164240,7 +165083,7 @@
                       ]
                     },
                     "maxItems": 8,
-                    "description": "List of message content parts. Supports text, image, audio, and file types. Maximum 8 parts."
+                    "description": "List of message content parts. A 'text' part sets 'text'; 'image', 'audio' and 'file' parts set 'source'. Maximum 8 parts."
                   },
                   "networkName": {
                     "type": "string",
@@ -164255,12 +165098,9 @@
                     "enum": [
                       "DIGITAL_TWIN",
                       "DNAC",
-                      "MERAKI",
-                      "digital_twin",
-                      "dnac",
-                      "meraki"
+                      "MERAKI"
                     ],
-                    "description": "Platform identifier. Defaults to MERAKI when omitted. Case-insensitive."
+                    "description": "Platform identifier. Defaults to MERAKI when omitted. Values are matched case-insensitively."
                   }
                 },
                 "example": {
@@ -164393,7 +165233,7 @@
                     "content": {
                       "type": "object",
                       "additionalProperties": true,
-                      "description": "Message body text."
+                      "description": "Message body. An array of typed blocks for USER messages, or a JSON-encoded string for SYSTEM messages, whose encoding 'format' reports."
                     },
                     "timestamp": {
                       "type": "string",
@@ -164405,6 +165245,7 @@
                       "items": {
                         "type": "string"
                       },
+                      "maxItems": 50,
                       "description": "Data sources referenced in this message (assistant messages only). Empty array for user messages."
                     },
                     "followUps": {
@@ -164412,16 +165253,17 @@
                       "items": {
                         "type": "string"
                       },
+                      "maxItems": 10,
                       "description": "Suggested follow-up questions (assistant messages only). Empty array for user messages."
                     },
                     "tag": {
                       "type": "string",
-                      "description": "Classification tag for the message. Null for user messages.",
+                      "description": "Classification tag for the message, returned for assistant messages.",
                       "nullable": true
                     },
                     "format": {
                       "type": "string",
-                      "description": "Response format hint. Null for user messages.",
+                      "description": "Response format hint, returned for assistant messages.",
                       "nullable": true
                     },
                     "feedback": {
@@ -164435,14 +165277,17 @@
                           },
                           "reason": {
                             "type": "string",
-                            "description": "Optional structured reason for the feedback."
+                            "description": "Optional structured reason for the feedback.",
+                            "nullable": true
                           },
                           "comment": {
                             "type": "string",
-                            "description": "Optional free-text comment."
+                            "description": "Optional free-text comment.",
+                            "nullable": true
                           }
                         }
                       },
+                      "maxItems": 20,
                       "description": "Feedback entries previously submitted for this message."
                     }
                   }
@@ -164520,11 +165365,11 @@
           {
             "name": "perPage",
             "in": "query",
-            "description": "Number of entries per page. Defaults to 100.",
+            "description": "Number of entries per page. Defaults to 100. Maximum 100.",
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 1000
+              "maximum": 100
             }
           },
           {
@@ -164564,10 +165409,12 @@
                           },
                           "createdAt": {
                             "type": "string",
+                            "format": "date-time",
                             "description": "Artifact creation timestamp (ISO 8601)."
                           },
                           "updatedAt": {
                             "type": "string",
+                            "format": "date-time",
                             "description": "Artifact last update timestamp (ISO 8601)."
                           }
                         }
@@ -164711,28 +165558,34 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": {
-                      "type": "integer",
+                    "artifactId": {
+                      "type": "string",
                       "description": "Unique artifact identifier."
                     },
                     "messageId": {
-                      "type": "integer",
+                      "type": "string",
                       "description": "Parent message identifier."
                     },
                     "type": {
                       "type": "string",
                       "description": "Artifact type. Known values: 'processed_tool_response' (structured API call result), 'tool_response' (raw tool output), 'python_code' (generated Python script). Additional values may be added."
                     },
+                    "contentFormat": {
+                      "type": "string",
+                      "description": "Shape of 'content'. 'json' when the artifact decodes to a JSON document, 'text' for plain text."
+                    },
                     "content": {
                       "type": "string",
-                      "description": "Artifact content. May be a JSON object (processed_tool_response) or a plain text string (python_code). Typed as string in the spec DSL; see OpenAPI schema for oneOf definition."
+                      "description": "Artifact content. Read 'contentFormat' to interpret it: 'json' for an already-decoded JSON object or array, 'text' for a plain string."
                     },
                     "createdAt": {
                       "type": "string",
+                      "format": "date-time",
                       "description": "Artifact creation timestamp (ISO 8601)."
                     },
                     "updatedAt": {
                       "type": "string",
+                      "format": "date-time",
                       "description": "Artifact last update timestamp (ISO 8601)."
                     },
                     "pagination": {
@@ -164760,9 +165613,10 @@
                   }
                 },
                 "example": {
-                  "id": 123,
-                  "messageId": 456,
+                  "artifactId": "123",
+                  "messageId": "456",
                   "type": "processed_tool_response",
+                  "contentFormat": "json",
                   "content": "[{\"name\":\"switch-1\"}, {\"name\":\"switch-2\"}]",
                   "createdAt": "2026-04-01T12:00:00+00:00",
                   "updatedAt": "2026-04-01T12:05:00+00:00",
@@ -164835,32 +165689,76 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "vote": {
-                        "type": "boolean",
-                        "description": "True for positive (thumbs up), false for negative (thumbs down)."
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "vote": {
+                            "type": "boolean",
+                            "description": "True for positive (thumbs up), false for negative (thumbs down)."
+                          },
+                          "reason": {
+                            "type": "string",
+                            "description": "Optional free-text reason for the feedback.",
+                            "nullable": true
+                          },
+                          "comment": {
+                            "type": "string",
+                            "description": "Optional free-text comment.",
+                            "nullable": true
+                          }
+                        }
                       },
-                      "reason": {
-                        "type": "string",
-                        "description": "Optional free-text reason for the feedback. Null when not provided."
+                      "description": "Feedback entries recorded for this message, oldest first."
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "counts": {
+                          "type": "object",
+                          "properties": {
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "total": {
+                                  "type": "integer",
+                                  "description": "Total number of feedback entries on this message."
+                                },
+                                "remaining": {
+                                  "type": "integer",
+                                  "description": "Number of entries remaining after this page."
+                                }
+                              },
+                              "description": "Feedback counts for this message."
+                            }
+                          },
+                          "description": "Resource counts for this query."
+                        }
                       },
-                      "comment": {
-                        "type": "string",
-                        "description": "Optional free-text comment. Null when not provided."
-                      }
+                      "description": "Pagination metadata."
                     }
                   }
                 },
-                "example": [
-                  {
-                    "vote": true,
-                    "reason": "helpful",
-                    "comment": "Great answer!"
+                "example": {
+                  "items": [
+                    {
+                      "vote": true,
+                      "reason": "helpful",
+                      "comment": "Great answer!"
+                    }
+                  ],
+                  "meta": {
+                    "counts": {
+                      "items": {
+                        "total": 2,
+                        "remaining": 0
+                      }
+                    }
                   }
-                ]
+                }
               }
             }
           }
@@ -164884,7 +165782,7 @@
         "x-release-stage": "beta"
       },
       "post": {
-        "description": "Submit or replace feedback for a specific assistant message.",
+        "description": "Record a feedback entry for a specific assistant message. Each call appends a new entry; earlier entries for the same message are retained and returned by the list operation.",
         "operationId": "createOrganizationAssistantChatThreadMessageFeedback",
         "parameters": [
           {
@@ -164963,9 +165861,29 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "vote": {
+                      "type": "boolean",
+                      "description": "True for positive (thumbs up), false for negative (thumbs down)."
+                    },
+                    "reason": {
+                      "type": "string",
+                      "description": "Optional free-text reason for the feedback.",
+                      "nullable": true
+                    },
+                    "comment": {
+                      "type": "string",
+                      "description": "Optional free-text comment.",
+                      "nullable": true
+                    }
+                  }
                 },
-                "example": {}
+                "example": {
+                  "vote": true,
+                  "reason": "inaccurate",
+                  "comment": "This was great!"
+                }
               }
             }
           }
@@ -164977,7 +165895,7 @@
             ]
           }
         ],
-        "summary": "Submit or replace feedback for a specific assistant message.",
+        "summary": "Record a feedback entry for a specific assistant message",
         "tags": [
           "assistant",
           "configure",
@@ -169724,7 +170642,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "1209600"
+              "maximum": 1209600
             }
           }
         ],
@@ -172132,8 +173050,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -172406,8 +173324,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "7200",
-              "maximum": "1209600"
+              "minimum": 7200,
+              "maximum": 1209600
             }
           },
           {
@@ -172603,8 +173521,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -173170,8 +174088,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -174323,8 +175241,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "7200",
-              "maximum": "1209600"
+              "minimum": 7200,
+              "maximum": 1209600
             }
           }
         ],
@@ -174584,8 +175502,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -174812,8 +175730,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -175079,8 +175997,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -175483,8 +176401,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -175584,6 +176502,22 @@
                                 }
                               },
                               "description": "Client type info."
+                            },
+                            "vlan": {
+                              "type": "object",
+                              "properties": {
+                                "number": {
+                                  "type": "integer",
+                                  "description": "VLAN ID. Null when the connection had no VLAN tag.",
+                                  "nullable": true
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "VLAN name. Always null; VLAN name resolution is not yet supported.",
+                                  "nullable": true
+                                }
+                              },
+                              "description": "VLAN info."
                             },
                             "device": {
                               "type": "object",
@@ -175776,6 +176710,10 @@
                         "clientType": {
                           "name": "Phone"
                         },
+                        "vlan": {
+                          "number": 400,
+                          "name": null
+                        },
                         "device": {
                           "name": "My AP",
                           "serial": "Q234-ABCD-5678",
@@ -175911,8 +176849,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -176311,8 +177249,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -176743,8 +177681,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -177425,8 +178363,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -177830,8 +178768,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -178253,8 +179191,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           }
         ],
@@ -178564,8 +179502,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -179053,8 +179991,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -179601,8 +180539,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -180233,8 +181171,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -180782,8 +181720,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -181311,8 +182249,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -182300,8 +183238,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -182899,8 +183837,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -183185,7 +184123,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "1209600"
+              "maximum": 1209600
             }
           },
           {
@@ -183385,8 +184323,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -183658,8 +184596,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -184096,8 +185034,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -184540,8 +185478,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -185061,8 +185999,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -185533,8 +186471,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -185985,8 +186923,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -186878,8 +187816,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -187401,8 +188339,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -187698,8 +188636,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -188002,8 +188940,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -188259,8 +189197,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -188516,8 +189454,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -188829,8 +189767,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -189309,8 +190247,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -189808,8 +190746,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -190237,8 +191175,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -190764,8 +191702,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -191271,8 +192209,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -192156,8 +193094,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -192668,8 +193606,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -193215,8 +194153,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -193557,8 +194495,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -193898,8 +194836,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -194258,8 +195196,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -194655,8 +195593,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -195043,8 +195981,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -195411,8 +196349,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -196163,8 +197101,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -196536,8 +197474,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -196944,8 +197882,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "900",
-              "maximum": "1209600"
+              "minimum": 900,
+              "maximum": 1209600
             }
           },
           {
@@ -203047,8 +203985,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "3600",
-              "maximum": "604800"
+              "minimum": 3600,
+              "maximum": 604800
             }
           },
           {
@@ -212228,7 +213166,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -212327,7 +213265,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           }
         ],
@@ -217040,7 +217978,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "31536000"
+              "maximum": 31536000
             }
           },
           {
@@ -217863,7 +218801,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -218224,7 +219162,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "63072000"
+              "maximum": 63072000
             }
           },
           {
@@ -218456,8 +219394,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -222297,8 +223235,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "3600",
-              "maximum": "604800"
+              "minimum": 3600,
+              "maximum": 604800
             }
           }
         ],
@@ -222678,7 +223616,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "31536000"
+              "maximum": 31536000
             }
           },
           {
@@ -230454,7 +231392,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "300"
+              "maximum": 300
             }
           },
           {
@@ -233643,7 +234581,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -249182,9 +250120,17 @@
             }
           },
           {
+            "name": "active",
+            "in": "query",
+            "description": "When `true`, returns only regions associated with at least one successfully onboarded VPC for the organization; when `false` or omitted, it adds no filter. This condition is evaluated independently of the `type` filter. If supplied, this parameter takes precedence over the deprecated `hasOnboardedVpcs` and `hasOnboardedNetworks` aliases, including when its value is `false`. If omitted, the aliases remain available for compatibility.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "hasOnboardedNetworks",
             "in": "query",
-            "description": "Deprecated: Use `hasOnboardedVpcs`. When `true`, returns only regions associated with at least one successfully onboarded legacy Network for the organization; when `false`, it adds no filter. If both parameters are supplied, `hasOnboardedVpcs` takes precedence.",
+            "description": "Deprecated: Use `active`. When `true`, returns only regions associated with at least one successfully onboarded VPC for the organization; when `false`, it adds no filter. This alias is applied only when both `active` and `hasOnboardedVpcs` are omitted.",
             "schema": {
               "type": "boolean"
             }
@@ -249192,7 +250138,7 @@
           {
             "name": "hasOnboardedVpcs",
             "in": "query",
-            "description": "When `true`, returns only regions associated with at least one successfully onboarded VPC for the organization; when `false` or omitted, it adds no filter. This condition is evaluated independently of the `type` filter. This preferred field takes precedence over `hasOnboardedNetworks` when both are supplied.",
+            "description": "Deprecated: Use `active`. When `true`, returns only regions associated with at least one successfully onboarded VPC for the organization; when `false` or omitted, it adds no filter. This condition is evaluated independently of the `type` filter. This alias is applied only when `active` is omitted and takes precedence over `hasOnboardedNetworks`, including when its value is `false`.",
             "schema": {
               "type": "boolean"
             }
@@ -260361,7 +261307,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -263695,7 +264641,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -272719,9 +273665,45 @@
                             "type": "string",
                             "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                           },
-                          "routeTarget": {
-                            "type": "string",
-                            "description": "Route target are used to control the import and export of routes between VRFs"
+                          "routeTargets": {
+                            "type": "object",
+                            "properties": {
+                              "imports": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "The route target ID"
+                                    },
+                                    "asnIp": {
+                                      "type": "string",
+                                      "description": "The route target value"
+                                    }
+                                  }
+                                },
+                                "description": "Route targets imported by the VRF"
+                              },
+                              "exports": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "The route target ID"
+                                    },
+                                    "asnIp": {
+                                      "type": "string",
+                                      "description": "The route target value"
+                                    }
+                                  }
+                                },
+                                "description": "Route targets exported by the VRF"
+                              }
+                            },
+                            "description": "Route targets used to control the import and export of routes between VRFs"
                           },
                           "switchFabricId": {
                             "type": "string",
@@ -272798,7 +273780,20 @@
                       "name": "Engineering",
                       "description": "Virtual network for Engineering",
                       "routeDistinguisher": "65000:42",
-                      "routeTarget": "65000:42",
+                      "routeTargets": {
+                        "imports": [
+                          {
+                            "id": "1",
+                            "asnIp": "65001:100"
+                          }
+                        ],
+                        "exports": [
+                          {
+                            "id": "3",
+                            "asnIp": "65002:200"
+                          }
+                        ]
+                      },
                       "switchFabricId": "123",
                       "appliance": {
                         "enabled": true,
@@ -272865,14 +273860,62 @@
                     "type": "string",
                     "description": "Description of the VRF (Virtual Routing and Forwarding)"
                   },
+                  "autoRd": {
+                    "type": "boolean",
+                    "description": "Whether the VRF is auto RD"
+                  },
                   "routeDistinguisher": {
                     "type": "string",
                     "nullable": true,
                     "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                   },
-                  "routeTarget": {
-                    "type": "string",
-                    "description": "Route target are used to control the import and export of routes between VRFs"
+                  "routeTargets": {
+                    "type": "object",
+                    "properties": {
+                      "imports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The ID of the route target to update or delete"
+                            },
+                            "asnIp": {
+                              "type": "string",
+                              "description": "The route target value"
+                            },
+                            "destroy": {
+                              "type": "boolean",
+                              "description": "Whether to delete this route target"
+                            }
+                          }
+                        },
+                        "description": "Route targets to import"
+                      },
+                      "exports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The ID of the route target to update or delete"
+                            },
+                            "asnIp": {
+                              "type": "string",
+                              "description": "The route target value"
+                            },
+                            "destroy": {
+                              "type": "boolean",
+                              "description": "Whether to delete this route target"
+                            }
+                          }
+                        },
+                        "description": "Route targets to export"
+                      }
+                    },
+                    "description": "Import and export route targets for the VRF"
                   },
                   "appliance": {
                     "type": "object",
@@ -272893,8 +273936,24 @@
                 "example": {
                   "name": "Engineering",
                   "description": "Virtual network for Engineering",
+                  "autoRd": false,
                   "routeDistinguisher": "65000:42",
-                  "routeTarget": "65000:42",
+                  "routeTargets": {
+                    "imports": [
+                      {
+                        "id": "1",
+                        "asnIp": "65001:100",
+                        "destroy": true
+                      }
+                    ],
+                    "exports": [
+                      {
+                        "id": "3",
+                        "asnIp": "65002:200",
+                        "destroy": true
+                      }
+                    ]
+                  },
                   "appliance": {
                     "enabled": true,
                     "index": "1"
@@ -272936,9 +273995,45 @@
                       "type": "string",
                       "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                     },
-                    "routeTarget": {
-                      "type": "string",
-                      "description": "Route target are used to control the import and export of routes between VRFs"
+                    "routeTargets": {
+                      "type": "object",
+                      "properties": {
+                        "imports": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "The route target ID"
+                              },
+                              "asnIp": {
+                                "type": "string",
+                                "description": "The route target value"
+                              }
+                            }
+                          },
+                          "description": "Route targets imported by the VRF"
+                        },
+                        "exports": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "The route target ID"
+                              },
+                              "asnIp": {
+                                "type": "string",
+                                "description": "The route target value"
+                              }
+                            }
+                          },
+                          "description": "Route targets exported by the VRF"
+                        }
+                      },
+                      "description": "Route targets used to control the import and export of routes between VRFs"
                     },
                     "switchFabricId": {
                       "type": "string",
@@ -272987,7 +274082,20 @@
                   "name": "Engineering",
                   "description": "Virtual network for Engineering",
                   "routeDistinguisher": "65000:42",
-                  "routeTarget": "65000:42",
+                  "routeTargets": {
+                    "imports": [
+                      {
+                        "id": "1",
+                        "asnIp": "65001:100"
+                      }
+                    ],
+                    "exports": [
+                      {
+                        "id": "3",
+                        "asnIp": "65002:200"
+                      }
+                    ]
+                  },
                   "switchFabricId": "123",
                   "appliance": {
                     "enabled": true,
@@ -273073,9 +274181,53 @@
                             "type": "string",
                             "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                           },
-                          "routeTarget": {
-                            "type": "string",
-                            "description": "Route target used to control the import and export of routes between VRFs"
+                          "routeTargets": {
+                            "type": "object",
+                            "properties": {
+                              "imports": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "The route target ID"
+                                    },
+                                    "asnIp": {
+                                      "type": "string",
+                                      "description": "The route target value"
+                                    },
+                                    "destroy": {
+                                      "type": "boolean",
+                                      "description": "Whether to delete this route target"
+                                    }
+                                  }
+                                },
+                                "description": "Route targets imported by the VRF"
+                              },
+                              "exports": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "The route target ID"
+                                    },
+                                    "asnIp": {
+                                      "type": "string",
+                                      "description": "The route target value"
+                                    },
+                                    "destroy": {
+                                      "type": "boolean",
+                                      "description": "Whether to delete this route target"
+                                    }
+                                  }
+                                },
+                                "description": "Route targets exported by the VRF"
+                              }
+                            },
+                            "description": "Route targets used to control the import and export of routes between VRFs"
                           },
                           "counts": {
                             "type": "object",
@@ -273157,7 +274309,22 @@
                       "name": "Engineering",
                       "description": "Virtual network for Engineering",
                       "routeDistinguisher": "65000:42",
-                      "routeTarget": "65000:42",
+                      "routeTargets": {
+                        "imports": [
+                          {
+                            "id": "1",
+                            "asnIp": "65001:100",
+                            "destroy": true
+                          }
+                        ],
+                        "exports": [
+                          {
+                            "id": "3",
+                            "asnIp": "65002:200",
+                            "destroy": true
+                          }
+                        ]
+                      },
                       "counts": {
                         "networks": {
                           "total": 5
@@ -273238,14 +274405,62 @@
                     "type": "string",
                     "description": "Description of the VRF (Virtual Routing and Forwarding)"
                   },
+                  "autoRd": {
+                    "type": "boolean",
+                    "description": "Whether the VRF is auto RD"
+                  },
                   "routeDistinguisher": {
                     "type": "string",
                     "nullable": true,
                     "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                   },
-                  "routeTarget": {
-                    "type": "string",
-                    "description": "Route target are used to control the import and export of routes between VRFs"
+                  "routeTargets": {
+                    "type": "object",
+                    "properties": {
+                      "imports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The ID of the route target to update or delete"
+                            },
+                            "asnIp": {
+                              "type": "string",
+                              "description": "The route target value"
+                            },
+                            "destroy": {
+                              "type": "boolean",
+                              "description": "Whether to delete this route target"
+                            }
+                          }
+                        },
+                        "description": "Route targets to import"
+                      },
+                      "exports": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "The ID of the route target to update or delete"
+                            },
+                            "asnIp": {
+                              "type": "string",
+                              "description": "The route target value"
+                            },
+                            "destroy": {
+                              "type": "boolean",
+                              "description": "Whether to delete this route target"
+                            }
+                          }
+                        },
+                        "description": "Route targets to export"
+                      }
+                    },
+                    "description": "Import and export route targets for the VRF"
                   },
                   "appliance": {
                     "type": "object",
@@ -273280,8 +274495,24 @@
                 "example": {
                   "name": "Engineering",
                   "description": "Virtual network for Engineering",
+                  "autoRd": false,
                   "routeDistinguisher": "65000:42",
-                  "routeTarget": "65000:42",
+                  "routeTargets": {
+                    "imports": [
+                      {
+                        "id": "1",
+                        "asnIp": "65001:100",
+                        "destroy": true
+                      }
+                    ],
+                    "exports": [
+                      {
+                        "id": "3",
+                        "asnIp": "65002:200",
+                        "destroy": true
+                      }
+                    ]
+                  },
                   "appliance": {
                     "enabled": true,
                     "index": "1",
@@ -273323,9 +274554,45 @@
                       "type": "string",
                       "description": "RD (Route Distinguisher) for the VRF (Virtual Routing and Forwarding)"
                     },
-                    "routeTarget": {
-                      "type": "string",
-                      "description": "Route target are used to control the import and export of routes between VRFs"
+                    "routeTargets": {
+                      "type": "object",
+                      "properties": {
+                        "imports": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "The route target ID"
+                              },
+                              "asnIp": {
+                                "type": "string",
+                                "description": "The route target value"
+                              }
+                            }
+                          },
+                          "description": "Route targets imported by the VRF"
+                        },
+                        "exports": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "The route target ID"
+                              },
+                              "asnIp": {
+                                "type": "string",
+                                "description": "The route target value"
+                              }
+                            }
+                          },
+                          "description": "Route targets exported by the VRF"
+                        }
+                      },
+                      "description": "Route targets used to control the import and export of routes between VRFs"
                     },
                     "switchFabricId": {
                       "type": "string",
@@ -273374,7 +274641,20 @@
                   "name": "Engineering",
                   "description": "Virtual network for Engineering",
                   "routeDistinguisher": "65000:42",
-                  "routeTarget": "65000:42",
+                  "routeTargets": {
+                    "imports": [
+                      {
+                        "id": "1",
+                        "asnIp": "65001:100"
+                      }
+                    ],
+                    "exports": [
+                      {
+                        "id": "3",
+                        "asnIp": "65002:200"
+                      }
+                    ]
+                  },
                   "switchFabricId": "123",
                   "appliance": {
                     "enabled": true,
@@ -280344,7 +281624,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -280632,7 +281912,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -282088,7 +283368,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "31536000"
+              "maximum": 31536000
             }
           },
           {
@@ -283264,7 +284544,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -288988,7 +290268,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2764800"
+              "maximum": 2764800
             }
           }
         ],
@@ -289207,7 +290487,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2764800"
+              "maximum": 2764800
             }
           }
         ],
@@ -289358,7 +290638,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2764800"
+              "maximum": 2764800
             }
           }
         ],
@@ -289543,7 +290823,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2764800"
+              "maximum": 2764800
             }
           }
         ],
@@ -289708,7 +290988,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2764800"
+              "maximum": 2764800
             }
           }
         ],
@@ -289805,7 +291085,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -289946,7 +291226,7 @@
               "type": "number",
               "format": "float",
               "minimum": 1500,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -290135,7 +291415,7 @@
               "type": "number",
               "format": "float",
               "minimum": 1500,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -290293,7 +291573,7 @@
               "type": "number",
               "format": "float",
               "minimum": 1500,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -290453,7 +291733,7 @@
               "type": "number",
               "format": "float",
               "minimum": 28800,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -290647,7 +291927,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -290830,7 +292110,7 @@
               "type": "number",
               "format": "float",
               "minimum": 28800,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -291044,7 +292324,7 @@
               "type": "number",
               "format": "float",
               "minimum": 28800,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -291541,7 +292821,7 @@
               "type": "number",
               "format": "float",
               "minimum": 28800,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -291729,7 +293009,7 @@
               "type": "number",
               "format": "float",
               "minimum": 1500,
-              "maximum": "16070400"
+              "maximum": 16070400
             }
           }
         ],
@@ -291928,8 +293208,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -292142,8 +293422,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -292308,7 +293588,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           }
         ],
@@ -292455,8 +293735,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -292749,8 +294029,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -292898,8 +294178,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -293047,8 +294327,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -293718,6 +294998,7 @@
               "items": {
                 "type": "string",
                 "enum": [
+                  "checked-in",
                   "checking-in",
                   "download-complete",
                   "download-started",
@@ -293732,7 +295013,7 @@
                   "verification-started"
                 ]
               },
-              "maxItems": 12
+              "maxItems": 13
             }
           },
           {
@@ -293798,7 +295079,7 @@
           {
             "name": "sortKey",
             "in": "query",
-            "description": "Sort key: currentVersion orders currentVersion.shortName; device orders device.name with serial fallback; isUpdateAvailable orders false before true when ascending; model orders device.model; network orders network.name; updateStatus uses this semantic order when ascending: idle, upgrade-scheduled, upgrade-retry-scheduled, checking-in, download-started, download-complete, install-started, verification-started, upgrade-complete, upgrade-skipped, upgrade-canceled, upgrade-failed. Terminal items are then ordered by result: succeeded, skipped, canceled, then failed. Ties are resolved by device.serial. Defaults to device.",
+            "description": "Sort key: currentVersion orders currentVersion.shortName; device orders device.name with serial fallback; isUpdateAvailable orders false before true when ascending; model orders device.model; network orders network.name; updateStatus uses this semantic order when ascending: idle, upgrade-scheduled, upgrade-retry-scheduled, checking-in, checked-in, download-started, download-complete, install-started, verification-started, upgrade-complete, upgrade-skipped, upgrade-canceled, upgrade-failed. Terminal items are then ordered by result: succeeded, skipped, canceled, then failed. Ties are resolved by device.serial. Defaults to device.",
             "schema": {
               "type": "string",
               "enum": [
@@ -294037,6 +295318,7 @@
                                   "value": {
                                     "type": "string",
                                     "enum": [
+                                      "checked-in",
                                       "checking-in",
                                       "download-complete",
                                       "download-started",
@@ -294525,7 +295807,7 @@
     },
     "/organizations/{organizationId}/switch/devices/software/versions/targets/byDevice": {
       "get": {
-        "description": "Returns a paginated list of accessible Cloud Monitoring for Catalyst switches and the complete list of destination software versions for each switch. When serials are supplied, only matching accessible switches are returned; when omitted, all accessible eligible switches in the organization are returned. Pagination applies to switch items, not to the targets within each switch. Target lists are evaluated independently rather than intersected across switches. Targets are compatible with the switch and newer than its current version. A switch returns an empty targets list when its current version cannot be determined or no compatible newer version is available. This operation does not determine whether a switch is currently eligible to schedule an update.",
+        "description": "Returns a paginated list of accessible Cloud Monitoring for Catalyst switches and the complete list of destination software versions for each switch. When serials are supplied, only matching accessible switches are returned; when omitted, all accessible eligible switches in the organization are returned. Pagination applies to switch items, not to the targets within each switch. Target lists are evaluated independently rather than intersected across switches. When a device-reported current version is present, all compatible published targets are returned, including supported downgrade versions. The exact firmware image already installed on the switch is excluded when it can be identified. Missing or unresolved current firmware does not restrict the target list; a switch returns an empty targets list only when no compatible target is available. This operation does not determine whether a switch is currently eligible to schedule an update.",
         "operationId": "getOrganizationSwitchDevicesSoftwareVersionsTargetsByDevice",
         "parameters": [
           {
@@ -294642,7 +295924,7 @@
                                 "release"
                               ]
                             },
-                            "description": "Software versions compatible with this switch and newer than its current version. Target IDs are specific to the switch serial. Empty if the current version cannot be determined or no compatible newer version is available."
+                            "description": "Software versions compatible with this switch, including supported downgrade versions, except the exact firmware image already installed when it can be identified. Target IDs are specific to the switch serial. Empty only when no compatible target version is available."
                           }
                         },
                         "required": [
@@ -295728,7 +297010,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -296349,8 +297631,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "43200",
-              "maximum": "16070400"
+              "minimum": 43200,
+              "maximum": 16070400
             }
           }
         ],
@@ -302083,7 +303365,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -315723,7 +317005,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           },
           {
@@ -317181,8 +318463,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -317382,8 +318664,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -317622,8 +318904,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           }
         ],
@@ -317862,7 +319144,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           }
         ],
@@ -318386,8 +319668,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "604800"
+              "minimum": 300,
+              "maximum": 604800
             }
           },
           {
@@ -319116,7 +320398,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -319396,8 +320678,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "3600",
-              "maximum": "604800"
+              "minimum": 3600,
+              "maximum": 604800
             }
           },
           {
@@ -319725,8 +321007,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "3600",
-              "maximum": "604800"
+              "minimum": 3600,
+              "maximum": 604800
             }
           },
           {
@@ -320163,8 +321445,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "3600",
-              "maximum": "604800"
+              "minimum": 3600,
+              "maximum": 604800
             }
           },
           {
@@ -320662,7 +321944,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -320886,7 +322168,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -321100,7 +322382,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -321338,7 +322620,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2678400"
+              "maximum": 2678400
             }
           },
           {
@@ -321599,7 +322881,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -322231,7 +323513,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -322440,7 +323722,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -322649,7 +323931,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "7776000"
+              "maximum": 7776000
             }
           },
           {
@@ -323138,8 +324420,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "7776000"
+              "minimum": 300,
+              "maximum": 7776000
             }
           }
         ],
@@ -323371,8 +324653,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "7776000"
+              "minimum": 300,
+              "maximum": 7776000
             }
           }
         ],
@@ -323616,8 +324898,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "7776000"
+              "minimum": 300,
+              "maximum": 7776000
             }
           }
         ],
@@ -323770,7 +325052,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "86400"
+              "maximum": 86400
             }
           },
           {
@@ -326577,7 +327859,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -326772,7 +328054,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -326949,7 +328231,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "2592000"
+              "maximum": 2592000
             }
           }
         ],
@@ -327058,7 +328340,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "86400"
+              "maximum": 86400
             }
           },
           {
@@ -327314,8 +328596,8 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "minimum": "300",
-              "maximum": "1800"
+              "minimum": 300,
+              "maximum": 1800
             }
           },
           {
@@ -331537,7 +332819,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-09-16T08:06:26Z"
+                      "lastEnabledAt": "2026-09-21T08:06:03Z"
                     }
                   }
                 ]
@@ -333243,7 +334525,7 @@
                       },
                       "ai": {
                         "enabled": true,
-                        "lastEnabledAt": "2026-09-16T08:06:26Z"
+                        "lastEnabledAt": "2026-09-21T08:06:03Z"
                       }
                     }
                   ],
@@ -334100,7 +335382,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "604800"
+              "maximum": 604800
             }
           },
           {
@@ -345935,7 +347217,7 @@
             "schema": {
               "type": "number",
               "format": "float",
-              "maximum": "86400"
+              "maximum": 86400
             }
           },
           {
@@ -347685,6 +348967,9 @@
     },
     {
       "name": "alternateManagementInterface"
+    },
+    {
+      "name": "alternateManagementInterfaces"
     },
     {
       "name": "analytics"
@@ -349612,6 +350897,12 @@
       "operation": "update"
     },
     {
+      "group": "Alternate management interface",
+      "summary": "Update Secure Router alternate management interface settings for a network. Omitted properties remain unchanged. The request contains only editable properties; the response includes network identity and resolved VRF name. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "resource": "/networks/{networkId}/appliance/alternateManagementInterface",
+      "operation": "update"
+    },
+    {
       "group": "Api features/actions/config template",
       "summary": "Create a new configuration template",
       "resource": "/organizations/{organizationId}/configTemplates",
@@ -351533,19 +352824,19 @@
     },
     {
       "group": "Mx port radius server",
-      "summary": "Create a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. A network can have at most 3 shared servers. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "summary": "Create a shared Security Appliance or Secure Router port RADIUS server for a network. These network-owned servers are shared by all eligible Security Appliance or Secure Router ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. A network can have at most 3 shared servers. Servers are returned in priority order, using the server ID as a deterministic tie-breaker. Newly created servers are appended to the end of the pool. Explicit reordering is not supported. This beta operation is available only to organizations with beta API access and may change before GA.",
       "resource": "/networks/{networkId}/appliance/ports/radius/servers",
       "operation": "create"
     },
     {
       "group": "Mx port radius server",
-      "summary": "Delete a network-owned shared MX port RADIUS server. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "summary": "Delete a network-owned shared Security Appliance or Secure Router port RADIUS server. Remaining server priorities are compacted after deletion. Deleting the final server is allowed. This beta operation is available only to organizations with beta API access and may change before GA.",
       "resource": "/networks/{networkId}/appliance/ports/radius/servers/{serverId}",
       "operation": "destroy"
     },
     {
       "group": "Mx port radius server",
-      "summary": "Update a shared MX port RADIUS server for a network. These network-owned servers are shared by all MX ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (802.1X authentication with MAC-based RADIUS fallback) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
+      "summary": "Update a shared Security Appliance or Secure Router port RADIUS server for a network. These network-owned servers are shared by all eligible Security Appliance or Secure Router ports in the network using '802.1X', 'MAC RADIUS' (MAC-based RADIUS authentication), or 'hybrid' (combined 802.1X and MAC-based RADIUS authentication) access policies. Omitted attributes are left unchanged. This beta operation is available only to organizations with beta API access and may change before GA.",
       "resource": "/networks/{networkId}/appliance/ports/radius/servers/{serverId}",
       "operation": "update"
     },
@@ -352090,6 +353381,12 @@
       "operation": "update"
     },
     {
+      "group": "Uplink nat settings",
+      "summary": "Update uplink NAT settings of the specified network",
+      "resource": "/networks/{networkId}/appliance/uplinks/nat",
+      "operation": "update"
+    },
+    {
       "group": "User access device",
       "summary": "Delete a User Access Device",
       "resource": "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}",
@@ -352616,12 +353913,6 @@
       "summary": "Update a split DNS profile",
       "resource": "/organizations/{organizationId}/appliance/dns/split/profiles/{profileId}",
       "operation": "update"
-    },
-    {
-      "group": "Wired/uplink nat settings/api/actions/update uplink nat",
-      "summary": "Update uplink NAT settings of the specified network",
-      "resource": "/networks/{networkId}/appliance/uplinks/nat",
-      "operation": "settings"
     },
     {
       "group": "Wired/uplinks/actions/settings",
