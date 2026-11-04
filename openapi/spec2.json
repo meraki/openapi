@@ -1,9 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "v1.75.1",
+    "version": "1.76.0",
     "title": "Meraki Dashboard API",
-    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 16 October, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
+    "description": "The Cisco Meraki Dashboard API is a modern REST API based on the OpenAPI specification.\n\n> Date: 04 November, 2026\n>\n> [Recent Updates](https://meraki.io/whats-new/)\n\n---\n\n[API Documentation](https://meraki.io/api)\n\n[Community Support](https://meraki.io/community)\n\n[Meraki Homepage](https://www.meraki.com)\n",
     "contact": {
       "name": "Meraki Developer Community",
       "url": "https://meraki.io/community"
@@ -2928,8 +2928,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "1800",
-            "maximum": "1209600",
+            "minimum": 1800,
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 30 minutes and be less than or equal to 14 days. The default is 30 minutes."
@@ -6594,7 +6594,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 1 hour."
@@ -6866,7 +6866,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "50400",
+            "maximum": 50400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 hours. The default is 1 hour."
@@ -9365,6 +9365,128 @@
         ]
       }
     },
+    "/devices/{serial}/certificates/{certificateSerial}/revoke": {
+      "post": {
+        "description": "Revoke a device certificate. The device and certificate are identified by the path parameters. You may supply a revocation reason in the request body; if omitted, a default reason is applied.",
+        "operationId": "revokeDeviceCertificate",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "certificateSerial",
+            "in": "path",
+            "description": "Certificate serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "revokeDeviceCertificate",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "enum": [
+                    "aACompromise",
+                    "affiliationChanged",
+                    "cACompromise",
+                    "certificateHold",
+                    "cessationOfOperation",
+                    "keyCompromise",
+                    "privilegeWithdrawn",
+                    "removeFromCRL",
+                    "superseded",
+                    "unspecified"
+                  ],
+                  "description": "Revocation reason per RFC 5280; omit to use `unspecified`"
+                }
+              },
+              "example": {
+                "reason": "unspecified"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Human-readable outcome"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "certificate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Certificate ID"
+                        }
+                      },
+                      "description": "Certificate reference"
+                    },
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number"
+                    },
+                    "feature": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "openroaming",
+                            "radsec",
+                            "zigbee"
+                          ],
+                          "description": "Feature type"
+                        }
+                      },
+                      "description": "Feature this certificate served"
+                    }
+                  },
+                  "description": "Revoked certificate details"
+                }
+              },
+              "required": [
+                "result"
+              ]
+            },
+            "examples": {
+              "application/json": {
+                "message": "Certificate revoked successfully",
+                "result": {
+                  "certificate": {
+                    "id": "12345"
+                  },
+                  "serial": "Q2ZZ-AAAA-CCCC",
+                  "feature": {
+                    "type": "radsec"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Revoke a device certificate",
+        "tags": [
+          "devices",
+          "configure",
+          "certificates"
+        ]
+      }
+    },
     "/devices/{serial}/clients": {
       "get": {
         "description": "List the clients of a device, up to a maximum of a month ago. The usage of each client is returned in kilobytes. If the device is a switch, the switchport is returned; otherwise the switchport field is null. Wireless connection metadata reflects the latest available successful association event in the selected period.",
@@ -9386,7 +9508,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -12587,6 +12709,491 @@
         ]
       }
     },
+    "/devices/{serial}/liveTools/route/details": {
+      "post": {
+        "description": "Enqueue a live tool job to fetch route details from a device.",
+        "operationId": "createDeviceLiveToolsRouteDetail",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createDeviceLiveToolsRouteDetail",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "BGP"
+                  ],
+                  "description": "The type of the route provided. The only supported value for now is 'BGP'."
+                },
+                "vrf": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the route VRF."
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "description": "The route VRF to inspect."
+                },
+                "destination": {
+                  "type": "object",
+                  "properties": {
+                    "subnet": {
+                      "type": "string",
+                      "description": "The route destination subnet, represented in CIDR format."
+                    }
+                  },
+                  "required": [
+                    "subnet"
+                  ],
+                  "description": "The destination of the route provided"
+                },
+                "nextHop": {
+                  "type": "object",
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "description": "The route next-hop represented in regular ip format."
+                    }
+                  },
+                  "required": [
+                    "address"
+                  ],
+                  "description": "The next-hop-IP of the route provided."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. If using this field, please also specify a sharedSecret."
+                    },
+                    "sharedSecret": {
+                      "type": "string",
+                      "description": "A shared secret that will be included in the requests sent to the callback URL. It can be used to verify that the request was sent by Meraki. If using this field, please also specify an url."
+                    },
+                    "httpServer": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The webhook receiver ID that will receive information. If specifying this, please leave the url and sharedSecret fields blank."
+                        }
+                      },
+                      "description": "The webhook receiver used for the callback webhook."
+                    },
+                    "payloadTemplate": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "The ID of the payload template. Defaults to 'wpt_00005' for the Callback (included) template."
+                        }
+                      },
+                      "description": "The payload template of the webhook used for the callback"
+                    }
+                  },
+                  "x-release-stage": "general_availability",
+                  "description": "Details for the callback. Please include either an httpServerId OR url and sharedSecret"
+                }
+              },
+              "example": {
+                "type": "BGP",
+                "vrf": {
+                  "name": "vrf1"
+                },
+                "destination": {
+                  "subnet": "10.130.0.0/24"
+                },
+                "nextHop": {
+                  "address": "136.1.1.1"
+                },
+                "callback": {
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "sharedSecret": "secret",
+                  "httpServer": {
+                    "id": "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vd2ViaG9va3M="
+                  },
+                  "payloadTemplate": {
+                    "id": "wpt_2100"
+                  }
+                }
+              },
+              "required": [
+                "type",
+                "vrf",
+                "destination",
+                "nextHop"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobId": {
+                  "type": "string",
+                  "description": "ID of the route details request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this URL to check the status of your route details request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number."
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "BGP"
+                      ],
+                      "description": "The route type to inspect. The only supported value is 'BGP'."
+                    },
+                    "vrf": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the route VRF."
+                        }
+                      },
+                      "description": "The route VRF to inspect."
+                    },
+                    "destination": {
+                      "type": "object",
+                      "properties": {
+                        "subnet": {
+                          "type": "string",
+                          "description": "The destination subnet in CIDR format."
+                        }
+                      },
+                      "description": "The route destination to inspect."
+                    },
+                    "nextHop": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "description": "The IP address of the next hop."
+                        }
+                      },
+                      "description": "The next hop to inspect."
+                    }
+                  },
+                  "description": "Route details request parameters."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the route details request."
+                },
+                "callback": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "The ID of the callback. To check the status of the callback, use this ID in a request to /webhooks/callbacks/statuses/{id}"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The callback URL for the webhook target. This was either provided in the original request or comes from a configured webhook receiver"
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "The status of the callback"
+                    }
+                  },
+                  "description": "Information for callback used to send back results",
+                  "x-release-stage": "general_availability"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "jobId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/route/details/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "type": "BGP",
+                  "vrf": {
+                    "name": "vrf1"
+                  },
+                  "destination": {
+                    "subnet": "10.130.0.0/24"
+                  },
+                  "nextHop": {
+                    "address": "136.1.1.1"
+                  }
+                },
+                "status": "complete",
+                "callback": {
+                  "id": "1284392014819",
+                  "url": "https://webhook.site/28efa24e-f830-4d9f-a12b-fbb9e5035031",
+                  "status": "new"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enqueue a live tool job to fetch route details from a device.",
+        "tags": [
+          "devices",
+          "liveTools",
+          "route",
+          "details"
+        ]
+      }
+    },
+    "/devices/{serial}/liveTools/route/details/{jobId}": {
+      "get": {
+        "description": "Return a route details live tool job for a device.",
+        "operationId": "getDeviceLiveToolsRouteDetail",
+        "parameters": [
+          {
+            "name": "serial",
+            "in": "path",
+            "description": "Serial",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jobId": {
+                  "type": "string",
+                  "description": "ID of the route details request. Used to check the status of the request."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "GET this URL to check the status of your route details request."
+                },
+                "request": {
+                  "type": "object",
+                  "properties": {
+                    "serial": {
+                      "type": "string",
+                      "description": "Device serial number."
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "BGP"
+                      ],
+                      "description": "The route type to inspect. The only supported value is 'BGP'."
+                    },
+                    "vrf": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "The name of the route VRF."
+                        }
+                      },
+                      "description": "The route VRF to inspect."
+                    },
+                    "destination": {
+                      "type": "object",
+                      "properties": {
+                        "subnet": {
+                          "type": "string",
+                          "description": "The destination subnet in CIDR format."
+                        }
+                      },
+                      "description": "The route destination to inspect."
+                    },
+                    "nextHop": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string",
+                          "description": "The IP address of the next hop."
+                        }
+                      },
+                      "description": "The next hop to inspect."
+                    }
+                  },
+                  "description": "Route details request parameters."
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Status of the route details request."
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "isActive": {
+                      "type": "boolean",
+                      "description": "Whether the device reports the route as active."
+                    },
+                    "bgp": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "EBGP",
+                            "IBGP"
+                          ],
+                          "description": "The BGP route type reported by the device."
+                        },
+                        "metrics": {
+                          "type": "object",
+                          "properties": {
+                            "localPreference": {
+                              "type": "integer",
+                              "description": "Value reported by the device to choose preferred exit paths within an autonomous system. Higher values are preferred."
+                            },
+                            "multiExitDiscriminator": {
+                              "type": "integer",
+                              "description": "Value reported by the device to influence inbound traffic from neighboring autonomous systems. Lower values are preferred."
+                            },
+                            "weight": {
+                              "type": "integer",
+                              "description": "Cisco-proprietary value reported by the device to choose a local route path. Higher values are preferred."
+                            }
+                          },
+                          "description": "BGP route metrics reported by the device."
+                        },
+                        "autonomousSystem": {
+                          "type": "object",
+                          "properties": {
+                            "path": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer"
+                              },
+                              "description": "The BGP autonomous system path reported by the device. When multiple values are present, they are ordered from the most recently prepended AS — typically the neighboring AS — toward the originating AS."
+                            }
+                          },
+                          "description": "BGP autonomous system details reported by the device."
+                        },
+                        "communities": {
+                          "type": "object",
+                          "properties": {
+                            "extended": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Extended BGP community values reported by the device."
+                            }
+                          },
+                          "description": "BGP community details reported by the device."
+                        }
+                      },
+                      "description": "BGP route details returned by the device."
+                    }
+                  },
+                  "description": "Route details returned by the device for this job result."
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Any errors encountered while retrieving route details."
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "jobId": "1284392014819",
+                "url": "/devices/Q234-ABCD-5678/liveTools/route/details/1284392014819",
+                "request": {
+                  "serial": "Q234-ABCD-5678",
+                  "type": "BGP",
+                  "vrf": {
+                    "name": "vrf1"
+                  },
+                  "destination": {
+                    "subnet": "10.130.0.0/24"
+                  },
+                  "nextHop": {
+                    "address": "136.1.1.1"
+                  }
+                },
+                "status": "complete",
+                "results": {
+                  "isActive": true,
+                  "bgp": {
+                    "type": "EBGP",
+                    "metrics": {
+                      "localPreference": 100,
+                      "multiExitDiscriminator": 0,
+                      "weight": 0
+                    },
+                    "autonomousSystem": {
+                      "path": [
+                        13601
+                      ]
+                    },
+                    "communities": {
+                      "extended": [
+                        "RT:64512:0"
+                      ]
+                    }
+                  }
+                },
+                "errors": []
+              }
+            }
+          }
+        },
+        "summary": "Return a route details live tool job for a device.",
+        "tags": [
+          "devices",
+          "liveTools",
+          "route",
+          "details"
+        ]
+      }
+    },
     "/devices/{serial}/liveTools/routingTable/lookups": {
       "post": {
         "description": "Enqueue a job to perform a routing table lookup request for a device. The routing table lookup request fetches a specific set of routes based on filters. Any combination of search filters can be applied. Only Cisco Secure Routers are supported.",
@@ -14285,7 +14892,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -14974,7 +15581,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2592000",
+            "maximum": 2592000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 30 days. The default is 30 days."
@@ -15977,7 +16584,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -20543,7 +21150,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -20835,7 +21442,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -23334,7 +23941,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "68342400",
+            "maximum": 68342400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 31 days."
@@ -29681,6 +30288,19 @@
                           ]
                         },
                         "description": "Traffic filters"
+                      },
+                      "vrf": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "VRF ID for the policy. Use 0 for the default VRF."
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "description": "VRF settings for the policy. Omit this field to use the default VRF for the policy."
                       }
                     },
                     "required": [
@@ -29725,7 +30345,10 @@
                           }
                         }
                       }
-                    ]
+                    ],
+                    "vrf": {
+                      "id": "12345"
+                    }
                   }
                 ]
               }
@@ -29887,6 +30510,20 @@
                           ]
                         },
                         "description": "Traffic filters"
+                      },
+                      "vrf": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "VRF ID for the policy. Use 0 for the default VRF."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "VRF name for the policy."
+                          }
+                        },
+                        "description": "VRF settings for the policy. If a non-default VRF is not set for the policy, this value is the default VRF."
                       }
                     },
                     "required": [
@@ -29933,7 +30570,11 @@
                           }
                         }
                       }
-                    ]
+                    ],
+                    "vrf": {
+                      "id": "12345",
+                      "name": "VRF Blue"
+                    }
                   }
                 ]
               }
@@ -29976,7 +30617,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "31536000",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -35295,6 +35936,16 @@
                     ]
                   },
                   "description": "Major Application based VPN exclusion rules. Pass an empty array to clear existing rules."
+                },
+                "applicationCategoryMapping": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "When true, map the configured majorApplications to application categories and add the results to applications. Keep majorApplications unchanged. Defaults to false."
+                    }
+                  },
+                  "description": "Options for mapping configured majorApplications to application categories."
                 }
               },
               "example": {
@@ -35310,7 +35961,10 @@
                     "id": "meraki:vpnExclusion/application/2",
                     "name": "Office 365 Sharepoint"
                   }
-                ]
+                ],
+                "applicationCategoryMapping": {
+                  "enabled": false
+                }
               }
             }
           }
@@ -36029,7 +36683,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 10 minutes."
@@ -39023,7 +39677,7 @@
     },
     "/networks/{networkId}/appliance/vpn/siteToSiteVpn": {
       "get": {
-        "description": "Return the site-to-site VPN settings of a network. Only valid for MX networks.",
+        "description": "Return the site-to-site VPN settings of an MX network or configuration template.",
         "operationId": "getNetworkApplianceVpnSiteToSiteVpn",
         "parameters": [
           {
@@ -39101,13 +39755,17 @@
                           "remoteSubnet": {
                             "type": "string",
                             "description": "The translated subnet to be used in the VPN"
+                          },
+                          "legacy": {
+                            "type": "object",
+                            "description": "DEPRECATED: Legacy VPN NAT settings. For VLAN entries, when the corresponding NFO is enabled, the related field is returned for every VLAN, including false values."
                           }
                         },
                         "description": "Configuration of NAT for the subnet"
                       }
                     }
                   },
-                  "description": "The list of subnets and their VPN presence."
+                  "description": "The list of local VPN subnets and their VPN presence. VLAN entries include vlanId and subnetting where applicable. When the corresponding NFO is enabled, NAT settings are returned for every VLAN; non-VLAN entries omit vlanId, subnetting, and nat.legacy."
                 },
                 "sgt": {
                   "type": "object",
@@ -39167,6 +39825,28 @@
                     }
                   },
                   "description": "The list of VPN host translations. Host translations are supported starting from MX firmware version 26.1.2"
+                },
+                "natTraversal": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "automatic",
+                        "manual"
+                      ],
+                      "description": "Whether NAT traversal is automatic or manually configured."
+                    },
+                    "publicIp": {
+                      "type": "string",
+                      "description": "The public IPv4 address used for manual NAT traversal."
+                    },
+                    "publicPort": {
+                      "type": "integer",
+                      "description": "The public port used for manual NAT traversal."
+                    }
+                  },
+                  "description": "NAT traversal settings."
                 }
               }
             },
@@ -39191,7 +39871,7 @@
                     "useVpn": true,
                     "nat": {
                       "enabled": true,
-                      "remoteSubnet": "192.168.2.0/24"
+                      "remoteSubnet": "198.51.100.3/32"
                     }
                   }
                 ],
@@ -39213,12 +39893,17 @@
                       "address": "72.168.2.10"
                     }
                   }
-                ]
+                ],
+                "natTraversal": {
+                  "mode": "automatic",
+                  "publicIp": "203.0.113.8",
+                  "publicPort": 4500
+                }
               }
             }
           }
         },
-        "summary": "Return the site-to-site VPN settings of a network",
+        "summary": "Return the site-to-site VPN settings of an MX network or configuration template.",
         "tags": [
           "appliance",
           "configure",
@@ -39227,7 +39912,7 @@
         ]
       },
       "put": {
-        "description": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
+        "description": "Update the site-to-site VPN settings of an MX network or configuration template in NAT mode. Unacknowledged warnings return 400 Bad Request with retry guidance in errors and the warnings in confirmations. Review the warnings returned in confirmations, then retry with confirmed: true to accept them. Fatal errors must be corrected before retrying.",
         "operationId": "updateNetworkApplianceVpnSiteToSiteVpn",
         "parameters": [
           {
@@ -39243,6 +39928,10 @@
             "schema": {
               "type": "object",
               "properties": {
+                "confirmed": {
+                  "type": "boolean",
+                  "description": "Whether to accept the confirmation warnings for these changes. Defaults to true, which accepts confirmation warnings and preserves the existing update behavior. Set to false to opt in to confirmation warnings. Review the warnings returned in confirmations, then retry with confirmed: true to accept them. Fatal errors must be corrected before retrying."
+                },
                 "mode": {
                   "type": "string",
                   "enum": [
@@ -39251,6 +39940,31 @@
                     "spoke"
                   ],
                   "description": "The site-to-site VPN mode. Can be one of 'none', 'spoke' or 'hub'"
+                },
+                "natTraversal": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "automatic",
+                        "manual"
+                      ],
+                      "description": "Whether NAT traversal is automatic or manually configured."
+                    },
+                    "publicIp": {
+                      "type": "string",
+                      "description": "The public IP address used for manual NAT traversal."
+                    },
+                    "publicPort": {
+                      "type": "integer",
+                      "description": "The public port used for manual NAT traversal. Must be between 1024 and 65535."
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "description": "NAT traversal settings. Omit to leave the existing setting unchanged."
                 },
                 "hubs": {
                   "type": "array",
@@ -39279,7 +39993,7 @@
                     "properties": {
                       "localSubnet": {
                         "type": "string",
-                        "description": "The CIDR notation subnet used within the VPN"
+                        "description": "The CIDR notation subnet used within the VPN. Required for standalone networks."
                       },
                       "useVpn": {
                         "type": "boolean",
@@ -39295,16 +40009,17 @@
                           "remoteSubnet": {
                             "type": "string",
                             "description": "The translated subnet to be used in the VPN"
+                          },
+                          "legacy": {
+                            "type": "object",
+                            "description": "DEPRECATED: Legacy VPN NAT settings. For VLAN entries, when the corresponding NFO is enabled, the related field is returned for every VLAN, including false values."
                           }
                         },
                         "description": "Configuration of NAT for the subnet"
                       }
-                    },
-                    "required": [
-                      "localSubnet"
-                    ]
+                    }
                   },
-                  "description": "The list of subnets and their VPN presence."
+                  "description": "The list of local VPN subnets and their VPN presence. VLAN entries include vlanId and subnetting where applicable. When the corresponding NFO is enabled, NAT settings are returned for every VLAN; non-VLAN entries omit vlanId, subnetting, and nat.legacy."
                 },
                 "sgt": {
                   "type": "object",
@@ -39367,7 +40082,13 @@
                 }
               },
               "example": {
+                "confirmed": false,
                 "mode": "spoke",
+                "natTraversal": {
+                  "mode": "manual",
+                  "publicIp": "203.0.113.8",
+                  "publicPort": 4500
+                },
                 "hubs": [
                   {
                     "hubId": "N_4901849",
@@ -39380,7 +40101,7 @@
                     "useVpn": true,
                     "nat": {
                       "enabled": true,
-                      "remoteSubnet": "192.168.2.0/24"
+                      "remoteSubnet": "198.51.100.3/32"
                     }
                   }
                 ],
@@ -39478,13 +40199,17 @@
                           "remoteSubnet": {
                             "type": "string",
                             "description": "The translated subnet to be used in the VPN"
+                          },
+                          "legacy": {
+                            "type": "object",
+                            "description": "DEPRECATED: Legacy VPN NAT settings. For VLAN entries, when the corresponding NFO is enabled, the related field is returned for every VLAN, including false values."
                           }
                         },
                         "description": "Configuration of NAT for the subnet"
                       }
                     }
                   },
-                  "description": "The list of subnets and their VPN presence."
+                  "description": "The list of local VPN subnets and their VPN presence. VLAN entries include vlanId and subnetting where applicable. When the corresponding NFO is enabled, NAT settings are returned for every VLAN; non-VLAN entries omit vlanId, subnetting, and nat.legacy."
                 },
                 "sgt": {
                   "type": "object",
@@ -39544,6 +40269,28 @@
                     }
                   },
                   "description": "The list of VPN host translations. Host translations are supported starting from MX firmware version 26.1.2"
+                },
+                "natTraversal": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "automatic",
+                        "manual"
+                      ],
+                      "description": "Whether NAT traversal is automatic or manually configured."
+                    },
+                    "publicIp": {
+                      "type": "string",
+                      "description": "The public IPv4 address used for manual NAT traversal."
+                    },
+                    "publicPort": {
+                      "type": "integer",
+                      "description": "The public port used for manual NAT traversal."
+                    }
+                  },
+                  "description": "NAT traversal settings."
                 }
               }
             },
@@ -39568,7 +40315,7 @@
                     "useVpn": true,
                     "nat": {
                       "enabled": true,
-                      "remoteSubnet": "192.168.2.0/24"
+                      "remoteSubnet": "198.51.100.3/32"
                     }
                   }
                 ],
@@ -39590,12 +40337,17 @@
                       "address": "72.168.2.10"
                     }
                   }
-                ]
+                ],
+                "natTraversal": {
+                  "mode": "automatic",
+                  "publicIp": "203.0.113.8",
+                  "publicPort": 4500
+                }
               }
             }
           }
         },
-        "summary": "Update the site-to-site VPN settings of a network",
+        "summary": "Update the site-to-site VPN settings of an MX network or configuration template in NAT mode",
         "tags": [
           "appliance",
           "configure",
@@ -40063,7 +40815,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 7 days. The default is 1 day."
@@ -44415,24 +45167,9 @@
                       "services": {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "enum": [
-                            "afp",
-                            "airplay",
-                            "apple_screen_share",
-                            "bittorrent",
-                            "ftp",
-                            "google_chromecast",
-                            "ichat",
-                            "itunes",
-                            "printers",
-                            "samba",
-                            "scanner",
-                            "spotify",
-                            "ssh"
-                          ]
+                          "type": "string"
                         },
-                        "description": "Names of the configured services"
+                        "description": "Keys of predefined or custom mDNS services available to this network"
                       }
                     }
                   },
@@ -44470,24 +45207,9 @@
                       "services": {
                         "type": "array",
                         "items": {
-                          "type": "string",
-                          "enum": [
-                            "afp",
-                            "airplay",
-                            "apple_screen_share",
-                            "bittorrent",
-                            "ftp",
-                            "google_chromecast",
-                            "ichat",
-                            "itunes",
-                            "printers",
-                            "samba",
-                            "scanner",
-                            "spotify",
-                            "ssh"
-                          ]
+                          "type": "string"
                         },
-                        "description": "Names of the configured services"
+                        "description": "Keys of predefined or custom mDNS services available to this network"
                       }
                     },
                     "required": [
@@ -45206,7 +45928,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -45581,7 +46303,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -45691,7 +46413,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -45800,7 +46522,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -46517,7 +47239,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -51301,7 +52023,7 @@
                         "items": {
                           "type": "string",
                           "enum": [
-                            "snmp-device-access-check"
+                            "snmp-auth-and-privacy-check"
                           ]
                         },
                         "description": "The names of the removed feature checks to acknowledge."
@@ -51423,7 +52145,7 @@
                     "networkId": "N_1234",
                     "productType": "wireless",
                     "removedFeatureCheckNames": [
-                      "snmp-device-access-check"
+                      "snmp-auth-and-privacy-check"
                     ]
                   }
                 ]
@@ -62550,7 +63272,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
@@ -64036,7 +64758,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -64879,7 +65601,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -76302,7 +77024,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -76700,7 +77422,7 @@
                     "url": "https://n1.meraki.com//n//manage/nodes/new_list/000000000000",
                     "interface": {
                       "name": "My L3 Interface",
-                      "url": "https://n1.meraki.com//n//manage/configure/switch_l3/l3_interface/00000"
+                      "url": "https://n1.meraki.com//n//manage/configure/switch_l3/00000"
                     }
                   },
                   "ipv4": {
@@ -81222,6 +81944,16 @@
                   },
                   "description": "MAC blocklist"
                 },
+                "clientTracking": {
+                  "type": "object",
+                  "properties": {
+                    "deviceConfigMode": {
+                      "type": "object",
+                      "description": "Device Config mode settings."
+                    }
+                  },
+                  "description": "Client tracking settings."
+                },
                 "portChannelFallback": {
                   "type": "boolean",
                   "description": "Enable port channel fallback on Catalyst MS switches."
@@ -81264,6 +81996,7 @@
                 "macBlocklist": {
                   "enabled": true
                 },
+                "clientTracking": {},
                 "portChannelFallback": true,
                 "uplinkSelection": {
                   "failback": {
@@ -81358,6 +82091,16 @@
                     "enabled"
                   ],
                   "description": "MAC blocklist"
+                },
+                "clientTracking": {
+                  "type": "object",
+                  "properties": {
+                    "deviceConfigMode": {
+                      "type": "object",
+                      "description": "Device Config mode settings."
+                    }
+                  },
+                  "description": "Client tracking settings."
                 },
                 "portChannelFallback": {
                   "type": "boolean",
@@ -81455,6 +82198,16 @@
                   },
                   "description": "MAC blocklist"
                 },
+                "clientTracking": {
+                  "type": "object",
+                  "properties": {
+                    "deviceConfigMode": {
+                      "type": "object",
+                      "description": "Device Config mode settings."
+                    }
+                  },
+                  "description": "Client tracking settings."
+                },
                 "portChannelFallback": {
                   "type": "boolean",
                   "description": "Enable port channel fallback on Catalyst MS switches."
@@ -81497,6 +82250,7 @@
                 "macBlocklist": {
                   "enabled": true
                 },
+                "clientTracking": {},
                 "portChannelFallback": true,
                 "uplinkSelection": {
                   "failback": {
@@ -85988,7 +86742,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2592000",
+            "maximum": 2592000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 30 days."
@@ -88749,7 +89503,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -88918,7 +89672,7 @@
     },
     "/networks/{networkId}/wireless/airMarshal/rules": {
       "post": {
-        "description": "Creates a new rule",
+        "description": "Creates a new rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch. The created rule ID is returned in the action batch createdResources list. A later action in the same batch cannot reference that generated ID.",
         "operationId": "createNetworkWirelessAirMarshalRule",
         "parameters": [
           {
@@ -89066,7 +89820,7 @@
     },
     "/networks/{networkId}/wireless/airMarshal/rules/{ruleId}": {
       "put": {
-        "description": "Update a rule",
+        "description": "Update a rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch.",
         "operationId": "updateNetworkWirelessAirMarshalRule",
         "parameters": [
           {
@@ -89210,7 +89964,7 @@
         ]
       },
       "delete": {
-        "description": "Delete an Air Marshal rule.",
+        "description": "Delete an Air Marshal rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch.",
         "operationId": "deleteNetworkWirelessAirMarshalRule",
         "parameters": [
           {
@@ -89233,7 +89987,7 @@
             "description": "Successful operation"
           }
         },
-        "summary": "Delete an Air Marshal rule.",
+        "summary": "Delete an Air Marshal rule",
         "tags": [
           "wireless",
           "configure",
@@ -89244,7 +89998,7 @@
     },
     "/networks/{networkId}/wireless/airMarshal/settings": {
       "put": {
-        "description": "Updates Air Marshal settings.",
+        "description": "Updates Air Marshal settings. Omitting an optional setting leaves its saved value unchanged.",
         "operationId": "updateNetworkWirelessAirMarshalSettings",
         "parameters": [
           {
@@ -89271,12 +90025,8 @@
               },
               "example": {
                 "defaultPolicy": "allow"
-              },
-              "required": [
-                "defaultPolicy"
-              ]
-            },
-            "required": true
+              }
+            }
           }
         ],
         "responses": {
@@ -89303,7 +90053,7 @@
             }
           }
         },
-        "summary": "Updates Air Marshal settings.",
+        "summary": "Updates Air Marshal settings",
         "tags": [
           "wireless",
           "configure",
@@ -90214,7 +90964,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -90353,7 +91103,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -90562,7 +91312,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -90969,7 +91719,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "68342400",
+            "maximum": 68342400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 791 days. The default is 1 day."
@@ -91353,7 +92103,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -91550,7 +92300,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -91804,7 +92554,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -91943,7 +92693,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -93160,7 +93910,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -93449,7 +94199,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days."
@@ -94131,7 +94881,7 @@
                 },
                 "ai": {
                   "enabled": true,
-                  "lastEnabledAt": "2026-09-16T08:03:59Z"
+                  "lastEnabledAt": "2026-10-04T09:03:28Z"
                 }
               }
             }
@@ -102497,6 +103247,16 @@
                     },
                     "description": "The current setting for 802.11r. Only present when the authMode requires encryption and firmware supports 802.11r."
                   },
+                  "dot11k": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether 802.11k is enabled or not."
+                      }
+                    },
+                    "description": "The current setting for 802.11k. Only present when firmware supports 802.11k."
+                  },
                   "enterpriseAdminAccess": {
                     "type": "string",
                     "enum": [
@@ -102849,6 +103609,9 @@
                   "dot11r": {
                     "enabled": true,
                     "adaptive": true
+                  },
+                  "dot11k": {
+                    "enabled": true
                   },
                   "enterpriseAdminAccess": "access enabled",
                   "radiusTestingEnabled": true,
@@ -103452,6 +104215,16 @@
                   },
                   "description": "The current setting for 802.11r. Only present when the authMode requires encryption and firmware supports 802.11r."
                 },
+                "dot11k": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether 802.11k is enabled or not."
+                    }
+                  },
+                  "description": "The current setting for 802.11k. Only present when firmware supports 802.11k."
+                },
                 "enterpriseAdminAccess": {
                   "type": "string",
                   "enum": [
@@ -103803,6 +104576,9 @@
                   "enabled": true,
                   "adaptive": true
                 },
+                "dot11k": {
+                  "enabled": true
+                },
                 "enterpriseAdminAccess": "access enabled",
                 "radiusTestingEnabled": true,
                 "radiusCalledStationId": "00-11-22-33-44-55:AP1",
@@ -104019,6 +104795,19 @@
                     "enabled"
                   ],
                   "description": "The current setting for 802.11r"
+                },
+                "dot11k": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether 802.11k is enabled or not."
+                    }
+                  },
+                  "required": [
+                    "enabled"
+                  ],
+                  "description": "The current setting for 802.11k"
                 },
                 "splashPage": {
                   "type": "string",
@@ -104267,7 +105056,7 @@
                 },
                 "radiusAuthenticationNasId": {
                   "type": "string",
-                  "description": "The NAS identifier to use for RADIUS authentication. With 802.11r enabled or adaptive, custom text is available only to organizations enabled for this feature; otherwise, use only $NODE_MAC$, $VAP_NUM$, and $VAP_NAME$. When this feature is enabled, the complete rendered NAS identifier must be 1–48 bytes."
+                  "description": "The NAS identifier to use for RADIUS authentication. With 802.11r enabled or adaptive, use $NODE_MAC$, $VAP_NUM$, $VAP_NAME$, and/or custom text. The complete rendered NAS identifier must be 1–48 bytes."
                 },
                 "radiusServerTimeout": {
                   "type": "integer",
@@ -104709,6 +105498,9 @@
                 "dot11r": {
                   "enabled": true,
                   "adaptive": true
+                },
+                "dot11k": {
+                  "enabled": true
                 },
                 "splashPage": "Click-through splash page",
                 "splashGuestSponsorDomains": [
@@ -105204,6 +105996,16 @@
                   },
                   "description": "The current setting for 802.11r. Only present when the authMode requires encryption and firmware supports 802.11r."
                 },
+                "dot11k": {
+                  "type": "object",
+                  "properties": {
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether 802.11k is enabled or not."
+                    }
+                  },
+                  "description": "The current setting for 802.11k. Only present when firmware supports 802.11k."
+                },
                 "enterpriseAdminAccess": {
                   "type": "string",
                   "enum": [
@@ -105554,6 +106356,9 @@
                 "dot11r": {
                   "enabled": true,
                   "adaptive": true
+                },
+                "dot11k": {
+                  "enabled": true
                 },
                 "enterpriseAdminAccess": "access enabled",
                 "radiusTestingEnabled": true,
@@ -111654,6 +112459,34 @@
             "required": true
           },
           {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 1000. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "enum": [
+              "ascending",
+              "descending"
+            ],
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sorted order of entries. Order options are 'ascending' and 'descending'. Default is 'ascending'."
+          },
+          {
             "type": "string",
             "enum": [
               "completed",
@@ -111760,6 +112593,12 @@
                 "required": [
                   "actions"
                 ]
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
               }
             },
             "examples": {
@@ -114495,8 +115334,11 @@
                   "authenticationMethod": {
                     "type": "string",
                     "enum": [
+                      "Cisco Customer Identity",
                       "Cisco SecureX Sign-On",
-                      "Email"
+                      "Cisco Unified Identity",
+                      "Email",
+                      "SAML"
                     ],
                     "description": "Admin's authentication method"
                   }
@@ -114762,8 +115604,11 @@
                 "authenticationMethod": {
                   "type": "string",
                   "enum": [
+                    "Cisco Customer Identity",
                     "Cisco SecureX Sign-On",
-                    "Email"
+                    "Cisco Unified Identity",
+                    "Email",
+                    "SAML"
                   ],
                   "description": "Admin's authentication method"
                 }
@@ -115016,8 +115861,11 @@
                 "authenticationMethod": {
                   "type": "string",
                   "enum": [
+                    "Cisco Customer Identity",
                     "Cisco SecureX Sign-On",
-                    "Email"
+                    "Cisco Unified Identity",
+                    "Email",
+                    "SAML"
                   ],
                   "description": "Admin's authentication method"
                 }
@@ -116438,7 +117286,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
@@ -116667,7 +117515,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 31 days."
@@ -120446,7 +121294,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "1209600",
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
@@ -120827,7 +121675,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "31536000",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 31 days."
@@ -124698,7 +125546,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "1209600",
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 14 days. The default is 1 day."
@@ -125102,7 +125950,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -125562,7 +126410,7 @@
     },
     "/organizations/{organizationId}/appliance/vpn/thirdPartyVPNPeers": {
       "get": {
-        "description": "Return the third party VPN peers for an organization",
+        "description": "Return the configured third-party VPN peers for an organization.",
         "operationId": "getOrganizationApplianceVpnThirdPartyVPNPeers",
         "parameters": [
           {
@@ -125722,15 +126570,19 @@
                       "ipsecPoliciesPreset": {
                         "type": "string",
                         "enum": [
-                          "aws",
-                          "azure",
-                          "default",
+                          "aws (insecure)",
+                          "aws_v2",
+                          "azure (insecure)",
+                          "azure_v2",
+                          "default (insecure)",
                           "secure",
-                          "umbrella",
-                          "umbrella_short_lived",
-                          "zscaler"
+                          "umbrella (deprecated)",
+                          "umbrella (insecure)",
+                          "umbrella_v2",
+                          "zscaler (insecure)",
+                          "zscaler_v2"
                         ],
-                        "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                        "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                       },
                       "ikeVersion": {
                         "type": "string",
@@ -126035,7 +126887,7 @@
                     "slaPolicy": {
                       "id": "1234"
                     },
-                    "ipsecPoliciesPreset": "default",
+                    "ipsecPoliciesPreset": "default (insecure)",
                     "ikeVersion": "1",
                     "networkTags": [
                       "all"
@@ -126124,7 +126976,7 @@
             }
           }
         },
-        "summary": "Return the third party VPN peers for an organization",
+        "summary": "Return the configured third-party VPN peers for an organization.",
         "tags": [
           "appliance",
           "configure",
@@ -126282,15 +127134,19 @@
                       "ipsecPoliciesPreset": {
                         "type": "string",
                         "enum": [
-                          "aws",
-                          "azure",
-                          "default",
+                          "aws (insecure)",
+                          "aws_v2",
+                          "azure (insecure)",
+                          "azure_v2",
+                          "default (insecure)",
                           "secure",
-                          "umbrella",
-                          "umbrella_short_lived",
-                          "zscaler"
+                          "umbrella (deprecated)",
+                          "umbrella (insecure)",
+                          "umbrella_v2",
+                          "zscaler (insecure)",
+                          "zscaler_v2"
                         ],
-                        "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                        "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                       },
                       "slaPolicy": {
                         "type": "object",
@@ -126526,7 +127382,7 @@
                       ],
                       "childLifetime": 28800
                     },
-                    "ipsecPoliciesPreset": "default",
+                    "ipsecPoliciesPreset": "default (insecure)",
                     "slaPolicy": {
                       "id": "1234"
                     },
@@ -126741,15 +127597,19 @@
                       "ipsecPoliciesPreset": {
                         "type": "string",
                         "enum": [
-                          "aws",
-                          "azure",
-                          "default",
+                          "aws (insecure)",
+                          "aws_v2",
+                          "azure (insecure)",
+                          "azure_v2",
+                          "default (insecure)",
                           "secure",
-                          "umbrella",
-                          "umbrella_short_lived",
-                          "zscaler"
+                          "umbrella (deprecated)",
+                          "umbrella (insecure)",
+                          "umbrella_v2",
+                          "zscaler (insecure)",
+                          "zscaler_v2"
                         ],
-                        "description": "One of the following available presets: 'default', 'aws', 'azure', 'umbrella', 'umbrella_short_lived', 'secure', 'zscaler'. If this is provided, the 'ipsecPolicies' parameter is ignored. Note that 'umbrella_short_lived' maps to the Dashboard UI label 'Umbrella', while 'umbrella' maps to the Dashboard UI label 'Umbrella (Deprecated)'."
+                        "description": "One of the following available presets: 'default (insecure)', 'secure', 'aws (insecure)', 'aws_v2', 'azure (insecure)', 'azure_v2', 'umbrella (insecure)', 'umbrella_v2', 'umbrella (deprecated)', 'zscaler (insecure)', 'zscaler_v2'. If this is provided, the 'ipsecPolicies' parameter is ignored."
                       },
                       "ikeVersion": {
                         "type": "string",
@@ -127054,7 +127914,7 @@
                     "slaPolicy": {
                       "id": "1234"
                     },
-                    "ipsecPoliciesPreset": "default",
+                    "ipsecPoliciesPreset": "default (insecure)",
                     "ikeVersion": "1",
                     "networkTags": [
                       "all"
@@ -131665,8 +132525,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "7200",
-            "maximum": "1209600",
+            "minimum": 7200,
+            "maximum": 1209600,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 2 hours and be less than or equal to 14 days. The default is 2 hours."
@@ -131769,6 +132629,518 @@
           "wireless",
           "monitor",
           "impactedDevice",
+          "byNetwork"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/assurance/wireless/experience/successfulConnections/byNetwork": {
+      "get": {
+        "description": "Returns connection and client counts aggregated by network for the requested time window. This operation returns one aggregate per network for the requested window. Use the byInterval operation for time buckets. Use either timespan or t0/t1 to set the window. The default is 2 hours, the minimum timespan is 15 minutes, and the maximum lookback is 14 days. Results use cursor pagination by network ID. The perPage value is between 3 and 100, with a default of 100 networks. Breakdowns return up to 5 contributors, 10 sub-contributors per contributor, and 100 reasons per sub-contributor.",
+        "operationId": "getOrganizationAssuranceWirelessExperienceSuccessfulConnectionsByNetwork",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "name": "networkIds",
+            "in": "query",
+            "description": "Filter results by network."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "name": "serials",
+            "in": "query",
+            "description": "Filter results by device serial."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14
+              ]
+            },
+            "maxItems": 100,
+            "name": "ssidNumbers",
+            "in": "query",
+            "description": "Filter results by SSID number. Valid values are 0-14."
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "2.4",
+                "5",
+                "6"
+              ]
+            },
+            "maxItems": 3,
+            "name": "bands",
+            "in": "query",
+            "description": "Filter results by wireless band in GHz (2.4, 5, or 6)."
+          },
+          {
+            "type": "string",
+            "name": "t0",
+            "in": "query",
+            "description": "The beginning of the timespan for the data. The maximum lookback period is 14 days from today."
+          },
+          {
+            "type": "string",
+            "name": "t1",
+            "in": "query",
+            "description": "The end of the timespan for the data. t1 can be a maximum of 14 days after t0."
+          },
+          {
+            "type": "number",
+            "format": "float",
+            "minimum": 900,
+            "maximum": 1209600,
+            "name": "timespan",
+            "in": "query",
+            "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 15 minutes and be less than or equal to 14 days. The default is 2 hours."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 100."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 2147483647,
+                              "description": "Total items matching the filters."
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 2147483647,
+                              "description": "Matching items available on subsequent pages."
+                            }
+                          },
+                          "description": "Counts relating to the paginated items"
+                        }
+                      },
+                      "description": "Counts relating to the paginated dataset"
+                    }
+                  },
+                  "description": "Metadata relevant to the paginated dataset"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "network": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Network ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Network name."
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "Network Dashboard URL. Null when network details are unavailable.",
+                            "x-nullable": true
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "Unknown",
+                              "Wired",
+                              "Wireless"
+                            ],
+                            "description": "Network type: Wireless, Wired, or Unknown."
+                          }
+                        },
+                        "description": "Network details."
+                      },
+                      "successes": {
+                        "type": "object",
+                        "properties": {
+                          "count": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 2147483647,
+                            "description": "Successful connection attempts."
+                          }
+                        },
+                        "description": "Overall successes."
+                      },
+                      "failures": {
+                        "type": "object",
+                        "properties": {
+                          "count": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 2147483647,
+                            "description": "Failed connection attempts."
+                          }
+                        },
+                        "description": "Overall failures."
+                      },
+                      "clients": {
+                        "type": "object",
+                        "properties": {
+                          "total": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 2147483647,
+                            "description": "Total unique clients."
+                          },
+                          "failing": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 2147483647,
+                            "description": "Total unique failing clients."
+                          }
+                        },
+                        "description": "Client counts for the network."
+                      },
+                      "byContributor": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "description": "Failure contributor name."
+                            },
+                            "successes": {
+                              "type": "object",
+                              "properties": {
+                                "count": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 2147483647,
+                                  "description": "Successful connection attempts."
+                                }
+                              },
+                              "description": "Successful attempts for this contributor."
+                            },
+                            "failures": {
+                              "type": "object",
+                              "properties": {
+                                "count": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 2147483647,
+                                  "description": "Failed connection attempts."
+                                }
+                              },
+                              "description": "Failed attempts for this contributor."
+                            },
+                            "failureContribution": {
+                              "type": "object",
+                              "properties": {
+                                "percent": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "maximum": 100,
+                                  "description": "Percentage. Range: 0-100."
+                                }
+                              },
+                              "description": "Share of network failures attributed to this contributor."
+                            },
+                            "clientFailureContribution": {
+                              "type": "object",
+                              "properties": {
+                                "percent": {
+                                  "type": "number",
+                                  "format": "float",
+                                  "minimum": 0,
+                                  "maximum": 100,
+                                  "description": "Percentage. Range: 0-100."
+                                }
+                              },
+                              "description": "Share of failing clients attributed to this contributor."
+                            },
+                            "clients": {
+                              "type": "object",
+                              "properties": {
+                                "failing": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 2147483647,
+                                  "description": "Clients with failures for this contributor."
+                                },
+                                "total": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 2147483647,
+                                  "description": "Totals clients with activity on this contributor."
+                                }
+                              },
+                              "description": "Client counts for this contributor."
+                            },
+                            "bySubContributor": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "Failure sub-contributor name."
+                                  },
+                                  "failures": {
+                                    "type": "object",
+                                    "properties": {
+                                      "count": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 2147483647,
+                                        "description": "Failed connection attempts."
+                                      }
+                                    },
+                                    "description": "Failures for the given sub-contributor."
+                                  },
+                                  "failureContribution": {
+                                    "type": "object",
+                                    "properties": {
+                                      "percent": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "maximum": 100,
+                                        "description": "Percentage. Range: 0-100."
+                                      }
+                                    },
+                                    "description": "Share of contributor failures attributed to this sub-contributor."
+                                  },
+                                  "clients": {
+                                    "type": "object",
+                                    "properties": {
+                                      "failing": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 2147483647,
+                                        "description": "Clients with this sub-contributor failure."
+                                      }
+                                    },
+                                    "description": "Client counts for this failure sub-contributor."
+                                  },
+                                  "clientFailureContribution": {
+                                    "type": "object",
+                                    "properties": {
+                                      "percent": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "maximum": 100,
+                                        "description": "Percentage. Range: 0-100."
+                                      }
+                                    },
+                                    "description": "Share of failing clients attributed to this sub-contributor."
+                                  },
+                                  "byReason": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "802.11 reason",
+                                            "802.11 status",
+                                            "Meraki reason"
+                                          ],
+                                          "description": "Reason source type. Null when the source type cannot be determined.",
+                                          "x-nullable": true
+                                        },
+                                        "code": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 999,
+                                          "description": "Reason code from the reason source. Range: 0-999. Null when the source has invalid reason.",
+                                          "x-nullable": true
+                                        },
+                                        "reason": {
+                                          "type": "string",
+                                          "description": "Human-readable failure reason. Null when the source has invalid reason.",
+                                          "x-nullable": true
+                                        },
+                                        "count": {
+                                          "type": "integer",
+                                          "minimum": 0,
+                                          "maximum": 2147483647,
+                                          "description": "Failures for this reason."
+                                        }
+                                      }
+                                    },
+                                    "maxItems": 100,
+                                    "description": "Failure reasons. Maximum 100 entries. Sub-contributor totals include reasons not listed. No ordering is guaranteed."
+                                  }
+                                }
+                              },
+                              "maxItems": 10,
+                              "description": "Failure subcontributors. Maximum 10 entries. Contributor totals include entries not listed. No ordering is guaranteed."
+                            }
+                          }
+                        },
+                        "maxItems": 5,
+                        "description": "Connection failures grouped by contributor. Maximum 5 entries. No ordering is guaranteed."
+                      }
+                    }
+                  },
+                  "maxItems": 100,
+                  "description": "Wireless connection counts by network."
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 100,
+                      "remaining": 100
+                    }
+                  }
+                },
+                "items": [
+                  {
+                    "network": {
+                      "id": "L_100",
+                      "name": "Example Network",
+                      "url": "https://dashboard.meraki.com/manage/configure/sampleNetwork",
+                      "type": "Wireless"
+                    },
+                    "successes": {
+                      "count": 13682
+                    },
+                    "failures": {
+                      "count": 327
+                    },
+                    "clients": {
+                      "total": 585,
+                      "failing": 93
+                    },
+                    "byContributor": [
+                      {
+                        "name": "auth",
+                        "successes": {
+                          "count": 13679
+                        },
+                        "failures": {
+                          "count": 109
+                        },
+                        "failureContribution": {
+                          "percent": 33.33
+                        },
+                        "clientFailureContribution": {
+                          "percent": 37.57
+                        },
+                        "clients": {
+                          "failing": 68,
+                          "total": 610
+                        },
+                        "bySubContributor": [
+                          {
+                            "name": "Invalid credentials",
+                            "failures": {
+                              "count": 60
+                            },
+                            "failureContribution": {
+                              "percent": 55.05
+                            },
+                            "clients": {
+                              "failing": 11
+                            },
+                            "clientFailureContribution": {
+                              "percent": 25.58
+                            },
+                            "byReason": [
+                              {
+                                "type": "802.11 reason",
+                                "code": 23,
+                                "reason": "802.1X RADIUS failed",
+                                "count": 60
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "summary": "Summarize wireless connection counts by network",
+        "tags": [
+          "wireless",
+          "monitor",
+          "experience",
+          "successfulConnections",
           "byNetwork"
         ]
       }
@@ -135461,8 +136833,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "3600",
-            "maximum": "604800",
+            "minimum": 3600,
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 1 hour and be less than or equal to 7 days. The default is 2 hours."
@@ -141266,6 +142638,823 @@
         ]
       }
     },
+    "/organizations/{organizationId}/certificates/authorities": {
+      "get": {
+        "description": "List certificate authorities for an organization. Optionally filter by authority IDs and sort results.",
+        "operationId": "getOrganizationCertificatesAuthorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "authorityIds",
+            "in": "query",
+            "description": "Feature certificate authority IDs to filter by (exact match on each id; duplicates are ignored)"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "authorityId",
+              "featureType",
+              "status"
+            ],
+            "name": "sortBy",
+            "in": "query",
+            "description": "Field to sort by (default: authorityId)"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "name": "direction",
+            "in": "query",
+            "description": "Sort direction (default: asc)"
+          },
+          {
+            "type": "boolean",
+            "name": "includeChain",
+            "in": "query",
+            "description": "When true, include the certification path from each certificate authority up to the self signed root. Required by validators that cannot anchor trust at a non self signed certificate authority. Defaults to false."
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "authority": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Unique ID of the certificate authority"
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Certificate authority name"
+                          }
+                        },
+                        "description": "Certificate authority reference"
+                      },
+                      "feature": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "openroaming",
+                              "radsec",
+                              "zigbee"
+                            ],
+                            "description": "Feature type"
+                          }
+                        },
+                        "description": "Feature context for this certificate authority"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending_revoked",
+                          "revoked",
+                          "trusted",
+                          "untrusted"
+                        ],
+                        "description": "Feature certificate authority lifecycle state: untrusted (new), trusted (in use), revoked, or pending_revoked (revocation in progress)."
+                      },
+                      "contents": {
+                        "type": "string",
+                        "description": "PEM encoded certificate authority contents with newlines as \\n; null if not generated"
+                      },
+                      "chain": {
+                        "type": "string",
+                        "description": "PEM bundle of the complete certification path, ordered from this certificate authority up to the self signed root, with newlines as \\n. Only returned when includeChain is true. If a complete path is unavailable for any certificate authority in the response, the request fails rather than returning a partial path."
+                      }
+                    }
+                  },
+                  "description": "Certificate authorities"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of items returned"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "Remaining items (always 0)"
+                            }
+                          },
+                          "description": "Item counts"
+                        }
+                      },
+                      "description": "Result counts"
+                    }
+                  },
+                  "description": "Metadata about returned items"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "authority": {
+                      "id": "5409",
+                      "name": "radsec-123"
+                    },
+                    "feature": {
+                      "type": "radsec"
+                    },
+                    "status": "untrusted",
+                    "contents": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\\n",
+                    "chain": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\\n-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\\n"
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 2,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List certificate authorities for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities"
+        ]
+      },
+      "post": {
+        "description": "Create a certificate authority for an organization. The response includes job information for tracking progress.",
+        "operationId": "createOrganizationCertificatesAuthority",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "createOrganizationCertificatesAuthority",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "featureType": {
+                  "type": "string",
+                  "description": "Feature this CA serves (e.g., radsec, openroaming, zigbee)"
+                }
+              },
+              "example": {
+                "featureType": "radsec"
+              },
+              "required": [
+                "featureType"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the background job"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "create",
+                    "delete",
+                    "update"
+                  ],
+                  "description": "The operation being performed"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Current status of the job"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Job message or error details"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "authority": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID of the created, updated, or deleted certificate authority"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Certificate authority name"
+                        }
+                      },
+                      "description": "Certificate authority details"
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "description": "ISO8601 timestamp when the CA was deleted (delete operations only)"
+                    }
+                  },
+                  "description": "Result data when job completes successfully (null while pending)"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "12345",
+                "action": "create",
+                "status": "new",
+                "message": "CA creation enqueued",
+                "result": {
+                  "authority": {
+                    "id": "",
+                    "name": "radsec-123"
+                  },
+                  "deletedAt": "2024-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a certificate authority for an organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities"
+        ]
+      },
+      "put": {
+        "description": "Trust a newly created certificate authority (transition from untrusted to trusted).",
+        "operationId": "updateOrganizationCertificatesAuthorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "updateOrganizationCertificatesAuthorities",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "ID of the certificate authority to trust. The CA must currently be untrusted."
+                }
+              },
+              "example": {
+                "authorityId": "5409"
+              },
+              "required": [
+                "authorityId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authority": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique ID of the certificate authority"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Certificate authority name"
+                    }
+                  },
+                  "description": "Certificate authority reference"
+                },
+                "feature": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "openroaming",
+                        "radsec",
+                        "zigbee"
+                      ],
+                      "description": "Feature type"
+                    }
+                  },
+                  "description": "Feature context for this certificate authority"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending_revoked",
+                    "revoked",
+                    "trusted",
+                    "untrusted"
+                  ],
+                  "description": "Feature certificate authority lifecycle state: untrusted (new), trusted (in use), revoked, or pending_revoked (revocation in progress)."
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "PEM encoded certificate authority contents with newlines as \\n; null if not generated"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authority": {
+                  "id": "5409",
+                  "name": "radsec-123"
+                },
+                "feature": {
+                  "type": "radsec"
+                },
+                "status": "untrusted",
+                "contents": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\\n"
+              }
+            }
+          }
+        },
+        "summary": "Trust a newly created certificate authority (transition from untrusted to trusted).",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities"
+        ]
+      },
+      "delete": {
+        "description": "Delete a certificate authority. The feature CA must be untrusted or revoked. Deletion takes effect immediately and the response confirms the deleted authority.",
+        "operationId": "deleteOrganizationCertificatesAuthorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "deleteOrganizationCertificatesAuthorities",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "ID of the certificate authority to delete"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Certificate authority name"
+                }
+              },
+              "example": {
+                "authorityId": "5409",
+                "name": "radsec-123"
+              },
+              "required": [
+                "authorityId",
+                "name"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "ID of the deleted certificate authority"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Certificate authority name"
+                },
+                "deletedAt": {
+                  "type": "string",
+                  "description": "ISO8601 timestamp (UTC) when the certificate authority was deleted"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authorityId": "5409",
+                "name": "radsec-123",
+                "deletedAt": "2024-01-01T00:00:00Z"
+              }
+            }
+          }
+        },
+        "summary": "Delete a certificate authority",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/certificates/authorities/jobs/{jobId}": {
+      "get": {
+        "description": "Return the status and result of a certificate authority job.",
+        "operationId": "getOrganizationCertificatesAuthoritiesJob",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "jobId",
+            "in": "path",
+            "description": "Job ID",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Unique identifier for the background job"
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "create",
+                    "delete",
+                    "update"
+                  ],
+                  "description": "The operation being performed"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "failed",
+                    "new",
+                    "ready",
+                    "running",
+                    "scheduled"
+                  ],
+                  "description": "Current status of the job"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Job message or error details"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "authority": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ID of the created, updated, or deleted certificate authority"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Certificate authority name"
+                        }
+                      },
+                      "description": "Certificate authority details"
+                    },
+                    "deletedAt": {
+                      "type": "string",
+                      "description": "ISO8601 timestamp when the CA was deleted (delete operations only)"
+                    }
+                  },
+                  "description": "Result data when job completes successfully (null while pending)"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "id": "12345",
+                "action": "create",
+                "status": "new",
+                "message": "CA creation enqueued",
+                "result": {
+                  "authority": {
+                    "id": "",
+                    "name": "radsec-123"
+                  },
+                  "deletedAt": "2024-01-01T00:00:00Z"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return the status and result of a certificate authority job.",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities",
+          "jobs"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/certificates/authorities/revoke": {
+      "post": {
+        "description": "Revoke a trusted feature certificate authority.",
+        "operationId": "revokeOrganizationCertificatesAuthorities",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "revokeOrganizationCertificatesAuthorities",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authorityId": {
+                  "type": "string",
+                  "description": "ID of the feature certificate authority to revoke"
+                }
+              },
+              "example": {
+                "authorityId": "5409"
+              },
+              "required": [
+                "authorityId"
+              ]
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "authority": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Unique ID of the certificate authority"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Certificate authority name"
+                    }
+                  },
+                  "description": "Certificate authority reference"
+                },
+                "feature": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "openroaming",
+                        "radsec",
+                        "zigbee"
+                      ],
+                      "description": "Feature type"
+                    }
+                  },
+                  "description": "Feature context for this certificate authority"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending_revoked",
+                    "revoked",
+                    "trusted",
+                    "untrusted"
+                  ],
+                  "description": "Feature certificate authority lifecycle state: untrusted (new), trusted (in use), revoked, or pending_revoked (revocation in progress)."
+                },
+                "contents": {
+                  "type": "string",
+                  "description": "PEM encoded certificate authority contents with newlines as \\n; null if not generated"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "authority": {
+                  "id": "5409",
+                  "name": "radsec-123"
+                },
+                "feature": {
+                  "type": "radsec"
+                },
+                "status": "untrusted",
+                "contents": "-----BEGIN CERTIFICATE-----\\n...\\n-----END CERTIFICATE-----\\n"
+              }
+            }
+          }
+        },
+        "summary": "Revoke a trusted feature certificate authority.",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "authorities"
+        ]
+      }
+    },
+    "/organizations/{organizationId}/certificates/revocationLists": {
+      "get": {
+        "description": "Return full certificate revocation lists (CRLs) for the organization's certificate authorities. The list may be empty when no CRL data is available.",
+        "operationId": "getOrganizationCertificatesRevocationLists",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "certificateAuthorityIds",
+            "in": "query",
+            "description": "Optional filter: feature certificate authority IDs (base-10 integers). Every value must exist for this organization; otherwise the request fails. Omit to return CRLs for all feature CAs in the organization."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "certificateAuthorityId": {
+                        "type": "string",
+                        "description": "The ID of the certificate authority"
+                      },
+                      "crl": {
+                        "type": "string",
+                        "description": "The PEM-encoded CRL for the certificate authority"
+                      }
+                    }
+                  },
+                  "description": "List of CRLs for the specified certificate authorities"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of CRLs"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "Number of remaining CRLs"
+                            }
+                          },
+                          "description": "Counts of the CRLs"
+                        }
+                      },
+                      "description": "Counts of the CRLs"
+                    }
+                  },
+                  "description": "Metadata about the CRLs"
+                }
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "certificateAuthorityId": "1234",
+                    "crl": "-----BEGIN X509 CRL-----\nMIICVjCCAj8CAQEwQQD\n...\n-----END X509 CRL-----\n"
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 2,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Return full certificate revocation lists (CRLs) for the organization's certificate authorities",
+        "tags": [
+          "organizations",
+          "configure",
+          "certificates",
+          "revocationLists"
+        ]
+      }
+    },
     "/organizations/{organizationId}/claim": {
       "post": {
         "deprecated": true,
@@ -141456,7 +143645,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 186 days. The default is 1 day."
@@ -141538,7 +143727,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -143953,7 +146142,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "31536000",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 365 days."
@@ -144663,7 +146852,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -147669,6 +149858,234 @@
         ]
       }
     },
+    "/organizations/{organizationId}/devices/certificates": {
+      "get": {
+        "description": "List device certificates for the organization. Optionally filter by device serial numbers and feature types.",
+        "operationId": "getOrganizationDevicesCertificates",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "in": "path",
+            "description": "Organization ID",
+            "type": "string",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "name": "serials",
+            "in": "query",
+            "description": "Device serial numbers to filter by (exact match; duplicates are ignored)"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "openroaming",
+                "radsec",
+                "zigbee"
+              ]
+            },
+            "name": "featureTypes",
+            "in": "query",
+            "description": "Feature types these device certificates serve (exact match; e.g., radsec, openroaming, zigbee)"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "authorityId",
+              "featureType",
+              "status"
+            ],
+            "name": "sortBy",
+            "in": "query",
+            "description": "Field to sort by (default: authorityId)"
+          },
+          {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "name": "direction",
+            "in": "query",
+            "description": "Sort direction (default: asc)"
+          },
+          {
+            "type": "integer",
+            "name": "perPage",
+            "in": "query",
+            "description": "The number of entries per page returned. Acceptable range is 3 - 100. Default is 50."
+          },
+          {
+            "type": "string",
+            "name": "startingAfter",
+            "in": "query",
+            "description": "A token used by the server to indicate the start of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          },
+          {
+            "type": "string",
+            "name": "endingBefore",
+            "in": "query",
+            "description": "A token used by the server to indicate the end of the page. Often this is a timestamp or an ID but it is not limited to those. This parameter should not be defined by client applications. The link for the first, last, prev, or next page in the HTTP Link header should define it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "serial": {
+                        "type": "string",
+                        "description": "Device serial number"
+                      },
+                      "feature": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "openroaming",
+                              "radsec",
+                              "zigbee"
+                            ],
+                            "description": "Feature type"
+                          }
+                        },
+                        "description": "Feature this certificate served"
+                      },
+                      "authority": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "ID of the issuing certificate authority"
+                          }
+                        },
+                        "description": "Issuing certificate authority"
+                      },
+                      "contents": {
+                        "type": "string",
+                        "description": "PEM encoded device certificate with newlines as \\n"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "CSR failed",
+                          "CSR identity rejected",
+                          "active",
+                          "delivered",
+                          "delivery failed",
+                          "expired",
+                          "expiring soon",
+                          "pending CSR",
+                          "pending signing",
+                          "replaced",
+                          "revoked",
+                          "signed",
+                          "signing failed",
+                          "superseded"
+                        ],
+                        "description": "Certificate status"
+                      },
+                      "expiresAt": {
+                        "type": "string",
+                        "description": "Certificate expiry timestamp"
+                      },
+                      "issuedAt": {
+                        "type": "string",
+                        "description": "Certificate issuance timestamp"
+                      },
+                      "certificateSerial": {
+                        "type": "string",
+                        "description": "Certificate serial in hex with colons"
+                      }
+                    }
+                  },
+                  "description": "Device certificates"
+                },
+                "meta": {
+                  "type": "object",
+                  "properties": {
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of items returned"
+                            },
+                            "remaining": {
+                              "type": "integer",
+                              "description": "Number of items remaining after this page"
+                            }
+                          },
+                          "description": "Item counts"
+                        }
+                      },
+                      "description": "Result counts"
+                    }
+                  },
+                  "description": "Metadata about returned items"
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "type": "string",
+                "description": "A comma-separated list of first, last, prev, and next relative links used for subsequent paginated requests."
+              }
+            },
+            "examples": {
+              "application/json": {
+                "items": [
+                  {
+                    "serial": "Q2ZZ-AAAA-CCCC",
+                    "feature": {
+                      "type": "radsec"
+                    },
+                    "authority": {
+                      "id": "5409"
+                    },
+                    "contents": "-----BEGIN CERTIFICATE-----\\nMIID...\\n-----END CERTIFICATE-----",
+                    "status": "active",
+                    "expiresAt": "2027-01-01T00:00:00Z",
+                    "issuedAt": "2026-01-01T00:00:00Z",
+                    "certificateSerial": "7a:3c:5b:2d"
+                  }
+                ],
+                "meta": {
+                  "counts": {
+                    "items": {
+                      "total": 2,
+                      "remaining": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List device certificates for the organization",
+        "tags": [
+          "organizations",
+          "configure",
+          "devices",
+          "certificates"
+        ]
+      }
+    },
     "/organizations/{organizationId}/devices/controller/migrations": {
       "post": {
         "description": "Migrate devices to another controller or management mode",
@@ -148251,7 +150668,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "31536000",
+            "maximum": 31536000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 365 days. The default is 365 days."
@@ -152685,7 +155102,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "300",
+            "maximum": 300,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 5 minutes. The default is 5 minutes."
@@ -153637,7 +156054,7 @@
     },
     "/organizations/{organizationId}/firmware/upgrades/byDevice": {
       "get": {
-        "description": "Get firmware upgrade status for the filtered devices. This endpoint currently only supports Meraki switches and access points.",
+        "description": "Get firmware upgrade status for the filtered devices. This endpoint supports Meraki switches, access points, and campus gateways.",
         "operationId": "getOrganizationFirmwareUpgradesByDevice",
         "parameters": [
           {
@@ -156840,6 +159257,11 @@
                         "type": "string",
                         "description": "Subscription ID"
                       },
+                      "trialId": {
+                        "type": "string",
+                        "description": "Trial identifier associated with the subscription",
+                        "x-nullable": true
+                      },
                       "name": {
                         "type": "string",
                         "description": "Subscription name"
@@ -156894,6 +159316,7 @@
                 "subscriptions": [
                   {
                     "subscriptionId": "1234",
+                    "trialId": null,
                     "name": "My UNX Subscription",
                     "description": "Wireless Networking Subscription",
                     "startDate": "2020-06-30T00:00:00Z",
@@ -156961,6 +159384,11 @@
                 "claimId": {
                   "type": "string",
                   "description": "The secure unique order claim number"
+                },
+                "trialId": {
+                  "type": "string",
+                  "description": "Trial identifier associated with the Unified Order",
+                  "x-nullable": true
                 },
                 "resolution": {
                   "type": "object",
@@ -157070,6 +159498,11 @@
                         "type": "string",
                         "description": "Subscription ID"
                       },
+                      "trialId": {
+                        "type": "string",
+                        "description": "Trial identifier associated with the subscription",
+                        "x-nullable": true
+                      },
                       "name": {
                         "type": "string",
                         "description": "Subscription name"
@@ -157117,6 +159550,7 @@
             "examples": {
               "application/json": {
                 "claimId": "ABCD1EFGH4IJ",
+                "trialId": "TRIAL-12345",
                 "resolution": {
                   "submissionStrategy": "sync_order_claim",
                   "supportsSubscriptionSelection": true,
@@ -157150,6 +159584,7 @@
                 "subscriptions": [
                   {
                     "subscriptionId": "1234",
+                    "trialId": null,
                     "name": "My UNX Subscription",
                     "description": "Wireless Networking Subscription",
                     "startDate": "2020-06-30T00:00:00Z",
@@ -160733,7 +163168,7 @@
     },
     "/organizations/{organizationId}/networks/moves": {
       "post": {
-        "description": "Move networks from one organization to another. For more information and caveats around network move limitations see the Network Portability documentation.",
+        "description": "Move networks from one organization to another. Cross-shard moves must be enabled for your organization. For more information and caveats around network move limitations see the Network Portability documentation.",
         "operationId": "createNetworkMove",
         "parameters": [
           {
@@ -161259,7 +163694,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -173215,7 +175650,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "604800",
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 7 days. The default is 2 hours."
@@ -176228,7 +178663,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2764800",
+            "maximum": 2764800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 32 days. The default is 30 days."
@@ -176433,7 +178868,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2764800",
+            "maximum": 2764800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 32 days. The default is 30 days."
@@ -176574,7 +179009,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2764800",
+            "maximum": 2764800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 32 days. The default is 30 days."
@@ -176749,7 +179184,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2764800",
+            "maximum": 2764800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 32 days. The default is 30 days."
@@ -176904,7 +179339,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2764800",
+            "maximum": 2764800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 32 days. The default is 30 days."
@@ -176991,7 +179426,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 186 days. The default is 1 day."
@@ -177096,7 +179531,7 @@
             "type": "number",
             "format": "float",
             "minimum": 1500,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 186 days. The default is 1 day."
@@ -177256,7 +179691,7 @@
             "type": "number",
             "format": "float",
             "minimum": 1500,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 186 days. The default is 1 day."
@@ -177385,7 +179820,7 @@
             "type": "number",
             "format": "float",
             "minimum": 1500,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 186 days. The default is 1 day."
@@ -177509,7 +179944,7 @@
             "type": "number",
             "format": "float",
             "minimum": 28800,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 186 days. The default is 1 day."
@@ -177667,7 +180102,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 186 days. The default is 1 day."
@@ -177814,7 +180249,7 @@
             "type": "number",
             "format": "float",
             "minimum": 28800,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 186 days. The default is 1 day."
@@ -177992,7 +180427,7 @@
             "type": "number",
             "format": "float",
             "minimum": 28800,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 186 days. The default is 1 day."
@@ -178415,7 +180850,7 @@
             "type": "number",
             "format": "float",
             "minimum": 28800,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 8 hours and be less than or equal to 186 days. The default is 1 day."
@@ -178567,7 +181002,7 @@
             "type": "number",
             "format": "float",
             "minimum": 1500,
-            "maximum": "16070400",
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 25 minutes and be less than or equal to 186 days. The default is 1 day."
@@ -179098,7 +181533,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -179365,8 +181800,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "43200",
-            "maximum": "16070400",
+            "minimum": 43200,
+            "maximum": 16070400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 12 hours and be less than or equal to 186 days. The default is 1 day."
@@ -179956,7 +182391,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameter t0. The value must be in seconds and be less than or equal to 31 days. The default is 1 day."
@@ -181278,7 +183713,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2592000",
+            "maximum": 2592000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 30 days. The default is 1 day."
@@ -181614,6 +184049,7 @@
                       }
                     }
                   },
+                  "maxItems": 1000,
                   "description": "List of settings"
                 },
                 "meta": {
@@ -181725,8 +184161,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "300",
-            "maximum": "604800",
+            "minimum": 300,
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 7 days. The default is 2 hours."
@@ -182138,8 +184574,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "3600",
-            "maximum": "604800",
+            "minimum": 3600,
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 1 hour and be less than or equal to 7 days. The default is 2 hours."
@@ -182434,8 +184870,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "3600",
-            "maximum": "604800",
+            "minimum": 3600,
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 1 hour and be less than or equal to 7 days. The default is 2 hours."
@@ -182835,8 +185271,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "3600",
-            "maximum": "604800",
+            "minimum": 3600,
+            "maximum": 604800,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 1 hour and be less than or equal to 7 days. The default is 2 hours."
@@ -183152,7 +185588,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "7776000",
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 90 days. The default is 7 days."
@@ -183345,7 +185781,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "7776000",
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 90 days. The default is 7 days."
@@ -183528,7 +185964,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -183735,7 +186171,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "2678400",
+            "maximum": 2678400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 31 days. The default is 7 days."
@@ -183871,7 +186307,7 @@
     },
     "/organizations/{organizationId}/wireless/devices/ethernet/statuses": {
       "get": {
-        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices. Power draw and per-port PoE negotiation values are the latest stored snapshot collected by Dashboard. The reportedAt field identifies when that snapshot was collected; an offline or unsupported device may return null values or an older timestamp within the three-day retention window.",
+        "description": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
         "operationId": "getOrganizationWirelessDevicesEthernetStatuses",
         "parameters": [
           {
@@ -183942,19 +186378,6 @@
                         "type": "string",
                         "description": "The PoE power mode for the AP. Can be 'full' or 'low'"
                       },
-                      "reportedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "ISO 8601 timestamp when Dashboard collected the latest stored power snapshot. Null when no snapshot is available within the three-day retention window.",
-                        "x-nullable": true
-                      },
-                      "draw": {
-                        "type": "number",
-                        "format": "float",
-                        "minimum": 0,
-                        "description": "Latest instantaneous device-wide power draw in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when the device did not report a valid current value.",
-                        "x-nullable": true
-                      },
                       "ac": {
                         "type": "object",
                         "properties": {
@@ -183993,35 +186416,6 @@
                             "standard": {
                               "type": "string",
                               "description": "The PoE Standard for the port. Can be '802.3at', '802.3af', '802.3bt', or null"
-                            },
-                            "isActive": {
-                              "type": "boolean",
-                              "description": "Whether this port is the active PoE source. Null when no power-source record is available for the port.",
-                              "x-nullable": true
-                            },
-                            "protocol": {
-                              "type": "string",
-                              "enum": [
-                                "CDP",
-                                "LLDP",
-                                "hardware"
-                              ],
-                              "description": "The firmware-selected PoE negotiation protocol: hardware classification, IEEE 802.1AB LLDP, or Cisco Discovery Protocol (CDP). This read-only value has no default. Null when unavailable or unknown.",
-                              "x-nullable": true
-                            },
-                            "requested": {
-                              "type": "number",
-                              "format": "float",
-                              "minimum": 0,
-                              "description": "Power requested through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null for hardware classification or when unavailable.",
-                              "x-nullable": true
-                            },
-                            "granted": {
-                              "type": "number",
-                              "format": "float",
-                              "minimum": 0,
-                              "description": "Power granted through the selected protocol in watts, rounded to 0.1 W. Range: 0 or greater; the API does not impose a model-independent upper bound. Null when unavailable.",
-                              "x-nullable": true
                             }
                           },
                           "description": "PoE details object for the port"
@@ -184078,8 +186472,6 @@
                   },
                   "power": {
                     "mode": "full",
-                    "reportedAt": "2026-09-12T18:43:31Z",
-                    "draw": 18.7,
                     "ac": {
                       "isConnected": false
                     },
@@ -184091,11 +186483,7 @@
                     {
                       "name": "Ethernet 0",
                       "poe": {
-                        "standard": "802.3at",
-                        "isActive": true,
-                        "protocol": "LLDP",
-                        "requested": 33.0,
-                        "granted": 33.0
+                        "standard": "802.3at"
                       },
                       "linkNegotiation": {
                         "duplex": "full",
@@ -184112,7 +186500,7 @@
             }
           }
         },
-        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices",
+        "summary": "List the most recent Ethernet link speed, duplex, aggregation and power mode and status information for wireless devices.",
         "tags": [
           "wireless",
           "monitor",
@@ -184203,8 +186591,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "300",
-            "maximum": "7776000",
+            "minimum": 300,
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
@@ -184410,8 +186798,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "300",
-            "maximum": "7776000",
+            "minimum": 300,
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
@@ -184622,8 +187010,8 @@
           {
             "type": "number",
             "format": "float",
-            "minimum": "300",
-            "maximum": "7776000",
+            "minimum": 300,
+            "maximum": 7776000,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be greater than or equal to 5 minutes and be less than or equal to 90 days. The default is 7 days."
@@ -184757,7 +187145,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "86400",
+            "maximum": 86400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 1 day. The default is 1 day."
@@ -186922,7 +189310,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "86400",
+            "maximum": 86400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 1 day. The default is 1 day."
@@ -189423,7 +191811,7 @@
                     },
                     "ai": {
                       "enabled": true,
-                      "lastEnabledAt": "2026-09-16T08:03:59Z"
+                      "lastEnabledAt": "2026-10-04T09:03:28Z"
                     }
                   }
                 ],
@@ -200019,7 +202407,7 @@
           {
             "type": "number",
             "format": "float",
-            "maximum": "86400",
+            "maximum": 86400,
             "name": "timespan",
             "in": "query",
             "description": "The timespan for which the information will be fetched. If specifying timespan, do not specify parameters t0 and t1. The value must be in seconds and be less than or equal to 1 day. The default is 1 hour."
@@ -201820,6 +204208,9 @@
       "name": "events"
     },
     {
+      "name": "experience"
+    },
+    {
       "name": "failedConnections"
     },
     {
@@ -202273,6 +204664,9 @@
       "name": "restrictions"
     },
     {
+      "name": "revocationLists"
+    },
+    {
       "name": "rfProfiles"
     },
     {
@@ -202280,6 +204674,9 @@
     },
     {
       "name": "rollbacks"
+    },
+    {
+      "name": "route"
     },
     {
       "name": "routing"
@@ -202433,6 +204830,9 @@
     },
     {
       "name": "subscriptions"
+    },
+    {
+      "name": "successfulConnections"
     },
     {
       "name": "summaries"
@@ -203221,25 +205621,25 @@
     },
     {
       "group": "Mr/actions/air marshal rule",
-      "summary": "Creates a new rule",
+      "summary": "Creates a new rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch. The created rule ID is returned in the action batch createdResources list. A later action in the same batch cannot reference that generated ID.",
       "resource": "/networks/{networkId}/wireless/airMarshal/rules",
       "operation": "create"
     },
     {
       "group": "Mr/actions/air marshal rule",
-      "summary": "Delete an Air Marshal rule.",
+      "summary": "Delete an Air Marshal rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch.",
       "resource": "/networks/{networkId}/wireless/airMarshal/rules/{ruleId}",
       "operation": "destroy"
     },
     {
       "group": "Mr/actions/air marshal rule",
-      "summary": "Update a rule",
+      "summary": "Update a rule. In an action batch, mutations execute in the submitted order and commit atomically; a failure rolls back every mutation and configuration update in that batch. Completed or failed batches cannot be executed again. Air Marshal settings updates may be included in the same batch.",
       "resource": "/networks/{networkId}/wireless/airMarshal/rules/{ruleId}",
       "operation": "update"
     },
     {
       "group": "Mr/actions/air marshal setting",
-      "summary": "Updates Air Marshal settings.",
+      "summary": "Updates Air Marshal settings. Omitting an optional setting leaves its saved value unchanged.",
       "resource": "/networks/{networkId}/wireless/airMarshal/settings",
       "operation": "update"
     },
@@ -203325,6 +205725,36 @@
       "group": "Mr/actions/iot/esl node settings",
       "summary": "Update the ESL settings of a device",
       "resource": "/devices/{serial}/wireless/electronicShelfLabel",
+      "operation": "update"
+    },
+    {
+      "group": "Mr/actions/pureca certificate",
+      "summary": "Revoke a device certificate. The device and certificate are identified by the path parameters. You may supply a revocation reason in the request body; if omitted, a default reason is applied.",
+      "resource": "/devices/{serial}/certificates/{certificateSerial}",
+      "operation": "revoke"
+    },
+    {
+      "group": "Mr/actions/pureca certificate authority",
+      "summary": "Create a certificate authority for an organization. The response includes job information for tracking progress.",
+      "resource": "/organizations/{organizationId}/certificates/authorities",
+      "operation": "create"
+    },
+    {
+      "group": "Mr/actions/pureca certificate authority",
+      "summary": "Delete a certificate authority. The feature CA must be untrusted or revoked. Deletion takes effect immediately and the response confirms the deleted authority.",
+      "resource": "/organizations/{organizationId}/certificates/authorities",
+      "operation": "delete"
+    },
+    {
+      "group": "Mr/actions/pureca certificate authority",
+      "summary": "Revoke a trusted feature certificate authority.",
+      "resource": "/organizations/{organizationId}/certificates/authorities",
+      "operation": "revoke"
+    },
+    {
+      "group": "Mr/actions/pureca certificate authority",
+      "summary": "Trust a newly created certificate authority (transition from untrusted to trusted).",
+      "resource": "/organizations/{organizationId}/certificates/authorities",
       "operation": "update"
     },
     {
@@ -203577,6 +206007,12 @@
       "group": "Ms/actions/storm control",
       "summary": "Update the storm control configuration for a switch network",
       "resource": "/networks/{networkId}/switch/stormControl",
+      "operation": "update"
+    },
+    {
+      "group": "Ms/actions/stp configuration",
+      "summary": "Updates STP settings",
+      "resource": "/networks/{networkId}/switch/stp",
       "operation": "update"
     },
     {
@@ -204048,12 +206484,6 @@
       "operation": "update"
     },
     {
-      "group": "STP configuration",
-      "summary": "Updates STP settings",
-      "resource": "/networks/{networkId}/switch/stp",
-      "operation": "update"
-    },
-    {
       "group": "Sm/actions/admins/role",
       "summary": "Create a Limited Access Role",
       "resource": "/organizations/{organizationId}/sm/admins/roles",
@@ -204174,6 +206604,12 @@
       "operation": "update"
     },
     {
+      "group": "Uplink nat settings",
+      "summary": "Update uplink NAT settings of the specified network",
+      "resource": "/networks/{networkId}/appliance/uplinks/nat",
+      "operation": "update"
+    },
+    {
       "group": "User access device",
       "summary": "Delete a User Access Device",
       "resource": "/networks/{networkId}/sm/userAccessDevices/{userAccessDeviceId}",
@@ -204238,6 +206674,12 @@
       "summary": "Enqueue a routing table summary job for a device. The job fetches summary data such as route counts by VRF and protocol. Only Cisco Secure Routers are supported.",
       "resource": "/devices/{serial}/liveTools/routingTable/summaries",
       "operation": "summary"
+    },
+    {
+      "group": "Wired/actions/firewall/settings",
+      "summary": "Update the firewall settings for this network",
+      "resource": "/networks/{networkId}/appliance/firewall/settings",
+      "operation": "update"
     },
     {
       "group": "Wired/actions/https inspection",
@@ -204391,7 +206833,7 @@
     },
     {
       "group": "Wired/actions/vpn/site to site vpn",
-      "summary": "Update the site-to-site VPN settings of a network. Only valid for MX networks in NAT mode.",
+      "summary": "Update the site-to-site VPN settings of an MX network or configuration template in NAT mode. Unacknowledged warnings return 400 Bad Request with retry guidance in errors and the warnings in confirmations. Review the warnings returned in confirmations, then retry with confirmed: true to accept them. Fatal errors must be corrected before retrying.",
       "resource": "/networks/{networkId}/appliance/vpn/siteToSiteVpn",
       "operation": "update"
     },
@@ -204576,6 +207018,12 @@
       "operation": "job"
     },
     {
+      "group": "Wired/live tools/actions/enqueue route",
+      "summary": "Enqueue a live tool job to fetch route details from a device.",
+      "resource": "/devices/{serial}/liveTools/route/details",
+      "operation": "details"
+    },
+    {
       "group": "Wired/live tools/actions/enqueue route table",
       "summary": "Enqueue a job to perform a routing table lookup request for a device. The routing table lookup request fetches a specific set of routes based on filters. Any combination of search filters can be applied. Only Cisco Secure Routers are supported.",
       "resource": "/devices/{serial}/liveTools/routingTable/lookups",
@@ -204670,12 +207118,6 @@
       "summary": "Update a split DNS profile",
       "resource": "/organizations/{organizationId}/appliance/dns/split/profiles/{profileId}",
       "operation": "update"
-    },
-    {
-      "group": "Wired/uplink nat settings/api/actions/update uplink nat",
-      "summary": "Update uplink NAT settings of the specified network",
-      "resource": "/networks/{networkId}/appliance/uplinks/nat",
-      "operation": "settings"
     },
     {
       "group": "Wired/uplinks/actions/settings",
